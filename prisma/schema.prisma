@@ -1,0 +1,321 @@
+datasource db {
+  provider          = "mysql"
+  url               = env("DATABASE_URL_MAIN")
+  shadowDatabaseUrl = env("DATABASE_URL_SHADOW")
+  relationMode      = "prisma"
+}
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+model Account {
+  id                String        @id @default(cuid())
+  userId            String
+  provider          LoginProvider
+  providerAccountId String
+  refresh_token     String?       @db.Text
+  access_token      String?       @db.Text
+  expires_at        Int?
+  token_type        String?
+  scope             String?
+  id_token          String?       @db.Text
+  session_state     String?
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([provider, providerAccountId])
+  @@index([userId])
+}
+
+model Session {
+  id           String     @id @default(cuid())
+  sessionToken String     @unique
+  userId       String
+  expires      DateTime
+  user         User       @relation(fields: [userId], references: [id], onDelete: Cascade)
+  cartItem     CartItem[]
+
+  @@index([userId])
+}
+
+model User {
+  id            String    @id @default(cuid())
+  firstName     String?
+  lastName      String?
+  email         String    @unique
+  emailVerified Boolean   @default(false)
+  image         Image?    @relation(fields: [imageId], references: [id])
+  addressId     String?
+  role          Role      @default(USER)
+  address       Address?  @relation(fields: [addressId], references: [id])
+  accounts      Account[]
+  sessions      Session[]
+  blogs         Blog[]
+  reviews       Review[]
+  imageId       String?
+
+  @@index([addressId])
+  @@index([imageId])
+}
+
+model VerificationToken {
+  identifier String
+  token      String   @unique
+  expires    DateTime
+
+  @@unique([identifier, token])
+}
+
+model Address {
+  id      String @id @default(cuid())
+  street  String
+  city    String
+  state   String
+  zipCode String
+  country String
+  User    User[]
+}
+
+model CartItem {
+  id        String  @id @default(uuid())
+  quantity  Int
+  productId String
+  sessionId String
+  product   Product @relation(fields: [productId], references: [id])
+  session   Session @relation(fields: [sessionId], references: [id])
+
+  @@index([productId])
+  @@index([sessionId])
+}
+
+model Product {
+  id                   String     @id @default(uuid())
+  sku                  String
+  name                 String
+  status               String
+  ratings              Int?
+  inventory            Int
+  productBreakdown     String?
+  shippingReturnPolicy String     @db.Text
+  description          String     @db.Text
+  tags                 Tag[]
+  price                Int
+  profitMargin         Int
+  displayPrice         Int
+  category             String
+  subcategory          String?
+  images               Image[]
+  cart                 CartItem[]
+  suppliers            Supplier[]
+  reviews              Review[]
+}
+
+model AmazonProduct {
+  id String @id @default(uuid())
+}
+
+model CjShipping {
+  id String @id @default(uuid())
+}
+
+model Order {
+  id String @id @default(uuid())
+}
+
+model Blog {
+  id          String   @id @default(uuid())
+  title       String
+  subTitle    String
+  description String   @db.Text
+  featured    Boolean  @default(false)
+  images      Image[]
+  author      User     @relation(fields: [userId], references: [id])
+  date        DateTime
+  content     String   @db.Text
+  tags        Tag[]
+  template    String
+  userId      String
+
+  @@index([userId])
+}
+
+model Supplier {
+  id                      String    @id @default(uuid())
+  baseShippingPrice       Int
+  height                  Int
+  width                   Int
+  length                  Int
+  weight                  Int
+  supplierName            String
+  supplierStatus          String?
+  shippingWeight          Int?
+  listPrice               Int?
+  salePrice               Int?
+  availability            String?
+  supplierWrittenComments String?
+  supplierUrl             String    @db.Text
+  supplierEmail           String?
+  supplierWhatsApp        String?
+  products                Product[]
+}
+
+model Service {
+  id             String       @id @default(uuid())
+  image          Image?       @relation(fields: [imageId], references: [id])
+  title          String
+  previewContent String       @db.Text
+  description    String       @db.Text
+  hourlyRate     Int
+  valueBrought   String
+  skillsUsed     String
+  htmlEmbed      String?
+  Review         Review[]
+  tags           Tag[]
+  imageId        String
+  subServices    SubService[]
+
+  @@index([imageId])
+}
+
+model Review {
+  id               String     @id @default(uuid())
+  name             String
+  image            Image?     @relation(fields: [imageId], references: [id])
+  title            String
+  content          String     @db.Text
+  link             String     @db.Text
+  rating           Int
+  tags             Tag[]
+  verifiedCustomer Boolean    @default(false)
+  reviewType       ReviewType @default(MAIN)
+  product          Product?   @relation(fields: [productId], references: [id])
+  productId        String?
+  service          Service?   @relation(fields: [serviceId], references: [id])
+  serviceId        String?
+  prompt           GptPrompt? @relation(fields: [gptPromptId], references: [id])
+  user             User       @relation(fields: [userId], references: [id])
+  userId           String
+  imageId          String
+  gptPromptId      String?
+
+  @@index([productId])
+  @@index([serviceId])
+  @@index([userId])
+  @@index([imageId])
+  @@index([gptPromptId])
+}
+
+model Image {
+  id         String       @id @default(uuid())
+  name       String?
+  src        String       @db.Text
+  products   Product[]
+  blogs      Blog[]
+  Service    Service[]
+  SubService SubService[]
+  Review     Review[]
+  GptPrompt  GptPrompt[]
+  User       User[]
+  Event      Event[]
+}
+
+model SubService {
+  id                                        String  @id @default(uuid())
+  image                                     Image?  @relation(fields: [imageId], references: [id])
+  title                                     String
+  pricingModel                              String
+  discounts                                 String
+  serviceDeliverables                       String
+  tags                                      Tag[]
+  serviceUsageScore                         Int
+  description                               String  @db.Text
+  department                                String
+  estimated_hours_times_fifty_percent       Int
+  estimated_hours_times_one_hundred_percent Int
+  skillLevel                                String
+  complexity                                Int
+  overheadCost                              Int
+  service                                   Service @relation(fields: [serviceId], references: [id])
+  imageId                                   String
+  serviceId                                 String
+
+  @@index([imageId])
+  @@index([serviceId])
+}
+
+model GptPrompt {
+  id                String   @id @default(uuid())
+  description       String   @db.Text
+  prompt            String   @db.Text
+  temperature       Int      @default(0)
+  max_tokens        Int      @default(0)
+  top_p             Int      @default(0)
+  best_of           Int      @default(0)
+  frequency_penalty Int      @default(0)
+  presence_penalty  Int      @default(0)
+  stop              String   @db.Text // comma separaetd sequences
+  timesUsed         Int      @default(0)
+  timesIntegrated   Int      @default(0)
+  costPerToken      Int      @default(0)
+  profitMargin      Int      @default(0)
+  tags              Tag[]
+  image             Image?   @relation(fields: [imageId], references: [id])
+  reviews           Review[]
+  imageId           String?
+
+  @@index([imageId])
+}
+
+model Event {
+  id          String      @id @default(uuid())
+  name        String
+  date        DateTime
+  location    String
+  description String      @db.Text
+  image       Image?      @relation(fields: [imageId], references: [id])
+  imageId     String?
+  eventLink   String      @db.Text // URL for Eventbrite or Facebook event page
+  status      EventStatus
+  isVirtual   Boolean
+
+  @@index([imageId])
+}
+
+model Tag {
+  id          String       @id @default(uuid())
+  name        String       @unique
+  products    Product[]
+  blog        Blog[]
+  reviews     Review[]
+  services    Service[]
+  subServices SubService[]
+  prompts     GptPrompt[]
+}
+
+enum Role {
+  ADMIN
+  OWNER
+  USER
+}
+
+enum LoginProvider {
+  META
+  TWITTER
+  PAYPAL
+  APPLE
+  AMAZON
+}
+
+enum ReviewType {
+  MAIN
+  PRODUCT
+  SERVICE
+  PROMPT
+}
+
+enum EventStatus {
+  UPCOMING
+  CANCELLED
+  COMPLETED
+}
