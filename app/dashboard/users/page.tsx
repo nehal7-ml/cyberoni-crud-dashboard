@@ -1,12 +1,17 @@
 import Table from "@/components/Table"
 import { TableItem } from "@/components/TableItem";
+import Pagination from "@/components/Pagination";
 import { displayUserDTO } from "@/crud/user";
 import React, { useEffect, useState } from 'react'
 
 async function Users({users}: {users:displayUserDTO[]}) {
     const data = await getData();
+
+  function onPageChange(page: number) {
+
+  }
   return (
-    <main className="flex w-3/4 flex-col items-center felx-grow  p-5">
+     <main className="flex flex-col items-center  py-5">
         <Table headers={['no.', 'First Name','Last Name', 'Email', 'Email Verified', 'Role']}>
         {data?.map((value, index) => {
           const row: any = [];
@@ -21,6 +26,7 @@ async function Users({users}: {users:displayUserDTO[]}) {
           return <><TableItem key={index} index={index} row={row}></TableItem></>
         })}
         </Table>
+       <Pagination currentPage={1} totalPages={10} onPageChange={onPageChange}></Pagination>
     </main>
   )
 }

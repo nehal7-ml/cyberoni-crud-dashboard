@@ -1,15 +1,17 @@
 import { ListPlus } from "lucide-react"
 import React from 'react'
 
-function index() {
+function CreateRecordButton({className}:{className?:string}) {
   return (
     <>
-    <div>
-        <ListPlus />
-        <div>Create Record</div>
+    <div className={className}>
+        <div className="flex cursor-pointer hover:-translate-y-2 w-40">
+          <ListPlus />
+          <div className="flex-grow">Create Record</div>
+        </div>
     </div>
     </>
   )
 }
 
-export default index
+export default CreateRecordButton

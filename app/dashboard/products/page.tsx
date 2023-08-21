@@ -8,7 +8,7 @@ async function Products() {
   const data = await getData();
 
   return (
-    <main className="flex w-3/4 flex-col items-center felx-grow  p-5">
+    <main className="flex flex-col items-center  py-5">
       <Table headers={['no.', 'SKU', 'Name', 'Inventory', 'Price', 'Profit', 'Category']}>
         {data?.map((value, index) => {
           const row: any = [];
