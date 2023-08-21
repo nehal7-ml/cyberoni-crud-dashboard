@@ -21,6 +21,23 @@ export type createProductDTO = {
     images: createImageDTO[];
     suppliers?: createSupplierDTO[];
 }
+
+
+export type displayProductDTO = {
+    sku: string;
+    name: string;
+    status: string;
+    ratings: number | null;
+    inventory: number;
+    productBreakdown: string | null;
+    shippingReturnPolicy: string;
+    description: string;
+    price: number;
+    profitMargin: number;
+    displayPrice: number;
+    category: string;
+    subcategory: string | null;
+}
 async function create(product: createProductDTO, prismaClient: PrismaClient) {
     const products = prismaClient.product;
     let createdproduct = await products.create({
@@ -75,10 +92,10 @@ async function getAll(offset: number, prismaClient: PrismaClient) {
         where: {
         },
         include: {
-            reviews: true,
-            images: true,
-            tags: true,
-            suppliers: true
+            //reviews: true,
+            //images: true,
+            //tags: true,
+            //suppliers: true
         }
     })
 

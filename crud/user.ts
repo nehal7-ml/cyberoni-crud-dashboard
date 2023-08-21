@@ -4,7 +4,6 @@ import { createAddressDTO } from "./address";
 
 
 export type createUserDTO = {
-    id: string;
     firstName?: string;
     lastName?: string | null;
     email: string;
@@ -14,6 +13,14 @@ export type createUserDTO = {
     role: Role;
 }
 
+export type displayUserDTO = {
+    id:string;
+    firstName?: string;
+    lastName?: string | null;
+    email: string;
+    emailVerified: boolean;
+    role: Role
+}
 async function create(user: createUserDTO, prismaClient: PrismaClient) {
     const users = prismaClient.user;
     const existingUser = await users.findUnique({ where: { email: user.email } })
@@ -66,5 +73,20 @@ async function read(userId: string, prismaClient: PrismaClient) {
     else return
 }
 
+async function getAll(offset:number, prismaClient: PrismaClient) {
+    const users = prismaClient.user;
+    let allUsers = await users.findMany({
+        skip: offset, take: 30,
+        where: {
+        },
+        include: {
+            // reviews: true,
+        }
+    })
 
-export { create, update, remove, read }
+    return allUsers
+    
+}
+
+
+export { create, update, remove, read, getAll }

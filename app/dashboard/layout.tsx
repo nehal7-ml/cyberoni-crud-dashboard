@@ -6,8 +6,9 @@ export default function DashboardLayout({
     children: React.ReactNode
   }) {
     return (
-      <section className="flex h-full w-full" >
-        <SidePanel className="w-1/4 h-screen bg-blue-800"></SidePanel>          
+      <section className="grid h-full w-full" >
+        <SidePanel className="w-1/4 h-screen bg-blue-800"></SidePanel>    
+              
         {children}
       </section>
     )

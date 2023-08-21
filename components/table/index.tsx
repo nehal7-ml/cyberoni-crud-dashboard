@@ -1,11 +1,11 @@
 import React from "react"
 import TableHead from "./TableHead"
 
-function Table({ headers, children }: { headers: string[], children:JSX.Element[] }) {
+function Table({ headers, children }: { headers: string[], children:JSX.Element[] | undefined }) {
     return (
-        <><div className="flex w-full flex-col Table bg-slate-50 font-medium">
-            <div className="overflow-x-auto sm:-mx-6 lg:-mx-8">
-                <div className="inline-block min-w-full sm:px-6 lg:px-8">
+        <><div className="flex overflow-x-auto w-full flex-col Table bg-slate-50 font-medium">
+            <div className="w-full">
+                <div className="inline-block min-w-full">
                     <div className="overflow-hidden">
                         <table className="min-w-full">
                             <TableHead headers={headers}></TableHead>
