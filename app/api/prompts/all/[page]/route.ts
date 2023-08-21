@@ -1,16 +1,16 @@
-import { create, createGptPromptDTO } from "@/crud/prompts";
-import { GptPrompt } from "@prisma/client";
+import { getAll, read, remove, update } from "@/crud/blog";
+import { Product } from "@prisma/client";
 import { NextApiRequest, NextApiResponse } from "next";
 import { prisma } from "@/prisma/prismaClient";
 export default async function handler(req: NextApiRequest, res: NextApiResponse) {
 
     if (req.method === "GET") {
-        res.status(405).json({ error: 'Get is not Allowed on this path' })
+        const page = parseInt(req.query.page as string);
+        const blog = await getAll((page - 1) * 10, prisma)  // skipping 10 record for every new page
+        res.status(200).json({ message: "found", data: blog })
     }
     if (req.method === "POST") {
-        const newPrompt = req.body as createGptPromptDTO
-        const prompt=  await create(newPrompt, prisma)
-        res.status(200).json({ message: 'Prompt Added', data: prompt })
+        res.status(405).json({ error: 'POST is not Allowed on this path' })
     }
     if (req.method === "PUT") {
         res.status(405).json({ error: 'PUT is not Allowed on this path' })
@@ -20,3 +20,5 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
     }
 
 }
+
+
