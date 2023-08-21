@@ -38,7 +38,7 @@ async function create(review: createReviewDTO, prismaClient: PrismaClient) {
     return createdreview
 }
 
-async function update(reviewId: string, review: Review, prismaClient: PrismaClient) {
+async function update(reviewId: string, review: createReviewDTO, prismaClient: PrismaClient) {
 
 }
 async function remove(reviewId: string, prismaClient: PrismaClient) {

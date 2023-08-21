@@ -1,29 +1,38 @@
 import { NextApiRequest, NextApiResponse } from "next";
 import { prisma } from "@/prisma/prismaClient";
 import { createUserDTO, read, remove, update } from "@/crud/user";
+import { NextResponse } from 'next/server'
 
-export default async function handler(req: NextApiRequest, res: NextApiResponse) {
+
+export const GET = handler;
+export const POST = handler;
+export const PUT = handler;
+export const DELTE = handler;
+
+
+
+async function handler(req: NextApiRequest, { params }: { params: { id: string } } ) {
 
     if (req.method === "GET") {
-        const userId = req.query.id as string;
+        const userId = params.id as string;
         const user = await read(userId, prisma)
-        res.status(200).json({ data: user })
+        return NextResponse.json({ data: user })
 
     }
     if (req.method === "PUT") {
-        const userId = req.query.id as string;
+        const userId = params.id as string;
         const user = req.body as createUserDTO;
         const updatedUser = await update(userId, user, prisma);
-        res.status(200).json({ message: "update success", data: updatedUser });
+        return NextResponse.json({ message: "update success", data: updatedUser });
     }
     if (req.method === "DELETE") {
-        const userId = req.query.id as string;
+        const userId = params.id as string;
         const deleted = await remove(userId, prisma);
-        res.status(200).json({ message: "delete success" });
+        return NextResponse.json({ message: "delete success" });
 
     }
     if(req.method ==="POST") {
-        res.status(405).json({ error: 'POST is not Allowed on this path' })
+        return NextResponse.error()
     }
 
 
