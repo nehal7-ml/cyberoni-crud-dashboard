@@ -1,24 +1,11 @@
-import { getAll, read, remove, update } from "@/crud/blog";
-import { Product } from "@prisma/client";
+import { getAll, read, remove, update } from "@/crud/prompt";
 import { NextApiRequest, NextApiResponse } from "next";
 import { prisma } from "@/prisma/prismaClient";
-export default async function handler(req: NextApiRequest, res: NextApiResponse) {
+import { NextResponse } from 'next/server'
 
-    if (req.method === "GET") {
-        const page = parseInt(req.query.page as string);
-        const blog = await getAll((page - 1) * 10, prisma)  // skipping 10 record for every new page
-        res.status(200).json({ message: "found", data: blog })
-    }
-    if (req.method === "POST") {
-        res.status(405).json({ error: 'POST is not Allowed on this path' })
-    }
-    if (req.method === "PUT") {
-        res.status(405).json({ error: 'PUT is not Allowed on this path' })
-    }
-    if (req.method === "DELETE") {
-        res.status(405).json({ error: 'Delete is not Allowed on this path' })
-    }
+export const GET = async (req: NextApiRequest, { params }: { params: { page: string } }) => {
+    const prompts = await getAll(parseInt(params.page) , 10, prisma)  // skipping 10 record for every new page
+    return NextResponse.json({ message: "found", data: prompts })
 
 }
-
 

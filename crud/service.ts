@@ -48,23 +48,23 @@ async function create(service: createServiceDTO, prismaClient: PrismaClient) {
 async function update(serviceId: string, service: createServiceDTO, prismaClient: PrismaClient) {
     const services = prismaClient.service;
 
-    let currentService = await services.findUnique({where: {id: serviceId}})
+    let currentService = await services.findUnique({ where: { id: serviceId } })
     let updatedService = await services.update(
         {
-        where: {id: serviceId},
-        data: {
-            title: service.title,
-            previewContent: service.previewContent,
-            description: service.description,
-            hourlyRate: service.hourlyRate,
-            valueBrought: service.valueBrought,
-            skillsUsed: service.skillsUsed,
-            htmlEmbed: service.htmlEmbed,
-            image: { create: service.image },
-            tags: { create: service.tags },
+            where: { id: serviceId },
+            data: {
+                title: service.title,
+                previewContent: service.previewContent,
+                description: service.description,
+                hourlyRate: service.hourlyRate,
+                valueBrought: service.valueBrought,
+                skillsUsed: service.skillsUsed,
+                htmlEmbed: service.htmlEmbed,
+                image: { create: service.image },
+                tags: { create: service.tags },
 
-        }
-    });
+            }
+        });
     if (service.subServices && service.subServices?.length > 0) {
 
 
@@ -97,16 +97,26 @@ async function getServicesByTag(tag: string, prismaClient: PrismaClient) {
 
 }
 
-async function getAll(offset: number, prismaClient: PrismaClient) {
+async function getAll(page: number, pageSize: number, prismaClient: PrismaClient) {
     const services = prismaClient.service;
-    let allservices = await services.findMany({
-        skip: offset, take: 30,
+
+    if (pageSize !== 10 && pageSize != 30 && pageSize !== 50) throw new Error('page size must be 10, 30 or 50')
+
+    let allServices = await services.findMany({
+        skip: (page - 1) * pageSize, take: pageSize,
         where: {
         },
+        include: {
+            // reviews: true,
+
+        }
     })
 
-    return allservices
-}
+    const totalCount = await services.count();
+    const totalPages = Math.ceil(totalCount / pageSize);
 
+    return { records: allServices, currentPage: page, totalPages, pageSize }
+
+}
 
 export { create, update, remove, read, getAll }

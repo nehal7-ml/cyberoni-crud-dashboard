@@ -67,22 +67,26 @@ async function read(promptId: string, prismaClient: PrismaClient) {
     if (existingprompt) return existingprompt;
 
 }
-
-async function getAll(offset: number, prismaClient: PrismaClient) {
+async function getAll(page: number, pageSize: number, prismaClient: PrismaClient) {
     const prompts = prismaClient.gptPrompt;
-    let allGptPrompts = await prompts.findMany({
-        skip: offset, take: 30,
+
+    if (pageSize !== 10 && pageSize != 30 && pageSize !== 50) throw new Error('page size must be 10, 30 or 50')
+
+    let allPrompts = await prompts.findMany({
+        skip: (page - 1) * pageSize, take: pageSize,
         where: {
         },
         include: {
-            reviews: true,
-            image: true,
-            tags: true,
+            // reviews: true,
+
         }
     })
 
-    return allGptPrompts
-}
+    const totalCount = await prompts.count();
+    const totalPages = Math.ceil(totalCount / pageSize);
 
+    return { records: allPrompts, currentPage: page, totalPages, pageSize }
+
+}
 
 export { create, update, remove, read, getAll }

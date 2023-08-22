@@ -1,6 +1,7 @@
 import Pagination from "@/components/Pagination";
 import Table from "@/components/Table"
 import { TableItem } from "@/components/TableItem";
+import { getAllRecordsDTO } from "@/crud/commonDTO";
 import { displayProductDTO } from "@/crud/product";
 import React, { useEffect, useState } from 'react'
 
@@ -11,7 +12,7 @@ async function Products({params}: {params: { page: string }} ) {
   return (
     <main className="flex flex-col items-center  py-5">
       <Table headers={['no.', 'SKU', 'Name', 'Inventory', 'Price', 'Profit', 'Category']}>
-        {data?.map((value, index) => {
+        {(data?.records as displayProductDTO[]).map((value, index) => {
           const row: any = [];
           row.push(index+1)
           row.push(value.sku);
@@ -25,7 +26,7 @@ async function Products({params}: {params: { page: string }} ) {
           return <TableItem key={index} index={index} row={row}></TableItem>
         })}
       </Table>
-      <Pagination currentPage={page} totalPages={10}></Pagination>
+      <Pagination currentPage={page} totalPages={data?.totalPages || 0}></Pagination>
 
     </main>
   )
@@ -38,7 +39,7 @@ async function getData(page:number) {
   if (res.status == 200) {
     let resJson = await res.json() ;
     console.log(resJson);
-    return resJson.data as displayProductDTO[];
+    return (resJson.data as getAllRecordsDTO);
   }
 
 }

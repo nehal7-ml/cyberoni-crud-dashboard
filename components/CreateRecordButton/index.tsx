@@ -1,15 +1,22 @@
+'use client'
 import { ListPlus } from "lucide-react"
-import React from 'react'
+import Link from "next/link"
+import { usePathname } from "next/navigation";
+import React, { useEffect, useState }  from 'react'
 
-function CreateRecordButton({className}:{className?:string}) {
-  return (
+
+function CreateRecordButton({ className }: { className?: string }) {
+
+  const [show, setShow] = useState(true);
+  const path = usePathname().split('/');
+    return (
     <>
-    <div className={className}>
-        <div className="flex cursor-pointer hover:-translate-y-2 w-40">
+      <div className={className }>
+        <Link href= {`/${path[1]}/${path[2]}/new`} className="flex cursor-pointer hover:-translate-y-2 w-40">
           <ListPlus />
           <div className="flex-grow">Create Record</div>
-        </div>
-    </div>
+        </Link>
+      </div>
     </>
   )
 }

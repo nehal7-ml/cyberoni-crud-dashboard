@@ -170,7 +170,7 @@ model Service {
   valueBrought   String
   skillsUsed     String
   htmlEmbed      String?
-  Review         Review[]
+  reviews         Review[]
   tags           Tag[]
   imageId        String
   subServices    SubService[]

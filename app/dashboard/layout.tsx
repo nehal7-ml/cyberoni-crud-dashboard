@@ -1,20 +1,25 @@
 import SidePanel from "@/components/SidePanel"
 import Pagination from "@/components/Pagination"
 import CreateRecordButton from "@/components/CreateRecordButton"
+import { usePathname } from "next/navigation";
 
 export default function DashboardLayout({
-    children, // will be a page or nested layout
-  }: {
-    children: React.ReactNode
-  }) {
-    return (
-      <section className="grid grid-cols-12 gap-2 h-full w-full" >
-        <SidePanel className="col-span-3 h-screen bg-blue-800"></SidePanel>
-        <div className="col-span-9">
-          <CreateRecordButton className="flex justify-end"></CreateRecordButton>
-          {children}
-
+  children,  // will be a page or nested layout
+  params
+}: {
+  children: React.ReactNode,
+  params: any
+}) {
+  return (
+    <section className="grid grid-cols-12 gap-2 h-full w-full" >
+      <SidePanel className="col-span-3 h-screen bg-blue-800"></SidePanel>
+      <div className="col-span-9">
+        <div className="flex justify-between">
+          <h2 className="col-span-2"></h2>
+          <CreateRecordButton className="col-span-2 flex justify-end"></CreateRecordButton>
         </div>
-      </section>
-    )
-  }
+        <div className="col-span-4 row-span-5">{children}</div>
+      </div>
+    </section>
+  )
+}

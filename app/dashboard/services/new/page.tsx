@@ -4,7 +4,7 @@ import React from 'react'
 function Record() {
   return (
     <>
-      <CreateRecordForm recordType={"User"}>
+      <CreateRecordForm recordType={"Service"}>
 
       </CreateRecordForm>
     </>

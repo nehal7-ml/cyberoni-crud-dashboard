@@ -1,6 +1,6 @@
 import { NextApiRequest, NextApiResponse } from "next";
 import { prisma } from "@/prisma/prismaClient";
-import { createGptPromptDTO, read, remove, update } from "@/crud/prompts";
+import { createGptPromptDTO, read, remove, update } from "@/crud/prompt";
 import { NextResponse } from 'next/server'
 
 
