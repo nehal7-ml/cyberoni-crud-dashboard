@@ -9,7 +9,7 @@ export type createBlogDTO = {
     date: Date;
     content: string;
     template: string;
-    author: User
+    author: {id:string}
 }
 
 export type displayBlogDTO = Blog

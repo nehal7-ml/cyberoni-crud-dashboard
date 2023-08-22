@@ -4,7 +4,6 @@ import { connectOrCreateObject as connectImage, createImageDTO } from "./images"
 import { createSupplierDTO } from "./supplier";
 
 export type createGptPromptDTO = {
-    id: string;
     description: string;
     prompt: string;
     temperature: number;
