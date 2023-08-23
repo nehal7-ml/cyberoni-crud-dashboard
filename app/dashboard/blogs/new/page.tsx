@@ -1,4 +1,5 @@
 'use client'
+import QuillEditor from "@/components/QuillEditor";
 import { createBlogDTO } from "@/crud/blog";
 import React, { useState } from 'react';
 
@@ -37,9 +38,16 @@ const CreateBlogForm: React.FC = () => {
     console.log(blogData);
   };
 
+  function setQuillData(value:string) {
+    setBlogData(prevData => ({
+        ...prevData,
+        content: value
+    }))
+}
+
   return (
-    <div className="light:bg-gray-100 light:text-black dark:bg-gray-700 dark:text-gray-800  bg-gray-100 min-h-screen flex items-center justify-center">
-      <div className="bg-white shadow-md rounded p-8 max-w-md w-full">
+    <div className="light:bg-gray-100 light:text-black dark:bg-gray-700 dark:text-gray-800  bg-gray-100 min-h-screen flex items-center justify-center ">
+      <div className="bg-white shadow-md rounded p-8 max-w-3xl w-full">
         <h2 className="text-2xl font-semibold mb-4">Create Blog</h2>
         <form onSubmit={handleSubmit}>
           <div className="mb-4">
@@ -84,15 +92,9 @@ const CreateBlogForm: React.FC = () => {
               />
             </label>
           </div>
-          <div className="mb-4">
+          <div className="mb-4 h-fit">
             <label className="block text-sm font-medium text-gray-700">Content:</label>
-            <textarea
-              name="content"
-              rows={6}
-              className="mt-1 p-2 border rounded w-full"
-              value={blogData.content}
-              onChange={handleInputChange}
-            />
+            <QuillEditor onChange={setQuillData}></QuillEditor>
           </div>
           <div className="mb-4">
             <label className="block text-sm font-medium text-gray-700">Template:</label>

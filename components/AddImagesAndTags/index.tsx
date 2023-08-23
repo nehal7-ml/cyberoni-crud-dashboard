@@ -4,10 +4,11 @@ import React, { useState } from 'react';
 
 
 type AddImagesAndTagsProps = {
+  maxImages?: number,
   onImagesAndTagsChange: (images: createImageDTO[], tags: createTagDTO[]) => void;
 };
 
-const AddImagesAndTags: React.FC<AddImagesAndTagsProps> = ({ onImagesAndTagsChange }) => {
+const AddImagesAndTags: React.FC<AddImagesAndTagsProps> = ({ onImagesAndTagsChange, maxImages }) => {
   const [images, setImages] = useState<createImageDTO[]>([]);
   const [tags, setTags] = useState<createTagDTO[]>([]);
   const [newImageSrc, setNewImageSrc] = useState('');
@@ -15,8 +16,11 @@ const AddImagesAndTags: React.FC<AddImagesAndTagsProps> = ({ onImagesAndTagsChan
 
   const handleAddImage = () => {
     if (newImageSrc) {
-      setImages(prevImages => [...prevImages, { src: newImageSrc }]);
-      setNewImageSrc('');
+      if (images.length <= (maxImages || 10)) {
+        setImages(prevImages => [...prevImages, { src: newImageSrc }]);
+        setNewImageSrc('');
+      }
+
     }
   };
 
@@ -30,7 +34,9 @@ const AddImagesAndTags: React.FC<AddImagesAndTagsProps> = ({ onImagesAndTagsChan
   const handleImagesAndTagsChange = () => {
     onImagesAndTagsChange(images, tags);
   };
-
+  const handleRemoveImage = (imageToRemove: createImageDTO) => {
+    setImages(prevImages => prevImages.filter(image => image.src !== imageToRemove.src));
+  };
   const handleRemoveTag = (tagToRemove: createTagDTO) => {
     setTags(prevTags => prevTags.filter(tag => tag.name !== tagToRemove.name));
   };
@@ -38,16 +44,23 @@ const AddImagesAndTags: React.FC<AddImagesAndTagsProps> = ({ onImagesAndTagsChan
     <div>
       <h2 className="text-lg font-semibold mb-2">Add Images</h2>
       <div className="mb-4">
-      <div className="flex flex-wrap gap-2">
-        {images.map(image => (
-          <div
-            key={image.src}
-            className="bg-gray-200 p-2 rounded"
-          >
-            <img src={image.src} alt="Product" className="w-20 h-20 object-cover" />
-          </div>
-        ))}
-      </div>
+        <div className="flex flex-wrap gap-2">
+          {images.map(image => (
+            <div
+              key={image.src}
+              className="bg-gray-200 p-2 rounded"
+            >
+              <img src={image.src} alt="Product" className="w-20 h-20 object-cover" />
+              <button
+                type="button"
+                className="ml-2 text-red-600 hover:text-red-800 focus:outline-none focus:ring focus:ring-red-300"
+                onClick={() => handleRemoveImage(image)}
+              >
+                X
+              </button>
+            </div>
+          ))}
+        </div>
         <input
           type="text"
           className="p-2 border rounded w-full"
@@ -65,23 +78,23 @@ const AddImagesAndTags: React.FC<AddImagesAndTagsProps> = ({ onImagesAndTagsChan
       </div>
       <h2 className="text-lg font-semibold mb-2">Add Tags</h2>
       <div className="mb-4">
-      <div className="flex flex-wrap gap-2">
-        {tags.map(tag => (
-          <div
-            key={tag.name}
-            className="bg-blue-200 text-blue-800 p-2 rounded flex items-center"
-          >
-            <span>{tag.name}</span>
-            <button
-              type="button"
-              className="ml-2 text-red-600 hover:text-red-800 focus:outline-none focus:ring focus:ring-red-300"
-              onClick={() => handleRemoveTag(tag)}
+        <div className="flex flex-wrap gap-2">
+          {tags.map(tag => (
+            <div
+              key={tag.name}
+              className="bg-blue-200 text-blue-800 p-2 rounded flex items-center"
             >
-              X
-            </button>
-          </div>
-        ))}
-      </div>
+              <span>{tag.name}</span>
+              <button
+                type="button"
+                className="ml-2 text-red-600 hover:text-red-800 focus:outline-none focus:ring focus:ring-red-300"
+                onClick={() => handleRemoveTag(tag)}
+              >
+                X
+              </button>
+            </div>
+          ))}
+        </div>
         <input
           type="text"
           className="p-2 border rounded w-full"
@@ -96,7 +109,7 @@ const AddImagesAndTags: React.FC<AddImagesAndTagsProps> = ({ onImagesAndTagsChan
         >
           Add Tag
         </button>
-      </div>    
+      </div>
 
     </div>
   );
