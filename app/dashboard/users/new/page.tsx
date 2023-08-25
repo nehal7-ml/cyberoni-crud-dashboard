@@ -5,11 +5,16 @@ import { createImageDTO } from "@/crud/images";
 import { createUserDTO } from "@/crud/user";
 import { Role } from "@prisma/client";
 import React, { useState } from 'react';
+import Notification from "@/components/Notification";
 
 
 const apiUrl = process.env.NEXT_PUBLIC_API_URL;
 
 const CreateUserForm: React.FC = () => {
+
+  const [notify, setNotify] = useState(false);
+  const [notifyMessage, setNotifyMessage] = useState("");
+  const [notifyType, setNotifyType] = useState<'success'|'fail'>('fail');
 
   const [addressData, setAddressData] = useState<createAddressDTO>({
     city: '',
@@ -56,7 +61,15 @@ const CreateUserForm: React.FC = () => {
     };
     // Send the userData to your backend for creating the user
     const res = await fetch(`${apiUrl}/users/add`, {method: 'POST', body: JSON.stringify(userData), headers})
-    console.log(await res.json());
+    let resJson = await res.json() ;
+
+    if(res.status ==200) {
+      setNotify(true); setNotifyMessage(resJson.message);
+      setNotifyType('success');
+    } else {
+      setNotify(true); setNotifyMessage(resJson.message);
+      setNotifyType('fail');
+    }
   };
 
   return (
@@ -174,6 +187,8 @@ const CreateUserForm: React.FC = () => {
           </button>
         </form>
       </div>
+      {notify && <Notification  message={notifyMessage} type={notifyType}></Notification>}
+
     </div>
   );
 };

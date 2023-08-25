@@ -1,10 +1,17 @@
 'use client'
 import QuillEditor from "@/components/QuillEditor";
+import Notification from "@/components/Notification";
 import { createBlogDTO } from "@/crud/blog";
 import React, { useState } from 'react';
 
 
 const CreateBlogForm: React.FC = () => {
+
+  const [notify, setNotify] = useState(false);
+  const [notifyMessage, setNotifyMessage] = useState("");
+  const [notifyType, setNotifyType] = useState<'success' | 'fail'>('fail');
+
+
   const [blogData, setBlogData] = useState<createBlogDTO>({
     title: '',
     subTitle: '',
@@ -14,7 +21,7 @@ const CreateBlogForm: React.FC = () => {
     content: '',
     template: '',
     author: { id: '' },
-    
+
   });
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
@@ -36,21 +43,29 @@ const CreateBlogForm: React.FC = () => {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     const apiUrl = process.env.NEXT_PUBLIC_API_URL;
-        const headers = {
-            'Content-Type': 'application/json',
-            'Authorization': 'Bearer your-access-token',
-          };
-          // Send the userData to your backend for creating the user
-          const res = await fetch(`${apiUrl}/blogs/add`, {method: 'POST', body: JSON.stringify(blogData), headers})
-          console.log(await res.json());
+    const headers = {
+      'Content-Type': 'application/json',
+      'Authorization': 'Bearer your-access-token',
+    };
+    // Send the userData to your backend for creating the user
+    const res = await fetch(`${apiUrl}/blogs/add`, { method: 'POST', body: JSON.stringify(blogData), headers })
+    let resJson = await res.json();
+
+    if (res.status == 200) {
+      setNotify(true); setNotifyMessage(resJson.message);
+      setNotifyType('success');
+    } else {
+      setNotify(true); setNotifyMessage(resJson.message);
+      setNotifyType('fail');
+    }
   };
 
-  function setQuillData(value:string) {
+  function setQuillData(value: string) {
     setBlogData(prevData => ({
-        ...prevData,
-        content: value
+      ...prevData,
+      content: value
     }))
-}
+  }
 
   return (
     <div className="light:bg-gray-100 light:text-black dark:bg-gray-700 dark:text-gray-800  bg-gray-100 min-h-screen flex items-center justify-center ">
@@ -121,6 +136,7 @@ const CreateBlogForm: React.FC = () => {
           </button>
         </form>
       </div>
+      {notify && <Notification message={notifyMessage} type={notifyType}></Notification>}
     </div>
   );
 };

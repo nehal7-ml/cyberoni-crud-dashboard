@@ -4,8 +4,14 @@ import { createImageDTO } from "@/crud/images";
 import { createGptPromptDTO } from "@/crud/prompt";
 import { createTagDTO } from "@/crud/tags";
 import React, { useState } from 'react';
+import Notification from "@/components/Notification";
 
 const CreateGptPromptForm: React.FC = () => {
+
+  const [notify, setNotify] = useState(false);
+  const [notifyMessage, setNotifyMessage] = useState("");
+  const [notifyType, setNotifyType] = useState<'success'|'fail'>('fail');
+
   const [gptPromptData, setGptPromptData] = useState<createGptPromptDTO>({
     description: '',
     prompt: '',
@@ -41,7 +47,15 @@ const CreateGptPromptForm: React.FC = () => {
       };
       // Send the userData to your backend for creating the user
       const res = await fetch(`${apiUrl}/prompts/add`, {method: 'POST', body: JSON.stringify(gptPromptData), headers})
-      console.log(await res.json());
+      let resJson = await res.json() ;
+
+          if(res.status ==200) {
+            setNotify(true); setNotifyMessage(resJson.message);
+            setNotifyType('success');
+          } else {
+            setNotify(true); setNotifyMessage(resJson.message);
+            setNotifyType('fail');
+          }
   };
 
   function handleChangedImage(images: createImageDTO[], tags: createTagDTO[]) {
@@ -160,6 +174,8 @@ const CreateGptPromptForm: React.FC = () => {
           </button>
         </form>
       </div>
+      {notify && <Notification  message={notifyMessage} type={notifyType}></Notification>}
+
     </div>
   );
   

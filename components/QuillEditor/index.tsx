@@ -1,6 +1,5 @@
 'use client'
-import React, { useState } from 'react';
-import { DeltaStatic, Sources } from 'quill'
+import React, { useRef, useState } from 'react';
 import Quill from 'react-quill';
 import 'react-quill/dist/quill.snow.css';
 import { X } from "lucide-react";
@@ -9,7 +8,8 @@ const QuillEditor = ({ onChange }: { onChange: (text: string) => void }) => {
     const [value, setValue] = useState<Quill.Value>("");
     const [showPreview, setShowPreview] = useState(false);
     const [fullScreen, setfullScreen] = useState(false);
-
+    const editorRef = useRef(null);
+    const previewRef = useRef(null);
     function textUpdate(value: string) {
         setValue(value)
         onChange(value);
@@ -35,6 +35,7 @@ const QuillEditor = ({ onChange }: { onChange: (text: string) => void }) => {
         <div className="max-h-96 h-fit my-4">
             <div className="h-96">
                 <Quill
+                    ref={editorRef}
                     value={value}
                     onChange={textUpdate}
                     modules={modules}
@@ -53,6 +54,7 @@ const QuillEditor = ({ onChange }: { onChange: (text: string) => void }) => {
                 </div>
                 <div className="absolute top-0 z-30 w-3/4 h-full">
                     <Quill
+                        ref={previewRef}
                         readOnly
                         defaultValue={value}
                         value={value}

@@ -35,7 +35,8 @@ async function Products({params}: {params: { page: string }} ) {
 
 
 async function getData(page:number) {
-  let res = await fetch(`http://localhost:3000/api/products/all/${page}`);
+  let apiUrl = process.env.API_URL
+  let res = await fetch(`${apiUrl}/products/all/${page}`);
   if (res.status == 200) {
     let resJson = await res.json() ;
     console.log(resJson);

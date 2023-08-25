@@ -4,10 +4,15 @@ import { createImageDTO } from "@/crud/images";
 import { createProductDTO } from "@/crud/product";
 import { createTagDTO } from "@/crud/tags";
 import React, { useState } from 'react';
+import Notification from "@/components/Notification";
 
 
 
 const CreateProductForm: React.FC = () => {
+  const [notify, setNotify] = useState(false);
+  const [notifyMessage, setNotifyMessage] = useState("");
+  const [notifyType, setNotifyType] = useState<'success' | 'fail'>('fail');
+
   const [productData, setProductData] = useState<createProductDTO>({
     sku: '',
     name: '',
@@ -37,21 +42,29 @@ const CreateProductForm: React.FC = () => {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     const apiUrl = process.env.NEXT_PUBLIC_API_URL;
-        const headers = {
-            'Content-Type': 'application/json',
-            'Authorization': 'Bearer your-access-token',
-          };
-          // Send the userData to your backend for creating the user
-          const res = await fetch(`${apiUrl}/products/add`, {method: 'POST', body: JSON.stringify(productData), headers})
-          console.log(await res.json());
+    const headers = {
+      'Content-Type': 'application/json',
+      'Authorization': 'Bearer your-access-token',
+    };
+    // Send the userData to your backend for creating the user
+    const res = await fetch(`${apiUrl}/products/add`, { method: 'POST', body: JSON.stringify(productData), headers })
+    let resJson = await res.json();
+
+    if (res.status == 200) {
+      setNotify(true); setNotifyMessage(resJson.message);
+      setNotifyType('success');
+    } else {
+      setNotify(true); setNotifyMessage(resJson.message);
+      setNotifyType('fail');
+    }
   };
 
 
   function handleChangedImage(images: createImageDTO[], tags: createTagDTO[]) {
-    setProductData ((prevData)=> ({
-    ...prevData,
-    images,
-    tags
+    setProductData((prevData) => ({
+      ...prevData,
+      images,
+      tags
     }))
 
     console.log(productData)
@@ -63,7 +76,7 @@ const CreateProductForm: React.FC = () => {
       <div className="bg-white shadow-md rounded p-8 max-w-4xl w-full overflow-scroll max-h-screen">
         <h2 className="text-2xl font-semibold mb-4">Create Product</h2>
         <form onSubmit={handleSubmit}>
-        <div className="mb-4">
+          <div className="mb-4">
             <label className="block text-sm font-medium text-gray-700">SKU:</label>
             <input
               type="text"
@@ -152,6 +165,8 @@ const CreateProductForm: React.FC = () => {
           </button>
         </form>
       </div>
+      {notify && <Notification message={notifyMessage} type={notifyType}></Notification>}
+
     </div>
   );
 };

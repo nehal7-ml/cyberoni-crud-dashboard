@@ -9,6 +9,10 @@ import { X } from "lucide-react";
 import QuillEditor from "@/components/QuillEditor";
 
 function CreateServcie() {
+    const [notify, setNotify] = useState(false);
+    const [notifyMessage, setNotifyMessage] = useState("");
+    const [notifyType, setNotifyType] = useState<'success'|'fail'>('fail');
+
     const [showDialog, setShowDialog] = useState(false);
     const [serviceData, setServiceData] = useState<createServiceDTO>({
         description: '',
@@ -49,7 +53,15 @@ function CreateServcie() {
           };
           // Send the userData to your backend for creating the user
           const res = await fetch(`${apiUrl}/services/add`, {method: 'POST', body: JSON.stringify(serviceData), headers})
-          console.log(await res.json());
+          let resJson = await res.json() ;
+
+          if(res.status ==200) {
+            setNotify(true); setNotifyMessage(resJson.message);
+            setNotifyType('success');
+          } else {
+            setNotify(true); setNotifyMessage(resJson.message);
+            setNotifyType('fail');
+          }
     };
 
 

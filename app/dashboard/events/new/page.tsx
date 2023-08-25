@@ -5,10 +5,15 @@ import { createImageDTO } from "@/crud/images";
 import { createTagDTO } from "@/crud/tags";
 import { EventStatus } from "@prisma/client";
 import React, { useState } from 'react';
+import Notification from "@/components/Notification";
 
 
 
 const CreateEventForm: React.FC = () => {
+  const [notify, setNotify] = useState(false);
+  const [notifyMessage, setNotifyMessage] = useState("");
+  const [notifyType, setNotifyType] = useState<'success'|'fail'>('fail');
+
   const [eventData, setEventData] = useState<createEventDTO>({
     name: '',
     date: new Date(),
@@ -47,7 +52,15 @@ const CreateEventForm: React.FC = () => {
     };
     // Send the userData to your backend for creating the user
     const res = await fetch(`${apiUrl}/events/add`, { method: 'POST', body: JSON.stringify(eventData), headers })
-    console.log(await res.json());
+    let resJson = await res.json() ;
+
+          if(res.status ==200) {
+            setNotify(true); setNotifyMessage(resJson.message);
+            setNotifyType('success');
+          } else {
+            setNotify(true); setNotifyMessage(resJson.message);
+            setNotifyType('fail');
+          }
   };
 
 
@@ -155,6 +168,8 @@ const CreateEventForm: React.FC = () => {
           </button>
         </form>
       </div>
+      {notify && <Notification  message={notifyMessage} type={notifyType}></Notification>}
+
     </div>
   );
 };

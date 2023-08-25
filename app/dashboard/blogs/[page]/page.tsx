@@ -32,7 +32,8 @@ async function Blogs() {
   )
 }
 async function getData(page:number) {
-  let res = await fetch(`http://localhost:3000/api/blogs/all/${page}`);
+  let apiUrl = process.env.API_URL;
+  let res = await fetch(`${apiUrl}/blogs/all/${page}`);
   if (res.status == 200) {
     let resJson = await res.json() ;
     console.log(resJson);
