@@ -17,7 +17,7 @@ async function Users({params }: {params: { page: string } }) {
           const row: any = [];
           row.push(index+1)
           row.push(value.firstName);
-          row.push(value.firstName);
+          row.push(value.lastName);
           row.push(value.email);
           row.push(value.emailVerified? "true": "false");
           row.push(value.role);

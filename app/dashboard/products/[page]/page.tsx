@@ -5,7 +5,7 @@ import { getAllRecordsDTO } from "@/crud/commonDTO";
 import { displayProductDTO } from "@/crud/product";
 import React, { useEffect, useState } from 'react'
 
-async function Products({params}: {params: { page: string }} ) {
+async function Products({ params }: { params: { page: string } }) {
   const page = parseInt(params.page);
   const data = await getData(page);
 
@@ -14,14 +14,14 @@ async function Products({params}: {params: { page: string }} ) {
       <Table headers={['no.', 'SKU', 'Name', 'Inventory', 'Price', 'Profit', 'Category']}>
         {(data?.records as displayProductDTO[]).map((value, index) => {
           const row: any = [];
-          row.push(index+1)
+          row.push(index + 1)
           row.push(value.sku);
           row.push(value.name);
           row.push(value.inventory);
           row.push(value.price);
           row.push(value.profitMargin);
           row.push(value.category);
-          
+
 
           return <TableItem key={index} index={index} row={row}></TableItem>
         })}
@@ -34,12 +34,12 @@ async function Products({params}: {params: { page: string }} ) {
 
 
 
-async function getData(page:number) {
+async function getData(page: number) {
   let apiUrl = process.env.API_URL
   let res = await fetch(`${apiUrl}/products/all/${page}`);
   if (res.status == 200) {
-    let resJson = await res.json() ;
-    console.log(resJson);
+    let resJson = await res.json();
+    // console.log(resJson.data);
     return (resJson.data as getAllRecordsDTO);
   }
 

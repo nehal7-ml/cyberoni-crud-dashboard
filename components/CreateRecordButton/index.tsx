@@ -14,7 +14,7 @@ function CreateRecordButton({ className }: { className?: string }) {
       <div className={className }>
         <Link href= {`/${path[1]}/${path[2]}/new`} className="flex cursor-pointer hover:-translate-y-2 w-40">
           <ListPlus />
-          <div className="flex-grow">Create Record</div>
+          <div className="flex-grow">Create {path[2]}</div>
         </Link>
       </div>
     </>

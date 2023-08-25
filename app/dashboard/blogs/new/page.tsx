@@ -26,14 +26,26 @@ const CreateBlogForm: React.FC = () => {
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
     const { name, value } = e.target;
-    setBlogData(prevData => ({
-      ...prevData,
-      [name]: value,
-    }));
+
+    if (name == "author") {
+      setBlogData(prevData => ({
+        ...prevData,
+        author: { id: value },
+      }));
+    }
+    else {
+      setBlogData(prevData => ({
+        ...prevData,
+        [name]: value,
+      }));
+    }
+
   };
 
   const handleCheckboxChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, checked } = e.target;
+
+
     setBlogData(prevData => ({
       ...prevData,
       [name]: checked,
@@ -79,6 +91,16 @@ const CreateBlogForm: React.FC = () => {
               name="title"
               className="mt-1 p-2 border rounded w-full"
               value={blogData.title}
+              onChange={handleInputChange}
+            />
+          </div>
+          <div className="mb-4">
+            <label className="block text-sm font-medium text-gray-700">Author userId:</label>
+            <input
+              type="text"
+              name="author"
+              className="mt-1 p-2 border rounded w-full"
+              value={blogData.author.id}
               onChange={handleInputChange}
             />
           </div>
