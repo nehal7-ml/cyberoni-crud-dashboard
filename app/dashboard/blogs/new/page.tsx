@@ -14,6 +14,7 @@ const CreateBlogForm: React.FC = () => {
     content: '',
     template: '',
     author: { id: '' },
+    
   });
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
