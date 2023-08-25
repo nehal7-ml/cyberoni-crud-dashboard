@@ -40,10 +40,16 @@ function CreateServcie() {
 
     }
 
-    const handleSubmit = (e: React.FormEvent) => {
+    const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
-        // Send the productData to your backend for creating the product
-        console.log(serviceData);
+        const apiUrl = process.env.NEXT_PUBLIC_API_URL;
+        const headers = {
+            'Content-Type': 'application/json',
+            'Authorization': 'Bearer your-access-token',
+          };
+          // Send the userData to your backend for creating the user
+          const res = await fetch(`${apiUrl}/services/add`, {method: 'POST', body: JSON.stringify(serviceData), headers})
+          console.log(await res.json());
     };
 
 

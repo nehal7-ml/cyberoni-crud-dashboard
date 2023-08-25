@@ -32,10 +32,16 @@ const CreateGptPromptForm: React.FC = () => {
     }));
   };
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async(e: React.FormEvent) => {
     e.preventDefault();
-    // Send the gptPromptData to your backend for creating the GPT prompt
-    console.log(gptPromptData);
+    const apiUrl = process.env.NEXT_PUBLIC_API_URL;
+    const headers = {
+        'Content-Type': 'application/json',
+        'Authorization': 'Bearer your-access-token',
+      };
+      // Send the userData to your backend for creating the user
+      const res = await fetch(`${apiUrl}/prompts/add`, {method: 'POST', body: JSON.stringify(gptPromptData), headers})
+      console.log(await res.json());
   };
 
   function handleChangedImage(images: createImageDTO[], tags: createTagDTO[]) {

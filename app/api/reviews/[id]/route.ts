@@ -5,13 +5,12 @@ import { NextResponse } from 'next/server'
 
 
 export const GET = handler;
-export const POST = handler;
 export const PUT = handler;
 export const DELTE = handler;
 
 
 
-async function handler(req: NextApiRequest, { params }: { params: { id: string } } ) {
+async function handler(req: Request, { params }: { params: { id: string } } ) {
 
     if (req.method === "GET") {
         const reviewId = params.id as string;
@@ -21,7 +20,7 @@ async function handler(req: NextApiRequest, { params }: { params: { id: string }
     }
     if (req.method === "PUT") {
         const reviewId = params.id as string;
-        const review = req.body as createReviewDTO;
+        const review = await req.json() as createReviewDTO;
         const updatedUser = await update(reviewId, review, prisma);
         return NextResponse.json({ message: "update success", data: updatedUser });
     }
@@ -31,9 +30,7 @@ async function handler(req: NextApiRequest, { params }: { params: { id: string }
         return NextResponse.json({ message: "delete success" });
 
     }
-    if(req.method ==="POST") {
-        return NextResponse.error()
-    }
+
 
 
 }

@@ -11,7 +11,7 @@ export const DELTE = handler;
 
 
 
-async function handler(req: NextApiRequest, { params }: { params: { id: string } } ) {
+async function handler(req: Request, { params }: { params: { id: string } } ) {
 
     if (req.method === "GET") {
         const productId = params.id as string;
@@ -21,7 +21,7 @@ async function handler(req: NextApiRequest, { params }: { params: { id: string }
     }
     if (req.method === "PUT") {
         const productId = params.id as string;
-        const product = req.body as createProductDTO;
+        const product = await req.json() as createProductDTO;
         const updatedUser = await update(productId, product, prisma);
         return NextResponse.json({ message: "update success", data: updatedUser });
     }

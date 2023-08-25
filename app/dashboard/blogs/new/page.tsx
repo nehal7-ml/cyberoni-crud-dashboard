@@ -32,10 +32,16 @@ const CreateBlogForm: React.FC = () => {
     }));
   };
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    // Send the blogData to your backend for creating the blog
-    console.log(blogData);
+    const apiUrl = process.env.NEXT_PUBLIC_API_URL;
+        const headers = {
+            'Content-Type': 'application/json',
+            'Authorization': 'Bearer your-access-token',
+          };
+          // Send the userData to your backend for creating the user
+          const res = await fetch(`${apiUrl}/blogs/add`, {method: 'POST', body: JSON.stringify(blogData), headers})
+          console.log(await res.json());
   };
 
   function setQuillData(value:string) {

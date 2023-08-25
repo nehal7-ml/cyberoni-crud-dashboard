@@ -6,7 +6,7 @@ import { getAllRecordsDTO } from "./commonDTO";
 
 export type createUserDTO = {
     firstName?: string;
-    lastName?: string | null;
+    lastName?: string ;
     email: string;
     image?: createImageDTO;
     address?: createAddressDTO;
@@ -16,7 +16,7 @@ export type createUserDTO = {
 export type displayUserDTO = {
     id: string;
     firstName?: string;
-    lastName?: string | null;
+    lastName?: string ;
     email: string;
     emailVerified: boolean;
     role: Role

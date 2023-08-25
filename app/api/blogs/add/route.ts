@@ -1,19 +1,16 @@
+import { create, createBlogDTO } from "@/crud/blog";
+import { prisma } from "@/prisma/prismaClient";
 import { NextApiRequest, NextApiResponse } from "next";
+import { NextResponse } from "next/server";
 
-export default function handler(req: NextApiRequest, res:NextApiResponse) {
+export async function POST(req: Request) {
 
-    if(req.method ==="GET") {
-        res.status(400).json({ error: 'Get is not Allowed on this path' })
+
+    if (req.method === "POST") {
+        const blog = await req.json() as createBlogDTO;
+        const newUser = await create(blog, prisma);
+        return NextResponse.json({ message: "Add success", data: newUser });
     }
-    if(req.method ==="POST") {
-        res.status(400).json({ error: 'Get is not Allowed on this path' })
-    }
-    if(req.method ==="PATCH") {
-        res.status(400).json({ error: 'Patch is not Allowed on this path' })
-    }
-    if(req.method ==="DELETE") {
-        res.status(400).json({ error: 'Delete is not Allowed on this path' })
-    }
-   
-   
-  }
+
+
+}

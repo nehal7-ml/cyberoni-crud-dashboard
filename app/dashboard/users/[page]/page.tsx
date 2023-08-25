@@ -4,6 +4,7 @@ import Pagination from "@/components/Pagination";
 import { displayUserDTO } from "@/crud/user";
 import React, { useEffect, useState } from 'react'
 import { getAllRecordsDTO } from "@/crud/commonDTO";
+export const dynamic = 'force-dynamic'
 
 async function Users({params }: {params: { page: string } }) {
   const page = parseInt(params.page)

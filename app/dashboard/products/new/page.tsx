@@ -34,10 +34,16 @@ const CreateProductForm: React.FC = () => {
     }));
   };
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    // Send the productData to your backend for creating the product
-    console.log(productData);
+    const apiUrl = process.env.NEXT_PUBLIC_API_URL;
+        const headers = {
+            'Content-Type': 'application/json',
+            'Authorization': 'Bearer your-access-token',
+          };
+          // Send the userData to your backend for creating the user
+          const res = await fetch(`${apiUrl}/products/add`, {method: 'POST', body: JSON.stringify(productData), headers})
+          console.log(await res.json());
   };
 
 
@@ -47,6 +53,8 @@ const CreateProductForm: React.FC = () => {
     images,
     tags
     }))
+
+    console.log(productData)
 
   }
 
