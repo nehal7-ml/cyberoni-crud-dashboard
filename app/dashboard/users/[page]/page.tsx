@@ -32,7 +32,8 @@ async function Users({params }: {params: { page: string } }) {
 }
 
 async function getData(page:number) {
-    let res = await fetch(`http://localhost:3001/api/users/all/${page}`);
+  let apiUrl = process.env.API_URL
+  let res = await fetch(`${apiUrl}/users/all/${page}`);
     if (res.status == 200) {
       let resJson = await res.json() ;
        console.log(resJson);
