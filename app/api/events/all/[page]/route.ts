@@ -1,4 +1,4 @@
-import { getAll, read, remove, update } from "@/crud/blog";
+import { getAll, read, remove, update } from "@/crud/event";
 import { NextApiRequest, NextApiResponse } from "next";
 import { prisma } from "@/prisma/prismaClient";
 import { NextResponse } from 'next/server'

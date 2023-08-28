@@ -43,14 +43,14 @@ const QuillEditor = ({ onChange }: { onChange: (text: string) => void }) => {
                     className="h-52 mb-4"
 
                 />
-                <button onClick={togglePreview} className="mt-16 bg-blue-500 text-white p-2 rounded hover:bg-blue-600 focus:outline-none focus:ring focus:ring-blue-300">Preview</button>
+                <button type="button" onClick={togglePreview} className="mt-16 bg-blue-500 text-white p-2 rounded hover:bg-blue-600 focus:outline-none focus:ring focus:ring-blue-300">Preview</button>
 
             </div>
 
             <div className={"w-screen h-screen fixed top-0 left-0 light:bg-gray-100 light:text-black dark:bg-gray-700 dark:text-gray-800 flex flex-col items-center justify-start" + `${showPreview ? '' : ' hidden'}`}>
                 <div className="bg-black backdrop-blur-lg bg-opacity-50 absolute inset-0 w-screen h-full z-10"></div>
                 <div className="flex self-end mr-10 justify-end z-30">
-                    <button className="self-end m-3" onClick={togglePreview} ><X color="red" className="cursor-pointer" /></button>
+                    <button type="button" className="self-end m-3" onClick={togglePreview} ><X color="red" className="cursor-pointer" /></button>
                 </div>
                 <div className="absolute top-0 z-30 w-3/4 h-full">
                     <Quill

@@ -5,6 +5,9 @@ import { createProductDTO } from "@/crud/product";
 import { createTagDTO } from "@/crud/tags";
 import React, { useState } from 'react';
 import Notification from "@/components/Notification";
+import CreateSupplier from "./createSupplier";
+import { createSupplierDTO } from "@/crud/supplier";
+import { X } from "lucide-react";
 
 
 
@@ -13,20 +16,23 @@ const CreateProductForm: React.FC = () => {
   const [notifyMessage, setNotifyMessage] = useState("");
   const [notifyType, setNotifyType] = useState<'success' | 'fail'>('fail');
 
+  const [showDialog, setShowDialog] = useState(false);
+
   const [productData, setProductData] = useState<createProductDTO>({
     sku: '',
     name: '',
     status: '',
-    ratings: null,
+    ratings: undefined,
     inventory: 0,
-    productBreakdown: null,
+    productBreakdown: undefined,
     shippingReturnPolicy: '',
     description: '',
     price: 0,
     profitMargin: 0,
     displayPrice: 0,
     category: '',
-    subcategory: null,
+    subcategory: undefined,
+    suppliers: [],
     tags: [],
     images: [],
   });
@@ -59,6 +65,16 @@ const CreateProductForm: React.FC = () => {
     }
   };
 
+  const handleNumberInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
+    const { name, value } = e.target;
+
+    setProductData({
+      ...productData,
+      [name]: Number(e.target.value)
+    })
+  }
+
+
 
   function handleChangedImage(images: createImageDTO[], tags: createTagDTO[]) {
     setProductData((prevData) => ({
@@ -68,6 +84,26 @@ const CreateProductForm: React.FC = () => {
     }))
 
     console.log(productData)
+
+  }
+
+
+  function handleSupplierAdd(supplier: createSupplierDTO) {
+
+    setProductData((prevData) => ({
+      ...prevData,
+      suppliers: [...(prevData.suppliers || []), supplier]
+    }))
+
+    setShowDialog(false)
+
+  }
+
+  function handleRemoveSupplier(supplierToRemove: createSupplierDTO) {
+    setProductData((prevData) => ({
+      ...prevData,
+      suppliers: prevData.suppliers?.filter(supplier => supplier.supplierName !== supplierToRemove.supplierName)
+    }))
 
   }
 
@@ -113,7 +149,7 @@ const CreateProductForm: React.FC = () => {
               name="inventory"
               className="mt-1 p-2 border rounded w-full"
               value={productData.inventory}
-              onChange={handleInputChange}
+              onChange={handleNumberInputChange}
             />
           </div>
           <div className="mb-4">
@@ -123,7 +159,7 @@ const CreateProductForm: React.FC = () => {
               name="price"
               className="mt-1 p-2 border rounded w-full"
               value={productData.price}
-              onChange={handleInputChange}
+              onChange={handleNumberInputChange}
             />
           </div>
           <div className="mb-4">
@@ -156,6 +192,46 @@ const CreateProductForm: React.FC = () => {
               onChange={handleInputChange}
             />
           </div>
+          <div className="mb-4">
+            <label className="block text-sm font-medium text-gray-700">Amazon ASIN:</label>
+            <input
+              type="text"
+              name="amazonProductId"
+              className="mt-1 p-2 border rounded w-full"
+              value={productData.amazonProductId}
+              onChange={handleInputChange}
+            />
+          </div>
+
+          <div className="mb-4">
+            <label className="block text-sm font-medium text-gray-700">CJdropshipping id:</label>
+            <input
+              type="text"
+              name="cjDropShippingId"
+              className="mt-1 p-2 border rounded w-full"
+              value={productData.cjDropShippingId}
+              onChange={handleInputChange}
+            />
+          </div>
+
+          <div className="my-4 flex flex-wrap gap-2">
+            {productData.suppliers?.map((supplier, index) => {
+              return (
+                <div key={index} className="bg-blue-200 text-blue-800 p-2 rounded flex items-center">
+                  <span>{supplier.supplierName}</span>
+                  <button
+                    type="button"
+                    className="ml-2 text-red-600 hover:text-red-800 focus:outline-none focus:ring focus:ring-red-300"
+                    onClick={() => handleRemoveSupplier(supplier)}
+                  >
+                    X
+                  </button>
+                </div>)
+            })}
+
+            <button type="button" onClick={() => setShowDialog(!showDialog)} className="w-full bg-blue-500 text-white p-2 rounded hover:bg-blue-600 focus:outline-none focus:ring focus:ring-blue-300">Add Supplier</button>
+          </div>
+
           <AddImagesAndTags onImagesAndTagsChange={handleChangedImage}></AddImagesAndTags>
           <button
             type="submit"
@@ -164,9 +240,14 @@ const CreateProductForm: React.FC = () => {
             Create Product
           </button>
         </form>
+        <div className={`fixed flex flex-col w-screen top-0 left-0 justify-center ${showDialog ? '' : ' hidden'}`}>
+          <div className="flex justify-end z-30">
+            <button className="self-end m-3" onClick={() => setShowDialog(!showDialog)} ><X color="red" className="cursor-pointer" /></button>
+          </div>
+          <CreateSupplier handleSupplierAdd={handleSupplierAdd}></CreateSupplier>
+        </div>
       </div>
       {notify && <Notification message={notifyMessage} type={notifyType}></Notification>}
-
     </div>
   );
 };

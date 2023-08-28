@@ -7,19 +7,21 @@ export type createProductDTO = {
     sku: string;
     name: string;
     status: string;
-    ratings: number | null;
+    ratings?: number ;
     inventory: number;
-    productBreakdown: string | null;
+    productBreakdown?: string ;
     shippingReturnPolicy: string;
     description: string;
     price: number;
     profitMargin: number;
     displayPrice: number;
     category: string;
-    subcategory: string | null;
+    subcategory?: string ;
     tags: createTagDTO[];
     images: createImageDTO[];
     suppliers?: createSupplierDTO[];
+    amazonProductId?: string;
+    cjDropShippingId?: string ;
 }
 
 
@@ -37,6 +39,8 @@ export type displayProductDTO = {
     displayPrice: number;
     category: string;
     subcategory: string | null;
+    amazonProductId?: string;
+    cjDropShippingId?: string ;
 }
 async function create(product: createProductDTO, prismaClient: PrismaClient) {
     const products = prismaClient.product;

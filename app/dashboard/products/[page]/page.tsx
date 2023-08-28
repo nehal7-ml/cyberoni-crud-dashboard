@@ -4,7 +4,7 @@ import { TableItem } from "@/components/TableItem";
 import { getAllRecordsDTO } from "@/crud/commonDTO";
 import { displayProductDTO } from "@/crud/product";
 import React, { useEffect, useState } from 'react'
-
+export const dynamic = 'force-dynamic';
 async function Products({ params }: { params: { page: string } }) {
   const page = parseInt(params.page);
   const data = await getData(page);

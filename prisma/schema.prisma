@@ -109,6 +109,11 @@ model Product {
   cart                 CartItem[]
   suppliers            Supplier[]
   reviews              Review[]
+  amazonProductId      String?
+  cjDropShippingId     String?
+
+  @@index([amazonProductId])
+  @@index([cjDropShippingId])
 }
 
 model AmazonProduct {
@@ -170,9 +175,9 @@ model Service {
   valueBrought   String
   skillsUsed     String
   htmlEmbed      String?
-  reviews         Review[]
+  reviews        Review[]
   tags           Tag[]
-  imageId        String
+  imageId        String?
   subServices    SubService[]
 
   @@index([imageId])
@@ -196,7 +201,7 @@ model Review {
   prompt           GptPrompt? @relation(fields: [gptPromptId], references: [id])
   user             User       @relation(fields: [userId], references: [id])
   userId           String
-  imageId          String
+  imageId          String?
   gptPromptId      String?
 
   @@index([productId])

@@ -1,6 +1,6 @@
 import { NextApiRequest, NextApiResponse } from "next";
 import { prisma } from "@/prisma/prismaClient";
-import { createBlogDTO, read, remove, update } from "@/crud/blog";
+import { createEventDTO, read, remove, update } from "@/crud/event";
 import { NextResponse } from 'next/server'
 
 
@@ -20,7 +20,7 @@ async function handler(req: Request, { params }: { params: { id: string } } ) {
     }
     if (req.method === "PUT") {
         const blogId = params.id as string;
-        const blog = await req.json() as createBlogDTO;
+        const blog = await req.json() as createEventDTO;
         const updatedUser = await update(blogId, blog, prisma);
         return NextResponse.json({ message: "update success", data: updatedUser });
     }

@@ -34,7 +34,12 @@ const CreateEventForm: React.FC = () => {
         date: new Date(value),
       }));
 
-    } else {
+    } if(name ==='isVirtual') { 
+      setEventData(prevData => ({
+      ...prevData,
+        isVirtual: value === 'on',
+      }));
+    }else {
 
       setEventData(prevData => ({
         ...prevData,
@@ -45,6 +50,7 @@ const CreateEventForm: React.FC = () => {
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
     const apiUrl = process.env.NEXT_PUBLIC_API_URL;
     const headers = {
       'Content-Type': 'application/json',
@@ -132,7 +138,7 @@ const CreateEventForm: React.FC = () => {
             <label className="block text-sm font-medium text-gray-700">Is Virtual:
               <input
                 type="checkbox"
-                name="price"
+                name="isVirtual"
                 className="ml-2 "
                 checked={eventData.isVirtual}
                 onChange={handleInputChange}

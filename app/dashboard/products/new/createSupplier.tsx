@@ -1,38 +1,39 @@
 'use client'
 import AddImagesAndTags from "@/components/AddImagesAndTags"
 import { createImageDTO } from "@/crud/images";
-import { createSubServiceDTO } from "@/crud/subService";
+import { createSupplierDTO } from "@/crud/supplier";
 import { createTagDTO } from "@/crud/tags";
 import React, { useState } from 'react'
 
-function CreateSubServcie({ subService, handleSubServiceAdd }: { subService?: createSubServiceDTO, handleSubServiceAdd: (subservice: createSubServiceDTO) => void }) {
-    const [subServiceData, setSubServiceData] = useState<createSubServiceDTO>(subService || {
-        description: '',
-        title: "",
-        complexity: 0,
-        department: "",
-        discounts: "",
-        estimated_hours_times_fifty_percent: 0,
-        estimated_hours_times_one_hundred_percent: 0,
-        pricingModel: '',
-        overheadCost: 0,
-        serviceDeliverables: '',
-        serviceUsageScore: 0,
-        skillLevel: "",
-        tags: [],
-        image: { src: "" }
+function CreateSupplier({ supplier, handleSupplierAdd }: { supplier?: createSupplierDTO, handleSupplierAdd: (subservice: createSupplierDTO) => void }) {
+    const [supplierData, setSupplierData] = useState<createSupplierDTO>(supplier || {
+        baseShippingPrice: 0,
+        supplierName: "",
+        height: 0,
+        length: 0,
+        width: 0,
+        weight: 0,
+        supplierUrl: "",
+        availability: "",
+        listPrice: 0,
+        salePrice: 0,
+        shippingWeight: 0,
+        supplierEmail: "",
+        supplierStatus: "",
+        supplierWhatsApp: "",
+        supplierWrittenComments: ""
     });
 
 
     const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
         const { name, value } = e.target;
-        setSubServiceData(prevData => ({
+        setSupplierData(prevData => ({
             ...prevData,
             [name]: value,
         }));
     };
     function handleChangedImage(image: createImageDTO[], tags: createTagDTO[]) {
-        setSubServiceData((prevData) => ({
+        setSupplierData((prevData) => ({
             ...prevData,
             image: image[0],
             tags
@@ -43,15 +44,15 @@ function CreateSubServcie({ subService, handleSubServiceAdd }: { subService?: cr
     const handleSubmit = (e: React.FormEvent) => {
         e.preventDefault();
         // Send the productData to your backend for creating the product
-        handleSubServiceAdd(subServiceData)
+        handleSupplierAdd(supplierData)
     };
 
 
     const handleNumberInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
         const { name, value } = e.target;
 
-        setSubServiceData({
-            ...subServiceData,
+        setSupplierData({
+            ...supplierData,
             [name]: Number(e.target.value)
         })
     }
@@ -65,134 +66,163 @@ function CreateSubServcie({ subService, handleSubServiceAdd }: { subService?: cr
                     <h2 className="text-2xl font-semibold mb-4">Add Sub Service</h2>
                     <form onSubmit={handleSubmit}>
                         <div className="mb-4">
-                            <label className="block text-sm font-medium text-gray-700">Title:</label>
+                            <label className="block text-sm font-medium text-gray-700">Name:</label>
                             <input
                                 type="text"
-                                name="title"
+                                name="supplierName"
                                 className="mt-1 p-2 border rounded w-full"
-                                value={subServiceData.title}
+                                value={supplierData.supplierName}
                                 onChange={handleInputChange}
                             />
                         </div>
                         <div className="mb-4">
-                            <label className="block text-sm font-medium text-gray-700">Department:</label>
+                            <label className="block text-sm font-medium text-gray-700">Supplier URl:</label>
                             <input
                                 type="text"
-                                name="department"
+                                name="supplierUrl"
                                 className="mt-1 p-2 border rounded w-full"
-                                value={subServiceData.department}
+                                value={supplierData.supplierUrl}
                                 onChange={handleInputChange}
                             />
                         </div>
 
                         <div className="mb-4">
-                            <label className="block text-sm font-medium text-gray-700">Estimated time for 50%:</label>
+                            <label className="block text-sm font-medium text-gray-700">height:</label>
                             <input
                                 type="number"
-                                name="estimated_hours_times_fifty_percent"
+                                name="height"
                                 className="mt-1 p-2 border rounded w-full"
-                                value={subServiceData.estimated_hours_times_fifty_percent}
+                                value={supplierData.height}
                                 onChange={handleNumberInputChange}
                             />
                         </div>
                         <div className="mb-4">
-                            <label className="block text-sm font-medium text-gray-700">Estimated time for 100%:</label>
+                            <label className="block text-sm font-medium text-gray-700">length:</label>
                             <input
                                 type="number"
-                                name="estimated_hours_times_one_hundred_percent"
+                                name="length"
                                 className="mt-1 p-2 border rounded w-full"
-                                value={subServiceData.estimated_hours_times_one_hundred_percent}
+                                value={supplierData.length}
                                 onChange={handleNumberInputChange}
                             />
                         </div>
                         <div className="mb-4">
-                            <label className="block text-sm font-medium text-gray-700">Over-head Cost:</label>
+                            <label className="block text-sm font-medium text-gray-700">width:</label>
                             <input
                                 type="number"
-                                name="overheadCost"
+                                name="width"
                                 className="mt-1 p-2 border rounded w-full"
-                                value={subServiceData.overheadCost}
+                                value={supplierData.width}
                                 onChange={handleNumberInputChange}
                             />
                         </div>
                         <div className="mb-4">
-                            <label className="block text-sm font-medium text-gray-700">Service Usage Score:</label>
+                            <label className="block text-sm font-medium text-gray-700">weight:</label>
                             <input
                                 type="number"
-                                name="serviceUsageScore"
+                                name="weight"
                                 className="mt-1 p-2 border rounded w-full"
-                                value={subServiceData.serviceUsageScore}
+                                value={supplierData.weight}
                                 onChange={handleNumberInputChange}
                             />
                         </div>
                         <div className="mb-4">
-                            <label className="block text-sm font-medium text-gray-700">Complexity:</label>
+                            <label className="block text-sm font-medium text-gray-700">base Shipping Price:</label>
                             <input
                                 type="number"
-                                name="complexity"
+                                name="baseShippingPrice"
                                 className="mt-1 p-2 border rounded w-full"
-                                value={subServiceData.complexity}
+                                value={supplierData.baseShippingPrice}
                                 onChange={handleNumberInputChange}
+                            />
+                        </div>
+                        <div className="mb-4">
+                            <label className="block text-sm font-medium text-gray-700">shipping Weight:</label>
+                            <input
+                                type="number"
+                                name="shippingWeight"
+                                className="mt-1 p-2 border rounded w-full"
+                                value={supplierData.shippingWeight}
+                                onChange={handleNumberInputChange}
+                            />
+                        </div>
+                        <div className="mb-4">
+                            <label className="block text-sm font-medium text-gray-700">list Price:</label>
+                            <input
+                                type="number"
+                                name="listPrice"
+                                className="mt-1 p-2 border rounded w-full"
+                                value={supplierData.listPrice}
+                                onChange={handleNumberInputChange}
+                            />
+                        </div>
+                        <div className="mb-4">
+                            <label className="block text-sm font-medium text-gray-700">sale Price</label>
+                            <input
+                                type="number"
+                                name="salePrice"
+                                className="mt-1 p-2 border rounded w-full"
+                                value={supplierData.salePrice}
+                                onChange={handleNumberInputChange}
+                            />
+                        </div>
+                        <div className="mb-4">
+                            <label className="block text-sm font-medium text-gray-700">Supplier Email:</label>
+                            <input
+                                type=""
+                                name="supplierEmail"
+                                className="mt-1 p-2 border rounded w-full"
+                                value={supplierData.supplierEmail}
+                                onChange={handleInputChange}
+                            />
+                        </div>
+                        <div className="mb-4">
+                            <label className="block text-sm font-medium text-gray-700">Supplier WhatsApp:</label>
+                            <input
+                                type="text"
+                                name="supplierWhatsApp"
+                                className="mt-1 p-2 border rounded w-full"
+                                value={supplierData.supplierWhatsApp}
+                                onChange={handleInputChange}
                             />
                         </div>
 
                         <div className="mb-4">
-                            <label className="block text-sm font-medium text-gray-700">Description:</label>
-                            <textarea
-                                name="description"
-                                rows={4} // Adjust the number of rows as needed
+                            <label className="block text-sm font-medium text-gray-700">Supplier Status:</label>
+                            <input
+                                type="text"
+                                name="supplierStatus"
                                 className="mt-1 p-2 border rounded w-full"
-                                value={subServiceData.description}
+                                value={supplierData.supplierStatus}
                                 onChange={handleInputChange}
                             />
                         </div>
                         <div className="mb-4">
-                            <label className="block text-sm font-medium text-gray-700">discounts (comma separted):</label>
+                            <label className="block text-sm font-medium text-gray-700">Availability: </label>
                             <input
                                 type="text"
-                                name="discounts"
+                                name="availability"
                                 className="mt-1 p-2 border rounded w-full"
-                                value={subServiceData.discounts}
+                                value={supplierData.availability}
                                 onChange={handleInputChange}
                             />
                         </div>
                         <div className="mb-4">
-                            <label className="block text-sm font-medium text-gray-700">Service Deliverables (comma separted):</label>
+                            <label className="block text-sm font-medium text-gray-700">supplier Written Comments:</label>
                             <input
                                 type="text"
-                                name="serviceDeliverables"
+                                name="supplierWrittenComments"
                                 className="mt-1 p-2 border rounded w-full"
-                                value={subServiceData.serviceDeliverables}
+                                value={supplierData.supplierWrittenComments}
                                 onChange={handleInputChange}
                             />
                         </div>
 
-                        <div className="mb-4">
-                            <label className="block text-sm font-medium text-gray-700">discounts (comma separted):</label>
-                            <input
-                                type="text"
-                                name="discounts"
-                                className="mt-1 p-2 border rounded w-full"
-                                value={subServiceData.discounts}
-                                onChange={handleInputChange}
-                            />
-                        </div>
-                        <div className="mb-4">
-                            <label className="block text-sm font-medium text-gray-700">Pricing Model:</label>
-                            <input
-                                type="text"
-                                name="pricingModel"
-                                className="mt-1 p-2 border rounded w-full"
-                                value={subServiceData.pricingModel}
-                                onChange={handleInputChange}
-                            />
-                        </div>
-                        <AddImagesAndTags maxImages={1} onImagesAndTagsChange={handleChangedImage}></AddImagesAndTags>
-                        <button
+                            <button
                             type="submit"
                             className="w-full bg-blue-500 text-white p-2 rounded hover:bg-blue-600 focus:outline-none focus:ring focus:ring-blue-300"
                         >
-                            Add Sub Service
+                            Add Supplier
                         </button>
                     </form>
                 </div>
@@ -202,4 +232,4 @@ function CreateSubServcie({ subService, handleSubServiceAdd }: { subService?: cr
     )
 }
 
-export default CreateSubServcie
+export default CreateSupplier
