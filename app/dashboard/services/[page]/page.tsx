@@ -12,16 +12,15 @@ async function Services({params }: {params: { page: string } }) {
   const data = await getData(page);
   return (
     <main className="flex flex-col items-center py-5">
-        <Table  headers={['no.', 'Service Name','Rate', 'value Bought', 'skills used']}>
+        <Table  headers={['view', 'Service Name','Rate', 'value Bought', 'skills used']}>
         {(data?.records as Service[] || []).map((value, index) => {
           const row: any = [];
-          row.push(index+1)
           row.push(value.title);
           row.push(value.hourlyRate);
           row.push(value.valueBrought);
           row.push(value.skillsUsed);        
 
-          return <TableItem key={index} index={index} row={row}></TableItem>
+          return <TableItem type="services" key={value.id} index={value.id} row={row}></TableItem>
         })}
         </Table>
         <Pagination currentPage={page} totalPages={data?.totalPages || 0}></Pagination>

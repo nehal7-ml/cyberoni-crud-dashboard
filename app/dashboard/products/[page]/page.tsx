@@ -14,7 +14,6 @@ async function Products({ params }: { params: { page: string } }) {
       <Table headers={['no.', 'SKU', 'Name', 'Inventory', 'Price', 'Profit', 'Category']}>
         {(data?.records as displayProductDTO[]).map((value, index) => {
           const row: any = [];
-          row.push(index + 1)
           row.push(value.sku);
           row.push(value.name);
           row.push(value.inventory);
@@ -23,7 +22,7 @@ async function Products({ params }: { params: { page: string } }) {
           row.push(value.category);
 
 
-          return <TableItem key={index} index={index} row={row}></TableItem>
+          return <TableItem type="products" key={value.id} index={value.id} row={row}></TableItem>
         })}
       </Table>
       <Pagination currentPage={page} totalPages={data?.totalPages || 0}></Pagination>

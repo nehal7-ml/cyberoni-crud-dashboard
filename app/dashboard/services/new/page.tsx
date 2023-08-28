@@ -132,7 +132,7 @@ function CreateServcie() {
 
                         <div className="mb-4 h-96 flex-grow">
                             <label className="block text-sm font-medium text-gray-700">Description:</label>
-                            <QuillEditor onChange={setQuillData} ></QuillEditor>
+                            <QuillEditor defaultValue={serviceData.description} onChange={setQuillData} ></QuillEditor>
                         </div>
                         <div className="mb-4">
                             <label className="block text-sm font-medium text-gray-700">Preview Content:</label>

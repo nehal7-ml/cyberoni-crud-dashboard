@@ -9,7 +9,7 @@ export type createBlogDTO = {
     date: Date;
     content: string;
     template: string;
-    author: {id:string}
+    author: { id: string }
 }
 
 export type displayBlogDTO = Blog
@@ -42,7 +42,26 @@ async function remove(blogId: string, prismaClient: PrismaClient) {
 }
 async function read(blogId: string, prismaClient: PrismaClient) {
     const blogs = prismaClient.blog;
-    const existingblog = await blogs.findUnique({ where: { id: blogId } })
+    const existingblog = await blogs.findUnique({
+        where: { id: blogId },
+        select: {
+            userId:false,
+            content:true,
+            date:true,
+            description:true,
+            featured:true,
+            id:true,
+            title:true,
+            subTitle:true,
+            template:true,
+            author: {
+                select: {
+                    id: true,
+                    email: true
+                }
+            }
+        }
+    })
     if (existingblog) return existingblog;
 
 }
@@ -58,14 +77,14 @@ async function getAll(page: number, pageSize: number, prismaClient: PrismaClient
         },
         include: {
             // reviews: true,
-     
+
         }
     })
 
     const totalCount = await blogs.count();
     const totalPages = Math.ceil(totalCount / pageSize);
 
-    return { records:allBlogs, currentPage: page, totalPages, pageSize }
+    return { records: allBlogs, currentPage: page, totalPages, pageSize }
 
 }
 

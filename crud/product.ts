@@ -26,6 +26,7 @@ export type createProductDTO = {
 
 
 export type displayProductDTO = {
+    id:string;
     sku: string;
     name: string;
     status: string;

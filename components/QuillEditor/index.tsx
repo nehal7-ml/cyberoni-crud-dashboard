@@ -1,19 +1,26 @@
 'use client'
-import React, { useRef, useState } from 'react';
-import Quill from 'react-quill';
+import React, { useEffect, useMemo, useRef, useState } from 'react';
+import type ReactQuill from "react-quill";
+import { Value } from 'react-quill';
 import 'react-quill/dist/quill.snow.css';
 import { X } from "lucide-react";
+import dynamic from "next/dynamic";
 // react-quill QuillEditor
-const QuillEditor = ({ onChange }: { onChange: (text: string) => void }) => {
-    const [value, setValue] = useState<Quill.Value>("");
+const QuillEditor = ({ defaultValue, onChange }: { defaultValue: string, onChange: (text: string) => void }) => {
+    const ReactQuill = dynamic(() => import('react-quill'), { ssr: false });
+
+    const [value, setValue] = useState<Value>(defaultValue);
     const [showPreview, setShowPreview] = useState(false);
     const [fullScreen, setfullScreen] = useState(false);
-    const editorRef = useRef(null);
-    const previewRef = useRef(null);
+    const editorRef = useRef<ReactQuill>(null);
+    const previewRef = useRef<ReactQuill>(null);
+
     function textUpdate(value: string) {
         setValue(value)
         onChange(value);
     }
+
+
     const modules = {
         toolbar: [
             [{ 'header': [1, 2, false] }],
@@ -31,17 +38,20 @@ const QuillEditor = ({ onChange }: { onChange: (text: string) => void }) => {
     function togglePreview() {
         setShowPreview(!showPreview);
     }
+
+    useEffect(() => {
+        setValue(defaultValue)
+    }, [ defaultValue]);
     return (
         <div className="max-h-96 h-fit my-4">
             <div className="h-96">
-                <Quill
-                    ref={editorRef}
+                <ReactQuill
+                    defaultValue={defaultValue}
                     value={value}
                     onChange={textUpdate}
                     modules={modules}
                     theme="snow"
                     className="h-52 mb-4"
-
                 />
                 <button type="button" onClick={togglePreview} className="mt-16 bg-blue-500 text-white p-2 rounded hover:bg-blue-600 focus:outline-none focus:ring focus:ring-blue-300">Preview</button>
 
@@ -53,8 +63,7 @@ const QuillEditor = ({ onChange }: { onChange: (text: string) => void }) => {
                     <button type="button" className="self-end m-3" onClick={togglePreview} ><X color="red" className="cursor-pointer" /></button>
                 </div>
                 <div className="absolute top-0 z-30 w-3/4 h-full">
-                    <Quill
-                        ref={previewRef}
+                    <ReactQuill
                         readOnly
                         defaultValue={value}
                         value={value}

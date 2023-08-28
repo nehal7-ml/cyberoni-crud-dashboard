@@ -5,15 +5,15 @@ import { displayBlogDTO } from "@/crud/blog";
 import { getAllRecordsDTO } from "@/crud/commonDTO";
 import React from 'react'
 
+export const dynamic= 'force-dynamic'
 async function Blogs({ params }: { params: { page: string } }) {
   const page = parseInt(params.page);
   const data = await getData(page);
   return (
     <main className="flex flex-col items-center py-5">
-      <Table headers={['no.', 'Title', 'Featured', 'Date', 'Author', 'Template']}>
+      <Table headers={['View', 'Title', 'Featured', 'Date', 'Author', 'Template']}>
         {(data?.records as displayBlogDTO[]).map((value, index) => {
           const row: any = [];
-          row.push(index + 1)
           row.push(value.title);
           row.push(value.featured);
           row.push(value.date);
@@ -21,7 +21,7 @@ async function Blogs({ params }: { params: { page: string } }) {
           row.push(value.template);
 
 
-          return <TableItem key={index} index={index} row={row}></TableItem>
+          return <TableItem type="blogs" key={value.id} index={value.id} row={row}></TableItem>
         })}
       </Table>
       <Pagination currentPage={page} totalPages={data?.totalPages || 0}></Pagination>

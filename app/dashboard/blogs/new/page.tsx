@@ -138,7 +138,7 @@ const CreateBlogForm: React.FC = () => {
           </div>
           <div className="mb-4 h-fit">
             <label className="block text-sm font-medium text-gray-700">Content:</label>
-            <QuillEditor onChange={setQuillData}></QuillEditor>
+            <QuillEditor defaultValue={blogData.content} onChange={setQuillData}></QuillEditor>
           </div>
           <div className="mb-4">
             <label className="block text-sm font-medium text-gray-700">Template:</label>

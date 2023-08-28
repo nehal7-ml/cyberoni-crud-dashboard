@@ -15,14 +15,13 @@ async function Events({ params }: { params: { page: string } }) {
         <Table headers={['no.', 'Name','Date', 'Location', 'Link', 'Status']}>
         {(data?.records as Event[]).map((value, index) => {
           const row: any = [];
-          row.push(index + 1)
           row.push(value.name);
           row.push(value.date);
           row.push(value.location);
           row.push(value.eventLink);
           row.push(value.status);
 
-          return <TableItem key={index} index={index} row={row}></TableItem>
+          return <TableItem type="events" key={value.id} index={value.id} row={row}></TableItem>
         })} 
         </Table>
         <Pagination currentPage={page} totalPages={data?.totalPages || 0}></Pagination>

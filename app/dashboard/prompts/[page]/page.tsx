@@ -12,10 +12,9 @@ async function Products({params}: {params: { page: string }} ) {
 
   return (
     <main className="flex flex-col items-center  py-5">
-      <Table headers={['no.', 'ID', 'Description', 'profit', 'Times Used', 'times Integrated']}>
+      <Table headers={['view', 'ID', 'Description', 'profit', 'Times Used', 'times Integrated']}>
         {(data?.records as GptPrompt[]).map((value, index) => {
           const row: any = [];
-          row.push(index+1)
           row.push(value.id);
           row.push(value.description);
           row.push(value.profitMargin);
@@ -23,7 +22,7 @@ async function Products({params}: {params: { page: string }} ) {
           row.push(value.timesIntegrated);
           
 
-          return <TableItem key={index} index={index} row={row}></TableItem>
+          return <TableItem type="prompts" key={value.id} index={value.id} row={row}></TableItem>
         })}
       </Table>
       <Pagination currentPage={page} totalPages={data?.totalPages || 0}></Pagination>
