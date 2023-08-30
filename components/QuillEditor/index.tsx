@@ -8,7 +8,7 @@ import dynamic from "next/dynamic";
 import  { Quill } from 'react-quill';
 // react-quill QuillEditor
 const ReactQuill = dynamic(() => import('react-quill'), { ssr: false });
-Quill.register('modules/imageResize', BlotFormatter);
+Quill.register('modules/blotFormatter', BlotFormatter);
 
 const QuillEditor = ({ defaultValue, onChange }: { defaultValue?: string, onChange: (text: string) => void }) => {
     const [initialValue, setInitialValue] = useState(defaultValue || "");

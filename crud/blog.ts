@@ -1,6 +1,7 @@
 import { Blog, PrismaClient, User } from "@prisma/client";
 import { connectOrCreateObject as connectTags, createTagDTO } from "./tags";
 import { connectOrCreateObject, createImageDTO } from "./images";
+import { PrismaClientKnownRequestError } from "@prisma/client/runtime/library";
 
 
 export type createBlogDTO = {
@@ -23,7 +24,7 @@ async function create(blog: createBlogDTO, prismaClient: PrismaClient) {
     let createdblog = await blogs.create({
         data: {
             ...blog,
-            images:  {create: blog.images},
+            images: { create: blog.images },
             tags: { connectOrCreate: connectTags(blog.tags) },
             author: { connect: { id: blog.author.id } }
         }
@@ -39,13 +40,16 @@ async function update(blogId: string, blog: createBlogDTO, prismaClient: PrismaC
         where: { id: blogId },
         data: {
             ...blog,
-            images:  {create: blog.images},
+            images: { create: blog.images },
             tags: { connectOrCreate: connectTags(blog.tags) },
             author: { connect: { id: blog.author.id } }
         }
     })
     return updatedBlog
+
 }
+
+
 async function remove(blogId: string, prismaClient: PrismaClient) {
     const blogs = prismaClient.blog;
     const existingblog = await blogs.findUnique({ where: { id: blogId } })
@@ -73,8 +77,8 @@ async function read(blogId: string, prismaClient: PrismaClient) {
                     email: true
                 }
             },
-            tags:true,
-            images:true
+            tags: true,
+            images: true
         }
     })
     if (existingblog) return existingblog;
