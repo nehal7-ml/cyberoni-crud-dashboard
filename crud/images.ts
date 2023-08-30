@@ -23,10 +23,9 @@ export async function createMany(newImages: createImageDTO[], prismaClient: Pris
 
 export function connectOrCreateObject(newImages: createImageDTO[]) {
 
-    let imageConnect: { create?: createImageDTO; where?: { id: string } }[] = []
+    let imageConnect: { create: createImageDTO; where: { id: string }; }[] = []
     newImages.forEach(image => {
-        const connect = image.id ? { where: { id: image.id } } : { create: image }
-        imageConnect.push(connect)
+        imageConnect.push({where: {id: image.id || ""}, create: image  })
     })
     return imageConnect
 

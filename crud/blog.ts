@@ -1,6 +1,6 @@
 import { Blog, PrismaClient, User } from "@prisma/client";
 import { connectOrCreateObject as connectTags, createTagDTO } from "./tags";
-import { connectOrCreateObject, createImageDTO } from "./images";
+import { connectOrCreateObject as connectImages, createImageDTO } from "./images";
 import { PrismaClientKnownRequestError } from "@prisma/client/runtime/library";
 
 
@@ -40,8 +40,8 @@ async function update(blogId: string, blog: createBlogDTO, prismaClient: PrismaC
         where: { id: blogId },
         data: {
             ...blog,
-            images: { create: blog.images },
-            tags: { connectOrCreate: connectTags(blog.tags) },
+            images: { connectOrCreate: connectImages(blog.images) },
+            tags: { connectOrCreate: connectTags(blog.tags)},
             author: { connect: { id: blog.author.id } }
         }
     })

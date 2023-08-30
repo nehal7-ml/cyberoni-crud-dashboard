@@ -1,6 +1,6 @@
 import { NextApiRequest, NextApiResponse } from "next";
 import { prisma } from "@/prisma/prismaClient";
-import { createBlogDTO, read, remove, update } from "@/crud/blog";
+import { createProductDTO, read, remove, update } from "@/crud/product";
 import { NextResponse } from 'next/server'
 
 
@@ -13,20 +13,20 @@ export const DELTE = handler;
 async function handler(req: Request, { params }: { params: { id: string } } ) {
 
     if (req.method === "GET") {
-        const blogId = params.id as string;
-        const blog = await read(blogId, prisma)
-        return NextResponse.json({ data: blog })
+        const productId = params.id as string;
+        const product = await read(productId, prisma)
+        return NextResponse.json({ data: product })
 
     }
     if (req.method === "PUT") {
-        const blogId = params.id as string;
-        const blog = await req.json() as createBlogDTO;
-        const updatedUser = await update(blogId, blog, prisma);
+        const productId = params.id as string;
+        const product = await req.json() as createProductDTO;
+        const updatedUser = await update(productId, product, prisma);
         return NextResponse.json({ message: "update success", data: updatedUser });
     }
     if (req.method === "DELETE") {
-        const blogId = params.id as string;
-        const deleted = await remove(blogId, prisma);
+        const productId = params.id as string;
+        const deleted = await remove(productId, prisma);
         return NextResponse.json({ message: "delete success" });
 
     }

@@ -1,6 +1,6 @@
 import { PrismaClient, Tag } from "@prisma/client"
 export type createTagDTO = {
-    id?: string
+    id?: string;
     name: string;
 }
 
@@ -21,7 +21,7 @@ export function connectOrCreateObject(newTags: createTagDTO[]) {
 
     let tagConnect: { where: { name: string; }; create: createTagDTO; }[] = []
     newTags.forEach(tag => {
-        tagConnect.push({ where: { name: tag.name }, create: tag })
+        if(!tag.id) tagConnect.push({ where: { name: tag.name }, create: tag })
 
     })
     return tagConnect

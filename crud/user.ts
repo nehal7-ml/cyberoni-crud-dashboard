@@ -5,8 +5,9 @@ import { getAllRecordsDTO } from "./commonDTO";
 
 
 export type createUserDTO = {
+    id?: string;
     firstName?: string;
-    lastName?: string ;
+    lastName?: string;
     email: string;
     image?: createImageDTO;
     address?: createAddressDTO;
@@ -16,7 +17,7 @@ export type createUserDTO = {
 export type displayUserDTO = {
     id: string;
     firstName?: string;
-    lastName?: string ;
+    lastName?: string;
     email: string;
     emailVerified: boolean;
     role: Role
@@ -51,8 +52,8 @@ async function update(userId: string, user: createUserDTO, prismaClient: PrismaC
                 email: user.email,
                 firstName: user.firstName,
                 lastName: user.lastName,
-                image: { create: user.image },
-                address: { create: user.address }
+                image: { update: user.image },
+                address: { update: user.address }
             }
         });
         return updatedUser

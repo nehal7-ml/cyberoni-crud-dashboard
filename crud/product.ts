@@ -7,26 +7,26 @@ export type createProductDTO = {
     sku: string;
     name: string;
     status: string;
-    ratings?: number ;
+    ratings?: number;
     inventory: number;
-    productBreakdown?: string ;
+    productBreakdown?: string;
     shippingReturnPolicy: string;
     description: string;
     price: number;
     profitMargin: number;
     displayPrice: number;
     category: string;
-    subcategory?: string ;
+    subcategory?: string;
     tags: createTagDTO[];
     images: createImageDTO[];
     suppliers?: createSupplierDTO[];
     amazonProductId?: string;
-    cjDropShippingId?: string ;
+    cjDropShippingId?: string;
 }
 
 
 export type displayProductDTO = {
-    id:string;
+    id: string;
     sku: string;
     name: string;
     status: string;
@@ -41,7 +41,7 @@ export type displayProductDTO = {
     category: string;
     subcategory: string | null;
     amazonProductId?: string;
-    cjDropShippingId?: string ;
+    cjDropShippingId?: string;
 }
 async function create(product: createProductDTO, prismaClient: PrismaClient) {
     const products = prismaClient.product;
@@ -49,7 +49,7 @@ async function create(product: createProductDTO, prismaClient: PrismaClient) {
         data: {
             ...product,
             tags: { connectOrCreate: connectTag(product.tags) },
-            images: { create: product.images },
+            images: { connectOrCreate: connectImage(product.images) },
             suppliers: { create: product.suppliers }
         }
     });
@@ -101,14 +101,14 @@ async function getAll(page: number, pageSize: number, prismaClient: PrismaClient
         },
         include: {
             // reviews: true,
-     
+
         }
     })
 
     const totalCount = await products.count();
     const totalPages = Math.ceil(totalCount / pageSize);
 
-    return {records: allProducts, currentPage: page, totalPages, pageSize }
+    return { records: allProducts, currentPage: page, totalPages, pageSize }
 
 }
 
