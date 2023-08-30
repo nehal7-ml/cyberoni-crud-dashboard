@@ -63,7 +63,7 @@ async function update(productId: string, product: createProductDTO, prismaClient
         data: {
             ...product,
             tags: { connectOrCreate: connectTag(product.tags) },
-            images: { create: product.images },
+            images: { connectOrCreate: connectImage(product.images) },
             suppliers: { create: product.suppliers }
         }
     });

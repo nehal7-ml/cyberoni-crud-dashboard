@@ -1,7 +1,7 @@
 import { Service, PrismaClient, Prisma } from "@prisma/client";
-import { createTagDTO, create as createTag } from "./tags";
-import { createImageDTO, create as createImage } from "./images";
-import { createSubServiceDTO, create as createSubService } from "./subService";
+import { createTagDTO, create as createTag, connectOrCreateObject as connectTags } from "./tags";
+import { createImageDTO, create as createImage, connectOrCreateObject } from "./images";
+import { createSubServiceDTO, create as createSubService, update as updateSubService } from "./subService";
 
 
 export type createServiceDTO = {
@@ -32,7 +32,7 @@ async function create(service: createServiceDTO, prismaClient: PrismaClient) {
             skillsUsed: service.skillsUsed,
             htmlEmbed: service.htmlEmbed,
             image: { create: service.image },
-            tags: { create: service.tags },
+            tags: { connectOrCreate: connectTags(service.tags || []) },
 
         }
     });
@@ -60,16 +60,23 @@ async function update(serviceId: string, service: createServiceDTO, prismaClient
                 valueBrought: service.valueBrought,
                 skillsUsed: service.skillsUsed,
                 htmlEmbed: service.htmlEmbed,
-                image: { create: service.image },
-                tags: { create: service.tags },
+                image: { update: service.image },
+                tags:  { connectOrCreate: connectTags(service.tags || []) },
 
             }
         });
+
+
     if (service.subServices && service.subServices?.length > 0) {
 
 
         service.subServices.forEach(async subService => {
-            const newSubService = await createSubService(subService, updatedService.id, prismaClient);
+            if(subService.id) {
+                const newSubService = await updateSubService( subService.id,subService, updatedService.id, prismaClient);
+            }
+            else {
+                const newSubService = await createSubService(subService, updatedService.id, prismaClient);
+            }
         });
     }
     return updatedService

@@ -40,7 +40,7 @@ async function update(promptId: string, prompt: createGptPromptDTO, prismaClient
         data: {
             ...prompt,
             tags: { connectOrCreate: connectTag(prompt.tags) },
-            image: { create: prompt.image },
+            image: { update: prompt.image },
         }
     });
     return UpdatedPrompt
