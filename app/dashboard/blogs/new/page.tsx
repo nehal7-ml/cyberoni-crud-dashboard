@@ -3,6 +3,8 @@ import QuillEditor from "@/components/QuillEditor";
 import Notification from "@/components/Notification";
 import { createBlogDTO } from "@/crud/blog";
 import React, { useState } from 'react';
+import { createImageDTO } from "@/crud/images";
+import { createTagDTO } from "@/crud/tags";
 
 
 const CreateBlogForm: React.FC = () => {
@@ -21,8 +23,19 @@ const CreateBlogForm: React.FC = () => {
     content: '',
     template: '',
     author: { id: '' },
+    tags:[],
+    images:[]
 
   });
+  function handleChangedImage(images: createImageDTO[], tags: createTagDTO[]) {
+    setBlogData((prevData) => ({
+        ...prevData,
+        images,
+        tags
+    }))
+
+}
+
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
     const { name, value } = e.target;

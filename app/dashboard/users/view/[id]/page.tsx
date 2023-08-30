@@ -155,7 +155,7 @@ const CreateUserForm: React.FC = () => {
                         </select>
                     </div>
                     <div className="mb-4">
-                        <AddImage onImagesChange={onImageChane} maxImages={1}></AddImage>
+                        <AddImage images={userData.image? [userData.image]:[] } onImagesChange={onImageChane} maxImages={1}></AddImage>
                     </div>
                     <div className="mb-4">
                         <label className="block text-sm font-medium text-gray-700">Street:</label>

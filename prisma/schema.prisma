@@ -28,43 +28,25 @@ model Account {
   @@index([userId])
 }
 
-model Session {
-  id           String     @id @default(cuid())
-  sessionToken String     @unique
-  userId       String
-  expires      DateTime
-  user         User       @relation(fields: [userId], references: [id], onDelete: Cascade)
-  cartItem     CartItem[]
-
-  @@index([userId])
-}
-
 model User {
-  id            String    @id @default(cuid())
-  firstName     String?
-  lastName      String?
-  email         String    @unique
-  emailVerified Boolean   @default(false)
-  image         Image?    @relation(fields: [imageId], references: [id])
-  addressId     String?
-  role          Role      @default(USER)
-  address       Address?  @relation(fields: [addressId], references: [id])
-  accounts      Account[]
-  sessions      Session[]
-  blogs         Blog[]
-  reviews       Review[]
-  imageId       String?
+  id             String           @id @default(cuid())
+  firstName      String?
+  lastName       String?
+  email          String           @unique
+  emailVerified  Boolean          @default(false)
+  image          Image?           @relation(fields: [imageId], references: [id])
+  addressId      String?
+  role           Role             @default(USER)
+  address        Address?         @relation(fields: [addressId], references: [id])
+  accounts       Account[]
+  blogs          Blog[]
+  reviews        Review[]
+  imageId        String?
+  CartItem       CartItem[]
+  ApiCredentials ApiCredentials[]
 
   @@index([addressId])
   @@index([imageId])
-}
-
-model VerificationToken {
-  identifier String
-  token      String   @unique
-  expires    DateTime
-
-  @@unique([identifier, token])
 }
 
 model Address {
@@ -81,12 +63,22 @@ model CartItem {
   id        String  @id @default(uuid())
   quantity  Int
   productId String
-  sessionId String
   product   Product @relation(fields: [productId], references: [id])
-  session   Session @relation(fields: [sessionId], references: [id])
+  user      User    @relation(fields: [userId], references: [id])
+  userId    String
 
   @@index([productId])
-  @@index([sessionId])
+  @@index([userId])
+}
+
+model ApiCredentials {
+  id      String   @id @default(uuid())
+  token   String   @unique
+  expires DateTime
+  user    User     @relation(fields: [userId], references: [id])
+  userId  String
+
+  @@index([userId])
 }
 
 model Product {
@@ -300,7 +292,8 @@ model Tag {
 
 enum Role {
   ADMIN
-  OWNER
+  SUPERUSER
+  TRUSTED
   USER
 }
 

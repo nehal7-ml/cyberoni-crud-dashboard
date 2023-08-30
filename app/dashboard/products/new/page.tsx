@@ -232,7 +232,7 @@ const CreateProductForm: React.FC = () => {
             <button type="button" onClick={() => setShowDialog(!showDialog)} className="w-full bg-blue-500 text-white p-2 rounded hover:bg-blue-600 focus:outline-none focus:ring focus:ring-blue-300">Add Supplier</button>
           </div>
 
-          <AddImagesAndTags onImagesAndTagsChange={handleChangedImage}></AddImagesAndTags>
+          <AddImagesAndTags tags={productData.tags} images={productData.images} onImagesAndTagsChange={handleChangedImage}></AddImagesAndTags>
           <button
             type="submit"
             className="w-full bg-blue-500 text-white p-2 rounded hover:bg-blue-600 focus:outline-none focus:ring focus:ring-blue-300"

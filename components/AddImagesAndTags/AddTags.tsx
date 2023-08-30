@@ -1,11 +1,12 @@
 'use client'
-import { createImageDTO } from "@/crud/images";
 import { createTagDTO } from "@/crud/tags";
 import React, { useEffect, useState } from 'react'
 
-function AddTags({ onTagsChange }: { onTagsChange: (images: createTagDTO[]) => void }) {
+function AddTags({ defaultTags, onTagsChange }: { defaultTags?: createTagDTO[], onTagsChange: (tags: createTagDTO[]) => void }) {
+     const [initialTags, setInitialTags] = useState<createTagDTO[]>([]);
     const [tags, setTags] = useState<createTagDTO[]>([]);
     const [newTagName, setNewTagName] = useState('');
+
     const handleRemoveTag = (tagToRemove: createTagDTO) => {
         setTags(prevTags => prevTags.filter(tag => tag.name !== tagToRemove.name));
     };
@@ -18,14 +19,25 @@ function AddTags({ onTagsChange }: { onTagsChange: (images: createTagDTO[]) => v
     };
 
     useEffect(() => {
-        onTagsChange(tags)
+        if(tags.length > 0) {
+        onTagsChange(initialTags.concat(tags))
+
+        }
     }, [tags])
+
+
+    useEffect(() => {
+        setInitialTags(defaultTags || [])
+        setTags([])
+    }, [defaultTags]);
+
+
     return (
         <>
             <h2 className="text-lg font-semibold mb-2">Add Images</h2>
             <div className="mb-4">
                 <div className="flex flex-wrap gap-2">
-                    {tags.map(tag => (
+                    {(initialTags.concat(tags)).map(tag => (
                         <div
                             key={tag.name}
                             className="bg-blue-200 text-blue-800 p-2 rounded flex items-center"

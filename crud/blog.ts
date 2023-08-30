@@ -1,4 +1,6 @@
 import { Blog, PrismaClient, User } from "@prisma/client";
+import { connectOrCreateObject as connectTags, createTagDTO } from "./tags";
+import { connectOrCreateObject, createImageDTO } from "./images";
 
 
 export type createBlogDTO = {
@@ -9,14 +11,23 @@ export type createBlogDTO = {
     date: Date;
     content: string;
     template: string;
-    author: { id: string }
+    author: { id: string },
+    images: createImageDTO[],
+    tags: createTagDTO[]
 }
 
 export type displayBlogDTO = Blog
 
 async function create(blog: createBlogDTO, prismaClient: PrismaClient) {
     const blogs = prismaClient.blog;
-    let createdblog = await blogs.create({ data: { ...blog, author: { connect: { id: blog.author.id } } } });
+    let createdblog = await blogs.create({
+        data: {
+            ...blog,
+            images:  {create: blog.images},
+            tags: { connectOrCreate: connectTags(blog.tags) },
+            author: { connect: { id: blog.author.id } }
+        }
+    });
     return createdblog
 
 
@@ -28,6 +39,8 @@ async function update(blogId: string, blog: createBlogDTO, prismaClient: PrismaC
         where: { id: blogId },
         data: {
             ...blog,
+            images:  {create: blog.images},
+            tags: { connectOrCreate: connectTags(blog.tags) },
             author: { connect: { id: blog.author.id } }
         }
     })
@@ -45,21 +58,23 @@ async function read(blogId: string, prismaClient: PrismaClient) {
     const existingblog = await blogs.findUnique({
         where: { id: blogId },
         select: {
-            userId:false,
-            content:true,
-            date:true,
-            description:true,
-            featured:true,
-            id:true,
-            title:true,
-            subTitle:true,
-            template:true,
+            userId: false,
+            content: true,
+            date: true,
+            description: true,
+            featured: true,
+            id: true,
+            title: true,
+            subTitle: true,
+            template: true,
             author: {
                 select: {
                     id: true,
                     email: true
                 }
-            }
+            },
+            tags:true,
+            images:true
         }
     })
     if (existingblog) return existingblog;
@@ -77,6 +92,7 @@ async function getAll(page: number, pageSize: number, prismaClient: PrismaClient
         },
         include: {
             // reviews: true,
+            tags: true
 
         }
     })

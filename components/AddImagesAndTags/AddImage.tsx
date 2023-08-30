@@ -2,8 +2,8 @@
 import { createImageDTO } from "@/crud/images";
 import React, { useEffect, useState } from 'react'
 
-function AddImage({ onImagesChange, maxImages }: { onImagesChange: (images: createImageDTO[]) => void, maxImages?: number }) {
-
+function AddImage({ defaultImages, onImagesChange, maxImages }: { defaultImages?: createImageDTO[], onImagesChange: (images: createImageDTO[]) => void, maxImages?: number }) {
+    const [initialImages, setinitialImages] = useState<createImageDTO[]>([]);
     const [images, setImages] = useState<createImageDTO[]>([]);
     const [newImageSrc, setNewImageSrc] = useState('');
 
@@ -22,16 +22,24 @@ function AddImage({ onImagesChange, maxImages }: { onImagesChange: (images: crea
     };
 
     useEffect(() => {
-        onImagesChange(images)
+        if (images.length > 0) {
+            onImagesChange(initialImages.concat(images))
+        }
 
     }, [images])
+
+
+    useEffect(() => {
+        setinitialImages(defaultImages || []);
+        setImages([])
+    }, [defaultImages]);
 
     return (
         <>
             <h2 className="text-lg font-semibold mb-2">Add Images</h2>
             <div className="mb-4">
                 <div className="flex flex-wrap gap-2">
-                    {images.map(image => (
+                    {initialImages.concat(images).map(image => (
                         <div
                             key={image.src}
                             className="bg-gray-200 p-2 rounded"

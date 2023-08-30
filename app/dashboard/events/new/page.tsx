@@ -165,7 +165,7 @@ const CreateEventForm: React.FC = () => {
               onChange={handleInputChange}
             />
           </div>
-          <AddImagesAndTags maxImages={1} onImagesAndTagsChange={handleChangedImage}></AddImagesAndTags>
+          <AddImagesAndTags  images={eventData.image? [eventData.image]: []} maxImages={1} onImagesAndTagsChange={handleChangedImage}></AddImagesAndTags>
           <button
             type="submit"
             className="w-full bg-blue-500 text-white p-2 rounded hover:bg-blue-600 focus:outline-none focus:ring focus:ring-blue-300"
