@@ -1,19 +1,22 @@
 'use client'
 import React, { useEffect, useMemo, useRef, useState } from 'react';
-import type ReactQuill from "react-quill";
 import { Value } from 'react-quill';
+import BlotFormatter from 'quill-blot-formatter';
 import 'react-quill/dist/quill.snow.css';
 import { X } from "lucide-react";
 import dynamic from "next/dynamic";
+import  { Quill } from 'react-quill';
 // react-quill QuillEditor
-const QuillEditor = ({ defaultValue, onChange }: { defaultValue: string, onChange: (text: string) => void }) => {
-    const ReactQuill = dynamic(() => import('react-quill'), { ssr: false });
+const ReactQuill = dynamic(() => import('react-quill'), { ssr: false });
+Quill.register('modules/imageResize', BlotFormatter);
 
-    const [value, setValue] = useState<Value>(defaultValue);
+const QuillEditor = ({ defaultValue, onChange }: { defaultValue?: string, onChange: (text: string) => void }) => {
+    const [initialValue, setInitialValue] = useState(defaultValue || "");
+    const [value, setValue] = useState<Value>("");
     const [showPreview, setShowPreview] = useState(false);
     const [fullScreen, setfullScreen] = useState(false);
-    const editorRef = useRef<ReactQuill>(null);
-    const previewRef = useRef<ReactQuill>(null);
+    // const editorRef = useRef<ReactQuill>(null);
+    // const previewRef = useRef<ReactQuill>(null);
 
     function textUpdate(value: string) {
         setValue(value)
@@ -31,6 +34,7 @@ const QuillEditor = ({ defaultValue, onChange }: { defaultValue: string, onChang
             ['clean'],
 
         ],
+        blotFormatter: {}
     }
 
     const emptyModules = { toolbar: false }
@@ -40,13 +44,15 @@ const QuillEditor = ({ defaultValue, onChange }: { defaultValue: string, onChang
     }
 
     useEffect(() => {
-        setValue(defaultValue)
+        setInitialValue(defaultValue || "");
+        setValue(defaultValue || "");
     }, [ defaultValue]);
+
+
     return (
         <div className="max-h-96 h-fit my-4">
             <div className="h-96">
                 <ReactQuill
-                    defaultValue={defaultValue}
                     value={value}
                     onChange={textUpdate}
                     modules={modules}
