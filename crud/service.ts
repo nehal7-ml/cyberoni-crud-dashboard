@@ -61,7 +61,7 @@ async function update(serviceId: string, service: createServiceDTO, prismaClient
                 skillsUsed: service.skillsUsed,
                 htmlEmbed: service.htmlEmbed,
                 image: { update: service.image },
-                tags:  { connectOrCreate: connectTags(service.tags || []) },
+                tags: { connectOrCreate: connectTags(service.tags || []) },
 
             }
         });
@@ -71,8 +71,8 @@ async function update(serviceId: string, service: createServiceDTO, prismaClient
 
 
         service.subServices.forEach(async subService => {
-            if(subService.id) {
-                const newSubService = await updateSubService( subService.id,subService, updatedService.id, prismaClient);
+            if (subService.id) {
+                const newSubService = await updateSubService(subService.id, subService, updatedService.id, prismaClient);
             }
             else {
                 const newSubService = await createSubService(subService, updatedService.id, prismaClient);
@@ -91,7 +91,12 @@ async function remove(serviceId: string, prismaClient: PrismaClient) {
 }
 async function read(serviceId: string, prismaClient: PrismaClient) {
     const services = prismaClient.service;
-    const existingservice = await services.findUnique({ where: { id: serviceId } })
+    const existingservice = await services.findUnique({
+        where: { id: serviceId },
+        include: {
+            subServices: true
+        }
+    })
     if (existingservice) return existingservice;
 
 }

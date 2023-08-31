@@ -27,7 +27,7 @@ async function update(eventId: string, event: createEventDTO, prismaClient: Pris
         where: { id: eventId },
         data: {
             ...event,
-            image: { create: event.image }
+            image: { update: event.image }
         }
     })
     return updatedEvent

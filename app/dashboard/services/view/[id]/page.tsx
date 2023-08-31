@@ -9,6 +9,7 @@ import QuillEditor from "@/components/QuillEditor";
 import { createSubServiceDTO } from "@/crud/subService";
 import { createUserDTO } from "@/crud/user";
 import { useParams } from "next/navigation";
+import CreateSubServcie from "./CreateSubService";
 
 function CreateServcie() {
     const [notify, setNotify] = useState(false);
@@ -216,10 +217,16 @@ function CreateServcie() {
                             type="submit"
                             className="w-full bg-blue-500 text-white p-2 rounded hover:bg-blue-600 focus:outline-none focus:ring focus:ring-blue-300"
                         >
-                            Create Service
+                            Update Service
                         </button>
                     </form>
 
+                    <div className={`fixed flex flex-col w-screen top-0 left-0 justify-center ${showDialog ? '' : ' hidden'}`}>
+                        <div className="flex justify-end z-30">
+                            <button className="self-end m-3" onClick={() => setShowDialog(!showDialog)} ><X color="red" className="cursor-pointer" /></button>
+                        </div>
+                        <CreateSubServcie handleSubServiceAdd={handleSubServiceAdd}></CreateSubServcie>
+                    </div>
                 </div>
             </div>
 
