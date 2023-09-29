@@ -9,9 +9,7 @@ export const dynamic = 'force-dynamic'
 
 async function Users({ params }: { params: { page: string } }) {
   const page = parseInt(params.page)
-  const data = await getData(page);
-
-
+  const data = await getData(page) || { records: [], totalPages:0 };
   return (
     <main className="flex flex-col items-center  py-5">
       <Table headers={['View', 'First Name', 'Last Name', 'Email', 'Email Verified', 'Role']}>

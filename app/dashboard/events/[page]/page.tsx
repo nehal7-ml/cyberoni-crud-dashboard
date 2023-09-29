@@ -8,7 +8,7 @@ export const dynamic = 'force-dynamic';
 
 async function Events({ params }: { params: { page: string } }) {
   const page = parseInt(params.page);
-  const data = await getData(page);
+  const data = await getData(page)  ||{ records: [], totalPages:0 };
 
   return (
     <main className="flex flex-col items-center py-5">
