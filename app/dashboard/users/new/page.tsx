@@ -5,7 +5,7 @@ import { createImageDTO } from "@/crud/images";
 import { createUserDTO } from "@/crud/user";
 import { Role } from "@prisma/client";
 import React, { useState } from 'react';
-import Notification from "@/components/Notification";
+import Notification, { NotificationType } from "@/components/Notification";
 
 
 const apiUrl = process.env.NEXT_PUBLIC_API_URL;
@@ -14,7 +14,7 @@ const CreateUserForm: React.FC = () => {
 
   const [notify, setNotify] = useState(false);
   const [notifyMessage, setNotifyMessage] = useState("");
-  const [notifyType, setNotifyType] = useState<'success'|'fail'>('fail');
+  const [notifyType, setNotifyType] = useState<'success' | 'fail'>('fail');
 
   const [addressData, setAddressData] = useState<createAddressDTO>({
     city: '',
@@ -38,7 +38,7 @@ const CreateUserForm: React.FC = () => {
       [name]: value,
     }));
   };
-  const handleAddressChange = (e:React.ChangeEvent<HTMLInputElement>)=> {
+  const handleAddressChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
 
     setAddressData(prevData => ({
@@ -60,17 +60,24 @@ const CreateUserForm: React.FC = () => {
       'Authorization': 'Bearer your-access-token',
     };
     // Send the userData to your backend for creating the user
-    const res = await fetch(`${apiUrl}/users/add`, {method: 'POST', body: JSON.stringify(userData), headers})
-    let resJson = await res.json() ;
+    const res = await fetch(`${apiUrl}/users/add`, { method: 'POST', body: JSON.stringify(userData), headers })
+    let resJson = await res.json();
 
-    if(res.status ==200) {
-      setNotify(true); setNotifyMessage(resJson.message);
-      setNotifyType('success');
+    if (res.status == 200) {
+      message('success', resJson.message)
+
     } else {
-      setNotify(true); setNotifyMessage(resJson.message);
-      setNotifyType('fail');
+      message('fail', resJson.message)
+
     }
   };
+
+  function message(type: NotificationType, message: string) {
+    setNotify(true);
+    setNotifyType(type);
+    setNotifyMessage(message);
+
+  }
 
   return (
     <div className="light:bg-gray-100 light:text-black dark:bg-gray-700 dark:text-gray-800 min-h-screen flex items-center justify-center">
@@ -127,7 +134,7 @@ const CreateUserForm: React.FC = () => {
             </select>
           </div>
           <div className="mb-4">
-            <AddImage defaultImages={userData.image? [userData.image]:[] } onImagesChange={onImageChane} maxImages={1}></AddImage>
+            <AddImage defaultImages={userData.image ? [userData.image] : []} onImagesChange={onImageChane} maxImages={1}></AddImage>
           </div>
           <div className="mb-4">
             <label className="block text-sm font-medium text-gray-700">Street:</label>
@@ -187,7 +194,7 @@ const CreateUserForm: React.FC = () => {
           </button>
         </form>
       </div>
-      {notify && <Notification  message={notifyMessage} type={notifyType}></Notification>}
+      <Notification visible={notify} setVisible={setNotify} message={notifyMessage} type={notifyType}></Notification>
 
     </div>
   );

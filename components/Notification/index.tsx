@@ -1,26 +1,22 @@
 'use client'
 import { Check, X } from "lucide-react";
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, Dispatch } from 'react';
 
-const Notification = ({ message, type }: { message: string, type: 'success' | 'fail' }) => {
-    const [isVisible, setIsVisible] = useState(false);
+export type NotificationType = 'success' | 'fail'
+const Notification = ({ message, type, visible, setVisible }: { message: string, type: NotificationType, visible: boolean, setVisible: Dispatch<boolean> }) => {
 
-    useEffect(() => {
-        setIsVisible(true);
+  useEffect(() => {
+    if (visible) {
 
-        const timer = setTimeout(() => {
-            setIsVisible(false);
-        }, 3000); // Adjust the duration as needed
+      setTimeout(() => { setVisible(false) }, 3000)
+    }
 
-        return () => clearTimeout(timer);
-    }, []);
+  }, [visible]);
+  const notificationClass = `fixed bottom-4 right-4 p-4 rounded ${type === 'success' ? 'bg-green-500' : 'bg-red-500'
+    } ${visible ? 'opacity-100' : 'opacity-0'} transition-opacity duration-300 z-50 text-white font-semibold`;
 
-    const notificationClass = `fixed bottom-4 right-4 p-4 rounded ${
-        type === 'success' ? 'bg-green-500' : 'bg-red-500'
-      } ${isVisible ? 'opacity-100' : 'opacity-0'} transition-opacity duration-300 z-50 text-white font-semibold`;
-    
 
-    return <div className={notificationClass}>
+  return <div className={notificationClass}>
     {type === 'success' ? (
       <Check className="mr-2" />
     ) : (

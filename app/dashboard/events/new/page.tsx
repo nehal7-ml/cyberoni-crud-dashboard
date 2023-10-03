@@ -5,7 +5,7 @@ import { createImageDTO } from "@/crud/images";
 import { createTagDTO } from "@/crud/tags";
 import { EventStatus } from "@prisma/client";
 import React, { useState } from 'react';
-import Notification from "@/components/Notification";
+import Notification, { NotificationType } from "@/components/Notification";
 
 
 
@@ -60,14 +60,22 @@ const CreateEventForm: React.FC = () => {
     const res = await fetch(`${apiUrl}/events/add`, { method: 'POST', body: JSON.stringify(eventData), headers })
     let resJson = await res.json() ;
 
-          if(res.status ==200) {
-            setNotify(true); setNotifyMessage(resJson.message);
-            setNotifyType('success');
-          } else {
-            setNotify(true); setNotifyMessage(resJson.message);
-            setNotifyType('fail');
-          }
-  };
+    if (res.status == 200) {
+      message('success', resJson.mesage)
+
+  } else {
+      message('fail', resJson.mesage)
+
+  }
+};
+
+function message(type: NotificationType, message: string) {
+  setNotify(true);
+  setNotifyType(type);
+  setNotifyMessage(message);
+  setTimeout(() => { setNotify(false) }, 5000)
+
+}
 
 
   function handleChangedImage(images: createImageDTO[], tags: createTagDTO[]) {
@@ -174,7 +182,7 @@ const CreateEventForm: React.FC = () => {
           </button>
         </form>
       </div>
-      {notify && <Notification  message={notifyMessage} type={notifyType}></Notification>}
+      <Notification visible={notify} setVisible={setNotify} message={notifyMessage} type={notifyType}></Notification>
 
     </div>
   );

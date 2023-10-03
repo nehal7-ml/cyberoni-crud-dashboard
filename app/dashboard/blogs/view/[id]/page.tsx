@@ -209,7 +209,7 @@ const CreateBlogForm: React.FC = () => {
                     </button>
                 </form>
             </div>
-            {notify && <Notification message={notifyMessage} type={notifyType}></Notification>}
+            <Notification visible={notify} setVisible={setNotify} message={notifyMessage} type={notifyType}></Notification>
         </div>
     );
 };

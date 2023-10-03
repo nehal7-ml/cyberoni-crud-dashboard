@@ -4,7 +4,7 @@ import { createImageDTO } from "@/crud/images";
 import { createProductDTO } from "@/crud/product";
 import { createTagDTO } from "@/crud/tags";
 import React, { useState } from 'react';
-import Notification from "@/components/Notification";
+import Notification, { NotificationType } from "@/components/Notification";
 import CreateSupplier from "./createSupplier";
 import { createSupplierDTO } from "@/crud/supplier";
 import { X } from "lucide-react";
@@ -57,13 +57,20 @@ const CreateProductForm: React.FC = () => {
     let resJson = await res.json();
 
     if (res.status == 200) {
-      setNotify(true); setNotifyMessage(resJson.message);
-      setNotifyType('success');
-    } else {
-      setNotify(true); setNotifyMessage(resJson.message);
-      setNotifyType('fail');
-    }
-  };
+      message('success', resJson.mesage)
+
+  } else {
+      message('fail', resJson.mesage)
+
+  }
+};
+
+function message(type: NotificationType, message: string) {
+  setNotify(true);
+  setNotifyType(type);
+  setNotifyMessage(message);
+
+}
 
   const handleNumberInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
     const { name, value } = e.target;
@@ -247,7 +254,7 @@ const CreateProductForm: React.FC = () => {
           <CreateSupplier handleSupplierAdd={handleSupplierAdd}></CreateSupplier>
         </div>
       </div>
-      {notify && <Notification message={notifyMessage} type={notifyType}></Notification>}
+      <Notification visible={notify} setVisible={setNotify} message={notifyMessage} type={notifyType}></Notification>
     </div>
   );
 };

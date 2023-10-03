@@ -1,9 +1,10 @@
 import { create, createProductDTO } from "@/crud/product";
+import apiHandler from "@/errorHandler";
 import { prisma } from "@/prisma/prismaClient";
 import { NextApiRequest, NextApiResponse } from "next";
 import { NextResponse } from "next/server";
 
-export async function POST(req: Request) {
+async function post(req: Request) {
 
 
     if (req.method === "POST") {
@@ -14,3 +15,5 @@ export async function POST(req: Request) {
 
 
 }
+
+export const { POST, DELETE, GET, PATCH, PUT } = apiHandler({ POST: post });

@@ -25,7 +25,7 @@ export type displayUserDTO = {
 async function create(user: createUserDTO, prismaClient: PrismaClient) {
     const users = prismaClient.user;
     const existingUser = await users.findUnique({ where: { email: user.email } })
-    if (existingUser) return;
+    if (existingUser) throw {status:400 ,message: `User ${user.email} already exists`};
     else {
         let createdUser = await users.create({
             data: {
@@ -45,7 +45,7 @@ async function update(userId: string, user: createUserDTO, prismaClient: PrismaC
     const users = prismaClient.user;
     const existingUser = await users.findUnique({ where: { id: userId } })
 
-    if (existingUser) return;
+    if (existingUser) throw {status:400 ,message: `User ${user.email} doesn't exists`};
     else {
         let updatedUser = await users.update({
             where: { id: userId }, data: {
@@ -63,7 +63,7 @@ async function update(userId: string, user: createUserDTO, prismaClient: PrismaC
 async function remove(userId: string, prismaClient: PrismaClient) {
     const users = prismaClient.user;
     const existingUser = await users.findUnique({ where: { id: userId } })
-    if (existingUser) return false;
+    if (existingUser) throw {status:400 ,message: `User ${userId} doesn't exists`};
     else {
         await users.delete({ where: { id: userId } });
         return true;
@@ -73,7 +73,7 @@ async function read(userId: string, prismaClient: PrismaClient) {
     const users = prismaClient.user;
     const existingUser = await users.findUnique({ where: { id: userId } })
     if (existingUser) return existingUser
-    else return
+    else throw{status:400 ,message: `User ${userId} doesn't exists`};
 }
 
 async function getAll(page: number, pageSize: number, prismaClient: PrismaClient) {

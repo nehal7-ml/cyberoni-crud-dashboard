@@ -10,6 +10,7 @@ import { createSubServiceDTO } from "@/crud/subService";
 import { createUserDTO } from "@/crud/user";
 import { useParams } from "next/navigation";
 import CreateSubServcie from "./CreateSubService";
+import Notification, { NotificationType } from "@/components/Notification";
 
 function CreateServcie() {
     const [notify, setNotify] = useState(false);
@@ -69,13 +70,21 @@ function CreateServcie() {
         let resJson = await res.json();
 
         if (res.status == 200) {
-            setNotify(true); setNotifyMessage(resJson.message);
-            setNotifyType('success');
+            message('success', resJson.mesage)
+
         } else {
-            setNotify(true); setNotifyMessage(resJson.message);
-            setNotifyType('fail');
+            message('fail', resJson.mesage)
+
         }
     };
+
+    function message(type: NotificationType, message: string) {
+        setNotify(true);
+        setNotifyType(type);
+        setNotifyMessage(message);
+
+    }
+
 
 
     function setQuillData(value: string) {
@@ -124,8 +133,7 @@ function CreateServcie() {
             if (res.status == 200) {
                 setServiceData(resJson.data as createServiceDTO);
             } else {
-                setNotify(true); setNotifyMessage(resJson.message);
-                setNotifyType('fail');
+                message('fail', resJson.mesage)
             }
         }
 
@@ -229,6 +237,7 @@ function CreateServcie() {
                     </div>
                 </div>
             </div>
+            <Notification visible={notify} setVisible={setNotify} message={notifyMessage} type={notifyType}></Notification>
 
         </>
     )

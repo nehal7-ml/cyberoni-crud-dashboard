@@ -5,7 +5,7 @@ import { createImageDTO } from "@/crud/images";
 import { createUserDTO } from "@/crud/user";
 import { Role } from "@prisma/client";
 import React, { useEffect, useState } from 'react';
-import Notification from "@/components/Notification";
+import Notification, { NotificationType } from "@/components/Notification";
 import { useParams } from "next/navigation";
 
 
@@ -67,13 +67,21 @@ const CreateUserForm: React.FC = () => {
         let resJson = await res.json();
 
         if (res.status == 200) {
-            setNotify(true); setNotifyMessage(resJson.message);
-            setNotifyType('success');
+            message('success', resJson.mesage)
+
         } else {
-            setNotify(true); setNotifyMessage(resJson.message);
-            setNotifyType('fail');
+            message('fail', resJson.mesage)
+
         }
     };
+
+    function message(type: NotificationType, message: string) {
+        setNotify(true);
+        setNotifyType(type);
+        setNotifyMessage(message);
+        setTimeout(() => { setNotify(false) }, 5000)
+
+    }
 
 
     const params = useParams();
@@ -91,15 +99,18 @@ const CreateUserForm: React.FC = () => {
             console.log(resJson)
 
             if (res.status == 200) {
-                setUserData(resJson.data as createUserDTO);
+                setUserData(resJson.data as createUserDTO)
+
             } else {
-                setNotify(true); setNotifyMessage(resJson.message);
-                setNotifyType('fail');
+                message('fail', resJson.mesage)
+
             }
         }
 
         fetchData()
     }, []);
+
+    
     return (
         <div className="light:bg-gray-100 light:text-black dark:bg-gray-700 dark:text-gray-800 min-h-screen flex items-center justify-center">
             <div className="bg-white shadow-md rounded p-8 max-w-md w-full">
@@ -155,7 +166,7 @@ const CreateUserForm: React.FC = () => {
                         </select>
                     </div>
                     <div className="mb-4">
-                        <AddImage images={userData.image? [userData.image]:[] } onImagesChange={onImageChane} maxImages={1}></AddImage>
+                        <AddImage defaultImages={userData.image ? [userData.image] : []} onImagesChange={onImageChane} maxImages={1}></AddImage>
                     </div>
                     <div className="mb-4">
                         <label className="block text-sm font-medium text-gray-700">Street:</label>
@@ -215,7 +226,7 @@ const CreateUserForm: React.FC = () => {
                     </button>
                 </form>
             </div>
-            {notify && <Notification message={notifyMessage} type={notifyType}></Notification>}
+            <Notification visible={notify} setVisible={setNotify} message={notifyMessage} type={notifyType}></Notification>
 
         </div>
     );

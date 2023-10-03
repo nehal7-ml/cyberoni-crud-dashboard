@@ -8,11 +8,12 @@ import CreateSubServcie from "./CreateSubService";
 import { X } from "lucide-react";
 import QuillEditor from "@/components/QuillEditor";
 import { createSubServiceDTO } from "@/crud/subService";
+import Notification,{ NotificationType } from "@/components/Notification";
 
 function CreateServcie() {
     const [notify, setNotify] = useState(false);
     const [notifyMessage, setNotifyMessage] = useState("");
-    const [notifyType, setNotifyType] = useState<'success' | 'fail'>('fail');
+    const [notifyType, setNotifyType] = useState<NotificationType>('fail');
 
     const [showDialog, setShowDialog] = useState(false);
     const [serviceData, setServiceData] = useState<createServiceDTO>({
@@ -67,13 +68,20 @@ function CreateServcie() {
         let resJson = await res.json();
 
         if (res.status == 200) {
-            setNotify(true); setNotifyMessage(resJson.message);
-            setNotifyType('success');
+            message('success', resJson.mesage)
+
         } else {
-            setNotify(true); setNotifyMessage(resJson.message);
-            setNotifyType('fail');
+            message('fail', resJson.mesage)
+
         }
     };
+
+    function message(type: NotificationType, message: string) {
+        setNotify(true);
+        setNotifyType(type);
+        setNotifyMessage(message);
+
+    }
 
 
     function setQuillData(value: string) {
@@ -102,6 +110,8 @@ function CreateServcie() {
         }))
 
     }
+
+
     return (
         <>
             <div className="light:bg-gray-100 light:text-black dark:bg-gray-700 dark:text-gray-800 min-h-screen flex items-center justify-center">
@@ -199,6 +209,8 @@ function CreateServcie() {
                         <CreateSubServcie handleSubServiceAdd={handleSubServiceAdd}></CreateSubServcie>
                     </div>
                 </div>
+                <Notification visible={notify} setVisible={setNotify} message={notifyMessage} type={notifyType}></Notification>
+
             </div>
 
         </>

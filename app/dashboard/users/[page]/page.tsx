@@ -35,7 +35,7 @@ async function getData(page: number) {
   let res = await fetch(`${apiUrl}/users/all/${page}`);
   if (res.status == 200) {
     let resJson = await res.json();
-    console.log(resJson.data.records);
+    console.log(resJson);
     return (resJson.data as getAllRecordsDTO);
   }
 }

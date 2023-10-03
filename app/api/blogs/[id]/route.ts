@@ -1,38 +1,30 @@
 import { NextApiRequest, NextApiResponse } from "next";
 import { prisma } from "@/prisma/prismaClient";
-import { createBlogDTO, read, remove, update } from "@/crud/blog";
-import { NextResponse } from 'next/server'
+import { createBlogDTO, read, remove  as removeBlog, update } from "@/crud/blog";
+import { NextRequest, NextResponse } from 'next/server'
+import apiHandler from "@/errorHandler";
 
 
-export const GET = handler;
-export const PUT = handler;
-export const DELTE = handler;
+export const { POST, DELETE, GET, PATCH, PUT } = apiHandler({ GET: get, PUT: put, DELETE: remove });
+
+async function put(req: NextRequest, { params }: { params: { id: string } }) {
+
+    const blogID = params.id as string;
+    const blog = await req.json() as createBlogDTO;
+    const updatedUser = await update(blogID, blog, prisma);
+    return NextResponse.json({ message: "update success", data: updatedUser });
+}
+async function remove(req: NextRequest, { params }: { params: { id: string } }) {
+    const blogID = params.id as string;
+    const deleted = await removeBlog(blogID, prisma);
+    return NextResponse.json({ message: "delete success" });
+}
 
 
-
-async function handler(req: Request, { params }: { params: { id: string } } ) {
-
-    if (req.method === "GET") {
-        const blogId = params.id as string;
-        const blog = await read(blogId, prisma)
-        return NextResponse.json({ data: blog })
-
-    }
-    if (req.method === "PUT") {
-        const blogId = params.id as string;
-        const blog = await req.json() as createBlogDTO;
-        const updatedUser = await update(blogId, blog, prisma);
-        return NextResponse.json({ message: "update success", data: updatedUser });
-    }
-    if (req.method === "DELETE") {
-        const blogId = params.id as string;
-        const deleted = await remove(blogId, prisma);
-        return NextResponse.json({ message: "delete success" });
-
-    }
-    if(req.method ==="POST") {
-        return NextResponse.error()
-    }
+async function get(req: NextRequest, { params }: { params: { id: string } }) {
+    const blogID = params.id as string;
+    const blog = await read(blogID, prisma)
+    return NextResponse.json({ data: blog })
 
 
 }

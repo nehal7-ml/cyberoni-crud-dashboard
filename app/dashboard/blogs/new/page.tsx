@@ -1,6 +1,6 @@
 'use client'
 import QuillEditor from "@/components/QuillEditor";
-import Notification from "@/components/Notification";
+import Notification, { NotificationType } from "@/components/Notification";
 import { createBlogDTO } from "@/crud/blog";
 import React, { useState } from 'react';
 import { createImageDTO } from "@/crud/images";
@@ -23,18 +23,18 @@ const CreateBlogForm: React.FC = () => {
     content: '',
     template: '',
     author: { id: '' },
-    tags:[],
-    images:[]
+    tags: [],
+    images: []
 
   });
   function handleChangedImage(images: createImageDTO[], tags: createTagDTO[]) {
     setBlogData((prevData) => ({
-        ...prevData,
-        images,
-        tags
+      ...prevData,
+      images,
+      tags
     }))
 
-}
+  }
 
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
@@ -77,13 +77,21 @@ const CreateBlogForm: React.FC = () => {
     let resJson = await res.json();
 
     if (res.status == 200) {
-      setNotify(true); setNotifyMessage(resJson.message);
-      setNotifyType('success');
+      message('success', resJson.mesage)
+
     } else {
-      setNotify(true); setNotifyMessage(resJson.message);
-      setNotifyType('fail');
+      message('fail', resJson.mesage)
+
     }
   };
+
+  function message(type: NotificationType, message: string) {
+    setNotify(true);
+    setNotifyType(type);
+    setNotifyMessage(message);
+    setTimeout(() => { setNotify(false) }, 5000)
+
+  }
 
   function setQuillData(value: string) {
     setBlogData(prevData => ({
@@ -171,7 +179,7 @@ const CreateBlogForm: React.FC = () => {
           </button>
         </form>
       </div>
-      {notify && <Notification message={notifyMessage} type={notifyType}></Notification>}
+      <Notification visible={notify} setVisible={setNotify} message={notifyMessage} type={notifyType}></Notification>
     </div>
   );
 };

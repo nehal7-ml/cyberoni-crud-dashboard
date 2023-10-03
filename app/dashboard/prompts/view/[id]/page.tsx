@@ -4,14 +4,14 @@ import { createImageDTO } from "@/crud/images";
 import { createGptPromptDTO } from "@/crud/prompt";
 import { createTagDTO } from "@/crud/tags";
 import React, { useEffect, useState } from 'react';
-import Notification from "@/components/Notification";
+import Notification, { NotificationType } from "@/components/Notification";
 import { useParams } from "next/navigation";
 
 const CreateGptPromptForm: React.FC = () => {
 
   const [notify, setNotify] = useState(false);
   const [notifyMessage, setNotifyMessage] = useState("");
-  const [notifyType, setNotifyType] = useState<'success'|'fail'>('fail');
+  const [notifyType, setNotifyType] = useState<'success' | 'fail'>('fail');
 
   const [gptPromptData, setGptPromptData] = useState<createGptPromptDTO>({
     description: '',
@@ -39,31 +39,38 @@ const CreateGptPromptForm: React.FC = () => {
     }));
   };
 
-  const handleSubmit = async(e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     const apiUrl = process.env.NEXT_PUBLIC_API_URL;
     const headers = {
-        'Content-Type': 'application/json',
-        'Authorization': 'Bearer your-access-token',
-      };
-      // Send the userData to your backend for creating the user
-      const res = await fetch(`${apiUrl}/prompts/${params.id}`, {method: 'POST', body: JSON.stringify(gptPromptData), headers})
-      let resJson = await res.json() ;
+      'Content-Type': 'application/json',
+      'Authorization': 'Bearer your-access-token',
+    };
+    // Send the userData to your backend for creating the user
+    const res = await fetch(`${apiUrl}/prompts/${params.id}`, { method: 'POST', body: JSON.stringify(gptPromptData), headers })
+    let resJson = await res.json();
 
-          if(res.status ==200) {
-            setNotify(true); setNotifyMessage(resJson.message);
-            setNotifyType('success');
-          } else {
-            setNotify(true); setNotifyMessage(resJson.message);
-            setNotifyType('fail');
-          }
+    if (res.status == 200) {
+      message('success', resJson.mesage)
+
+    } else {
+      message('fail', resJson.mesage)
+
+    }
   };
 
+  function message(type: NotificationType, message: string) {
+    setNotify(true);
+    setNotifyType(type);
+    setNotifyMessage(message);
+
+  }
+
   function handleChangedImage(images: createImageDTO[], tags: createTagDTO[]) {
-    setGptPromptData ((prevData)=> ({
-    ...prevData,
-    images,
-    tags
+    setGptPromptData((prevData) => ({
+      ...prevData,
+      images,
+      tags
     }))
 
   }
@@ -73,27 +80,27 @@ const CreateGptPromptForm: React.FC = () => {
 
   useEffect(() => {
 
-      async function fetchData() {
-          const apiUrl = process.env.NEXT_PUBLIC_API_URL;
+    async function fetchData() {
+      const apiUrl = process.env.NEXT_PUBLIC_API_URL;
 
-          const headers = {
-              'Content-Type': 'application/json',
-              'Authorization': 'Bearer your-access-token',
-          };
-          // Send the userData to your backend for creating the user
-          const res = await fetch(`${apiUrl}/prompts/${params.id}`, { method: 'GET', headers })
-          let resJson = await res.json();
-          console.log(resJson)
+      const headers = {
+        'Content-Type': 'application/json',
+        'Authorization': 'Bearer your-access-token',
+      };
+      // Send the userData to your backend for creating the user
+      const res = await fetch(`${apiUrl}/prompts/${params.id}`, { method: 'GET', headers })
+      let resJson = await res.json();
+      console.log(resJson)
 
-          if (res.status == 200) {
-              setGptPromptData(resJson.data as createGptPromptDTO);
-          } else {
-              setNotify(true); setNotifyMessage(resJson.message);
-              setNotifyType('fail');
-          }
+      if (res.status == 200) {
+        setGptPromptData(resJson.data as createGptPromptDTO);
+      } else {
+        message('fail', resJson.mesage)
+
       }
+    }
 
-      fetchData()
+    fetchData()
   }, []);
 
   return (
@@ -203,11 +210,11 @@ const CreateGptPromptForm: React.FC = () => {
           </button>
         </form>
       </div>
-      {notify && <Notification  message={notifyMessage} type={notifyType}></Notification>}
+      <Notification visible={notify} setVisible={setNotify} message={notifyMessage} type={notifyType}></Notification>
 
     </div>
   );
-  
+
 };
 
 export default CreateGptPromptForm;
