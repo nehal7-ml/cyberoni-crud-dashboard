@@ -4,7 +4,7 @@ import { prisma } from "@/prisma/prismaClient";
 import { NextResponse } from 'next/server'
 import apiHandler from "@/errorHandler";
 
-export const get = async (req: NextApiRequest, { params }: { params: { page: string } }) => {
+ const get = async (req: NextApiRequest, { params }: { params: { page: string } }) => {
     const blogs = await getAll(parseInt(params.page), 10, prisma)  // skipping 10 record for every new page
     return NextResponse.json({ message: "found", data: blogs })
 

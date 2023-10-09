@@ -25,6 +25,7 @@ export default function apiHandler(handler: any) {
                 
             } catch (err: any) {
                 // global error handler
+                console.log(err)
                 return errorHandler(err);
             }
         };
