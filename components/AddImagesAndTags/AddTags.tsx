@@ -34,7 +34,7 @@ function AddTags({ defaultTags, onTagsChange }: { defaultTags?: createTagDTO[], 
 
     return (
         <>
-            <h2 className="text-lg font-semibold mb-2">Add Images</h2>
+            <h2 className="text-lg font-semibold mb-2">Add Tags</h2>
             <div className="mb-4">
                 <div className="flex flex-wrap gap-2">
                     {(initialTags.concat(tags)).map(tag => (
