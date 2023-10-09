@@ -20,7 +20,6 @@ async function Blogs({ params }: { params: { page: string } }) {
           row.push(value.userId);
           row.push(value.template);
 
-
           return <TableItem type="blogs" key={value.id} index={value.id} row={row}></TableItem>
         })}
       </Table>

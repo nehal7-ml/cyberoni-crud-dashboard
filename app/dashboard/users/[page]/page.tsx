@@ -21,7 +21,6 @@ async function Users({ params }: { params: { page: string } }) {
           row.push(value.emailVerified ? "true" : "false");
           row.push(value.role);
 
-
           return <TableItem type="users" key={value.id} index={value.id} row={row}></TableItem>
         })}
       </Table>

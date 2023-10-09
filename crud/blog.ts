@@ -12,7 +12,7 @@ export type createBlogDTO = {
     date: Date;
     content: string;
     template: string;
-    author: { id: string },
+    author: { id?: string , email:string},
     images: createImageDTO[],
     tags: createTagDTO[]
 }
@@ -26,7 +26,7 @@ async function create(blog: createBlogDTO, prismaClient: PrismaClient) {
             ...blog,
             images: { create: blog.images },
             tags: { connectOrCreate: connectTags(blog.tags) },
-            author: { connect: { id: blog.author.id } }
+            author: { connect: { email: blog.author.email } }
         }
     });
     return createdblog
@@ -42,7 +42,7 @@ async function update(blogId: string, blog: createBlogDTO, prismaClient: PrismaC
             ...blog,
             images: { connectOrCreate: connectImages(blog.images) },
             tags: { connectOrCreate: connectTags(blog.tags)},
-            author: { connect: { id: blog.author.id } }
+            author: { connect:  { email: blog.author.email }  }
         }
     })
     return updatedBlog

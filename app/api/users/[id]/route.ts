@@ -15,7 +15,7 @@ async function put(req: NextRequest, { params }: { params: { id: string } }) {
 async function remove(req: NextRequest, { params }: { params: { id: string } }) {
     const userId = params.id as string;
     const deleted = await removeUser(userId, prisma);
-    return NextResponse.json({ message: "delete success" });
+    return NextResponse.json({ message: "success" });
 }
 
 

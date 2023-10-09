@@ -22,7 +22,7 @@ const CreateBlogForm: React.FC = () => {
     date: new Date(),
     content: '',
     template: '',
-    author: { id: '' },
+    author: { email: '' },
     tags: [],
     images: []
 
@@ -43,7 +43,7 @@ const CreateBlogForm: React.FC = () => {
     if (name == "author") {
       setBlogData(prevData => ({
         ...prevData,
-        author: { id: value },
+        author: { email: value },
       }));
     }
     else {
@@ -116,13 +116,14 @@ const CreateBlogForm: React.FC = () => {
             />
           </div>
           <div className="mb-4">
-            <label className="block text-sm font-medium text-gray-700">Author userId:</label>
+            <label className="block text-sm font-medium text-gray-700">Author email/username:</label>
             <input
               type="text"
               name="author"
               className="mt-1 p-2 border rounded w-full"
-              value={blogData.author.id}
+              value={blogData.author.email}
               onChange={handleInputChange}
+              required
             />
           </div>
           <div className="mb-4">
