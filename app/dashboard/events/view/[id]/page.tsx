@@ -13,7 +13,7 @@ import { useParams } from "next/navigation";
 const CreateEventForm: React.FC = () => {
   const [notify, setNotify] = useState(false);
   const [notifyMessage, setNotifyMessage] = useState("");
-  const [notifyType, setNotifyType] = useState<'success'|'fail'>('fail');
+  const [notifyType, setNotifyType] = useState<'success' | 'fail'>('fail');
 
   const [eventData, setEventData] = useState<createEventDTO>({
     name: '',
@@ -35,12 +35,12 @@ const CreateEventForm: React.FC = () => {
         date: new Date(value),
       }));
 
-    } if(name ==='isVirtual') { 
+    } if (name === 'isVirtual') {
       setEventData(prevData => ({
-      ...prevData,
+        ...prevData,
         isVirtual: value === 'on',
       }));
-    }else {
+    } else {
 
       setEventData(prevData => ({
         ...prevData,
@@ -59,15 +59,15 @@ const CreateEventForm: React.FC = () => {
     };
     // Send the userData to your backend for creating the user
     const res = await fetch(`${apiUrl}/events/${params.id}`, { method: 'PUT', body: JSON.stringify(eventData), headers })
-    let resJson = await res.json() ;
+    let resJson = await res.json();
 
-          if(res.status ==200) {
-            setNotify(true); setNotifyMessage(resJson.message);
-            setNotifyType('success');
-          } else {
-            setNotify(true); setNotifyMessage(resJson.message);
-            setNotifyType('fail');
-          }
+    if (res.status == 200) {
+      setNotify(true); setNotifyMessage(resJson.message);
+      setNotifyType('success');
+    } else {
+      setNotify(true); setNotifyMessage(resJson.message);
+      setNotifyType('fail');
+    }
   };
 
 
@@ -87,32 +87,38 @@ const CreateEventForm: React.FC = () => {
 
 
 
-  
+
   const params = useParams();
 
   useEffect(() => {
 
-      async function fetchData() {
-          const apiUrl = process.env.NEXT_PUBLIC_API_URL;
+    async function fetchData() {
+      const apiUrl = process.env.NEXT_PUBLIC_API_URL;
 
-          const headers = {
-              'Content-Type': 'application/json',
-              'Authorization': 'Bearer your-access-token',
-          };
-          // Send the userData to your backend for creating the user
-          const res = await fetch(`${apiUrl}/events/${params.id}`, { method: 'GET', headers })
-          let resJson = await res.json();
-          console.log(resJson)
+      const headers = {
+        'Content-Type': 'application/json',
+        'Authorization': 'Bearer your-access-token',
+      };
+      // Send the userData to your backend for creating the user
+      const res = await fetch(`${apiUrl}/events/${params.id}`, { method: 'GET', headers })
+      let resJson = await res.json();
+      console.log(resJson)
 
-          if (res.status == 200) {
-              setEventData(resJson.data as createEventDTO);
-          } else {
-              setNotify(true); setNotifyMessage(resJson.message);
-              setNotifyType('fail');
+      if (res.status == 200) {
+        setEventData(() => {
+          const event = resJson.data as createEventDTO
+          return {
+            ...event,
+            date: new Date(event.date)
           }
+        });
+      } else {
+        setNotify(true); setNotifyMessage(resJson.message);
+        setNotifyType('fail');
       }
+    }
 
-      fetchData()
+    fetchData()
   }, []);
   return (
     <div className="light:bg-gray-100 light:text-black dark:bg-gray-700 dark:text-gray-800 min-h-screen flex items-center justify-center">
@@ -196,7 +202,7 @@ const CreateEventForm: React.FC = () => {
               onChange={handleInputChange}
             />
           </div>
-          <AddImagesAndTags images={eventData.image? [eventData.image]: []}  maxImages={1} onImagesAndTagsChange={handleChangedImage}></AddImagesAndTags>
+          <AddImagesAndTags images={eventData.image ? [eventData.image] : []} maxImages={1} onImagesAndTagsChange={handleChangedImage}></AddImagesAndTags>
           <button
             type="submit"
             className="w-full bg-blue-500 text-white p-2 rounded hover:bg-blue-600 focus:outline-none focus:ring focus:ring-blue-300"

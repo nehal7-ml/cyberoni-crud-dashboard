@@ -15,7 +15,7 @@ export type createEventDTO = {
 
 async function create(event: createEventDTO, prismaClient: PrismaClient) {
     const events = prismaClient.event;
-    let createdevent = await events.create({ data: { ...event, image: { create: event.image } } });
+    let createdevent = await events.create({ data: { ...event, date: new Date(event.date), image: { create: event.image } } });
     return createdevent
 
 
@@ -27,6 +27,7 @@ async function update(eventId: string, event: createEventDTO, prismaClient: Pris
         where: { id: eventId },
         data: {
             ...event,
+            date: new Date(event.date),
             image: { update: event.image }
         }
     })
@@ -57,14 +58,14 @@ async function getAll(page: number, pageSize: number, prismaClient: PrismaClient
         },
         include: {
             // reviews: true,
-     
+
         }
     })
 
     const totalCount = await events.count();
     const totalPages = Math.ceil(totalCount / pageSize);
 
-    return { records:allEvents, currentPage: page, totalPages, pageSize }
+    return { records: allEvents, currentPage: page, totalPages, pageSize }
 
 }
 
