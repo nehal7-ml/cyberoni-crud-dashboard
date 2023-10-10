@@ -6,7 +6,7 @@ import { NextResponse } from "next/server";
 
 export const { POST, DELETE, GET, PATCH, PUT } = apiHandler({ POST: post });
 
-export async function post(req: Request) {
+async function post(req: Request) {
 
     if (req.method === "POST") {
         const prompt = await req.json() as createGptPromptDTO;

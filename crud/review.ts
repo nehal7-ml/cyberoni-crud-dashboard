@@ -20,6 +20,7 @@ export type createReviewDTO = {
 
 async function create(review: createReviewDTO, prismaClient: PrismaClient) {
     const reviews = prismaClient.review;
+    const connect = review.productId ? { connect: { id: review.productId } } : review.serviceId ? { connect: { id: review.serviceId } } : {};
     let createdreview = await reviews.create({
         data: {
             name: review.name,
@@ -32,7 +33,8 @@ async function create(review: createReviewDTO, prismaClient: PrismaClient) {
             verifiedCustomer: review.verifiedCustomer,
             reviewType: review.reviewType,
             user: { connect: { id: review.userId } },
-            product: { connect: { id: review.productId } }
+            product: connect,
+            service: connect
         }
     });
     return createdreview
@@ -67,14 +69,14 @@ async function getAll(page: number, pageSize: number, prismaClient: PrismaClient
         },
         include: {
             // reviews: true,
-     
+
         }
     })
 
     const totalCount = await reviews.count();
     const totalPages = Math.ceil(totalCount / pageSize);
 
-    return {records: allProducts, currentPage: page, totalPages, pageSize }
+    return { records: allProducts, currentPage: page, totalPages, pageSize }
 
 }
 
@@ -100,4 +102,4 @@ async function getByServiceId(serviceId: string, page: number, pageSize: number,
     if (existingreview) return existingreview;
 }
 
-export { create, update, remove, read,getByProductId,getByServiceId, getAll }
+export { create, update, remove, read, getByProductId, getByServiceId, getAll }
