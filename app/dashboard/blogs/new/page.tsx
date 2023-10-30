@@ -1,5 +1,5 @@
 'use client'
-import QuillEditor from "@/components/QuillEditor";
+import QuillEditor from "@/components/RichTextEditor";
 import Notification, { NotificationType } from "@/components/Notification";
 import { createBlogDTO } from "@/crud/blog";
 import React, { useState } from 'react';
@@ -104,7 +104,7 @@ const CreateBlogForm: React.FC = () => {
     <div className="light:bg-gray-100 light:text-black dark:bg-gray-700 dark:text-gray-800  bg-gray-100 min-h-screen flex items-center justify-center ">
       <div className="bg-white shadow-md rounded p-8 max-w-3xl w-full">
         <h2 className="text-2xl font-semibold mb-4">Create Blog</h2>
-        <form onSubmit={handleSubmit}>
+        <form onSubmit={handleSubmit} className="h-fit">
           <div className="mb-4">
             <label className="block text-sm font-medium text-gray-700">Title:</label>
             <input

@@ -23,7 +23,7 @@ function AddTags({ defaultTags, onTagsChange }: { defaultTags?: createTagDTO[], 
         onTagsChange(initialTags.concat(tags))
 
         }
-    }, [tags])
+    }, [initialTags, onTagsChange, tags])
 
 
     useEffect(() => {

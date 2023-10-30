@@ -11,7 +11,7 @@ const Notification = ({ message, type, visible, setVisible }: { message: string,
       setTimeout(() => { setVisible(false) }, 3000)
     }
 
-  }, [visible]);
+  }, [setVisible, visible]);
   const notificationClass = `fixed bottom-4 right-4 p-4 rounded ${type === 'success' ? 'bg-green-500' : 'bg-red-500'
     } ${visible ? 'opacity-100' : 'opacity-0'} transition-opacity duration-300 z-50 text-white font-semibold`;
 

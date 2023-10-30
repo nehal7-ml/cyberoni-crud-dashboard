@@ -108,7 +108,7 @@ const CreateUserForm: React.FC = () => {
         }
 
         fetchData()
-    }, []);
+    }, [params.id]);
 
     
     return (

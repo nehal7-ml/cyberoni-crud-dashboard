@@ -4,9 +4,9 @@ import { createImageDTO } from "@/crud/images";
 import { createServiceDTO } from "@/crud/service";
 import { createTagDTO } from "@/crud/tags";
 import React, { useState } from 'react'
-import CreateSubServcie from "./CreateSubService";
+import CreateSubServcie from "../../../../components/FormComponents/CreateSubService";
 import { X } from "lucide-react";
-import QuillEditor from "@/components/QuillEditor";
+import QuillEditor from "@/components/RichTextEditor";
 import { createSubServiceDTO } from "@/crud/subService";
 import Notification,{ NotificationType } from "@/components/Notification";
 

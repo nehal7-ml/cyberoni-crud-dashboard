@@ -3,19 +3,32 @@ import { Product, CartItem, PrismaClient } from "@prisma/client";
 export type createCartItemDTO = {
     quantity: number;
     productId: string;
-    sessionId: string;
+    userEmail: string
 }
 
 async function create(cartItem: createCartItemDTO, prismaClient: PrismaClient) {
     const cartItems = prismaClient.cartItem;
-    let createdcartItem = await cartItems.create({ data: cartItem });
+    let createdcartItem = await cartItems.create({
+        data:
+        {
+            quantity: cartItem.quantity,
+            product: { connect: { id: cartItem.productId } },
+            user: { connect: { email: cartItem.userEmail } }
+
+        }
+    });
     return createdcartItem
 
 }
 
 async function update(cartItemId: string, cartItem: createCartItemDTO, prismaClient: PrismaClient) {
     const cartItems = prismaClient.cartItem;
-    const item = await cartItems.update({ where: { id: cartItemId }, data: cartItem })
+    const item = await cartItems.update({
+        where: { id: cartItemId },
+        data: {
+            quantity: cartItem.quantity,
+        }
+    })
 
     return item
 

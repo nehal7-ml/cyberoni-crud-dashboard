@@ -6,7 +6,6 @@ import { createTagDTO } from "@/crud/tags";
 import React, { useEffect, useState } from 'react';
 import Notification, { NotificationType } from "@/components/Notification";
 import { createSupplierDTO } from "@/crud/supplier";
-import { X } from "lucide-react";
 import { useParams } from "next/navigation";
 
 
@@ -139,7 +138,7 @@ const CreateProductForm: React.FC = () => {
       }
 
       fetchData()
-  }, []);
+  }, [params.id]);
 
   return (
     <div className="light:bg-gray-100 light:text-black dark:bg-gray-700 dark:text-gray-800 min-h-screen flex items-center justify-center">

@@ -5,7 +5,7 @@ import { createServiceDTO } from "@/crud/service";
 import { createTagDTO } from "@/crud/tags";
 import React, { useEffect, useState } from 'react'
 import { X } from "lucide-react";
-import QuillEditor from "@/components/QuillEditor";
+import QuillEditor from "@/components/RichTextEditor";
 import { createSubServiceDTO } from "@/crud/subService";
 import { createUserDTO } from "@/crud/user";
 import { useParams } from "next/navigation";
@@ -138,7 +138,7 @@ function CreateServcie() {
         }
 
         fetchData()
-    }, []);
+    }, [params.id]);
     return (
         <>
             <div className="light:bg-gray-100 light:text-black dark:bg-gray-700 dark:text-gray-800 min-h-screen flex items-center justify-center">

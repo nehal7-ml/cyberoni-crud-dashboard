@@ -101,7 +101,7 @@ const CreateGptPromptForm: React.FC = () => {
     }
 
     fetchData()
-  }, []);
+  }, [params.id]);
 
   return (
     <div className="light:bg-gray-100 light:text-black dark:bg-gray-700 dark:text-gray-800 max-h-screen p-2 flex items-center justify-center">

@@ -1,10 +1,10 @@
 import { NextResponse } from "next/server";
 
 
-export type HttpError = Error & {
-    status: number;
-    message: string;
-}
+    export type HttpError = Error & {
+        status: number;
+        message: string;
+    }
 
 
 export default function errorHandler(error: HttpError) {

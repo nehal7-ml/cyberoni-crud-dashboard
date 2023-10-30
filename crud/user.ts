@@ -19,7 +19,7 @@ export type displayUserDTO = {
     firstName?: string;
     lastName?: string;
     email: string;
-    emailVerified: boolean;
+    emailVerified: Date;
     role: Role
 }
 async function create(user: createUserDTO, prismaClient: PrismaClient) {
@@ -85,14 +85,7 @@ async function getAll(page: number, pageSize: number, prismaClient: PrismaClient
         skip: (page - 1) * pageSize, take: pageSize,
         where: {
         },
-        include: {
-            // reviews: true,
-            reviews: {
-                include: {
-                    _count: true
-                }
-            }
-        }
+
     })
 
     const totalCount = await users.count();

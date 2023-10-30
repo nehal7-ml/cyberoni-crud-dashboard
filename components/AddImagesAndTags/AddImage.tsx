@@ -26,7 +26,7 @@ function AddImage({ defaultImages, onImagesChange, maxImages }: { defaultImages?
             onImagesChange(initialImages.concat(images))
         }
 
-    }, [images])
+    }, [images, initialImages, onImagesChange])
 
 
     useEffect(() => {
@@ -44,6 +44,7 @@ function AddImage({ defaultImages, onImagesChange, maxImages }: { defaultImages?
                             key={image.src}
                             className="bg-gray-200 p-2 rounded"
                         >
+                            {/* eslint-disable-next-line @next/next/no-img-element */}
                             <img src={image.src} alt="Product" className="w-20 h-20 object-cover" />
                             <button
                                 type="button"
