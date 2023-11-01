@@ -87,7 +87,6 @@ async function read(blogId: string, prismaClient: PrismaClient) {
 
 async function getAll(page: number, pageSize: number, prismaClient: PrismaClient) {
     const blogs = prismaClient.blog;
-
     if (pageSize !== 10 && pageSize != 30 && pageSize !== 50) throw new Error('page size must be 10, 30 or 50')
 
     let allBlogs = await blogs.findMany({

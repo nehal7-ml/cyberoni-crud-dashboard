@@ -14,7 +14,7 @@ const CreateBlogForm: React.FC = () => {
     const [notify, setNotify] = useState(false);
     const [notifyMessage, setNotifyMessage] = useState("");
     const [notifyType, setNotifyType] = useState<'success' | 'fail'>('fail');
-
+    const [initialContent, setInitialContent] = useState("");
 
     const [blogData, setBlogData] = useState<createBlogDTO>({
         title: '',
@@ -105,6 +105,7 @@ const CreateBlogForm: React.FC = () => {
 
             if (res.status == 200) {
                 setBlogData(resJson.data as createBlogDTO);
+                setInitialContent(resJson.data.content)
             } else {
                 setNotify(true); setNotifyMessage(resJson.message);
                 setNotifyType('fail');
@@ -186,7 +187,7 @@ const CreateBlogForm: React.FC = () => {
                     </div>
                     <div className="mb-4 h-fit">
                         <label className="block text-sm font-medium text-gray-700">Content:</label>
-                        <QuillEditor onChange={setQuillData} defaultValue={blogData.content}></QuillEditor>
+                        <QuillEditor onChange={setQuillData} defaultValue={initialContent}></QuillEditor>
                     </div>
                     <div className="mb-4">
                         <label className="block text-sm font-medium text-gray-700">Template:</label>

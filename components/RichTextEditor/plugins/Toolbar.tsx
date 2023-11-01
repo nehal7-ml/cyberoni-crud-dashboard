@@ -51,6 +51,9 @@ export type BlockType = "paragraph" | "quote" | "code" | "h1" | "h2" | "ul" | "o
 
 import { InsertImagePayload, INSERT_IMAGE_COMMAND } from "./ImagePlugin";
 import { Computer, Expand, HardDriveUpload, Image, Link, Shrink } from "lucide-react";
+import { bufferToB64 } from "@/lib/utils";
+import { uploadImage } from "@/lib/cloudinary";
+import { json } from "stream/consumers";
 
 const supportedBlockTypes = new Set([
     "paragraph",
@@ -389,43 +392,43 @@ function BlockOptionsDropdownList({
     return (
         <div className="dropdown" ref={dropDownRef}>
             <button
-                                        type="button" className="item" onClick={formatParagraph}>
+                type="button" className="item" onClick={formatParagraph}>
                 <span className="icon paragraph" />
                 <span className="text">Normal</span>
                 {blockType === "paragraph" && <span className="active" />}
             </button>
             <button
-                                        type="button" className="item" onClick={formatLargeHeading}>
+                type="button" className="item" onClick={formatLargeHeading}>
                 <span className="icon large-heading" />
                 <span className="text">Large Heading</span>
                 {blockType === "h1" && <span className="active" />}
             </button>
             <button
-                                        type="button" className="item" onClick={formatSmallHeading}>
+                type="button" className="item" onClick={formatSmallHeading}>
                 <span className="icon small-heading" />
                 <span className="text">Small Heading</span>
                 {blockType === "h2" && <span className="active" />}
             </button>
             <button
-                                        type="button" className="item" onClick={formatBulletList}>
+                type="button" className="item" onClick={formatBulletList}>
                 <span className="icon bullet-list" />
                 <span className="text">Bullet List</span>
                 {blockType === "ul" && <span className="active" />}
             </button>
             <button
-                                        type="button" className="item" onClick={formatNumberedList}>
+                type="button" className="item" onClick={formatNumberedList}>
                 <span className="icon numbered-list" />
                 <span className="text">Numbered List</span>
                 {blockType === "ol" && <span className="active" />}
             </button>
             <button
-                                        type="button" className="item" onClick={formatQuote}>
+                type="button" className="item" onClick={formatQuote}>
                 <span className="icon quote" />
                 <span className="text">Quote</span>
                 {blockType === "quote" && <span className="active" />}
             </button>
             <button
-                                        type="button" className="item" onClick={formatCode}>
+                type="button" className="item" onClick={formatCode}>
                 <span className="icon code" />
                 <span className="text">Code Block</span>
                 {blockType === "code" && <span className="active" />}
@@ -439,9 +442,24 @@ function BlockOptionsDropdownList({
     return srcfile;
 }
 
-export function loadFromComputer() {
+async function loadFromComputer(editor: LexicalEditor, event: ChangeEvent<HTMLInputElement>) {
 
-    return "null"
+    const files = event.target.files
+    if (files) {
+        const newFileSrc = bufferToB64(await files[0].arrayBuffer(), files[0].type);
+        const res = await fetch('/api/cloudinary', {
+            method: 'POST', body: JSON.stringify({
+                file: newFileSrc,
+                fileType: 'image',
+                requestType: 'UPLOAD'
+            })
+        })
+        const response = (await res.json())
+        console.log(response.data.url);
+        editor.dispatchCommand(INSERT_IMAGE_COMMAND, { altText: "uploaded image", src: response.data.url as string });
+
+    }
+
 
 }
 
@@ -467,7 +485,7 @@ export function FullScreen({ toolbar }: { toolbar: MutableRefObject<any> }) {
             toolbar.current.parentNode?.classList.remove('w-screen');
             toolbar.current.parentNode?.classList.remove('h-screen')
         }
-    }, [fullScreen]);
+    }, [fullScreen, toolbar]);
     return (
 
         <>
@@ -483,6 +501,7 @@ export function FullScreen({ toolbar }: { toolbar: MutableRefObject<any> }) {
 export default function ToolbarPlugin() {
     const [editor] = useLexicalComposerContext();
     const toolbarRef = useRef(null);
+    const fileInputRef = useRef(null);
     const [canUndo, setCanUndo] = useState(false);
     const [canRedo, setCanRedo] = useState(false);
     const [blockType, setBlockType] = useState<BlockType>("paragraph");
@@ -603,10 +622,13 @@ export default function ToolbarPlugin() {
         }
     }, [editor, isLink]);
 
+
+
+
     return (
         <div className="toolbar" ref={toolbarRef}>
             <button
-                                        type="button"
+                type="button"
                 disabled={!canUndo}
                 onClick={(e) => {
                     e.preventDefault()
@@ -618,7 +640,7 @@ export default function ToolbarPlugin() {
                 <i className="format undo" />
             </button>
             <button
-                                        type="button"
+                type="button"
                 disabled={!canRedo}
                 onClick={(e) => {
                     e.preventDefault()
@@ -633,7 +655,7 @@ export default function ToolbarPlugin() {
             {supportedBlockTypes.has(blockType) && (
                 <>
                     <button
-                                        type="button"
+                        type="button"
                         className="toolbar-item block-controls"
                         onClick={() =>
                             setShowBlockOptionsDropDown(!showBlockOptionsDropDown)
@@ -670,7 +692,7 @@ export default function ToolbarPlugin() {
             ) : (
                 <>
                     <button
-                                        type="button"
+                        type="button"
                         onClick={(e) => {
                             e.preventDefault()
                             editor.dispatchCommand(FORMAT_TEXT_COMMAND, "bold");
@@ -681,7 +703,7 @@ export default function ToolbarPlugin() {
                         <i className="format bold" />
                     </button>
                     <button
-                                        type="button"
+                        type="button"
                         onClick={(e) => {
                             e.preventDefault()
                             editor.dispatchCommand(FORMAT_TEXT_COMMAND, "italic");
@@ -692,7 +714,7 @@ export default function ToolbarPlugin() {
                         <i className="format italic" />
                     </button>
                     <button
-                                        type="button"
+                        type="button"
                         onClick={(e) => {
                             e.preventDefault()
                             editor.dispatchCommand(FORMAT_TEXT_COMMAND, "underline");
@@ -703,7 +725,7 @@ export default function ToolbarPlugin() {
                         <i className="format underline" />
                     </button>
                     <button
-                                        type="button"
+                        type="button"
                         onClick={(e) => {
                             e.preventDefault()
                             editor.dispatchCommand(FORMAT_TEXT_COMMAND, "strikethrough");
@@ -716,7 +738,7 @@ export default function ToolbarPlugin() {
                         <i className="format strikethrough" />
                     </button>
                     <button
-                                        type="button"
+                        type="button"
                         onClick={(e) => {
                             e.preventDefault()
                             editor.dispatchCommand(FORMAT_TEXT_COMMAND, "code");
@@ -727,7 +749,7 @@ export default function ToolbarPlugin() {
                         <i className="format code" />
                     </button>
                     <button
-                                        type="button"
+                        type="button"
                         onClick={insertLink}
                         className={"toolbar-item spaced " + (isLink ? "active" : "")}
                         aria-label="Insert Link"
@@ -745,8 +767,9 @@ export default function ToolbarPlugin() {
                                 id="options-menu"
                                 aria-haspopup="true"
                                 aria-expanded="true"
-                                onClick={()=> setInsertImageMenu(prev=>!prev)}
+                                onClick={() => setInsertImageMenu(prev => !prev)}
                             >
+                                {/*eslint-disable-next-line jsx-a11y/alt-text */}
                                 <Image className="text-gray-500" />
                             </button>
                             <div
@@ -755,7 +778,7 @@ export default function ToolbarPlugin() {
                                 aria-orientation="vertical"
                                 aria-labelledby="options-menu"
                             >
-                                <div className="py-1" role="menuitem">
+                                <div className="py-1 relative cursor-pointer" role="menuitem">
                                     <button
                                         type="button"
                                         onClick={(e) => {
@@ -767,18 +790,15 @@ export default function ToolbarPlugin() {
                                         <Link />
                                     </button>
                                 </div>
-                                <div className="py-1" role="menuitem">
-                                    <button
-                                        type="button"
-
-                                        onClick={(e) => {
-                                            e.preventDefault();
-                                            editor.dispatchCommand(INSERT_IMAGE_COMMAND, { altText: "URL image", src: loadFromComputer() as string });
-                                        }}
-                                        className="block p-2 text-gray-800 hover:bg-gray-100 w-full text-left"
-                                    >
-                                        <HardDriveUpload />
-                                    </button>
+                                <div className="py-1 relative hover:bg-gray-100 cursor-pointer " role="menuitem">
+                                    <HardDriveUpload className="block  cursor-pointer text-gray-800 hover:bg-gray-100 w-full text-left" />
+                                    <input
+                                        type="file"
+                                        accept=".jpg, .jpeg, .png"
+                                        onChange={(e) => { loadFromComputer(editor, e) }}
+                                        ref={fileInputRef}
+                                        className="absolute inset-0 cursor-pointer opacity-0  text-gray-800 hover:bg-gray-100 w-full text-left"
+                                    />
                                 </div>
                             </div>
                         </div>
@@ -787,7 +807,7 @@ export default function ToolbarPlugin() {
                     <Divider />
                     <div className="flex flex-row">
                         <button
-                                        type="button"
+                            type="button"
                             onClick={(e) => {
                                 e.preventDefault()
                                 editor.dispatchCommand(FORMAT_ELEMENT_COMMAND, "left");
@@ -798,7 +818,7 @@ export default function ToolbarPlugin() {
                             <i className="format left-align" />
                         </button>
                         <button
-                                        type="button"
+                            type="button"
                             onClick={(e) => {
                                 e.preventDefault()
                                 editor.dispatchCommand(FORMAT_ELEMENT_COMMAND, "center");
@@ -809,7 +829,7 @@ export default function ToolbarPlugin() {
                             <i className="format center-align" />
                         </button>
                         <button
-                                        type="button"
+                            type="button"
                             onClick={(e) => {
                                 e.preventDefault()
                                 editor.dispatchCommand(FORMAT_ELEMENT_COMMAND, "right");
@@ -820,7 +840,7 @@ export default function ToolbarPlugin() {
                             <i className="format right-align" />
                         </button>
                         <button
-                                        type="button"
+                            type="button"
                             onClick={(e) => {
                                 e.preventDefault()
                                 editor.dispatchCommand(FORMAT_ELEMENT_COMMAND, "justify");

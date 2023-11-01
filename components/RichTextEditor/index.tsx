@@ -31,7 +31,10 @@ import ImagePlugin from "./plugins/ImagePlugin";
 //import { ImageNode } from "./nodes/ImageNode";
 import HtmlPlugin from "./plugins/HtmlPlugin";
 import { ImageNode } from "./nodes/ImageNode";
-import { EditorState } from "lexical";
+import { LexicalEditor } from "lexical";
+import { parseEditorState } from "lexical/LexicalUpdates";
+import type { EditorState } from "lexical";
+import SetStatePlugin from "./plugins/SetStatePlugin";
 
 function Placeholder() {
     return <div className="editor-placeholder">Enter some rich text...</div>;
@@ -84,12 +87,13 @@ const editorConfig = {
         ImageNode
     ]
 };
-let ReactRichText = ({ initial, onChange , updatePreview}: { initial?: string, onChange: (value: string) => void ,updatePreview: (value: string) => void}, ) => {
+let ReactRichText = ({ initial, onChange }: { initial?: string, onChange: (value: EditorState) => void }, ) => {
 
 
-    function handleChange(event: FormEvent<HTMLDivElement>) {
+    function handleChange() {
 
         // console.log(event)
+        onChange
     }
     return (
         <LexicalComposer initialConfig={editorConfig} >
@@ -100,10 +104,8 @@ let ReactRichText = ({ initial, onChange , updatePreview}: { initial?: string, o
                         contentEditable={<ContentEditable onChange={handleChange} className="editor-input" />}
                         placeholder={<Placeholder />}
                         ErrorBoundary={LexicalErrorBoundary}
-
                     />
-                    {/* <OnChangePlugin onChange={editorState => updatePreview(editorState)} /> */}
-                    <HtmlPlugin initial={initial} onChange={onChange} />
+                    <OnChangePlugin onChange={editorState => onChange(editorState)} />
                     <HistoryPlugin />
                     <AutoFocusPlugin />
                     <CodeHighlightPlugin />
@@ -122,16 +124,17 @@ let ReactRichText = ({ initial, onChange , updatePreview}: { initial?: string, o
 const Preview = ({ value }: { value: string }) => {
 
     // console.log(value);
-    return (<LexicalComposer initialConfig={{ ...previewConfig }}  >
+    const editorRef = useRef<LexicalEditor>(null);
+    return (
+    <LexicalComposer  initialConfig={{ ...previewConfig}}  >
         <div className="editor-inner">
             <RichTextPlugin
                 contentEditable={<ContentEditable className="editor-input" />}
                 placeholder={<Placeholder />}
                 ErrorBoundary={LexicalErrorBoundary}
 
-
             />
-            <HtmlPlugin initial={value} onChange={()=> {}} />
+            <SetStatePlugin  state={value}/>
             <HistoryPlugin />
             <AutoFocusPlugin />
             <CodeHighlightPlugin />
@@ -150,7 +153,7 @@ const Preview = ({ value }: { value: string }) => {
 
 const Editor = ({ defaultValue, onChange }: { defaultValue?: string, onChange: (text: string) => void }) => {
     const [initialValue, setInitialValue] = useState(defaultValue || undefined);
-    const [value, setValue] = useState<string>("{}");
+    const [value, setValue] = useState<string>();
     const [showPreview, setShowPreview] = useState(false);
     // const editorRef = useRef<ReactQuill>(null);
     // const previewRef = useRef<ReactQuill>(null);
@@ -173,14 +176,15 @@ const Editor = ({ defaultValue, onChange }: { defaultValue?: string, onChange: (
         setIsClient(true)
     }, []);
 
-    function updatePreview(value: string) {
-        setValue(value)
+    function updatePreviewAndHandleChange(editorState: EditorState) {
+        onChange(JSON.stringify(editorState.toJSON()));
+        setValue(JSON.stringify(editorState.toJSON()))
     }
 
     return (
         <div className="h-fit my-4">
             <div className="h-fit ">
-                {isClient && <ReactRichText initial={initialValue} updatePreview={updatePreview} onChange={onChange} />}
+                {isClient && <ReactRichText initial={initialValue} onChange={updatePreviewAndHandleChange} />}
                 <button type="button" onClick={togglePreview} className=" bg-blue-500 text-white p-2 rounded hover:bg-blue-600 focus:outline-none focus:ring focus:ring-blue-300">Preview</button>
 
             </div>

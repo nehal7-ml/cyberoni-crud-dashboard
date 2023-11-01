@@ -232,6 +232,7 @@
     text-transform: uppercase;
   }
   .editor-image {
+    position: relative;
     width:fit-content;
     height: fit-content;
   }

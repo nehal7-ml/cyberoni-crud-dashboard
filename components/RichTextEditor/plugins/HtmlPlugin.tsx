@@ -1,3 +1,4 @@
+'use client'
 import { $getRoot, $insertNodes, LexicalEditor } from "lexical"
 import React, { useEffect, useState } from 'react'
 import { $generateHtmlFromNodes, $generateNodesFromDOM } from '@lexical/html';
@@ -15,12 +16,14 @@ function HtmlPlugin({ initial, onChange }: { initial?: string, onChange: (value:
             // the $ prefixed helper functions.
             if (editor) {
                 const output = $generateHtmlFromNodes(editor);
-                onChange(output);
+                 onChange(output);
             }
 
         });
 
     });
+
+
     useEffect(() => {
         if (initial && initial !== '<p class="editor-paragraph"><br></p>' && !initalInsert) {
             console.log("inital values are : ", initial, initalInsert);

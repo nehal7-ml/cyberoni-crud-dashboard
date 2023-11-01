@@ -1,3 +1,4 @@
+'use client'
 import { useLexicalComposerContext } from "@lexical/react/LexicalComposerContext";
 import { $wrapNodeInElement, mergeRegister } from "@lexical/utils";
 import {
@@ -8,10 +9,9 @@ import {
   createCommand,
   LexicalCommand
 } from "lexical";
-import { useCallback, useEffect, useState } from "react";
+import {  useEffect } from "react";
 
 import { $createImageNode, ImageNode, ImagePayload } from "../nodes/ImageNode";
-import { motion, useMotionValue } from "framer-motion";
 
 export type InsertImagePayload = Readonly<ImagePayload>;
 
@@ -37,7 +37,9 @@ export default function ImagesPlugin({
         INSERT_IMAGE_COMMAND,
         (payload) => {
           const imageNode = $createImageNode(payload);
-          return $insertNodes([imageNode]);
+          $insertNodes([imageNode]);
+          return true;
+
 
         },
         COMMAND_PRIORITY_EDITOR
