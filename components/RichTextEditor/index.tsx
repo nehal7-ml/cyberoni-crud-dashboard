@@ -99,13 +99,16 @@ let ReactRichText = ({ initial, onChange }: { initial?: string, onChange: (value
         <LexicalComposer initialConfig={editorConfig} >
             <div className="editor-container z-30">
                 <ToolbarPlugin />
+
                 <div className="editor-inner">
+
                     <RichTextPlugin
                         contentEditable={<ContentEditable onChange={handleChange} className="editor-input" />}
                         placeholder={<Placeholder />}
                         ErrorBoundary={LexicalErrorBoundary}
                     />
                     <OnChangePlugin onChange={editorState => onChange(editorState)} />
+                    <SetStatePlugin  state={initial as string}/>
                     <HistoryPlugin />
                     <AutoFocusPlugin />
                     <CodeHighlightPlugin />
@@ -123,11 +126,9 @@ let ReactRichText = ({ initial, onChange }: { initial?: string, onChange: (value
 
 const Preview = ({ value }: { value: string }) => {
 
-    // console.log(value);
-    const editorRef = useRef<LexicalEditor>(null);
     return (
     <LexicalComposer  initialConfig={{ ...previewConfig}}  >
-        <div className="editor-inner">
+        <div className="editor-inner z-50">
             <RichTextPlugin
                 contentEditable={<ContentEditable className="editor-input" />}
                 placeholder={<Placeholder />}

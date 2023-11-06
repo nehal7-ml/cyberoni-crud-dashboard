@@ -377,7 +377,7 @@ model Property {
 
   @@index([addressId])
   @@fulltext([title])
-  @@fulltext([title, fee, deposit, additional,process])
+  @@fulltext([title, fee, deposit, additional, process])
 }
 
 enum PropertyType {
@@ -392,6 +392,7 @@ model PropertyFile {
   type       String
   Property   Property? @relation(fields: [propertyId], references: [id])
   propertyId String?
+  feeSheet   Boolean   @default(false)
 
   @@index([propertyId])
 }
@@ -428,6 +429,7 @@ model GuruAgent {
 enum GuruRole {
   ADMIN
   AGENT
+  SUPER
 }
 
 enum Role {
