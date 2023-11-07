@@ -13,7 +13,7 @@ function BlogForm({ method, action, initial }: { method: 'POST' | 'PUT', action:
     const [notify, setNotify] = useState(false);
     const [notifyMessage, setNotifyMessage] = useState("");
     const [notifyType, setNotifyType] = useState<'success' | 'fail'>('fail');
-    const [initialContent, setInitialContent] = useState("");
+    const [initialContent, setInitialContent] = useState(initial?.content || "");
 
     const [blogData, setBlogData] = useState<CreateBlogDTO>({
         title: '',

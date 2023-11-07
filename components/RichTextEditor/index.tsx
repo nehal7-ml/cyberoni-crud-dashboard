@@ -112,7 +112,7 @@ const Editor = ({ defaultValue, onChange }: { defaultValue?: string, onChange: (
 
                             }
                         }
-                        initialValue={value as string}
+                        value={value as string}
                     />}
                 </div>
             </div>
