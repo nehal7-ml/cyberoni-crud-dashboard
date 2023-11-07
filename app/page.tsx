@@ -6,8 +6,7 @@ import { useEffect } from "react";
 export default function Home() {
 
   return (
-    <main className="flex min-h-screen flex-col items-center justify-normal p-24">
-      
+    <main className="flex min-h-screen flex-col items-center justify-normal p-24">      
       <Link href={"/dashboard/users/1"} className="w-1/2 h/12 text-center m-2 text-lg rounded-lg shadow-md hover:bg-blue-800 bg-blue-500" >go to dashboard</Link>
     </main>
   )
