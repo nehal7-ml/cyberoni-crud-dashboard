@@ -79,10 +79,11 @@ const Editor = ({ defaultValue, onChange }: { defaultValue?: string, onChange: (
                             "emoticons", "template",
                             "image",
                             "code",
+                            "media"
 
                         ],
                         toolbar1: "insertfile undo redo | styleselect | bold italic | alignleft aligncenter alignright alignjustify | bullist numlist outdent indent  | fullscreen",
-                        toolbar2: "link image code",
+                        toolbar2: "link image code media",
                         file_picker_types: 'image',
                         file_picker_callback: filePickerCallback,
                         image_advtab: true
