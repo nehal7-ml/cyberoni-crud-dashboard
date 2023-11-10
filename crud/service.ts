@@ -1,10 +1,10 @@
-import { Service, PrismaClient, Prisma } from "@prisma/client";
-import { createTagDTO, create as createTag, connectOrCreateObject as connectTags } from "./tags";
-import { createImageDTO, create as createImage, connectOrCreateObject } from "./images";
-import { createSubServiceDTO, create as createSubService, update as updateSubService } from "./subService";
+import { Service, PrismaClient, Prisma, Image, Tag, SubService } from "@prisma/client";
+import { CreateTagDTO, create as createTag, connectOrCreateObject as connectTags } from "./tags";
+import { CreateImageDTO, create as createImage, connectOrCreateObject } from "./images";
+import { CreateSubServiceDTO, create as createSubService, update as updateSubService } from "./subService";
 
 
-export type createServiceDTO = {
+export type CreateServiceDTO = {
     title: string;
     previewContent: string;
     description: string;
@@ -12,14 +12,20 @@ export type createServiceDTO = {
     valueBrought: string;
     skillsUsed: string;
     htmlEmbed?: string;
-    image: createImageDTO;
-    subServices?: createSubServiceDTO[];
-    tags?: createTagDTO[];
+    image: CreateImageDTO;
+    subServices?: CreateSubServiceDTO[];
+    tags?: CreateTagDTO[];
 }
 
 
+export type DisplayServiceDTO = Service & {
+    image?: Image,
+    tags?: Tag[],
+    subServices?: SubService[]
+}
 
-async function create(service: createServiceDTO, prismaClient: PrismaClient) {
+
+async function create(service: CreateServiceDTO, prismaClient: PrismaClient) {
     const services = prismaClient.service;
 
     let createdservice = await services.create({
@@ -45,7 +51,7 @@ async function create(service: createServiceDTO, prismaClient: PrismaClient) {
 
 }
 
-async function update(serviceId: string, service: createServiceDTO, prismaClient: PrismaClient) {
+async function update(serviceId: string, service: CreateServiceDTO, prismaClient: PrismaClient) {
     const services = prismaClient.service;
 
     let currentService = await services.findUnique({ where: { id: serviceId } })
@@ -94,7 +100,9 @@ async function read(serviceId: string, prismaClient: PrismaClient) {
     const existingservice = await services.findUnique({
         where: { id: serviceId },
         include: {
-            subServices: true
+            subServices: true,
+            image:true,
+            tags:true,
         }
     })
     if (existingservice) return existingservice;

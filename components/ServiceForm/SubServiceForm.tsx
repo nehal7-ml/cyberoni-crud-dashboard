@@ -1,12 +1,12 @@
 'use client'
 import AddImagesAndTags from "@/components/AddImagesAndTags"
-import { createImageDTO } from "@/crud/images";
-import { createSubServiceDTO } from "@/crud/subService";
-import { createTagDTO } from "@/crud/tags";
+import { CreateImageDTO } from "@/crud/images";
+import { CreateSubServiceDTO } from "@/crud/subService";
+import { CreateTagDTO } from "@/crud/tags";
 import React, { useState } from 'react'
 
-function CreateSubServcie({ subService, handleSubServiceAdd }: { subService?: createSubServiceDTO, handleSubServiceAdd: (subservice: createSubServiceDTO) => void }) {
-    const [subServiceData, setSubServiceData] = useState<createSubServiceDTO>(subService || {
+function CreateSubService({ subService, handleSubServiceAdd }: { subService?: CreateSubServiceDTO, handleSubServiceAdd: (subservice: CreateSubServiceDTO) => void }) {
+    const [subServiceData, setSubServiceData] = useState<CreateSubServiceDTO>(subService || {
         description: '',
         title: "",
         complexity: 0,
@@ -31,7 +31,7 @@ function CreateSubServcie({ subService, handleSubServiceAdd }: { subService?: cr
             [name]: value,
         }));
     };
-    function handleChangedImage(image: createImageDTO[], tags: createTagDTO[]) {
+    function handleChangedImage(image: CreateImageDTO[], tags: CreateTagDTO[]) {
         setSubServiceData((prevData) => ({
             ...prevData,
             image: image[0],
@@ -202,4 +202,4 @@ function CreateSubServcie({ subService, handleSubServiceAdd }: { subService?: cr
     )
 }
 
-export default CreateSubServcie
+export default CreateSubService

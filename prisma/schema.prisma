@@ -72,6 +72,7 @@ model User {
   createdAt      DateTime         @default(now())
   updatedAt      DateTime         @default(now()) @updatedAt
   Session        Session[]
+  Payment        Payment[]
 
   @@index([addressId])
   @@index([imageId])
@@ -239,6 +240,18 @@ model Service {
   subServices    SubService[]
 
   @@index([imageId])
+}
+
+model Payment {
+  id             String   @id @default(uuid())
+  subscriptionId String
+  invoice        String   @db.Text
+  price          String
+  customer       User     @relation(fields: [userId], references: [id])
+  createdAt      DateTime @default(now())
+  userId         String
+
+  @@index([userId])
 }
 
 model Review {
@@ -437,6 +450,7 @@ enum Role {
   SUPERUSER
   TRUSTED
   USER
+  CUSTOMER
 }
 
 enum LoginProvider {
