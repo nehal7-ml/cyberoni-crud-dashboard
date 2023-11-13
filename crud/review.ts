@@ -1,11 +1,11 @@
 import { Review, PrismaClient, ReviewType } from "@prisma/client";
-import { createImageDTO } from "./images";
-import { connectOrCreateObject, createTagDTO } from "./tags";
+import { CreateImageDTO } from "./images";
+import { connectOrCreateObject, CreateTagDTO } from "./tags";
 
 
 export type createReviewDTO = {
     name: string;
-    image: createImageDTO;
+    image: CreateImageDTO;
     title: string;
     content: string;
     link: string;
@@ -15,7 +15,7 @@ export type createReviewDTO = {
     productId?: string;
     serviceId?: string;
     userId: string;
-    tags?: createTagDTO[];
+    tags?: CreateTagDTO[];
 }
 
 async function create(review: createReviewDTO, prismaClient: PrismaClient) {

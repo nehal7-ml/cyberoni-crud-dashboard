@@ -1,37 +1,48 @@
 'use client'
-import { createImageDTO } from "@/crud/images";
+import { CreateImageDTO } from "@/crud/images";
+import { bufferToB64, generateUUID } from "@/lib/utils";
 import React, { useEffect, useState } from 'react'
+import { FileUploader } from "react-drag-drop-files";
 
-function AddImage({ defaultImages, onImagesChange, maxImages }: { defaultImages?: createImageDTO[], onImagesChange: (images: createImageDTO[]) => void, maxImages?: number }) {
-    const [initialImages, setinitialImages] = useState<createImageDTO[]>([]);
-    const [images, setImages] = useState<createImageDTO[]>([]);
-    const [newImageSrc, setNewImageSrc] = useState('');
+function AddImage({ defaultImages, onImagesChange, maxImages }: { defaultImages?: CreateImageDTO[], onImagesChange: (images: CreateImageDTO[]) => void, maxImages?: number }) {
+    const [images, setImages] = useState<CreateImageDTO[]>(defaultImages || []);
+    const fileTypes = ["JPG", "PNG", "GIF"];
 
-    const handleAddImage = () => {
-        if (newImageSrc) {
-            if (images.length <= (maxImages || 10)) {
-                setImages(prevImages => [...prevImages, { src: newImageSrc }]);
-                setNewImageSrc('');
+    const handleAddImage = async (file: any) => {
+        let newfiles = images;
+        for (let i = 0; i < file.length && i < (maxImages || 10); i++) {
+            const newfile = file.item(i);
+            const newFileSrc = bufferToB64(await newfile.arrayBuffer(), newfile.type);
+
+            if (images.length < (maxImages || 10)) {
+                newfiles.push({
+                    id: generateUUID(),
+                    src: newFileSrc,
+                    name: newfile.name,
+                });
+            } else {
+                console.log("notification sent");
             }
-
-        }
-    };
-
-    const handleRemoveImage = (imageToRemove: createImageDTO) => {
-        setImages(prevImages => prevImages.filter(image => image.src !== imageToRemove.src));
-    };
-
-    useEffect(() => {
-        if (images.length > 0) {
-            onImagesChange(initialImages.concat(images))
         }
 
-    }, [images, initialImages, onImagesChange])
+        onImagesChange(newfiles);
+    };
+
+    const handleRemoveImage = (imageToRemove: CreateImageDTO) => {
+        const newFiles = images.filter(image => image.src !== imageToRemove.src);
+        setImages(newFiles);
+        onImagesChange(newFiles);
+
+    };
+
+
 
 
     useEffect(() => {
-        setinitialImages(defaultImages || []);
-        setImages([])
+        if (defaultImages && defaultImages.length > 0) {
+            setImages(defaultImages)
+        }
+
     }, [defaultImages]);
 
     return (
@@ -39,7 +50,7 @@ function AddImage({ defaultImages, onImagesChange, maxImages }: { defaultImages?
             <h2 className="text-lg font-semibold mb-2">Add Images</h2>
             <div className="mb-4">
                 <div className="flex flex-wrap gap-2">
-                    {initialImages.concat(images).map(image => (
+                    {images.map(image => (
                         <div
                             key={image.src}
                             className="bg-gray-200 p-2 rounded"
@@ -56,20 +67,14 @@ function AddImage({ defaultImages, onImagesChange, maxImages }: { defaultImages?
                         </div>
                     ))}
                 </div>
-                <input
-                    type="text"
-                    className="p-2 border rounded w-full"
-                    placeholder="Image URL"
-                    value={newImageSrc}
-                    onChange={e => setNewImageSrc(e.target.value)}
+
+                <FileUploader
+                    multiple={true}
+                    handleChange={handleAddImage}
+                    name="file"
+                    types={fileTypes}
                 />
-                <button
-                    type="button"
-                    className="mt-2 bg-blue-500 text-white p-2 rounded hover:bg-blue-600 focus:outline-none focus:ring focus:ring-blue-300"
-                    onClick={handleAddImage}
-                >
-                    Add Image
-                </button>
+
             </div>
         </>
     )

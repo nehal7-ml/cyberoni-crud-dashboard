@@ -1,34 +1,36 @@
 'use client'
-import { createTagDTO } from "@/crud/tags";
+import { CreateTagDTO } from "@/crud/tags";
 import React, { useEffect, useState } from 'react'
 
-function AddTags({ defaultTags, onTagsChange }: { defaultTags?: createTagDTO[], onTagsChange: (tags: createTagDTO[]) => void }) {
-     const [initialTags, setInitialTags] = useState<createTagDTO[]>([]);
-    const [tags, setTags] = useState<createTagDTO[]>([]);
+function AddTags({ defaultTags, onTagsChange }: { defaultTags?: CreateTagDTO[], onTagsChange: (tags: CreateTagDTO[]) => void }) {
+    const [tags, setTags] = useState<CreateTagDTO[]>(defaultTags || []);
     const [newTagName, setNewTagName] = useState('');
 
-    const handleRemoveTag = (tagToRemove: createTagDTO) => {
-        setTags(prevTags => prevTags.filter(tag => tag.name !== tagToRemove.name));
+    const handleRemoveTag = (tagToRemove: CreateTagDTO) => {
+        let newTags = tags.filter(tag => tag.name !== tagToRemove.name)
+
+        setTags(newTags);
+        onTagsChange(newTags)
     };
 
     const handleAddTag = () => {
         if (newTagName) {
-            setTags(prevTags => [...prevTags, { name: newTagName }]);
+            let newTags = [...tags, { name: newTagName }]
+
+            setTags(newTags);
             setNewTagName('');
+            onTagsChange(newTags)
         }
     };
 
-    useEffect(() => {
-        if(tags.length > 0) {
-        onTagsChange(initialTags.concat(tags))
 
+
+
+    useEffect(() => {
+        if (defaultTags && defaultTags.length > 0) {
+            setTags(defaultTags)
         }
-    }, [initialTags, onTagsChange, tags])
 
-
-    useEffect(() => {
-        setInitialTags(defaultTags || [])
-        setTags([])
     }, [defaultTags]);
 
 
@@ -37,7 +39,7 @@ function AddTags({ defaultTags, onTagsChange }: { defaultTags?: createTagDTO[], 
             <h2 className="text-lg font-semibold mb-2">Add Tags</h2>
             <div className="mb-4">
                 <div className="flex flex-wrap gap-2">
-                    {(initialTags.concat(tags)).map(tag => (
+                    {tags.map(tag => (
                         <div
                             key={tag.name}
                             className="bg-blue-200 text-blue-800 p-2 rounded flex items-center"

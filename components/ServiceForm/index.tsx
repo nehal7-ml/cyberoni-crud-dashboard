@@ -21,7 +21,7 @@ function SerivceForm({ method, action, initial }: { method: 'POST' | 'PUT', acti
     const [showDialog, setShowDialog] = useState(false);
     const [serviceData, setServiceData] = useState<CreateServiceDTO>({
         description: '',
-        hourlyRate: 0,
+        hourlyRate: "" as unknown as number,
         previewContent: "",
         skillsUsed: "",
         title: "",
@@ -38,7 +38,7 @@ function SerivceForm({ method, action, initial }: { method: 'POST' | 'PUT', acti
 
         setServiceData({
             ...serviceData,
-            [name]: Number(e.target.value)
+            [name]: Number(value)
         })
     }
 
@@ -71,10 +71,10 @@ function SerivceForm({ method, action, initial }: { method: 'POST' | 'PUT', acti
         let resJson = await res.json();
 
         if (res.status == 200) {
-            message('success', resJson.mesage)
+            message('success', resJson.message)
 
         } else {
-            message('fail', resJson.mesage)
+            message('fail', resJson.message)
 
         }
     };
@@ -89,6 +89,7 @@ function SerivceForm({ method, action, initial }: { method: 'POST' | 'PUT', acti
 
 
     function setQuillData(value: string) {
+
         setServiceData(prevData => ({
             ...prevData,
             description: value
@@ -143,14 +144,14 @@ function SerivceForm({ method, action, initial }: { method: 'POST' | 'PUT', acti
                                 type="number"
                                 name="hourlyRate"
                                 className="mt-1 p-2 border rounded w-full"
-                                value={serviceData.hourlyRate}
+                                value={serviceData.hourlyRate == 0 ? '' : serviceData.hourlyRate}
                                 onChange={handleNumberInputChange}
                             />
                         </div>
 
                         <div className="mb-4 h-fit   flex-grow">
                             <label className="block text-sm font-medium text-gray-700">Description:</label>
-                            <QuillEditor defaultValue={serviceData.description} onChange={setQuillData} ></QuillEditor>
+                            <QuillEditor defaultValue={initial?.description} onChange={setQuillData} ></QuillEditor>
                         </div>
                         <div className="mb-4">
                             <label className="block text-sm font-medium text-gray-700">Preview Content:</label>
@@ -201,12 +202,12 @@ function SerivceForm({ method, action, initial }: { method: 'POST' | 'PUT', acti
                             <button type="button" onClick={() => setShowDialog(!showDialog)} className="w-full bg-blue-500 text-white p-2 rounded hover:bg-blue-600 focus:outline-none focus:ring focus:ring-blue-300">Add Subservice</button>
                         </div>
 
-                        <AddImagesAndTags maxImages={1} onImagesAndTagsChange={handleChangedImage}></AddImagesAndTags>
+                        <AddImagesAndTags maxImages={1} onImagesAndTagsChange={handleChangedImage} images={serviceData?.image? [serviceData?.image]: []} tags={serviceData?.tags}></AddImagesAndTags>
                         <button
                             type="submit"
                             className="w-full bg-blue-500 text-white p-2 rounded hover:bg-blue-600 focus:outline-none focus:ring focus:ring-blue-300"
                         >
-                            Update Service
+                            {method === 'PUT' ? 'Update Service' : 'Create Service'}
                         </button>
                     </form>
 

@@ -61,7 +61,7 @@ function CreateSubService({ subService, handleSubServiceAdd }: { subService?: Cr
             <div className="light:bg-gray-100 light:text-black dark:bg-gray-700 dark:text-gray-800 min-h-screen flex items-center justify-center">
                 <div className="bg-black backdrop-blur-lg bg-opacity-50 absolute inset-0 w-screen h-full z-10"></div>
 
-                <div className=" fixed top-0 bg-white shadow-md rounded p-8 max-w-4xl w-full overflow-scroll max-h-screen z-30">
+                <div className=" fixed top-0 bg-white shadow-md rounded p-8 max-w-4xl w-full overflow-scroll max-h-screen z-50">
                     <h2 className="text-2xl font-semibold mb-4">Add Sub Service</h2>
                     <form onSubmit={handleSubmit}>
                         <div className="mb-4">
@@ -91,7 +91,7 @@ function CreateSubService({ subService, handleSubServiceAdd }: { subService?: Cr
                                 type="number"
                                 name="estimated_hours_times_fifty_percent"
                                 className="mt-1 p-2 border rounded w-full"
-                                value={subServiceData.estimated_hours_times_fifty_percent}
+                                value={subServiceData.estimated_hours_times_fifty_percent==0? "" : subServiceData.estimated_hours_times_fifty_percent}
                                 onChange={handleNumberInputChange}
                             />
                         </div>
@@ -101,7 +101,7 @@ function CreateSubService({ subService, handleSubServiceAdd }: { subService?: Cr
                                 type="number"
                                 name="estimated_hours_times_one_hundred_percent"
                                 className="mt-1 p-2 border rounded w-full"
-                                value={subServiceData.estimated_hours_times_one_hundred_percent}
+                                value={subServiceData.estimated_hours_times_one_hundred_percent==0? "" : subServiceData.estimated_hours_times_one_hundred_percent}
                                 onChange={handleNumberInputChange}
                             />
                         </div>
@@ -111,7 +111,7 @@ function CreateSubService({ subService, handleSubServiceAdd }: { subService?: Cr
                                 type="number"
                                 name="overheadCost"
                                 className="mt-1 p-2 border rounded w-full"
-                                value={subServiceData.overheadCost}
+                                value={subServiceData.overheadCost==0? "" : subServiceData.overheadCost}
                                 onChange={handleNumberInputChange}
                             />
                         </div>
@@ -121,7 +121,7 @@ function CreateSubService({ subService, handleSubServiceAdd }: { subService?: Cr
                                 type="number"
                                 name="serviceUsageScore"
                                 className="mt-1 p-2 border rounded w-full"
-                                value={subServiceData.serviceUsageScore}
+                                value={subServiceData.serviceUsageScore==0? "" : subServiceData.serviceUsageScore }
                                 onChange={handleNumberInputChange}
                             />
                         </div>
@@ -131,7 +131,7 @@ function CreateSubService({ subService, handleSubServiceAdd }: { subService?: Cr
                                 type="number"
                                 name="complexity"
                                 className="mt-1 p-2 border rounded w-full"
-                                value={subServiceData.complexity}
+                                value={subServiceData.complexity==0? "" : subServiceData.complexity}
                                 onChange={handleNumberInputChange}
                             />
                         </div>
@@ -167,16 +167,6 @@ function CreateSubService({ subService, handleSubServiceAdd }: { subService?: Cr
                             />
                         </div>
 
-                        <div className="mb-4">
-                            <label className="block text-sm font-medium text-gray-700">discounts (comma separted):</label>
-                            <input
-                                type="text"
-                                name="discounts"
-                                className="mt-1 p-2 border rounded w-full"
-                                value={subServiceData.discounts}
-                                onChange={handleInputChange}
-                            />
-                        </div>
                         <div className="mb-4">
                             <label className="block text-sm font-medium text-gray-700">Pricing Model:</label>
                             <input

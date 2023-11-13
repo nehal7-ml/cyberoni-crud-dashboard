@@ -1,5 +1,5 @@
-import { createImageDTO } from "@/crud/images";
-import { createTagDTO } from "@/crud/tags";
+import { CreateImageDTO } from "@/crud/images";
+import { CreateTagDTO } from "@/crud/tags";
 import React, { useState } from 'react';
 import AddImage from "./AddImage";
 import AddTags from "./AddTags";
@@ -7,19 +7,18 @@ import AddTags from "./AddTags";
 
 type AddImagesAndTagsProps = {
   maxImages?: number,
-  onImagesAndTagsChange: (images: createImageDTO[], tags: createTagDTO[]) => void;
-  images?: createImageDTO[];
-  tags?: createTagDTO[];  
+  onImagesAndTagsChange: (images: CreateImageDTO[], tags: CreateTagDTO[]) => void;
+  images?: CreateImageDTO[];
+  tags?: CreateTagDTO[];  
 };
 
 const AddImagesAndTags: React.FC<AddImagesAndTagsProps> = ({ onImagesAndTagsChange, maxImages, images, tags }) => {
 
-  function onImageChange(images: createImageDTO[]) {
-
-    onImagesAndTagsChange(images, [])
+  function onImageChange(images: CreateImageDTO[]) {
+    onImagesAndTagsChange(images,tags || [])
   }
-  function onTagsChange(tags: createTagDTO[]) {
-    onImagesAndTagsChange([], tags)
+  function onTagsChange(tags: CreateTagDTO[]) {
+    onImagesAndTagsChange(images|| [], tags)
   }
 
   return (

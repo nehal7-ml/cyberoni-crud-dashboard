@@ -36,7 +36,7 @@ const filePickerCallback = async function loadFromComputer(cb: (value: string, m
 
 const Editor = ({ defaultValue, onChange }: { defaultValue?: string, onChange: (text: string) => void }) => {
     const [initialValue, setInitialValue] = useState(defaultValue || undefined);
-    const [value, setValue] = useState<string>();
+    const [value, setValue] = useState<string>("");
     const [showPreview, setShowPreview] = useState(false);
     // const editorRef = useRef<ReactQuill>(null);
     // const previewRef = useRef<ReactQuill>(null);
@@ -59,8 +59,7 @@ const Editor = ({ defaultValue, onChange }: { defaultValue?: string, onChange: (
         setIsClient(true)
     }, []);
 
-    function updatePreviewAndHandleChange(state: string, editor: TinyMCE) {
-
+    function updatePreviewAndHandleChange(state: string) {
         onChange(state);
         setValue(state)
     }
@@ -71,11 +70,10 @@ const Editor = ({ defaultValue, onChange }: { defaultValue?: string, onChange: (
                 {isClient && <RichTextEditor
                     apiKey={'w5nc9aqbzcv7ao6jscyo80kncaq1vbpp63v2wqazfsbjkowp'}
                     init={{
-                        content_css: 'writer',
                         plugins: [
                             "advlist", "autolink", "lists", "link", "charmap", "preview", "anchor", "pagebreak",
                             "searchreplace", 'wordcount', 'visualblocks', "visualchars", "fullscreen",
-                            "insertdatetime", "media", "nonbreaking", "save", "table", "directionality",
+                            "insertdatetime", "media", "nonbreaking", "save", "table", 
                             "emoticons", "template",
                             "image",
                             "code",
@@ -86,7 +84,8 @@ const Editor = ({ defaultValue, onChange }: { defaultValue?: string, onChange: (
                         toolbar2: "link image code media",
                         file_picker_types: 'image',
                         file_picker_callback: filePickerCallback,
-                        image_advtab: true
+                        image_advtab: true,
+                        directionality: 'ltr',
 
                     }}
                     initialValue={initialValue}

@@ -1,8 +1,8 @@
 import { PrismaClient } from "@prisma/client";
 
 export type CreateImageDTO = {
-    id?: string;
-    name?: string;
+    id?: string | undefined;
+    name?: string | undefined | null;
     src: string;
 }
 
@@ -25,7 +25,7 @@ export function connectOrCreateObject(newImages: CreateImageDTO[]) {
 
     let imageConnect: { create: CreateImageDTO; where: { id: string }; }[] = []
     newImages.forEach(image => {
-        imageConnect.push({where: {id: image.id || ""}, create: image  })
+        imageConnect.push({ where: { id: image.id || "" }, create: image })
     })
     return imageConnect
 

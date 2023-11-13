@@ -31,7 +31,8 @@
     "next": "^14.0.1",
     "next-auth": "^4.24.4",
     "react": "^18.2.0",
-    "react-dom": "^18.2.0"
+    "react-dom": "^18.2.0",
+    "react-drag-drop-files": "^2.3.10"
   },
   "devDependencies": {
     "@types/node": "^20.8.4",
