@@ -59,7 +59,8 @@ const Editor = ({ defaultValue, onChange }: { defaultValue?: string, onChange: (
         setIsClient(true)
     }, []);
 
-    function updatePreviewAndHandleChange(state: string) {
+    function updatePreviewAndHandleChange(state: string, editor: TinyMCE) {
+
         onChange(state);
         setValue(state)
     }
@@ -70,10 +71,11 @@ const Editor = ({ defaultValue, onChange }: { defaultValue?: string, onChange: (
                 {isClient && <RichTextEditor
                     apiKey={'w5nc9aqbzcv7ao6jscyo80kncaq1vbpp63v2wqazfsbjkowp'}
                     init={{
+                        content_css: 'writer',
                         plugins: [
                             "advlist", "autolink", "lists", "link", "charmap", "preview", "anchor", "pagebreak",
                             "searchreplace", 'wordcount', 'visualblocks', "visualchars", "fullscreen",
-                            "insertdatetime", "media", "nonbreaking", "save", "table", 
+                            "insertdatetime", "media", "nonbreaking", "save", "table", "directionality",
                             "emoticons", "template",
                             "image",
                             "code",
@@ -84,8 +86,7 @@ const Editor = ({ defaultValue, onChange }: { defaultValue?: string, onChange: (
                         toolbar2: "link image code media",
                         file_picker_types: 'image',
                         file_picker_callback: filePickerCallback,
-                        image_advtab: true,
-                        directionality: 'ltr',
+                        image_advtab: true
 
                     }}
                     initialValue={initialValue}

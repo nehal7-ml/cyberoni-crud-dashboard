@@ -1,5 +1,5 @@
 import { User, PrismaClient, Role } from "@prisma/client";
-import { connectOrCreateObject, createImageDTO } from "./images";
+import { connectOrCreateObject, CreateImageDTO } from "./images";
 import { createAddressDTO } from "./address";
 import { getAllRecordsDTO } from "./commonDTO";
 
@@ -9,7 +9,7 @@ export type createUserDTO = {
     firstName?: string;
     lastName?: string;
     email: string;
-    image?: createImageDTO;
+    image?: CreateImageDTO;
     address?: createAddressDTO;
     role: Role;
 }
@@ -33,7 +33,8 @@ async function create(user: createUserDTO, prismaClient: PrismaClient) {
                 firstName: user.firstName,
                 lastName: user.lastName,
                 image: { create: user.image },
-                address: { create: user.address }
+                address: { create: user.address },
+                role: user.role,
             }
         });
         return createdUser
@@ -45,7 +46,7 @@ async function update(userId: string, user: createUserDTO, prismaClient: PrismaC
     const users = prismaClient.user;
     const existingUser = await users.findUnique({ where: { id: userId } })
 
-    if (existingUser) throw {status:400 ,message: `User ${user.email} doesn't exists`};
+    if (!existingUser) throw {status:400 ,message: `User ${user.email} doesn't exists`};
     else {
         let updatedUser = await users.update({
             where: { id: userId }, data: {
@@ -53,7 +54,8 @@ async function update(userId: string, user: createUserDTO, prismaClient: PrismaC
                 firstName: user.firstName,
                 lastName: user.lastName,
                 image: { update: user.image },
-                address: { update: user.address }
+                address: { update: user.address },
+                role: user.role
             }
         });
         return updatedUser

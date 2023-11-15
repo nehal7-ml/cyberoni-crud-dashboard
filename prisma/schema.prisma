@@ -225,20 +225,34 @@ model Supplier {
 }
 
 model Service {
-  id             String       @id @default(uuid())
-  image          Image?       @relation(fields: [imageId], references: [id])
-  title          String
-  previewContent String       @db.Text
-  description    String       @db.Text
-  hourlyRate     Int
-  valueBrought   String
-  skillsUsed     String
-  htmlEmbed      String?
-  reviews        Review[]
-  tags           Tag[]
-  imageId        String?
-  subServices    SubService[]
+  id                 String               @id @default(uuid())
+  image              Image?               @relation(fields: [imageId], references: [id], onDelete: Cascade)
+  title              String
+  previewContent     String               @db.Text
+  hourlyRate         Int
+  valueBrought       String
+  skillsUsed         String
+  htmlEmbed          String?
+  reviews            Review[]
+  tags               Tag[]
+  imageId            String?
+  SubServices        SubService[]
+  ServiceDescription ServiceDescription[]
 
+  @@index([imageId])
+}
+
+model ServiceDescription {
+  id          String  @id @default(uuid())
+  title       String
+  content     String
+  imageOnLeft Boolean @default(true)
+  image       Image?  @relation(fields: [imageId], references: [id], onDelete: SetNull)
+  service     Service @relation(fields: [serviceId], references: [id], onDelete: Cascade)
+  imageId     String?
+  serviceId   String
+
+  @@index([serviceId])
   @@index([imageId])
 }
 
@@ -283,17 +297,18 @@ model Review {
 }
 
 model Image {
-  id         String       @id @default(uuid())
-  name       String?
-  src        String       @db.Text
-  products   Product[]
-  blogs      Blog[]
-  Service    Service[]
-  SubService SubService[]
-  Review     Review[]
-  GptPrompt  GptPrompt[]
-  User       User[]
-  Event      Event[]
+  id                 String               @id @default(uuid())
+  name               String?
+  src                String               @db.Text
+  products           Product[]
+  blogs              Blog[]
+  Service            Service[]
+  SubService         SubService[]
+  Review             Review[]
+  GptPrompt          GptPrompt[]
+  User               User[]
+  Event              Event[]
+  ServiceDescription ServiceDescription[]
 }
 
 model SubService {
@@ -312,7 +327,7 @@ model SubService {
   skillLevel                                String
   complexity                                Int
   overheadCost                              Int
-  service                                   Service @relation(fields: [serviceId], references: [id])
+  service                                   Service @relation(fields: [serviceId], references: [id], onDelete: Cascade)
   imageId                                   String
   serviceId                                 String
 
