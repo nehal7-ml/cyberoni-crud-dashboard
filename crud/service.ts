@@ -47,14 +47,18 @@ async function create(service: CreateServiceDTO, prismaClient: PrismaClient) {
             valueBrought: service.valueBrought,
             skillsUsed: service.skillsUsed,
             htmlEmbed: service.htmlEmbed,
-            image: { create: service.image },
+            image:service.image? { connect: { id: service.image?.id} } : {},
             tags: { connectOrCreate: connectTags(service.tags || []) },
         },
         include: {
             SubServices: true,
             image: true,
             tags: true,
-            ServiceDescription: true,
+            ServiceDescription: {
+                include: {
+                    image: true
+                }
+            },
         }
     });
 
@@ -73,7 +77,7 @@ async function create(service: CreateServiceDTO, prismaClient: PrismaClient) {
                 {
                     data: {
                         ...description,
-                        image: { create: description.image },
+                        image: { connect: {id: description.image.id}},
                         service: { connect: { id: createdservice.id } }
                     },
 
@@ -91,7 +95,7 @@ async function create(service: CreateServiceDTO, prismaClient: PrismaClient) {
 async function update(serviceId: string, service: CreateServiceDTO, prismaClient: PrismaClient) {
     const services = prismaClient.service;
 
-    let currentService = await services.findUnique({ where: { id: serviceId } })
+    // let currentService = await services.findUnique({ where: { id: serviceId } })
     let updatedService = await services.update(
         {
             where: { id: serviceId },
@@ -102,7 +106,7 @@ async function update(serviceId: string, service: CreateServiceDTO, prismaClient
                 valueBrought: service.valueBrought,
                 skillsUsed: service.skillsUsed,
                 htmlEmbed: service.htmlEmbed,
-                image: { update: service.image },
+                image: service.image?{ update: service.image }: {},
                 tags: { connectOrCreate: connectTags(service.tags || []) },
 
 
@@ -140,7 +144,7 @@ async function update(serviceId: string, service: CreateServiceDTO, prismaClient
                     {
                         data: {
                             ...description,
-                            image: { create: description.image },
+                            image: { connect: {id: description.image.id} },
                             service: { connect: { id: updatedService.id } }
                         }
                     }
@@ -172,6 +176,11 @@ async function read(serviceId: string, prismaClient: PrismaClient) {
         where: { id: serviceId },
         include: {
             SubServices: true,
+            ServiceDescription:{
+                include: {
+                    image: true
+                }
+            },
             image: true,
             tags: true,
         }

@@ -163,22 +163,34 @@ model Order {
 }
 
 model Blog {
-  id          String     @id @default(uuid())
+  id          String        @id @default(uuid())
   title       String
   subTitle    String
-  description String     @db.Text
-  featured    Boolean    @default(false)
+  description String        @db.Text
+  featured    Boolean       @default(false)
   images      Image[]
-  author      User       @relation(fields: [userId], references: [id])
+  author      User          @relation(fields: [userId], references: [id])
   date        DateTime
-  content     String     @db.LongText
+  content     String        @db.LongText
   tags        Tag[]
   template    String
   userId      String
   Likes       BlogLike[]
   Views       BlogView[]
+  BlogComment BlogComment[]
 
   @@index([userId])
+}
+
+model BlogComment {
+  id      String @id @default(uuid())
+  comment String @db.Text
+  name    String
+  email   String
+  Blog    Blog   @relation(fields: [blogId], references: [id])
+  blogId  String
+
+  @@index([blogId])
 }
 
 model BlogLike {
@@ -245,7 +257,7 @@ model Service {
 model ServiceDescription {
   id          String  @id @default(uuid())
   title       String
-  content     String
+  content     String  @db.LongText
   imageOnLeft Boolean @default(true)
   image       Image?  @relation(fields: [imageId], references: [id], onDelete: SetNull)
   service     Service @relation(fields: [serviceId], references: [id], onDelete: Cascade)

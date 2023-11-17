@@ -1,7 +1,7 @@
 import { Blog, PrismaClient, User } from "@prisma/client";
-import { CreateTagDTO, connectOrCreateObject as connectTags,  } from "./tags";
-import { CreateImageDTO, connectOrCreateObject as connectImages,  } from "./images";
-import { PrismaClientKnownRequestError } from "@prisma/client/runtime/library";
+import { CreateTagDTO, connectOrCreateObject as connectTags, } from "./tags";
+import { CreateImageDTO, connectOrCreateObject as connectImages, } from "./images";
+
 
 
 export type CreateBlogDTO = {
@@ -12,7 +12,7 @@ export type CreateBlogDTO = {
     date: Date;
     content: string;
     template: string;
-    author: { id?: string , email:string},
+    author: { id?: string, email: string },
     images: CreateImageDTO[],
     tags: CreateTagDTO[]
 }
@@ -24,7 +24,7 @@ async function create(blog: CreateBlogDTO, prismaClient: PrismaClient) {
     let createdblog = await blogs.create({
         data: {
             ...blog,
-            images: { create: blog.images },
+            images: { connect: blog.images.map(image => { return { id: image.id as string } }) },
             tags: { connectOrCreate: connectTags(blog.tags) },
             author: { connect: { email: blog.author.email } }
         }
@@ -41,8 +41,8 @@ async function update(blogId: string, blog: CreateBlogDTO, prismaClient: PrismaC
         data: {
             ...blog,
             images: { connectOrCreate: connectImages(blog.images) },
-            tags: { connectOrCreate: connectTags(blog.tags)},
-            author: { connect:  { email: blog.author.email }  }
+            tags: { connectOrCreate: connectTags(blog.tags) },
+            author: { connect: { email: blog.author.email } }
         }
     })
     return updatedBlog

@@ -161,7 +161,7 @@ function SerivceForm({ method, action, initial }: { method: 'POST' | 'PUT', acti
 
                         <div className="mb-4 h-fit   flex-grow">
                             <label className="block text-sm font-medium text-gray-700">Description:</label>
-                            {serviceData.ServiceDescription.map((section, index) => {
+                            {serviceData.ServiceDescription?.map((section, index) => {
 
                                 return <div className={`flex gap-5 w-full my-4 border-dotted border-2 p-2 ${section.imageOnLeft ? 'flex-row' : 'flex-row-reverse'}`} key={index}>
                                     <div className="w-1/3 ">

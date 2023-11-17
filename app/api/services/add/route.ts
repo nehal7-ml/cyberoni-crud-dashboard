@@ -1,4 +1,4 @@
-import { create, createServiceDTO } from "@/crud/service";
+import { create, CreateServiceDTO } from "@/crud/service";
 import apiHandler from "@/errorHandler";
 import { prisma } from "@/prisma/prismaClient";
 import { NextApiRequest, NextApiResponse } from "next";
@@ -12,7 +12,7 @@ async function post(req: Request) {
 
 
     if (req.method === "POST") {
-        const service = await req.json() as createServiceDTO;
+        const service = await req.json() as CreateServiceDTO;
         const newService = await create(service, prisma);
         return NextResponse.json({ message: "Add success", data: newService });
     }

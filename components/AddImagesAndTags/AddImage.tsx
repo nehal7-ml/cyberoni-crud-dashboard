@@ -15,11 +15,20 @@ function AddImage({ defaultImages, onImagesChange, maxImages }: { defaultImages?
             const newFileSrc = bufferToB64(await newfile.arrayBuffer(), newfile.type);
 
             if (images.length < (maxImages || 10)) {
-                newfiles.push({
-                    id: generateUUID(),
-                    src: newFileSrc,
-                    name: newfile.name,
-                });
+
+                const res = await fetch('/api/image', {
+                    method: 'POST', body: JSON.stringify({
+
+                        image: {
+                            src: newFileSrc,
+                            name: newfile.name,
+                        },
+                        request: "UPLOAD"
+                    })
+                })
+                const { image } = await res.json()
+                newfiles.push(image);
+                console.log(newfiles);
             } else {
                 console.log("notification sent");
             }
@@ -28,7 +37,15 @@ function AddImage({ defaultImages, onImagesChange, maxImages }: { defaultImages?
         onImagesChange(newfiles);
     };
 
-    const handleRemoveImage = (imageToRemove: CreateImageDTO) => {
+    const handleRemoveImage = async (imageToRemove: CreateImageDTO) => {
+
+        const res = await fetch('/api/image', {
+            method: 'POST', body: JSON.stringify({
+
+                image: imageToRemove,
+                request: 'DELETE',
+            })
+        })
         const newFiles = images.filter(image => image.src !== imageToRemove.src);
         setImages(newFiles);
         onImagesChange(newFiles);
