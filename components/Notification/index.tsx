@@ -3,6 +3,7 @@ import { Check, X } from "lucide-react";
 import React, { useState, useEffect, Dispatch } from 'react';
 
 export type NotificationType = 'success' | 'fail'
+
 const Notification = ({ message, type, visible, setVisible }: { message: string, type: NotificationType, visible: boolean, setVisible: Dispatch<boolean> }) => {
 
   useEffect(() => {

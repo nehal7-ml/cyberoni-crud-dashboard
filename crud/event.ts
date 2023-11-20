@@ -1,5 +1,5 @@
 import { Event, EventStatus, PrismaClient, User } from "@prisma/client";
-import { createImageDTO } from "./images";
+import { CreateImageDTO } from "./images";
 
 
 export type createEventDTO = {
@@ -7,7 +7,7 @@ export type createEventDTO = {
     date: Date;
     location: string;
     description: string;
-    image?: createImageDTO;
+    image?: CreateImageDTO;
     eventLink: string;
     status: EventStatus;
     isVirtual: boolean;
@@ -15,7 +15,7 @@ export type createEventDTO = {
 
 async function create(event: createEventDTO, prismaClient: PrismaClient) {
     const events = prismaClient.event;
-    let createdevent = await events.create({ data: { ...event, date: new Date(event.date), image: { create: event.image } } });
+    let createdevent = await events.create({ data: { ...event, date: new Date(event.date), image: { connect: {id: event.image?.id} } } });
     return createdevent
 
 
@@ -28,7 +28,7 @@ async function update(eventId: string, event: createEventDTO, prismaClient: Pris
         data: {
             ...event,
             date: new Date(event.date),
-            image: { update: event.image }
+            image: { connect: {id: event.image?.id} }
         }
     })
     return updatedEvent

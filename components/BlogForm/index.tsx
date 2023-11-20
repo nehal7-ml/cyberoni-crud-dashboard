@@ -70,11 +70,15 @@ function BlogForm({ method, action, initial }: { method: 'POST' | 'PUT', action:
         let resJson = await res.json();
 
         if (res.status == 200) {
-            setNotify(true); setNotifyMessage(resJson.message);
             setNotifyType('success');
+            setNotifyMessage(resJson.message);
+            setNotify(true);
+
         } else {
-            setNotify(true); setNotifyMessage(resJson.message);
             setNotifyType('fail');
+            setNotifyMessage(resJson.message);
+            setNotify(true);
+
         }
     };
 
@@ -89,7 +93,7 @@ function BlogForm({ method, action, initial }: { method: 'POST' | 'PUT', action:
     const params = useParams();
 
     useEffect(() => {
-        if(initial)  setBlogData(initial)
+        if (initial) setBlogData(initial)
     }, [initial]);
 
 
@@ -183,7 +187,7 @@ function BlogForm({ method, action, initial }: { method: 'POST' | 'PUT', action:
                         type="submit"
                         className="w-full bg-blue-500 text-white p-2 rounded hover:bg-blue-600 focus:outline-none focus:ring focus:ring-blue-300"
                     >
-                        {method==='POST'? 'Create Blog':'Update Blog'}
+                        {method === 'POST' ? 'Create Blog' : 'Update Blog'}
                     </button>
                 </form>
             </div>

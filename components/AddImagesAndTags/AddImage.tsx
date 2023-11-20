@@ -4,8 +4,10 @@ import { bufferToB64, generateUUID } from "@/lib/utils";
 import React, { useEffect, useState } from 'react'
 import { FileUploader } from "react-drag-drop-files";
 
-function AddImage({ defaultImages, onImagesChange, maxImages }: { defaultImages?: CreateImageDTO[], onImagesChange: (images: CreateImageDTO[]) => void, maxImages?: number }) {
+function AddImage({ defaultImages, onImagesChange, maxImages, submit }: { defaultImages?: CreateImageDTO[], onImagesChange: (images: CreateImageDTO[]) => void, maxImages?: number, submit?: boolean }) {
     const [images, setImages] = useState<CreateImageDTO[]>(defaultImages || []);
+    const [toUpload, setToUpload] = useState<CreateImageDTO[]>([]);
+    const [toDelete, setToDelete] = useState<CreateImageDTO[]>();
     const fileTypes = ["JPG", "PNG", "GIF"];
 
     const handleAddImage = async (file: any) => {
@@ -61,6 +63,12 @@ function AddImage({ defaultImages, onImagesChange, maxImages }: { defaultImages?
         }
 
     }, [defaultImages]);
+
+    useEffect(() => {
+        if (submit) {
+
+        }
+    }, [submit]);
 
     return (
         <>
