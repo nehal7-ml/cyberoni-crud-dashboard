@@ -11,7 +11,7 @@ export type CreateBlogDTO = {
     featured: boolean;
     date: Date;
     content: string;
-    template: string;
+    templateId?: string;
     author: { id?: string, email: string },
     images: CreateImageDTO[],
     tags: CreateTagDTO[]

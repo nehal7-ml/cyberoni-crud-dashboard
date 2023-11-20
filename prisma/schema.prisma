@@ -68,7 +68,6 @@ model User {
   CartItem       CartItem[]
   ApiCredentials ApiCredentials[]
   BlogLike       BlogLike[]
-  BlogView       BlogView[]
   createdAt      DateTime         @default(now())
   updatedAt      DateTime         @default(now()) @updatedAt
   Session        Session[]
@@ -163,32 +162,43 @@ model Order {
 }
 
 model Blog {
-  id          String        @id @default(uuid())
-  title       String
-  subTitle    String
-  description String        @db.Text
-  featured    Boolean       @default(false)
-  images      Image[]
-  author      User          @relation(fields: [userId], references: [id])
-  date        DateTime
-  content     String        @db.LongText
-  tags        Tag[]
-  template    String
-  userId      String
-  Likes       BlogLike[]
-  Views       BlogView[]
-  BlogComment BlogComment[]
+  id             String        @id @default(uuid())
+  title          String
+  subTitle       String
+  description    String        @db.Text
+  featured       Boolean       @default(false)
+  images         Image[]
+  author         User          @relation(fields: [userId], references: [id])
+  date           DateTime
+  content        String        @db.LongText
+  tags           Tag[]
+  template       BlogTemplate? @relation(fields: [blogTemplateId], references: [id])
+  userId         String
+  Likes          BlogLike[]
+  Views          Int           @default(0)
+  Comments       BlogComment[]
+  blogTemplateId String?
 
   @@index([userId])
+  @@index([blogTemplateId])
+}
+
+model BlogTemplate {
+  id       String @id @default(uuid())
+  name     String
+  template String @db.Text
+  Blog     Blog[]
 }
 
 model BlogComment {
-  id      String @id @default(uuid())
-  comment String @db.Text
-  name    String
-  email   String
-  Blog    Blog   @relation(fields: [blogId], references: [id])
-  blogId  String
+  id        String   @id @default(uuid())
+  comment   String   @db.Text
+  name      String
+  email     String
+  Blog      Blog     @relation(fields: [blogId], references: [id])
+  blogId    String
+  createdAt DateTime @default(now())
+  updatedAt DateTime @default(now()) @updatedAt
 
   @@index([blogId])
 }
@@ -196,18 +206,6 @@ model BlogComment {
 model BlogLike {
   user   User   @relation(fields: [userId], references: [id])
   blog   Blog   @relation(fields: [blogId], references: [id])
-  userId String
-  blogId String
-
-  @@id([userId, blogId])
-  @@index([userId])
-  @@index([blogId])
-}
-
-model BlogView {
-  date   DateTime
-  user   User     @relation(fields: [userId], references: [id])
-  blog   Blog     @relation(fields: [blogId], references: [id])
   userId String
   blogId String
 

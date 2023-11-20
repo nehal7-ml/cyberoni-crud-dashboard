@@ -22,14 +22,14 @@ function BlogForm({ method, action, initial }: { method: 'POST' | 'PUT', action:
         featured: false,
         date: new Date(),
         content: '',
-        template: '',
         author: { email: '' },
+        templateId: undefined,
         tags: [],
         images: []
 
     });
 
-    const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
+    const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => {
         const { name, value } = e.target;
 
         if (name == "author") {
@@ -172,13 +172,14 @@ function BlogForm({ method, action, initial }: { method: 'POST' | 'PUT', action:
                     </div>
                     <div className="mb-4">
                         <label className="block text-sm font-medium text-gray-700">Template:</label>
-                        <input
-                            type="text"
-                            name="template"
+                        <select
+                            name="templateId"
                             className="mt-1 p-2 border rounded w-full"
-                            value={blogData.template}
+                            value={blogData.templateId}
                             onChange={handleInputChange}
-                        />
+                        >
+                            <option value={undefined}>default</option>
+                        </select>
                     </div>
                     <div className="mb-4">
                         <AddImagesAndTags tags={blogData.tags} images={blogData.images} onImagesAndTagsChange={handleChangedImageAndTag} maxImages={10}></AddImagesAndTags>
