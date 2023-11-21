@@ -345,6 +345,12 @@ model SubService {
   @@index([serviceId])
 }
 
+model CaseStudy {
+  id String @id @default(uuid())
+  title String
+  
+}
+
 model GptPrompt {
   id                String   @id @default(uuid())
   description       String   @db.Text

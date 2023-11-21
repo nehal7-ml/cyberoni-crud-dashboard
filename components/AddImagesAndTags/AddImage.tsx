@@ -3,14 +3,16 @@ import { CreateImageDTO } from "@/crud/images";
 import { bufferToB64, generateUUID } from "@/lib/utils";
 import React, { useEffect, useState } from 'react'
 import { FileUploader } from "react-drag-drop-files";
+import Loading from "../Loading";
 
 function AddImage({ defaultImages, onImagesChange, maxImages, submit }: { defaultImages?: CreateImageDTO[], onImagesChange: (images: CreateImageDTO[]) => void, maxImages?: number, submit?: boolean }) {
     const [images, setImages] = useState<CreateImageDTO[]>(defaultImages || []);
     const [toUpload, setToUpload] = useState<CreateImageDTO[]>([]);
     const [toDelete, setToDelete] = useState<CreateImageDTO[]>();
     const fileTypes = ["JPG", "PNG", "GIF"];
-
+    const [loading, setLoading] = useState(false);
     const handleAddImage = async (file: any) => {
+        setLoading(true);
         let newfiles = images;
         for (let i = 0; i < file.length && i < (maxImages || 10); i++) {
             const newfile = file.item(i);
@@ -37,6 +39,8 @@ function AddImage({ defaultImages, onImagesChange, maxImages, submit }: { defaul
         }
 
         onImagesChange(newfiles);
+        setLoading(false);
+
     };
 
     const handleRemoveImage = async (imageToRemove: CreateImageDTO) => {
@@ -99,7 +103,10 @@ function AddImage({ defaultImages, onImagesChange, maxImages, submit }: { defaul
                     name="file"
                     types={fileTypes}
                 />
-
+                {loading &&
+                    <div className="fixed w-screen h-screen z-[100]">
+                        <Loading />
+                    </div>}
             </div>
         </>
     )

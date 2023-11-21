@@ -1,7 +1,7 @@
 import Pagination from "@/components/Pagination";
 import Table from "@/components/Table"
 import { TableItem } from "@/components/TableItem";
-import { displayBlogDTO } from "@/crud/blog";
+import { DisplayBlogDTO } from "@/crud/blog";
 import { getAllRecordsDTO } from "@/crud/commonDTO";
 import React from 'react'
 
@@ -12,13 +12,13 @@ async function Blogs({ params }: { params: { page: string } }) {
   return (
     <main className="flex flex-col items-center py-5">
       <Table headers={['View', 'Title', 'Featured', 'Date', 'Author', 'Template']}>
-        {(data?.records as displayBlogDTO[]).map((value, index) => {
+        {(data?.records as DisplayBlogDTO[]).map((value, index) => {
           const row: any = [];
           row.push(value.title);
           row.push(value.featured);
           row.push(value.date);
           row.push(value.userId);
-          row.push(value.template);
+          row.push('default');
 
           return <TableItem type="blogs" key={value.id} index={value.id} row={row}></TableItem>
         })}
