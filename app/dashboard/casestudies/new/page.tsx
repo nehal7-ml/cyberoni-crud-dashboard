@@ -3,7 +3,7 @@ import CaseStudyForm from "@/components/CaseStudyForm";
 async function CreateBlogForm() {
 
     return (
-        <CaseStudyForm  method="POST" action={`/api/blogs/add`} />
+        <CaseStudyForm  method="POST" action={`/api/casestudies/add`} />
     )
 
 };

@@ -11,7 +11,7 @@ function Header() {
       <div className="flex m-2 relative justify-between w-full h-1/6 lg:static lg:block lg:w-auto lg:justify-start">
         <Link href="/dashboard" className="flex items-center text-2xl font-display">
           <Logo></Logo>
-          <p className="subpixel-antialiased text-white">
+          <p className="subpixel-antialiased">
             Crud Ops
           </p>
         </Link>

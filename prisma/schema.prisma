@@ -346,9 +346,24 @@ model SubService {
 }
 
 model CaseStudy {
-  id String @id @default(uuid())
-  title String
-  
+  id                  String @id @default(uuid())
+  title               String
+  type                String 
+  preview             String @db.Text
+  problemStatement    String @db.Text
+  userResearch        String @db.Text
+  userProblems        Json
+  possibleSolutions   Json
+  goals               Json
+  images              Json //image 
+  uniqueFeatures      String @db.Text
+  keyLearning         String @db.Text
+  userPersonas        Json
+  competetiveAnalysis Json
+  wireFrames          Json?
+  hifiDesign          Json?
+  userFlow            Json?
+  architecture        Json?
 }
 
 model GptPrompt {

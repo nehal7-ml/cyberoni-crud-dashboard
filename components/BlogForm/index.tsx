@@ -23,7 +23,6 @@ function BlogForm({ method, action, initial }: { method: 'POST' | 'PUT', action:
         date: new Date(),
         content: '',
         author: { email: '' },
-        templateId: undefined,
         tags: [],
         images: []
 
@@ -175,8 +174,6 @@ function BlogForm({ method, action, initial }: { method: 'POST' | 'PUT', action:
                         <select
                             name="templateId"
                             className="mt-1 p-2 border rounded w-full"
-                            value={blogData.templateId}
-                            onChange={handleInputChange}
                         >
                             <option value={undefined}>default</option>
                         </select>

@@ -76,24 +76,7 @@ export function bufferToB64(buffer: any, mimetype: string) {
 }
 
 
-export function getPropertyPriceSheet(files: PropertyFile[]) {
-  const extracted = files.filter(file => (FileRegex.test(file.type)))
-  if (extracted.length > 0) {
-    return extracted[0]
-  }
-  else return { src: "/no-File-added", name: 'no-file-added', type: 'PNG', id: '12442', propertyId: "2389wrqwr" }
-}
 
-
-export function getPropertyImages(files: PropertyFile[]) {
-  const extracted = files.filter(file => (ImageRegex.test(file.type)))
-  if (extracted.length > 0) {
-    return extracted
-  }
-  else return [{ src: "https://placehold.co/600x400", name: 'no-file-added', type: 'PNG', id: '12442', propertyId: "2389wrqwr" }] as PropertyFile[]
-}
-export const ImageRegex = /(?:jpg|jpeg|png|gif|bmp|svg|webp)$/i
-export const FileRegex = /(?:pdf|doc|docx)$/i
 
 
 export function generateUUID() {

@@ -1,21 +1,25 @@
 /** @type {import('next').NextConfig} */
+
+const { hostname } = require('os')
+
+const imageLocations = [
+  "lh3.googleusercontent.com",
+  "res.cloudinary.com",
+  "www.facebook.com",
+  "www.google.com",
+  "www.cjdropshipping.com/",
+  "www.amazon.com",
+  "example.com",
+  "images.unsplash.com",
+  "via.placeholder.com",
+  "picsum.photos",
+  "m.media-amazon.com"
+]
 const nextConfig = {
   reactStrictMode: true,
   swcMinify: true,
     images: {
-        domains: [
-          "lh3.googleusercontent.com",
-          "res.cloudinary.com",
-          "www.facebook.com",
-          "www.google.com",
-          "www.cjdropshipping.com/",
-          "www.amazon.com",
-          "example.com",
-          "images.unsplash.com",
-          "via.placeholder.com",
-          "picsum.photos",
-          "m.media-amazon.com"
-        ],
+      remotePatterns: imageLocations.map(location=>({hostname: location,}))
       },
       async headers() {
         return [

@@ -104,7 +104,7 @@ function AddImage({ defaultImages, onImagesChange, maxImages, submit }: { defaul
                     types={fileTypes}
                 />
                 {loading &&
-                    <div className="fixed w-screen h-screen z-[100]">
+                    <div className="fixed top-0 left-0 w-screen h-screen z-[100]  backdrop-blur-md">
                         <Loading />
                     </div>}
             </div>
