@@ -1,6 +1,6 @@
 import { Image, PrismaClient } from "@prisma/client";
 import { CreateImageDTO } from "./images";
-export type CaseStudyType = 'ECOMMERCE' |'LANDING' | 'SOFTWARE'| 'GRAPHICS' ;
+export type CaseStudyType = 'ECOMMERCE' | 'LANDING' | 'SOFTWARE' | 'GRAPHICS';
 export type CreateCaseStudy = {
     id?: string;
     title: string;
@@ -45,7 +45,6 @@ export async function create(caseStudy: CreateCaseStudy, prisma: PrismaClient) {
             competetiveAnalysis: caseStudy.competetiveAnalysis,
             problemStatement: caseStudy.problemStatement,
             uniqueFeatures: caseStudy.uniqueFeatures,
-        
             userPersonas: caseStudy.userPersonas,
             userProblems: caseStudy.userProblems,
             architecture: caseStudy.architecture,
@@ -96,4 +95,21 @@ export async function getAll(page: number, pageSize: number, prismaClient: Prism
 
     return { records: allrecords, currentPage: page, totalPages, pageSize }
 
+}
+
+
+export async function getGroup(group: CaseStudyType, prismaClient: PrismaClient) {
+    const caseStudys = prismaClient.caseStudy;
+
+    let allrecords = await caseStudys.findMany({
+        take: 16,
+        where: {
+            type: group
+        },
+
+    })
+
+
+
+    return allrecords
 }
