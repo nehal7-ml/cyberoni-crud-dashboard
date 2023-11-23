@@ -77,20 +77,38 @@ const Editor = ({ defaultValue, onChange }: { defaultValue?: string, onChange: (
                             "searchreplace", 'wordcount', 'visualblocks', "visualchars", "fullscreen",
                             "insertdatetime", "media", "nonbreaking", "save", "table", "directionality",
                             "emoticons", "template",
-                            "image",
-                            "code",
-                            "media"
+                            "image", "code", "media"
+
+
 
                         ],
                         toolbar1: "insertfile undo redo | styleselect | bold italic | alignleft aligncenter alignright alignjustify | bullist numlist outdent indent  | fullscreen",
-                        toolbar2: "link image code media",
+                        toolbar2: "link image code media ",
                         file_picker_types: 'image',
                         file_picker_callback: filePickerCallback,
-                        image_advtab: true
-
+                        image_advtab: true,
+                        textpattern_patterns: [
+                            { start: '*', end: '*', format: 'italic' },
+                            { start: '**', end: '**', format: 'bold' },
+                            { start: '#', format: 'h1' },
+                            { start: '##', format: 'h2' },
+                            { start: '###', format: 'h3' },
+                            { start: '####', format: 'h4' },
+                            { start: '#####', format: 'h5' },
+                            { start: '######', format: 'h6' },
+                            { start: '1. ', cmd: 'InsertOrderedList' },
+                            { start: '* ', cmd: 'InsertUnorderedList' },
+                            { start: '- ', cmd: 'InsertUnorderedList' },
+                            { start: '//brb', replacement: 'Be Right Back' },
+                            { start: '```', end: '```', replacement: '' }
+                        ],
+                        extended_valid_elements: 'script[language|type|src]',
+                        protect: [/<script>[\s\S]*?<\/script>/g]
                     }}
                     initialValue={initialValue}
                     onEditorChange={updatePreviewAndHandleChange}
+                    
+                    
                 />}
                 <button type="button" onClick={togglePreview} className=" bg-blue-500 text-white p-2 rounded hover:bg-blue-600 focus:outline-none focus:ring focus:ring-blue-300">Preview</button>
 

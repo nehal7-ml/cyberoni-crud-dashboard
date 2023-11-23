@@ -5,7 +5,7 @@ import { prisma } from "@/prisma/prismaClient";
 async function UpdateBlogForm({ params }: { params: { id: string } }) {
     const blog = await read(params.id, prisma) as CreateBlogDTO
 
-
+    console.log(blog);
     return (
         <BlogForm initial={blog} method="PUT" action={`/api/blogs/${params.id}`} />
     )

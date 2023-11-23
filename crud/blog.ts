@@ -70,7 +70,6 @@ async function read(blogId: string, prismaClient: PrismaClient) {
             id: true,
             title: true,
             subTitle: true,
-            template: true,
             author: {
                 select: {
                     id: true,
