@@ -12,7 +12,7 @@ function CreateRecordButton({ className }: { className?: string }) {
     return (
     <>
       <div className={className }>
-        <Link href= {`/${path[1]}/${path[2]}/new`} className="flex cursor-pointer w-40">
+        <Link href= {`/${path[1]}/${path[2]}/new`} className="flex cursor-pointer w-fit mx-5 hover:shadow hover:rounded-sm py-1 px-3">
           <ListPlus />
           <div className="flex-grow">Create {path[2]}</div>
         </Link>

@@ -2,6 +2,8 @@ import Pagination from "@/components/Pagination";
 import Table from "@/components/Table"
 import { TableItem } from "@/components/TableItem";
 import { getAllRecordsDTO } from "@/crud/commonDTO";
+import { getAll } from "@/crud/event";
+import { prisma } from "@/prisma/prismaClient";
 import { Event } from "@prisma/client";
 import React from 'react'
 export const dynamic = 'force-dynamic';
@@ -33,13 +35,8 @@ async function Events({ params }: { params: { page: string } }) {
 
 async function getData(page: number) {
   let apiUrl = process.env.API_URL
-  let res = await fetch(`${apiUrl}/events/all/${page}`);
-  if (res.status == 200) {
-    let resJson = await res.json();
-     console.log(resJson.data);
-    return (resJson.data as getAllRecordsDTO);
-  }
-
+  let res = await getAll(page,10, prisma)
+  return res
 }
 
 export default Events

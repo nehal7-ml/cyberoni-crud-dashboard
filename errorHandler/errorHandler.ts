@@ -11,7 +11,7 @@ export type HttpError = Error & {
 export default function errorHandler(error: HttpError | PrismaClientInitializationError | PrismaClientKnownRequestError | PrismaClientUnknownRequestError) {
     if (error.message) {
         let sendingError = error as HttpError
-        return NextResponse.json({ message: sendingError.message }, { status: sendingError.status })
+        return NextResponse.json({ message: sendingError.message }, { status: sendingError.status || 500 })
 
     } if (error.cause) {
         return NextResponse.json({ message: error.message }, { status: 500 })

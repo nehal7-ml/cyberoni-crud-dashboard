@@ -2,7 +2,8 @@ import { GptPrompt, PrismaClient } from "@prisma/client";
 import { connectOrCreateObject as connectTag, CreateTagDTO } from "./tags";
 import { connectOrCreateObject as connectImage, CreateImageDTO } from "./images";
 
-export type createGptPromptDTO = {
+export type CreateGptPromptDTO = {
+    id?:string
     description: string;
     prompt: string;
     temperature: number;
@@ -17,29 +18,29 @@ export type createGptPromptDTO = {
     costPerToken: number;
     profitMargin: number;
     tags: CreateTagDTO[];
-    image: CreateImageDTO;
+    image?: CreateImageDTO | null;
 
 }
-async function create(prompt: createGptPromptDTO, prismaClient: PrismaClient) {
+async function create(prompt: CreateGptPromptDTO, prismaClient: PrismaClient) {
     const prompts = prismaClient.gptPrompt;
     let createdprompt = await prompts.create({
         data: {
             ...prompt,
             tags: { connectOrCreate: connectTag(prompt.tags) },
-            image: { connect: { id: prompt.image.id! } },
+            image: prompt.image ? { connect: { id: prompt.image.id! } } : {},
         }
     });
     return createdprompt
 }
 
-async function update(promptId: string, prompt: createGptPromptDTO, prismaClient: PrismaClient) {
+async function update(promptId: string, prompt: CreateGptPromptDTO, prismaClient: PrismaClient) {
     const prompts = prismaClient.gptPrompt;
     let UpdatedPrompt = await prompts.update({
         where: { id: promptId },
         data: {
             ...prompt,
             tags: { connectOrCreate: connectTag(prompt.tags) },
-            image: { connect: { id: prompt.image.id } },
+            image: prompt.image ? { connect: { id: prompt.image.id! } } : {},
         }
     });
     return UpdatedPrompt
