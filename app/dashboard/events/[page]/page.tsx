@@ -1,7 +1,6 @@
 import Pagination from "@/components/Pagination";
 import Table from "@/components/Table"
 import { TableItem } from "@/components/TableItem";
-import { getAllRecordsDTO } from "@/crud/commonDTO";
 import { getAll } from "@/crud/event";
 import { prisma } from "@/prisma/prismaClient";
 import { Event } from "@prisma/client";
@@ -18,7 +17,7 @@ async function Events({ params }: { params: { page: string } }) {
         {(data?.records as Event[]).map((value, index) => {
           const row: any = [];
           row.push(value.name);
-          row.push(value.date);
+          row.push((new Date(value.date)).toLocaleDateString());
           row.push(value.location);
           row.push(value.eventLink);
           row.push(value.status);
@@ -36,6 +35,7 @@ async function Events({ params }: { params: { page: string } }) {
 async function getData(page: number) {
   let apiUrl = process.env.API_URL
   let res = await getAll(page,10, prisma)
+  // console.log(res);
   return res
 }
 
