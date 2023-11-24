@@ -6,7 +6,7 @@ import Image from "next/image";
 import { PlusCircle, X } from "lucide-react";
 import UserPersonaForm from "./UserPersonaForm";
 import { CreateImageDTO } from "@/crud/images";
-import ListInput from "./ListInput";
+import ListInput from "../ListInput";
 import Notification from "../Notification";
 
 function CaseStudyForm({ method, action, initial }: { method: 'POST' | 'PUT', action: string, initial?: CreateCaseStudy }) {
@@ -106,7 +106,7 @@ function CaseStudyForm({ method, action, initial }: { method: 'POST' | 'PUT', ac
     return (<>
         <div className="light:bg-gray-100 light:text-black dark:bg-gray-700 dark:text-gray-800  bg-gray-100 h-[95vh] max-h-screen flex items-center justify-center ">
             <div className="bg-white shadow-md rounded p-8 max-w-xl w-full max-h-full h-full">
-                <h2 className="text-2xl font-semibold mb-4">Create Case study</h2>
+                <h2 className="text-2xl font-semibold mb-4">{method === 'POST' ? 'Create' : 'Update'} Case study</h2>
                 <form onSubmit={handleSubmit} className=" h-[90%]" >
 
                     <div className="overflow-y-auto h-full py-4 px-2">

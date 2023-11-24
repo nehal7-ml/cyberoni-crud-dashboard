@@ -1,9 +1,9 @@
-import { GptPrompt, PrismaClient } from "@prisma/client";
+import { GptPrompt, Image, PrismaClient, Review, Tag } from "@prisma/client";
 import { connectOrCreateObject as connectTag, CreateTagDTO } from "./tags";
 import { connectOrCreateObject as connectImage, CreateImageDTO } from "./images";
 
 export type CreateGptPromptDTO = {
-    id?:string
+    id?: string
     description: string;
     prompt: string;
     temperature: number;
@@ -12,7 +12,7 @@ export type CreateGptPromptDTO = {
     best_of: number;
     frequency_penalty: number;
     presence_penalty: number;
-    stop: string;     // comma separaetd sequences
+    stop: string[];     // comma separaetd sequences
     timesUsed: number;
     timesIntegrated: number;
     costPerToken: number;
@@ -20,6 +20,13 @@ export type CreateGptPromptDTO = {
     tags: CreateTagDTO[];
     image?: CreateImageDTO | null;
 
+}
+
+export type DisplayPrompt = GptPrompt & {
+    stop: string[];
+    reviews?: Review[],
+    image?: Image,
+    tags: Tag[]
 }
 async function create(prompt: CreateGptPromptDTO, prismaClient: PrismaClient) {
     const prompts = prismaClient.gptPrompt;
@@ -63,7 +70,7 @@ async function read(promptId: string, prismaClient: PrismaClient) {
             tags: true,
         }
     })
-    if (existingprompt) return existingprompt;
+    if (existingprompt) return existingprompt as DisplayPrompt;
 
 }
 async function getAll(page: number, pageSize: number, prismaClient: PrismaClient) {

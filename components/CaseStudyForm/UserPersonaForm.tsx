@@ -1,7 +1,7 @@
 import { UserPersona } from "@/crud/casestudy";
 import { FormEvent, useRef, useState } from "react";
 import AddImage from "../AddImagesAndTags/AddImage";
-import ListInput from "./ListInput";
+import ListInput from "../ListInput";
 
 function UserPersonaForm({ initial, onSubmit }: { initial?: UserPersona, onSubmit: (persona: UserPersona) => void }) {
     const [persona, setPersona] = useState<UserPersona>({

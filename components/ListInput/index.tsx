@@ -16,7 +16,8 @@ function ListInput({ label, initial, onChange }: { label: string, initial: strin
 
     const handleAddTag = () => {
         if (newTagName) {
-            let newTags = [...list, newTagName]
+            let addedTags = newTagName.split(',');
+            let newTags = [...list, ...addedTags]
 
             setList(newTags);
             setNewTagName('');
@@ -38,13 +39,13 @@ function ListInput({ label, initial, onChange }: { label: string, initial: strin
         <div>
             <label>{label}</label>
 
-            <div className="flex flex-col gap-2">
+            <div className="flex flex-col gap-2 my-1">
                 {list.map(tag => (
                     <div
                         key={tag}
-                        className="bg-blue-200 text-blue-800 p-2 rounded flex items-center"
+                        className="bg-blue-200 text-blue-800 p-2 rounded flex items-center justify-around"
                     >
-                        <span>{tag}</span>
+                        <span className="line-clamp-1">{tag}</span>
                         <button
                             type="button"
                             className="ml-2 text-red-600 hover:text-red-800 focus:outline-none focus:ring focus:ring-red-300"

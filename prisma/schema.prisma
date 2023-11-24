@@ -376,7 +376,7 @@ model GptPrompt {
   best_of           Int      @default(0)
   frequency_penalty Int      @default(0)
   presence_penalty  Int      @default(0)
-  stop              String   @db.Text // comma separaetd sequences
+  stop              Json      
   timesUsed         Int      @default(0)
   timesIntegrated   Int      @default(0)
   costPerToken      Int      @default(0)
