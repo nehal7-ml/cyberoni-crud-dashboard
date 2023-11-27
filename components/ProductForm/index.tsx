@@ -3,12 +3,13 @@ import AddImagesAndTags from "@/components/AddImagesAndTags";
 import { CreateImageDTO } from "@/crud/images";
 import { CreateProductDTO } from "@/crud/product";
 import { CreateTagDTO } from "@/crud/tags";
-import React, { useState } from 'react';
+import React, { ChangeEvent, useEffect, useState } from 'react';
 import Notification, { NotificationType } from "@/components/Notification";
 import CreateSupplier from "./CreateSupplier";
 import { CreateSupplierDTO } from "@/crud/supplier";
 import { X } from "lucide-react";
 import { FormProps } from "@/crud/commonDTO";
+import { ProductStatus, Supplier } from "@prisma/client";
 
 
 
@@ -16,13 +17,13 @@ const ProductForm = ({ method, action, initial }: FormProps) => {
     const [notify, setNotify] = useState(false);
     const [notifyMessage, setNotifyMessage] = useState("");
     const [notifyType, setNotifyType] = useState<'success' | 'fail'>('fail');
-
+    const [suppliers, setSuppliers] = useState<Supplier[]>([]);
     const [showDialog, setShowDialog] = useState(false);
 
     const [productData, setProductData] = useState<CreateProductDTO>(initial as CreateProductDTO || {
         sku: '',
         name: '',
-        status: '',
+        status: 'SOLDOUT',
         ratings: undefined,
         inventory: 0,
         productBreakdown: undefined,
@@ -38,9 +39,10 @@ const ProductForm = ({ method, action, initial }: FormProps) => {
         images: [],
     });
 
-    const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
+    const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => {
         const { name, value } = e.target;
-        setProductData(prevData => ({
+
+         setProductData(prevData => ({
             ...prevData,
             [name]: value,
         }));
@@ -73,6 +75,10 @@ const ProductForm = ({ method, action, initial }: FormProps) => {
 
     }
 
+
+    function handleSupplierChange(e: ChangeEvent<HTMLSelectElement>) {
+
+    }
     const handleNumberInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
         const { name, value } = e.target;
 
@@ -96,7 +102,7 @@ const ProductForm = ({ method, action, initial }: FormProps) => {
     }
 
 
-    function handleSupplierAdd(supplier: CreateSupplierDTO) {
+    function handleSupplierAdd(supplier: Supplier) {
 
         setProductData((prevData) => ({
             ...prevData,
@@ -107,13 +113,23 @@ const ProductForm = ({ method, action, initial }: FormProps) => {
 
     }
 
-    function handleRemoveSupplier(supplierToRemove: CreateSupplierDTO) {
+    function handleRemoveSupplier(supplierToRemove: Supplier) {
         setProductData((prevData) => ({
             ...prevData,
             suppliers: prevData.suppliers?.filter(supplier => supplier.supplierName !== supplierToRemove.supplierName)
         }))
 
     }
+
+
+    useEffect(() => {
+
+        async function fetchSuppliers() {
+
+        }
+
+        fetchSuppliers();
+    }, []);
 
     return (
         <div className="light:bg-gray-100 light:text-black dark:bg-gray-700 dark:text-gray-800 min-h-screen flex items-center justify-center">
@@ -142,13 +158,19 @@ const ProductForm = ({ method, action, initial }: FormProps) => {
                     </div>
                     <div className="mb-4">
                         <label className="block text-sm font-medium text-gray-700">Status:</label>
-                        <input
-                            type="text"
+                        <select
                             name="status"
                             className="mt-1 p-2 border rounded w-full"
                             value={productData.status}
                             onChange={handleInputChange}
-                        />
+                        >
+                            {Object.values(ProductStatus).map(status => (
+                                <option key={status} value={status}>
+                                    {status}
+                                </option>
+                            ))}
+
+                        </select>
                     </div>
                     <div className="mb-4">
                         <label className="block text-sm font-medium text-gray-700">Inventory:</label>
@@ -236,8 +258,18 @@ const ProductForm = ({ method, action, initial }: FormProps) => {
                                     </button>
                                 </div>)
                         })}
+                        <select
+                            required
+                            onChange={handleSupplierChange}
+                        >
+                            <option disabled>Select Supplier</option>
+                            {suppliers.map((supplier, index) => {
 
-                        <button type="button" onClick={() => setShowDialog(!showDialog)} className="w-full bg-blue-500 text-white p-2 rounded hover:bg-blue-600 focus:outline-none focus:ring focus:ring-blue-300">Add Supplier</button>
+                                return <option key={index} value={supplier.id}>{supplier.supplierName}</option>
+                            })}
+                        </select>
+
+                        <button type="button" onClick={() => setShowDialog(!showDialog)} className="w-full bg-blue-500 text-white p-2 rounded hover:bg-blue-600 focus:outline-none focus:ring focus:ring-blue-300">Create Supplier</button>
                     </div>
 
                     <AddImagesAndTags tags={productData.tags} images={productData.images} onImagesAndTagsChange={handleChangedImage}></AddImagesAndTags>

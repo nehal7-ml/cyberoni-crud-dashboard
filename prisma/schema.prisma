@@ -126,7 +126,7 @@ model Product {
   id                   String     @id @default(uuid())
   sku                  String
   name                 String
-  status               String
+  status               ProductStatus @default(SOLDOUT)
   ratings              Int?
   inventory            Int
   productBreakdown     String?
@@ -240,8 +240,8 @@ model Service {
   title              String
   previewContent     String               @db.Text
   hourlyRate         Int
-  valueBrought       String
-  skillsUsed         String
+  valueBrought       Json
+  skillsUsed         Json 
   htmlEmbed          String?
   reviews            Review[]
   tags               Tag[]
@@ -326,8 +326,8 @@ model SubService {
   image                                     Image?  @relation(fields: [imageId], references: [id])
   title                                     String
   pricingModel                              String
-  discounts                                 String
-  serviceDeliverables                       String
+  discounts                                 Json?
+  serviceDeliverables                       Json?
   tags                                      Tag[]
   serviceUsageScore                         Int
   description                               String  @db.Text
@@ -376,7 +376,7 @@ model GptPrompt {
   best_of           Int      @default(0)
   frequency_penalty Int      @default(0)
   presence_penalty  Int      @default(0)
-  stop              Json
+  stop              Json?
   timesUsed         Int      @default(0)
   timesIntegrated   Int      @default(0)
   costPerToken      Int      @default(0)
@@ -520,4 +520,9 @@ enum EventStatus {
   UPCOMING
   CANCELLED
   COMPLETED
+}
+
+enum ProductStatus {
+  AVAILABLE
+  SOLDOUT
 }

@@ -1,7 +1,7 @@
 'use client'
 import AddImage from "@/components/AddImagesAndTags/AddImage";
 import { createAddressDTO } from "@/crud/address";
-import { createImageDTO } from "@/crud/images";
+import { CreateImageDTO } from "@/crud/images";
 import { createUserDTO } from "@/crud/user";
 import { Role } from "@prisma/client";
 import React, { useState } from 'react';
@@ -47,7 +47,7 @@ const CreateUserForm: React.FC = () => {
     }));
   }
 
-  function onImageChane(images: createImageDTO[]) {
+  function onImageChane(images: CreateImageDTO[]) {
     setUserData((prevData) => ({
       ...prevData,
       image: images[0]

@@ -3,9 +3,10 @@ import AddImagesAndTags from "@/components/AddImagesAndTags"
 import { CreateImageDTO } from "@/crud/images";
 import { CreateSupplierDTO } from "@/crud/supplier";
 import { CreateTagDTO } from "@/crud/tags";
+import { Supplier } from "@prisma/client";
 import React, { useState } from 'react'
 
-function CreateSupplier({ supplier, handleSupplierAdd }: { supplier?: CreateSupplierDTO, handleSupplierAdd: (subservice: CreateSupplierDTO) => void }) {
+function CreateSupplier({ supplier, handleSupplierAdd }: { supplier?: CreateSupplierDTO, handleSupplierAdd: (subservice: Supplier) => void }) {
     const [supplierData, setSupplierData] = useState<CreateSupplierDTO>(supplier || {
         baseShippingPrice: 0,
         supplierName: "",
@@ -41,10 +42,12 @@ function CreateSupplier({ supplier, handleSupplierAdd }: { supplier?: CreateSupp
 
     }
 
-    const handleSubmit = (e: React.FormEvent) => {
+    const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
         // Send the productData to your backend for creating the product
-        handleSupplierAdd(supplierData)
+        const res = await fetch(`/products/suppliers/add`, { method: 'POST', body: JSON.stringify(supplierData) });
+        const supplier = await res.json() as Supplier;
+        handleSupplierAdd(supplier)
     };
 
 
@@ -63,7 +66,7 @@ function CreateSupplier({ supplier, handleSupplierAdd }: { supplier?: CreateSupp
                 <div className="bg-black backdrop-blur-lg bg-opacity-50 absolute inset-0 w-screen h-full z-10"></div>
 
                 <div className=" fixed top-0 bg-white shadow-md rounded p-8 max-w-4xl w-full overflow-scroll max-h-screen z-30">
-                    <h2 className="text-2xl font-semibold mb-4">Add Sub Service</h2>
+                    <h2 className="text-2xl font-semibold mb-4">Add Supplier</h2>
                     <form onSubmit={handleSubmit}>
                         <div className="mb-4">
                             <label className="block text-sm font-medium text-gray-700">Name:</label>
@@ -242,4 +245,4 @@ function CreateSupplier({ supplier, handleSupplierAdd }: { supplier?: CreateSupp
     )
 }
 
-export default CreateSupplier
+export default CreateSupplier;

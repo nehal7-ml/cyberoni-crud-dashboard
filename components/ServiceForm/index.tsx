@@ -12,6 +12,7 @@ import CreateSubServcie from "./SubServiceForm";
 import { Service } from "@prisma/client";
 import Image from "next/image";
 import DescriptionForm from "./DescriptionSection";
+import ListInput from "../ListInput";
 
 function SerivceForm({ method, action, initial }: { method: 'POST' | 'PUT', action: string, initial?: DisplayServiceDTO }) {
     const [notify, setNotify] = useState(false);
@@ -22,10 +23,10 @@ function SerivceForm({ method, action, initial }: { method: 'POST' | 'PUT', acti
     const [serviceData, setServiceData] = useState<CreateServiceDTO>({
         hourlyRate: 0,
         previewContent: "",
-        skillsUsed: "",
+        skillsUsed: [],
         title: "",
         htmlEmbed: "",
-        valueBrought: "",
+        valueBrought: [],
         SubServices: [],
         ServiceDescription: [],
         tags: [],
@@ -100,9 +101,10 @@ function SerivceForm({ method, action, initial }: { method: 'POST' | 'PUT', acti
 
     function handleSubServiceAdd(subService: CreateSubServiceDTO) {
 
+        console.log(subService);
         setServiceData((prevData) => ({
             ...prevData,
-            subServices: [...(prevData.SubServices || []), subService]
+            SubServices: [...(prevData.SubServices || []), subService]
         }))
 
         setShowDialog(false)
@@ -112,7 +114,7 @@ function SerivceForm({ method, action, initial }: { method: 'POST' | 'PUT', acti
     function handleRemoveSubService(subServiceToRemove: CreateSubServiceDTO) {
         setServiceData((prevData) => ({
             ...prevData,
-            subServices: prevData.SubServices?.filter(subService => subService.id !== subServiceToRemove.id)
+            SubServices: prevData.SubServices?.filter(subService => subService.id !== subServiceToRemove.id)
         }))
 
     }
@@ -194,23 +196,18 @@ function SerivceForm({ method, action, initial }: { method: 'POST' | 'PUT', acti
                             />
                         </div>
                         <div className="mb-4">
-                            <label className="block text-sm font-medium text-gray-700">Value Brought:</label>
-                            <input
-                                type="text"
-                                name="valueBrought"
-                                className="mt-1 p-2 border rounded w-full"
-                                value={serviceData.valueBrought}
-                                onChange={handleInputChange}
+                      
+                            <ListInput
+                                label="Value Brought"
+                                initial={serviceData.valueBrought}
+                                onChange={(values)=> setServiceData(prev=>({...prev, valueBrought: values}))}
                             />
                         </div >
                         <div className="mb-4">
-                            <label className="block text-sm font-medium text-gray-700">Skills used(comma separted):</label>
-                            <input
-                                type="text"
-                                name="skillsUsed"
-                                className="mt-1 p-2 border rounded w-full"
-                                value={serviceData.skillsUsed}
-                                onChange={handleInputChange}
+                            <ListInput
+                                label="Skills used"
+                                initial={serviceData.skillsUsed}
+                                onChange={(values)=> setServiceData(prev=>({...prev, skillsUsed: values}))}
                             />
                         </div >
 

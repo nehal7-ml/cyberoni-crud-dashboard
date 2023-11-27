@@ -2,11 +2,11 @@ import { PrismaClient, SubService } from "@prisma/client"
 import { CreateImageDTO } from "./images";
 import { connectOrCreateObject, CreateTagDTO } from "./tags";
 export type CreateSubServiceDTO = {
-    id?:string;
+    id?: string;
     title: string;
     pricingModel: string;
-    discounts: string;
-    serviceDeliverables: string;
+    discounts: Discount[];
+    serviceDeliverables: string[];
     serviceUsageScore: number;
     description: string;
     department: string;
@@ -17,6 +17,11 @@ export type CreateSubServiceDTO = {
     skillLevel: string,
     image?: CreateImageDTO,
     tags?: CreateTagDTO[],
+}
+
+export type Discount = {
+    name: string;
+    value: string;
 }
 
 export async function create(newSubService: CreateSubServiceDTO, serviceId: string, prismaClient: PrismaClient) {

@@ -1,4 +1,4 @@
-import { Product, PrismaClient } from "@prisma/client";
+import { Product, PrismaClient, Supplier, ProductStatus } from "@prisma/client";
 import { connectOrCreateObject as connectTag, CreateTagDTO } from "./tags";
 import { connectOrCreateObject as connectImage, CreateImageDTO } from "./images";
 import { CreateSupplierDTO } from "./supplier";
@@ -6,7 +6,7 @@ import { CreateSupplierDTO } from "./supplier";
 export type CreateProductDTO = {
     sku: string;
     name: string;
-    status: string;
+    status: ProductStatus;
     ratings?: number;
     inventory: number;
     productBreakdown?: string;
@@ -19,7 +19,7 @@ export type CreateProductDTO = {
     subcategory?: string;
     tags: CreateTagDTO[];
     images: CreateImageDTO[];
-    suppliers?: CreateSupplierDTO[];
+    suppliers?: Supplier[];
     amazonProductId?: string;
     cjDropShippingId?: string;
 }
@@ -50,7 +50,7 @@ async function create(product: CreateProductDTO, prismaClient: PrismaClient) {
             ...product,
             tags: { connectOrCreate: connectTag(product.tags) },
             images: { connectOrCreate: connectImage(product.images) },
-            suppliers: { create: product.suppliers }
+            suppliers: { connect: product.suppliers }
         }
     });
     return createdproduct
@@ -64,7 +64,7 @@ async function update(productId: string, product: CreateProductDTO, prismaClient
             ...product,
             tags: { connectOrCreate: connectTag(product.tags) },
             images: { connectOrCreate: connectImage(product.images) },
-            suppliers: { create: product.suppliers }
+            suppliers: { connect: product.suppliers }
         }
     });
     return createdproduct
