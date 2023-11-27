@@ -16,7 +16,7 @@ function ListInput({ label, initial, onChange }: { label: string, initial: strin
 
     const handleAddTag = () => {
         if (newTagName) {
-            let addedTags = newTagName.split(',');
+            let addedTags = newTagName.trim().split(',');
             let newTags = [...list, ...addedTags]
 
             setList(newTags);
