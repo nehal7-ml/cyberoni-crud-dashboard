@@ -25,10 +25,11 @@ const EventForm = ({ method, action, initial }: { method: 'POST' | 'PUT', action
         image: undefined,
         tags: []
     });
+    const [date, setDate] = useState(((initial?.date) || (new Date())).toISOString().split('T')[0]);
 
     const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => {
         const { name, value } = e.target;
-        
+
         if (name === 'date') {
             console.log(new Date(value));
             setEventData(prevData => ({
@@ -113,9 +114,12 @@ const EventForm = ({ method, action, initial }: { method: 'POST' | 'PUT', action
                             type="date"
                             name="date"
                             className="mt-1 p-2 border rounded w-full"
-                            value={(eventData.date).toISOString().split('T')[0]}
+                            value={(date)}
                             required
-                            onChange={handleInputChange}
+                            onChange={(event)=> {
+                                setDate(event.target.value);
+                                setEventData(prev=>({...prev, date: new Date(event.target.value)}))
+                            }}
                         />
                     </div>
                     <div className="mb-4">
