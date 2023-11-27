@@ -1,4 +1,4 @@
-import { create, createProductDTO } from "@/crud/product";
+import { create, CreateProductDTO } from "@/crud/product";
 import apiHandler from "@/errorHandler";
 import { prisma } from "@/prisma/prismaClient";
 import { NextApiRequest, NextApiResponse } from "next";
@@ -8,7 +8,7 @@ async function post(req: Request) {
 
 
     if (req.method === "POST") {
-        const product = await req.json() as createProductDTO;
+        const product = await req.json() as CreateProductDTO;
         const newProduct = await create(product, prisma);
         return NextResponse.json({ message: "Add success", data: newProduct });
     }

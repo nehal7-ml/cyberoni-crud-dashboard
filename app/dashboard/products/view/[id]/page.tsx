@@ -1,11 +1,11 @@
 'use client'
 import AddImagesAndTags from "@/components/AddImagesAndTags";
 import { createImageDTO } from "@/crud/images";
-import { createProductDTO } from "@/crud/product";
+import { CreateProductDTO } from "@/crud/product";
 import { createTagDTO } from "@/crud/tags";
 import React, { useEffect, useState } from 'react';
 import Notification, { NotificationType } from "@/components/Notification";
-import { createSupplierDTO } from "@/crud/supplier";
+import { CreateSupplierDTO } from "@/crud/supplier";
 import { useParams } from "next/navigation";
 
 
@@ -17,7 +17,7 @@ const CreateProductForm: React.FC = () => {
 
   const [showDialog, setShowDialog] = useState(false);
 
-  const [productData, setProductData] = useState<createProductDTO>({
+  const [productData, setProductData] = useState<CreateProductDTO>({
     sku: '',
     name: '',
     status: '',
@@ -93,7 +93,7 @@ const CreateProductForm: React.FC = () => {
   }
 
 
-  function handleSupplierAdd(supplier: createSupplierDTO) {
+  function handleSupplierAdd(supplier: CreateSupplierDTO) {
 
     setProductData((prevData) => ({
       ...prevData,
@@ -104,7 +104,7 @@ const CreateProductForm: React.FC = () => {
 
   }
 
-  function handleRemoveSupplier(supplierToRemove: createSupplierDTO) {
+  function handleRemoveSupplier(supplierToRemove: CreateSupplierDTO) {
     setProductData((prevData) => ({
       ...prevData,
       suppliers: prevData.suppliers?.filter(supplier => supplier.supplierName !== supplierToRemove.supplierName)
@@ -130,7 +130,7 @@ const CreateProductForm: React.FC = () => {
           console.log(resJson)
 
           if (res.status == 200) {
-              setProductData(resJson.data as createProductDTO);
+            setProductData(resJson.data as CreateProductDTO);
           } else {
               setNotify(true); setNotifyMessage(resJson.message);
               message('fail', resJson.mesage)

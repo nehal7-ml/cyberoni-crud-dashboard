@@ -1,12 +1,12 @@
 'use client'
 import AddImagesAndTags from "@/components/AddImagesAndTags"
-import { createImageDTO } from "@/crud/images";
-import { createSupplierDTO } from "@/crud/supplier";
-import { createTagDTO } from "@/crud/tags";
+import { CreateImageDTO } from "@/crud/images";
+import { CreateSupplierDTO } from "@/crud/supplier";
+import { CreateTagDTO } from "@/crud/tags";
 import React, { useState } from 'react'
 
-function CreateSupplier({ supplier, handleSupplierAdd }: { supplier?: createSupplierDTO, handleSupplierAdd: (subservice: createSupplierDTO) => void }) {
-    const [supplierData, setSupplierData] = useState<createSupplierDTO>(supplier || {
+function CreateSupplier({ supplier, handleSupplierAdd }: { supplier?: CreateSupplierDTO, handleSupplierAdd: (subservice: CreateSupplierDTO) => void }) {
+    const [supplierData, setSupplierData] = useState<CreateSupplierDTO>(supplier || {
         baseShippingPrice: 0,
         supplierName: "",
         height: 0,
@@ -32,7 +32,7 @@ function CreateSupplier({ supplier, handleSupplierAdd }: { supplier?: createSupp
             [name]: value,
         }));
     };
-    function handleChangedImage(image: createImageDTO[], tags: createTagDTO[]) {
+    function handleChangedImage(image: CreateImageDTO[], tags: CreateTagDTO[]) {
         setSupplierData((prevData) => ({
             ...prevData,
             image: image[0],
@@ -53,7 +53,7 @@ function CreateSupplier({ supplier, handleSupplierAdd }: { supplier?: createSupp
 
         setSupplierData({
             ...supplierData,
-            [name]: Number(e.target.value)
+            [name]: value === "" ? "" : Number(value),
         })
     }
 
@@ -73,6 +73,7 @@ function CreateSupplier({ supplier, handleSupplierAdd }: { supplier?: createSupp
                                 className="mt-1 p-2 border rounded w-full"
                                 value={supplierData.supplierName}
                                 onChange={handleInputChange}
+                                required
                             />
                         </div>
                         <div className="mb-4">
@@ -83,6 +84,7 @@ function CreateSupplier({ supplier, handleSupplierAdd }: { supplier?: createSupp
                                 className="mt-1 p-2 border rounded w-full"
                                 value={supplierData.supplierUrl}
                                 onChange={handleInputChange}
+                                required
                             />
                         </div>
 
@@ -94,6 +96,7 @@ function CreateSupplier({ supplier, handleSupplierAdd }: { supplier?: createSupp
                                 className="mt-1 p-2 border rounded w-full"
                                 value={supplierData.height}
                                 onChange={handleNumberInputChange}
+                                required
                             />
                         </div>
                         <div className="mb-4">
@@ -104,6 +107,7 @@ function CreateSupplier({ supplier, handleSupplierAdd }: { supplier?: createSupp
                                 className="mt-1 p-2 border rounded w-full"
                                 value={supplierData.length}
                                 onChange={handleNumberInputChange}
+                                required
                             />
                         </div>
                         <div className="mb-4">
@@ -114,6 +118,7 @@ function CreateSupplier({ supplier, handleSupplierAdd }: { supplier?: createSupp
                                 className="mt-1 p-2 border rounded w-full"
                                 value={supplierData.width}
                                 onChange={handleNumberInputChange}
+                                required
                             />
                         </div>
                         <div className="mb-4">
@@ -124,6 +129,7 @@ function CreateSupplier({ supplier, handleSupplierAdd }: { supplier?: createSupp
                                 className="mt-1 p-2 border rounded w-full"
                                 value={supplierData.weight}
                                 onChange={handleNumberInputChange}
+                                required
                             />
                         </div>
                         <div className="mb-4">
@@ -134,6 +140,7 @@ function CreateSupplier({ supplier, handleSupplierAdd }: { supplier?: createSupp
                                 className="mt-1 p-2 border rounded w-full"
                                 value={supplierData.baseShippingPrice}
                                 onChange={handleNumberInputChange}
+                                required
                             />
                         </div>
                         <div className="mb-4">
@@ -144,6 +151,7 @@ function CreateSupplier({ supplier, handleSupplierAdd }: { supplier?: createSupp
                                 className="mt-1 p-2 border rounded w-full"
                                 value={supplierData.shippingWeight}
                                 onChange={handleNumberInputChange}
+                                required
                             />
                         </div>
                         <div className="mb-4">
@@ -154,6 +162,7 @@ function CreateSupplier({ supplier, handleSupplierAdd }: { supplier?: createSupp
                                 className="mt-1 p-2 border rounded w-full"
                                 value={supplierData.listPrice}
                                 onChange={handleNumberInputChange}
+                                required
                             />
                         </div>
                         <div className="mb-4">
@@ -164,6 +173,7 @@ function CreateSupplier({ supplier, handleSupplierAdd }: { supplier?: createSupp
                                 className="mt-1 p-2 border rounded w-full"
                                 value={supplierData.salePrice}
                                 onChange={handleNumberInputChange}
+                                required
                             />
                         </div>
                         <div className="mb-4">
@@ -218,7 +228,7 @@ function CreateSupplier({ supplier, handleSupplierAdd }: { supplier?: createSupp
                             />
                         </div>
 
-                            <button
+                        <button
                             type="submit"
                             className="w-full bg-blue-500 text-white p-2 rounded hover:bg-blue-600 focus:outline-none focus:ring focus:ring-blue-300"
                         >

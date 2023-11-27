@@ -1,4 +1,4 @@
-export type createSupplierDTO = {
+export type CreateSupplierDTO = {
 
     baseShippingPrice: number;
     height: number;

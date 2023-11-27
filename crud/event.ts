@@ -1,5 +1,6 @@
 import { Event, EventStatus, PrismaClient, User } from "@prisma/client";
 import { CreateImageDTO } from "./images";
+import { CreateTagDTO , connectOrCreateObject as connectTag} from "./tags";
 
 
 export type createEventDTO = {
@@ -7,7 +8,8 @@ export type createEventDTO = {
     date: Date;
     location: string;
     description: string;
-    image?: CreateImageDTO;
+    image?: CreateImageDTO |null;
+    tags: CreateTagDTO[]
     eventLink: string;
     status: EventStatus;
     isVirtual: boolean;
@@ -15,7 +17,13 @@ export type createEventDTO = {
 
 async function create(event: createEventDTO, prismaClient: PrismaClient) {
     const events = prismaClient.event;
-    let createdevent = await events.create({ data: { ...event, date: new Date(event.date), image: { connect: {id: event.image?.id} } } });
+    let createdevent = await events.create({ data: {
+         ...event,
+        date: new Date(event.date), 
+        image: event.image ? { connect: { id: event.image.id! } } : {},
+        tags: { connectOrCreate: connectTag (event.tags) },
+    
+    } })
     return createdevent
 
 
@@ -28,7 +36,9 @@ async function update(eventId: string, event: createEventDTO, prismaClient: Pris
         data: {
             ...event,
             date: new Date(event.date),
-            image: { connect: {id: event.image?.id} }
+            image: event.image ? { connect: { id: event.image.id! } } : {},
+            tags: { connectOrCreate: connectTag(event.tags) },
+
         }
     })
     return updatedEvent
@@ -42,7 +52,7 @@ async function remove(eventId: string, prismaClient: PrismaClient) {
 }
 async function read(eventId: string, prismaClient: PrismaClient) {
     const events = prismaClient.event;
-    const existingevent = await events.findUnique({ where: { id: eventId } })
+    const existingevent = await events.findUnique({ where: { id: eventId } , include: {image:true, tags:true}})
     if (existingevent) return existingevent;
 
 }
