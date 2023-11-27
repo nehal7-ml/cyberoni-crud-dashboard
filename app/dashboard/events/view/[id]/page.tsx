@@ -5,7 +5,7 @@ import { redirect } from "next/navigation";
 
 import React, { useEffect, useState } from 'react';
 
-const CreateGptPromptForm = async ({ params }: { params: { id: string } }) => {
+const CreateEventForm = async ({ params }: { params: { id: string } }) => {
   const res = await read(params.id, prisma)
   if (!res) redirect('/404')
   const { imageId, ...event } = res
@@ -15,4 +15,4 @@ const CreateGptPromptForm = async ({ params }: { params: { id: string } }) => {
   )
 };
 
-export default CreateGptPromptForm;
+export default CreateEventForm;

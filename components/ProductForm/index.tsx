@@ -258,16 +258,6 @@ const ProductForm = ({ method, action, initial }: FormProps) => {
                                     </button>
                                 </div>)
                         })}
-                        <select
-                            required
-                            onChange={handleSupplierChange}
-                        >
-                            <option disabled>Select Supplier</option>
-                            {suppliers.map((supplier, index) => {
-
-                                return <option key={index} value={supplier.id}>{supplier.supplierName}</option>
-                            })}
-                        </select>
 
                         <button type="button" onClick={() => setShowDialog(!showDialog)} className="w-full bg-blue-500 text-white p-2 rounded hover:bg-blue-600 focus:outline-none focus:ring focus:ring-blue-300">Create Supplier</button>
                     </div>

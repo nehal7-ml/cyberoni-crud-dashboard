@@ -7,9 +7,9 @@ export type CreateProductDTO = {
     sku: string;
     name: string;
     status: ProductStatus;
-    ratings?: number;
+    ratings?: number | null;
     inventory: number;
-    productBreakdown?: string;
+    productBreakdown?: string | null;
     shippingReturnPolicy: string;
     description: string;
     price: number;
