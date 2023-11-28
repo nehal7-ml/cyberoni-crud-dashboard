@@ -5,6 +5,12 @@ import { getAllRecordsDTO } from "./commonDTO";
 
 import bcrypt from 'bcrypt'
 import { sendPasswordEmail } from "@/lib/sendgrid";
+
+
+export type CredentialAuthDTO = {
+    email: string;
+    password: string;
+}
 export type CreateUserDTO = {
     id?: string;
     password: string;
@@ -126,6 +132,27 @@ async function getAll(page: number, pageSize: number, prismaClient: PrismaClient
     const totalPages = Math.ceil(totalCount / pageSize);
 
     return { records: allUsers, currentPage: page, totalPages, pageSize } as getAllRecordsDTO
+
+}
+
+
+export async function getUserByEmail(email: string, prismaClient: PrismaClient) {
+    const users = prismaClient.user;
+    const existingUsers = await users.findUnique({ where: { email: email } })
+    if (existingUsers) return existingUsers
+    else throw { status: 400, message: `GuruAgent ${email} doesn't exists` };
+}
+
+export async function authorizeWithPassword({ email, password }: CredentialAuthDTO, prisma: PrismaClient) {
+    const users = prisma.user
+    const user = await users.findUnique({ where: { email: email.toLowerCase() } })
+    if (!user) throw { message: `Invalid credentials account doesn't exist`, status: 400 };
+
+    else {
+        const authorized = await bcrypt.compare(password, user.password as string)
+        if (!authorized) throw { message: `Invalid credentials account didn't match`, status: 401 };
+        return user
+    }
 
 }
 
