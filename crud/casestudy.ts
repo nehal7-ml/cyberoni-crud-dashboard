@@ -4,7 +4,7 @@ export type CaseStudyType = 'ECOMMERCE' | 'LANDING' | 'SOFTWARE' | 'GRAPHICS';
 export type CreateCaseStudy = {
     id?: string;
     title: string;
-    type: CaseStudyType
+    serviceId?: string;
     preview: string;
     problemStatement: string;
     userProblems: string[]; //comma seaprated
@@ -36,7 +36,6 @@ export async function create(caseStudy: CreateCaseStudy, prisma: PrismaClient) {
     const newCase = await cases.create({
         data: {
             title: caseStudy.title,
-            type: caseStudy.type,
             goals: caseStudy.goals,
             preview: caseStudy.preview,
             userResearch: caseStudy.userResearch,
@@ -52,6 +51,7 @@ export async function create(caseStudy: CreateCaseStudy, prisma: PrismaClient) {
             images: caseStudy.images,
             userFlow: caseStudy.userFlow,
             wireFrames: caseStudy.wireFrames,
+            type: caseStudy.serviceId ? { connect: { id: caseStudy.serviceId } } : {},
         }
     })
 
@@ -67,7 +67,28 @@ export async function read(caseStudyId: string, prisma: PrismaClient) {
 
 export async function update(caseStudyId: string, caseStudy: CreateCaseStudy, prisma: PrismaClient) {
     const cases = prisma.caseStudy;
-    const updatedCaseStudy = await cases.update({ where: { id: caseStudyId }, data: { ...caseStudy } })
+    const updatedCaseStudy = await cases.update({
+        where: { id: caseStudyId }, data: {
+            title: caseStudy.title,
+            goals: caseStudy.goals,
+            preview: caseStudy.preview,
+            userResearch: caseStudy.userResearch,
+            keyLearning: caseStudy.keyLearning,
+            possibleSolutions: caseStudy.possibleSolutions,
+            competetiveAnalysis: caseStudy.competetiveAnalysis,
+            problemStatement: caseStudy.problemStatement,
+            uniqueFeatures: caseStudy.uniqueFeatures,
+            userPersonas: caseStudy.userPersonas,
+            userProblems: caseStudy.userProblems,
+            architecture: caseStudy.architecture,
+            hifiDesign: caseStudy.hifiDesign,
+            images: caseStudy.images,
+            userFlow: caseStudy.userFlow,
+            wireFrames: caseStudy.wireFrames,
+            type: caseStudy.serviceId ? { connect: { id: caseStudy.serviceId } } : {},
+
+        }
+    })
     return updatedCaseStudy
 
 }
@@ -98,13 +119,15 @@ export async function getAll(page: number, pageSize: number, prismaClient: Prism
 }
 
 
-export async function getGroup(group: CaseStudyType, prismaClient: PrismaClient) {
+export async function getGroup(group: string, prismaClient: PrismaClient) {
     const caseStudys = prismaClient.caseStudy;
 
     let allrecords = await caseStudys.findMany({
         take: 16,
         where: {
-            type: group
+            type: {
+                id: group
+            }
         },
 
     })

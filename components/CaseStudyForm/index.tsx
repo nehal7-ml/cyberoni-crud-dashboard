@@ -1,6 +1,6 @@
 'use client'
 import { CaseStudyType, CreateCaseStudy, UserPersona } from "@/crud/casestudy";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import AddImage from "../AddImagesAndTags/AddImage";
 import Image from "next/image";
 import { PlusCircle, X } from "lucide-react";
@@ -8,26 +8,16 @@ import UserPersonaForm from "./UserPersonaForm";
 import { CreateImageDTO } from "@/crud/images";
 import ListInput from "../ListInput";
 import Notification from "../Notification";
+import { Service } from "@prisma/client";
 
-function CaseStudyForm({ method, action, initial }: { method: 'POST' | 'PUT', action: string, initial?: CreateCaseStudy }) {
+function CaseStudyForm({ method, action, initial, types }: { method: 'POST' | 'PUT', action: string,types: Service[] , initial?: CreateCaseStudy }) {
     const [notify, setNotify] = useState(false);
     const [notifyMessage, setNotifyMessage] = useState("");
     const [notifyType, setNotifyType] = useState<'success' | 'fail'>('fail');
     const [userPersonaForm, setUserPersonaForm] = useState(false);
-    const types: { name: string, type: CaseStudyType }[] = [
-        { name: 'Ecommerce websites', type: 'ECOMMERCE' },
-        { name: 'Landing Pages', type: 'LANDING' },
-
-        { name: 'Software Architecture', type: 'SOFTWARE' },
-
-
-        { name: 'Graphic design', type: 'SOFTWARE' },
-
-
-
-    ]
+      
     const [caseData, setCaseData] = useState<CreateCaseStudy>(initial || {
-        type: 'ECOMMERCE',
+        serviceId: '',
         architecture: [],
         competetiveAnalysis: [],
         goals: [],
@@ -125,10 +115,10 @@ function CaseStudyForm({ method, action, initial }: { method: 'POST' | 'PUT', ac
                             <select
                                 name="type"
                                 className="mt-1 p-2 border rounded w-full"
-                                value={caseData.type}
+                                value={caseData.serviceId}
                                 onChange={handleInputChange}
                             >
-                                { types.map((type, index)=> (<option value={type.type} key={index}>{type.name}</option>))}
+                                {types.map((type, index) => (<option value={type.id} key={index}>{type.title}</option>))}
                             </select>
                         </div>
                         <div className="mb-4">

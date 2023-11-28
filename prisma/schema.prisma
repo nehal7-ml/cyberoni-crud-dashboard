@@ -123,15 +123,15 @@ model ApiCredentials {
 }
 
 model Product {
-  id                   String     @id @default(uuid())
+  id                   String        @id @default(uuid())
   sku                  String
   name                 String
   status               ProductStatus @default(SOLDOUT)
   ratings              Int?
   inventory            Int
   productBreakdown     String?
-  shippingReturnPolicy String     @db.Text
-  description          String     @db.Text
+  shippingReturnPolicy String        @db.Text
+  description          String        @db.Text
   tags                 Tag[]
   price                Int
   profitMargin         Int
@@ -241,13 +241,14 @@ model Service {
   previewContent     String               @db.Text
   hourlyRate         Int
   valueBrought       Json
-  skillsUsed         Json 
+  skillsUsed         Json
   htmlEmbed          String?
   reviews            Review[]
   tags               Tag[]
   imageId            String?
   SubServices        SubService[]
   ServiceDescription ServiceDescription[]
+  CaseStudy          CaseStudy[]
 
   @@index([imageId])
 }
@@ -346,24 +347,27 @@ model SubService {
 }
 
 model CaseStudy {
-  id                  String @id @default(uuid())
+  id                  String   @id @default(uuid())
   title               String
-  type                String
-  preview             String @db.Text
-  problemStatement    String @db.Text
-  userResearch        String @db.Text
+  type                Service? @relation(fields: [serviceId], references: [id])
+  preview             String   @db.Text
+  problemStatement    String   @db.Text
+  userResearch        String   @db.Text
   userProblems        Json
   possibleSolutions   Json
   goals               Json
   images              Json //image 
-  uniqueFeatures      String @db.Text
-  keyLearning         String @db.Text
+  uniqueFeatures      String   @db.Text
+  keyLearning         String   @db.Text
   userPersonas        Json
   competetiveAnalysis Json
   wireFrames          Json?
   hifiDesign          Json?
   userFlow            Json?
   architecture        Json?
+  serviceId           String?
+
+  @@index([serviceId])
 }
 
 model GptPrompt {

@@ -47,7 +47,7 @@ async function create(service: CreateServiceDTO, prismaClient: PrismaClient) {
             valueBrought: service.valueBrought,
             skillsUsed: service.skillsUsed,
             htmlEmbed: service.htmlEmbed,
-            image:service.image? { connect: { id: service.image?.id} } : {},
+            image: service.image ? { connect: { id: service.image?.id } } : {},
             tags: { connectOrCreate: connectTags(service.tags || []) },
         },
         include: {
@@ -77,7 +77,7 @@ async function create(service: CreateServiceDTO, prismaClient: PrismaClient) {
                 {
                     data: {
                         ...description,
-                        image: { connect: {id: description.image.id}},
+                        image: { connect: { id: description.image.id } },
                         service: { connect: { id: createdservice.id } }
                     },
 
@@ -106,7 +106,7 @@ async function update(serviceId: string, service: CreateServiceDTO, prismaClient
                 valueBrought: service.valueBrought,
                 skillsUsed: service.skillsUsed,
                 htmlEmbed: service.htmlEmbed,
-                image: service.image?{ update: service.image }: {},
+                image: service.image ? { update: service.image } : {},
                 tags: { connectOrCreate: connectTags(service.tags || []) },
 
 
@@ -144,7 +144,7 @@ async function update(serviceId: string, service: CreateServiceDTO, prismaClient
                     {
                         data: {
                             ...description,
-                            image: { connect: {id: description.image.id} },
+                            image: { connect: { id: description.image.id } },
                             service: { connect: { id: updatedService.id } }
                         }
                     }
@@ -176,7 +176,7 @@ async function read(serviceId: string, prismaClient: PrismaClient) {
         where: { id: serviceId },
         include: {
             SubServices: true,
-            ServiceDescription:{
+            ServiceDescription: {
                 include: {
                     image: true
                 }
@@ -203,7 +203,7 @@ async function getAll(page: number, pageSize: number, prismaClient: PrismaClient
     if (pageSize !== 10 && pageSize != 30 && pageSize !== 50) throw new Error('page size must be 10, 30 or 50')
 
     let allServices = await services.findMany({
-        skip: (page - 1) * pageSize, take: pageSize,
+        skip: page === 0 ? 0 : (page - 1) * pageSize, take: page === 0 ? 9999 : pageSize,
         where: {
         },
         include: {
