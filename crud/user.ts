@@ -3,9 +3,11 @@ import { connectOrCreateObject, CreateImageDTO } from "./images";
 import { CreateAddressDTO } from "./address";
 import { getAllRecordsDTO } from "./commonDTO";
 
-
+import bcrypt from 'bcrypt'
+import { sendPasswordEmail } from "@/lib/sendgrid";
 export type CreateUserDTO = {
     id?: string;
+    password: string;
     firstName?: string;
     lastName?: string;
     email: string;
@@ -27,9 +29,12 @@ async function create(user: CreateUserDTO, prismaClient: PrismaClient) {
     const existingUser = await users.findUnique({ where: { email: user.email } })
     if (existingUser) throw { status: 400, message: `User ${user.email} already exists` };
     else {
+        const hashedPassword = await bcrypt.hash(user.password, 10)
+
         let createdUser = await users.create({
             data: {
                 email: user.email,
+                password: hashedPassword,
                 firstName: user.firstName,
                 lastName: user.lastName,
                 image: { create: user.image },
@@ -37,6 +42,9 @@ async function create(user: CreateUserDTO, prismaClient: PrismaClient) {
                 role: user.role,
             }
         });
+
+        await sendPasswordEmail({ email: user.email, password: user.password })
+
         return createdUser
     }
 
@@ -48,9 +56,12 @@ async function update(userId: string, user: CreateUserDTO, prismaClient: PrismaC
 
     if (!existingUser) throw { status: 400, message: `User ${user.email} doesn't exists` };
     else {
+        let hashedPassword = user.password.length >= 8 ? await bcrypt.hash(user.password, 10) : existingUser.password;
+
         let updatedUser = await users.update({
             where: { id: userId }, data: {
                 email: user.email,
+                password: hashedPassword,
                 firstName: user.firstName,
                 lastName: user.lastName,
                 image: {
@@ -77,6 +88,8 @@ async function update(userId: string, user: CreateUserDTO, prismaClient: PrismaC
                 role: user.role
             }
         });
+        await sendPasswordEmail({ email: user.email, password: user.password })
+
         return updatedUser
     }
 

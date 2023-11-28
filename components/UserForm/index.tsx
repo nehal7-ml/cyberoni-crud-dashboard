@@ -7,6 +7,7 @@ import { Role } from "@prisma/client";
 import React, { useState } from 'react';
 import Notification, { NotificationType } from "@/components/Notification";
 import { FormProps } from "@/crud/commonDTO";
+import PasswordGenerator from "../PasswordInput";
 
 
 const apiUrl = process.env.NEXT_PUBLIC_API_URL;
@@ -20,6 +21,7 @@ const UserForm = ({ method, action, initial }: FormProps) => {
     const [userData, setUserData] = useState<CreateUserDTO>(initial as CreateUserDTO || {
         email: '',
         role: Role.USER,
+        password: '',
         address: {
             city: '',
             country: '',
@@ -96,6 +98,15 @@ const UserForm = ({ method, action, initial }: FormProps) => {
                             value={userData.email}
                             onChange={handleInputChange}
                             required
+                        />
+                    </div>
+                    <div className="mb-4 mx-2">
+                        <label className="block text-sm font-medium text-gray-700">Password (please copy before submitting): </label>
+                        <PasswordGenerator
+                            name="password"
+                            className="mt-1 p-2 border rounded w-full"
+                            value={userData.password}
+                            onChange={handleInputChange}
                         />
                     </div>
                     <div className="mb-4">
