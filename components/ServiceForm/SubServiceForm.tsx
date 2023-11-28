@@ -6,6 +6,7 @@ import { CreateTagDTO } from "@/crud/tags";
 import React, { useState } from 'react'
 import ListInput from "../ListInput";
 import DiscountsForm from "./Discount";
+import { PricingModel } from "@prisma/client";
 
 function CreateSubService({ subService, handleSubServiceAdd }: { subService?: CreateSubServiceDTO, handleSubServiceAdd: (subservice: CreateSubServiceDTO) => void }) {
     const [subServiceData, setSubServiceData] = useState<CreateSubServiceDTO>(subService || {
@@ -16,7 +17,7 @@ function CreateSubService({ subService, handleSubServiceAdd }: { subService?: Cr
         discounts: [],
         estimated_hours_times_fifty_percent: 0,
         estimated_hours_times_one_hundred_percent: 0,
-        pricingModel: '',
+        pricingModel: PricingModel.DEFAULT,
         overheadCost: 0,
         serviceDeliverables: [],
         serviceUsageScore: 0,
@@ -28,7 +29,7 @@ function CreateSubService({ subService, handleSubServiceAdd }: { subService?: Cr
     const [discounts, setDiscounts] = useState<Discount[]>(subService?.discounts || []);
 
 
-    const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
+    const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement |HTMLSelectElement>) => {
         const { name, value } = e.target;
         setSubServiceData(prevData => ({
             ...prevData,
@@ -170,13 +171,15 @@ function CreateSubService({ subService, handleSubServiceAdd }: { subService?: Cr
 
                         <div className="mb-4">
                             <label className="block text-sm font-medium text-gray-700">Pricing Model:</label>
-                            <input
-                                type="text"
+                            <select
                                 name="pricingModel"
                                 className="mt-1 p-2 border rounded w-full"
                                 value={subServiceData.pricingModel}
                                 onChange={handleInputChange}
-                            />
+                            > 
+                                {Object.keys(PricingModel).map((pricingModel, index) =>(<option key={index} value={pricingModel}>{pricingModel}</option>))}
+                            
+                            </select>
                         </div>
                         <AddImagesAndTags maxImages={1} onImagesAndTagsChange={handleChangedImage}></AddImagesAndTags>
                         <button

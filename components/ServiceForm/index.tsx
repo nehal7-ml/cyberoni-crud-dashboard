@@ -239,14 +239,14 @@ function SerivceForm({ method, action, initial }: { method: 'POST' | 'PUT', acti
                     </form>
 
                     <div className={`fixed flex flex-col w-screen top-0 left-0 justify-center ${showDialog ? '' : ' hidden'}`}>
-                        <div className="flex justify-end z-30">
-                            <button className="self-end m-3" onClick={() => setShowDialog(!showDialog)} ><X color="red" className="cursor-pointer" /></button>
+                        <div className="flex justify-end z-30 ">
+                            <button className="self-end   mx-10 my-3" onClick={() => setShowDialog(!showDialog)} ><X color="red" className="cursor-pointer" /></button>
                         </div>
                         <CreateSubServcie handleSubServiceAdd={handleSubServiceAdd}></CreateSubServcie>
                     </div>
                     <div className={`fixed flex flex-col w-screen top-0 left-0 justify-center ${descriptionForm ? '' : ' hidden'}`}>
                         <div className="flex justify-end z-30">
-                            <button type="button" className="self-end m-3" onClick={() => setDescriptionForm(false)} ><X color="red" className="cursor-pointer" /></button>
+                            <button type="button" className="self-end mx-10 my-3" onClick={() => setDescriptionForm(false)} ><X color="red" className="cursor-pointer" /></button>
                         </div>
                         <DescriptionForm handleDescritionChange={handleDescritionChange} />
                     </div>

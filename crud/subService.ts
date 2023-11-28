@@ -1,10 +1,10 @@
-import { PrismaClient, SubService } from "@prisma/client"
+import { PricingModel, PrismaClient, SubService } from "@prisma/client"
 import { CreateImageDTO } from "./images";
 import { connectOrCreateObject, CreateTagDTO } from "./tags";
 export type CreateSubServiceDTO = {
     id?: string;
     title: string;
-    pricingModel: string;
+    pricingModel: PricingModel;
     discounts: Discount[];
     serviceDeliverables: string[];
     serviceUsageScore: number;

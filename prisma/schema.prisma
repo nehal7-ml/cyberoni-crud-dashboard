@@ -324,22 +324,22 @@ model Image {
 }
 
 model SubService {
-  id                                        String  @id @default(uuid())
-  image                                     Image?  @relation(fields: [imageId], references: [id])
+  id                                        String       @id @default(uuid())
+  image                                     Image?       @relation(fields: [imageId], references: [id])
   title                                     String
-  pricingModel                              String
+  pricingModel                              PricingModel @default(DEFAULT)
   discounts                                 Json?
   serviceDeliverables                       Json?
   tags                                      Tag[]
   serviceUsageScore                         Int
-  description                               String  @db.Text
+  description                               String       @db.Text
   department                                String
   estimated_hours_times_fifty_percent       Int
   estimated_hours_times_one_hundred_percent Int
   skillLevel                                String
   complexity                                Int
   overheadCost                              Int
-  service                                   Service @relation(fields: [serviceId], references: [id], onDelete: Cascade)
+  service                                   Service      @relation(fields: [serviceId], references: [id], onDelete: Cascade)
   imageId                                   String
   serviceId                                 String
 
@@ -530,4 +530,9 @@ enum EventStatus {
 enum ProductStatus {
   AVAILABLE
   SOLDOUT
+}
+
+enum PricingModel {
+  DEFAULT
+  AGGRESSIVE
 }
