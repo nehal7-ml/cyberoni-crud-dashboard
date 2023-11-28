@@ -17,7 +17,7 @@ const ProductForm = ({ method, action, initial }: FormProps) => {
     const [notify, setNotify] = useState(false);
     const [notifyMessage, setNotifyMessage] = useState("");
     const [notifyType, setNotifyType] = useState<'success' | 'fail'>('fail');
-    const [suppliers, setSuppliers] = useState<Supplier[]>([]);
+    const [supplier, setSupplier] = useState<CreateSupplierDTO | undefined>(undefined);
     const [showDialog, setShowDialog] = useState(false);
 
     const [productData, setProductData] = useState<CreateProductDTO>(initial as CreateProductDTO || {
@@ -76,9 +76,6 @@ const ProductForm = ({ method, action, initial }: FormProps) => {
     }
 
 
-    function handleSupplierChange(e: ChangeEvent<HTMLSelectElement>) {
-
-    }
     const handleNumberInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
         const { name, value } = e.target;
 
@@ -102,21 +99,21 @@ const ProductForm = ({ method, action, initial }: FormProps) => {
     }
 
 
-    function handleSupplierAdd(supplier: Supplier) {
+    function handleSupplierAdd(supplier: CreateSupplierDTO | Supplier) {
 
         setProductData((prevData) => ({
             ...prevData,
-            suppliers: [...(prevData.suppliers || []), supplier]
+            suppliers: [...(prevData.suppliers as Supplier[] || []), supplier as Supplier]
         }))
 
         setShowDialog(false)
 
     }
 
-    function handleRemoveSupplier(supplierToRemove: Supplier) {
+    function handleRemoveSupplier(supplierToRemove: CreateSupplierDTO | Supplier) {
         setProductData((prevData) => ({
             ...prevData,
-            suppliers: prevData.suppliers?.filter(supplier => supplier.supplierName !== supplierToRemove.supplierName)
+            suppliers: prevData.suppliers?.filter(supplier => supplier.supplierName !== supplierToRemove.supplierName) as Supplier[]
         }))
 
     }
@@ -130,6 +127,15 @@ const ProductForm = ({ method, action, initial }: FormProps) => {
 
         fetchSuppliers();
     }, []);
+
+    useEffect(() => {
+        if(supplier) {
+            console.log(supplier);
+            setShowDialog(true)
+        } else {
+            setShowDialog(false)
+        }
+    }, [supplier]);
 
     return (
         <div className="light:bg-gray-100 light:text-black dark:bg-gray-700 dark:text-gray-800 min-h-screen flex items-center justify-center">
@@ -248,11 +254,14 @@ const ProductForm = ({ method, action, initial }: FormProps) => {
                         {productData.suppliers?.map((supplier, index) => {
                             return (
                                 <div key={index} className="bg-blue-200 text-blue-800 p-2 rounded flex items-center">
-                                    <span>{supplier.supplierName}</span>
+                                    <button type="button"
+                                        onClick={() => { setSupplier(supplier as CreateSupplierDTO); }}
+
+                                    ><span>{supplier.supplierName}</span></button>
                                     <button
                                         type="button"
                                         className="ml-2 text-red-600 hover:text-red-800 focus:outline-none focus:ring focus:ring-red-300"
-                                        onClick={() => handleRemoveSupplier(supplier)}
+                                        onClick={() => handleRemoveSupplier(supplier as Supplier)}
                                     >
                                         X
                                     </button>
@@ -270,11 +279,11 @@ const ProductForm = ({ method, action, initial }: FormProps) => {
                         {method === 'POST' ? 'Create' : 'Update'} Product
                     </button>
                 </form>
-                <div className={`fixed flex flex-col w-screen top-0 left-0 justify-center ${showDialog ? '' : ' hidden'}`}>
+                <div className={`fixed flex-col w-screen top-0 left-0 justify-center ${showDialog ? 'flex' : ' hidden'}`}>
                     <div className="flex justify-end z-30">
-                        <button className="self-end m-3" onClick={() => setShowDialog(!showDialog)} ><X color="red" className="cursor-pointer" /></button>
+                        <button className="self-end mx-10 my-3" onClick={() => { setShowDialog(!showDialog); setSupplier(undefined) }} ><X color="red" className="cursor-pointer" /></button>
                     </div>
-                    <CreateSupplier handleSupplierAdd={handleSupplierAdd}></CreateSupplier>
+                    <CreateSupplier supplier={supplier} handleSupplierAdd={handleSupplierAdd}></CreateSupplier>
                 </div>
             </div>
             <Notification visible={notify} setVisible={setNotify} message={notifyMessage} type={notifyType}></Notification>

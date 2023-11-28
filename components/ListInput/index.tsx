@@ -39,7 +39,7 @@ function ListInput({ label, initial, onChange }: { label: string, initial: strin
         <div>
             <label>{label}</label>
 
-            <div className="flex flex-col gap-2 my-1">
+            <div className="flex flex-wrap gap-2 my-1">
                 {list.map(tag => (
                     <div
                         key={tag}

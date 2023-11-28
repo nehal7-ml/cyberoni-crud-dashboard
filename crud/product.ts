@@ -19,7 +19,7 @@ export type CreateProductDTO = {
     subcategory?: string;
     tags: CreateTagDTO[];
     images: CreateImageDTO[];
-    suppliers?: Supplier[];
+    suppliers?: CreateSupplierDTO[] | Supplier[];
     amazonProductId?: string;
     cjDropShippingId?: string;
 }
@@ -50,7 +50,12 @@ async function create(product: CreateProductDTO, prismaClient: PrismaClient) {
             ...product,
             tags: { connectOrCreate: connectTag(product.tags) },
             images: { connectOrCreate: connectImage(product.images) },
-            suppliers: { connect: product.suppliers }
+            suppliers: {
+                create: [
+                    ...product.suppliers as CreateSupplierDTO[]
+
+                ]
+            }
         }
     });
     return createdproduct
@@ -58,13 +63,36 @@ async function create(product: CreateProductDTO, prismaClient: PrismaClient) {
 
 async function update(productId: string, product: CreateProductDTO, prismaClient: PrismaClient) {
     const products = prismaClient.product;
+    const suplierUpdate = {
+        create: [],
+        update: []
+    } as {
+        create: Array<any>, update: Array<{
+            where: { id: string },
+            data: Supplier
+
+        }>
+    }
+
+    for (const supplier of product.suppliers!) {
+        if ((supplier as Supplier).id) {
+            suplierUpdate.update.push({
+                where: { id: (supplier as Supplier).id as string },
+                data: supplier as Supplier
+
+            })
+        } else {
+            suplierUpdate.create.push(supplier)
+        }
+
+    }
     let createdproduct = await products.update({
         where: { id: productId },
         data: {
             ...product,
             tags: { connectOrCreate: connectTag(product.tags) },
             images: { connectOrCreate: connectImage(product.images) },
-            suppliers: { connect: product.suppliers }
+            suppliers: suplierUpdate
         }
     });
     return createdproduct

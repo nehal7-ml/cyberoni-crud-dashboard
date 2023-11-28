@@ -4,10 +4,12 @@ import { CreateImageDTO } from "@/crud/images";
 import { CreateSupplierDTO } from "@/crud/supplier";
 import { CreateTagDTO } from "@/crud/tags";
 import { Supplier } from "@prisma/client";
-import React, { useState } from 'react'
+import { title } from "process";
+import React, { useEffect, useState } from 'react'
 
 function CreateSupplier({ supplier, handleSupplierAdd }: { supplier?: CreateSupplierDTO, handleSupplierAdd: (subservice: Supplier) => void }) {
     const [supplierData, setSupplierData] = useState<CreateSupplierDTO>(supplier || {
+        
         baseShippingPrice: 0,
         supplierName: "",
         height: 0,
@@ -22,7 +24,7 @@ function CreateSupplier({ supplier, handleSupplierAdd }: { supplier?: CreateSupp
         supplierEmail: "",
         supplierStatus: "",
         supplierWhatsApp: "",
-        supplierWrittenComments: ""
+        supplierWrittenComments: "",       
     });
 
 
@@ -44,11 +46,8 @@ function CreateSupplier({ supplier, handleSupplierAdd }: { supplier?: CreateSupp
 
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
-        // Send the productData to your backend for creating the product
-        const res = await fetch(`/products/suppliers/add`, { method: 'POST', body: JSON.stringify(supplierData) });
-        const supplier = await res.json() as Supplier;
-        handleSupplierAdd(supplier)
-    };
+        handleSupplierAdd(supplierData as Supplier)
+    }
 
 
     const handleNumberInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
@@ -59,6 +58,10 @@ function CreateSupplier({ supplier, handleSupplierAdd }: { supplier?: CreateSupp
             [name]: value === "" ? "" : Number(value),
         })
     }
+
+    useEffect(() => {
+        if(supplier) setSupplierData(supplier)
+    }, [supplier]);
 
     return (
         <>
