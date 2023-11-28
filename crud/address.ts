@@ -1,5 +1,5 @@
 import { Address } from "@prisma/client"
-export type createAddressDTO = {
+export type CreateAddressDTO = {
     id?:string;
     street: string;
     city: string;

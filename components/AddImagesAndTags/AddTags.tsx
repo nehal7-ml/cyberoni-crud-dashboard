@@ -15,8 +15,7 @@ function AddTags({ defaultTags, onTagsChange }: { defaultTags?: CreateTagDTO[], 
 
     const handleAddTag = () => {
         if (newTagName) {
-            let addedTags = newTagName.trim().split(',');
-
+            let addedTags = ((newTagName.trim()).split(',')).filter(tag => tag.trim() !== "");
             let newTags = [...tags, ...addedTags.map(tag => ({ name: tag }))]
 
             setTags(newTags);

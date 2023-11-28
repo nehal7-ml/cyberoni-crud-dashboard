@@ -57,6 +57,7 @@ model User {
   lastName       String?
   email          String           @unique
   emailVerified  DateTime?
+  password       String           @default("")
   image          Image?           @relation(fields: [imageId], references: [id])
   addressId      String?
   role           Role             @default(USER)

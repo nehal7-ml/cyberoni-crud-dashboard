@@ -42,7 +42,7 @@ const ProductForm = ({ method, action, initial }: FormProps) => {
     const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => {
         const { name, value } = e.target;
 
-         setProductData(prevData => ({
+        setProductData(prevData => ({
             ...prevData,
             [name]: value,
         }));
@@ -84,7 +84,7 @@ const ProductForm = ({ method, action, initial }: FormProps) => {
 
         setProductData({
             ...productData,
-            [name]: Number(e.target.value)
+            [name]: value == "" ? "" : Number(value)
         })
     }
 
