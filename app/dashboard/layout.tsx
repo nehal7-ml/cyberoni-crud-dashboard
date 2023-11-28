@@ -22,11 +22,9 @@ export default function DashboardLayout({
           <CreateRecordButton className="col-span-2 flex justify-end"></CreateRecordButton>
         </div>
 
-        <Suspense fallback={<Loading/> }>
           <div className="col-span-4 row-span-5">
             {children}
           </div>
-        </Suspense>
       </div>
     </section>
   )
