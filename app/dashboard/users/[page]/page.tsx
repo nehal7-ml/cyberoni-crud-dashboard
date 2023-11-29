@@ -1,10 +1,10 @@
 import Table from "@/components/Table"
 import { TableItem } from "@/components/TableItem";
 import Pagination from "@/components/Pagination";
-import { displayUserDTO } from "@/crud/user";
+import { DisplayUserDTO, getAll } from "@/crud/user";
 import React, { useEffect, useState } from 'react'
-import { getAllRecordsDTO } from "@/crud/commonDTO";
-import Link from "next/link";
+
+import { prisma } from "@/prisma/prismaClient";
 export const dynamic = 'force-dynamic'
 
 async function Users({ params }: { params: { page: string } }) {
@@ -13,7 +13,7 @@ async function Users({ params }: { params: { page: string } }) {
   return (
     <main className="flex flex-col items-center  py-5">
       <Table headers={['View', 'First Name', 'Last Name', 'Email', 'Email Verified', 'Role']}>
-        {(data?.records as displayUserDTO[]).map((value, index) => {
+        {(data?.records as DisplayUserDTO[]).map((value, index) => {
           const row: any = [];
           row.push(value.firstName);
           row.push(value.lastName);
@@ -30,12 +30,9 @@ async function Users({ params }: { params: { page: string } }) {
 }
 
 async function getData(page: number) {
-  let apiUrl = process.env.API_URL
-  let res = await fetch(`${apiUrl}/users/all/${page}`);
-  if (res.status == 200) {
-    let resJson = await res.json();
-    return (resJson.data as getAllRecordsDTO);
-  }
+  let res = await getAll(page, 10, prisma);
+  return res
+
 }
 
 export default Users

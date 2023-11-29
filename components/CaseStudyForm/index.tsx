@@ -204,19 +204,19 @@ function CaseStudyForm({ method, action, initial, types }: { method: 'POST' | 'P
                         </div>
                         <div className="mb-4">
                             <label className="block text-sm font-medium text-gray-700">Wireframes:</label>
-                            <AddImage maxImages={1} defaultImages={caseData.wireFrames ? caseData.wireFrames : []} onImagesChange={(images) => handleImageChange("wireFrames", images)} />
+                            <AddImage maxImages={5} defaultImages={caseData.wireFrames ? caseData.wireFrames : []} onImagesChange={(images) => handleImageChange("wireFrames", images)} />
                         </div>
                         <div className="mb-4">
                             <label className="block text-sm font-medium text-gray-700">hifi designs:</label>
-                            <AddImage maxImages={1} defaultImages={caseData.hifiDesign ? caseData.hifiDesign : []} onImagesChange={(images) => handleImageChange("hifiDesign", images)} />
+                            <AddImage maxImages={5} defaultImages={caseData.hifiDesign ? caseData.hifiDesign : []} onImagesChange={(images) => handleImageChange("hifiDesign", images)} />
                         </div>
                         <div className="mb-4">
                             <label className="block text-sm font-medium text-gray-700">user flow:</label>
-                            <AddImage maxImages={1} defaultImages={caseData.userFlow ? caseData.userFlow : []} onImagesChange={(images) => handleImageChange("userFlow", images)} />
+                            <AddImage maxImages={5} defaultImages={caseData.userFlow ? caseData.userFlow : []} onImagesChange={(images) => handleImageChange("userFlow", images)} />
                         </div>
                         <div className="mb-4">
                             <label className="block text-sm font-medium text-gray-700">architecture Analysis:</label>
-                            <AddImage maxImages={1} defaultImages={caseData.architecture ? caseData.architecture : []} onImagesChange={(images) => handleImageChange("architecture", images)} />
+                            <AddImage maxImages={5} defaultImages={caseData.architecture ? caseData.architecture : []} onImagesChange={(images) => handleImageChange("architecture", images)} />
                         </div>
                         <div className="mb-4">
                             <label className="block text-sm font-medium text-gray-700">Competetive Analysis:</label>

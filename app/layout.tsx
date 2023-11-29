@@ -3,6 +3,7 @@ import './globals.css'
 import type { Metadata } from 'next'
 import { Inter } from 'next/font/google'
 import { Suspense } from "react"
+import { getServerSession } from "next-auth"
 
 const inter = Inter({ subsets: ['latin'] })
 
@@ -11,15 +12,18 @@ export const metadata: Metadata = {
   description: 'provide crud functionality for cyberoni database',
 }
 
-export default function RootLayout({
+export default async function RootLayout({
   children,
 }: {
   children: React.ReactNode
 }) {
+  const session = await getServerSession()
   return (
     <html lang="en">
       <body className={`${inter.className} bg-blacktext-white `}>
-        <Header></Header>
+        <Suspense>
+          <Header></Header>
+        </Suspense>
         {children}
       </body>
     </html>

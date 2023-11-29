@@ -22,7 +22,7 @@ export type CreateUserDTO = {
     role: Role;
 }
 
-export type displayUserDTO = {
+export type DisplayUserDTO = {
     id: string;
     firstName?: string;
     lastName?: string;

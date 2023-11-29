@@ -1,20 +1,21 @@
 import React from 'react'
-import Image from "next/image"
 import Link from "next/link"
-import { MAIN_LOGO } from "@/components/assets"
-import { motion } from "framer-motion";
 import Logo from "./logo";
+import User from "./User";
+import { getServerSession } from "next-auth";
 
-function Header() {
+async function Header() {
+  const session = await getServerSession();
   return (
     <>
-      <div className="flex m-2 relative justify-between w-full h-1/6 lg:static lg:block lg:w-auto lg:justify-start">
+      <div className="flex  m-2 relative justify-between w-full h-1/6 lg:w-auto lg:justify-between">
         <Link href="/dashboard" className="flex items-center text-2xl font-display">
           <Logo></Logo>
           <p className="subpixel-antialiased">
             Crud Ops
           </p>
         </Link>
+        {session && <User session={session} />}
       </div>
     </>
   )

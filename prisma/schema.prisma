@@ -250,6 +250,7 @@ model Service {
   SubServices        SubService[]
   ServiceDescription ServiceDescription[]
   CaseStudy          CaseStudy[]
+  faqs               FAQ[]
 
   @@index([imageId])
 }
@@ -344,6 +345,16 @@ model SubService {
   serviceId                                 String
 
   @@index([imageId])
+  @@index([serviceId])
+}
+
+model FAQ {
+  id        String   @id @default(uuid())
+  question  String   @db.Text
+  answer    String   @db.Text
+  Service   Service? @relation(fields: [serviceId], references: [id])
+  serviceId String?
+
   @@index([serviceId])
 }
 

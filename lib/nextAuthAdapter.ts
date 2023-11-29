@@ -15,6 +15,9 @@ export const authOptions: NextAuthOptions = {
 
         })
     ],
+    pages: {
+        signIn: '/auth/signin',
+    },
 
 
     callbacks: {
@@ -30,7 +33,9 @@ export const authOptions: NextAuthOptions = {
             token.user && (session.user = token.user)
 
             return session
-        }
+        },
+
+
 
     }
 };
@@ -44,6 +49,7 @@ async function authorize(credentials: Record<"password" | "username", string> | 
         headers: { "Content-Type": "application/json" }
     })
     const { user } = await res.json()
+    console.log(user);
     // If no error and we have user data, return it
     if (res.status === 200 && user) {
         return user

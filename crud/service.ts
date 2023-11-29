@@ -1,4 +1,4 @@
-import { Service, PrismaClient, Prisma, Image, Tag, SubService, ServiceDescription } from "@prisma/client";
+import { Service, PrismaClient, Prisma, Image, Tag, SubService, ServiceDescription, FAQ } from "@prisma/client";
 import { CreateTagDTO, create as createTag, connectOrCreateObject as connectTags } from "./tags";
 import { CreateImageDTO, create as createImage, connectOrCreateObject } from "./images";
 import { CreateSubServiceDTO, create as createSubService, update as updateSubService } from "./subService";
@@ -16,6 +16,7 @@ export type CreateServiceDTO = {
     image?: CreateImageDTO;
     SubServices?: CreateSubServiceDTO[];
     tags?: CreateTagDTO[];
+    faqs?: CreateFaqDTO[]
 }
 
 export type CreateServiceDescription = {
@@ -25,6 +26,10 @@ export type CreateServiceDescription = {
     imageOnLeft: boolean;
     image: CreateImageDTO
 
+}
+export type CreateFaqDTO = {
+    question: string;
+    answer: string;
 }
 
 export type DisplayServiceDTO = Service & {
@@ -49,6 +54,9 @@ async function create(service: CreateServiceDTO, prismaClient: PrismaClient) {
             htmlEmbed: service.htmlEmbed,
             image: service.image ? { connect: { id: service.image?.id } } : {},
             tags: { connectOrCreate: connectTags(service.tags || []) },
+            faqs: {
+                create: service.faqs ? service.faqs : []
+            }
         },
         include: {
             SubServices: true,
@@ -200,7 +208,7 @@ async function getServicesByTag(tag: string, prismaClient: PrismaClient) {
 async function getAll(page: number, pageSize: number, prismaClient: PrismaClient) {
     const services = prismaClient.service;
 
-    if (pageSize !== 10 && pageSize != 30 && pageSize !== 50 &&pageSize!==0) throw new Error('page size must be 10, 30 or 50')
+    if (pageSize !== 10 && pageSize != 30 && pageSize !== 50 && pageSize !== 0) throw new Error('page size must be 10, 30 or 50')
 
     let allServices = await services.findMany({
         skip: page === 0 ? 0 : (page - 1) * pageSize, take: page === 0 ? 9999 : pageSize,
