@@ -31,7 +31,7 @@ function SidePanel(props: React.BaseHTMLAttributes<HTMLDivElement>) {
                     <Link className={`flex justifyjustify-startr items-center  hover:bg-blue-900 py-1 text-gray-200 hover:cursor-pointer ml-3`} href={"/dashboard/blogs/1"}>
 
                         <BookOpen />
-                        <div className="text-left pl-3">blogs</div>
+                        <div className="text-left pl-3">Blogs</div>
                     </Link>
                     <Link className={`flex justifyjustify-startr items-center  hover:bg-blue-900 py-1 text-gray-200 hover:cursor-pointer ml-3`} href={"/dashboard/casestudies/1"}>
 
