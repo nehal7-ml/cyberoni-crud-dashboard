@@ -1,5 +1,7 @@
 import Credentials from "next-auth/providers/credentials";
 import { NextAuthOptions, RequestInternal } from "next-auth";
+import { authorizeWithPassword } from "@/crud/user";
+import { prisma } from "@/prisma/prismaClient";
 
 export const authOptions: NextAuthOptions = {
     //adapter: MyAdapter(prisma),
@@ -43,15 +45,10 @@ export const authOptions: NextAuthOptions = {
 
 
 async function authorize(credentials: Record<"password" | "username", string> | undefined, req: Pick<RequestInternal, "query" | "body" | "headers" | "method">) {
-    const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/auth/credentials`, {
-        method: 'POST',
-        body: JSON.stringify({ ...credentials, email: credentials?.username }),
-        headers: { "Content-Type": "application/json" }
-    })
-    const { user } = await res.json()
-    console.log(user);
+    const user = await authorizeWithPassword({ email: credentials?.username!, password: credentials?.password! }, prisma)
+    // console.log(user);
     // If no error and we have user data, return it
-    if (res.status === 200 && user) {
+    if (user) {
         return user
     }
     return null

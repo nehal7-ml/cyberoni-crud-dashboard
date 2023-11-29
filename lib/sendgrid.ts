@@ -4,13 +4,13 @@ sgMail.setApiKey(process.env.SENDGRID_API_KEY as string)
 
 export async function sendPasswordEmail({ email, password }: { email: string, password: string }) {
 
-    const msg: sgMail.MailDataRequired = {
-        to: email, // Change to your recipient
-        from: process.env.SENDGRID_EMAIL as string, // Change to your verified sender
-        subject: 'Welcome to Apartment Guru',
-        html: `
+  const msg: sgMail.MailDataRequired = {
+    to: email, // Change to your recipient
+    from: process.env.SENDGRID_EMAIL as string, // Change to your verified sender
+    subject: 'Cyberoni crud credentials',
+    html: `
           <section>
-            <h1>Welcome to Apartment Guru</h1>
+            <h1>Welcome to CyberOni</h1>
             
             <p>Login using the following credentials:</p>
             <div>
@@ -19,11 +19,11 @@ export async function sendPasswordEmail({ email, password }: { email: string, pa
             </div>          
           <section>
         `
-    }
+  }
 
-    let response = await sgMail.send(msg);
+  let response = await sgMail.send(msg);
 
-    // console.log(response[0].body)
-    return response[0].statusCode
+  // console.log(response[0].body)
+  return response[0].statusCode
 
 }

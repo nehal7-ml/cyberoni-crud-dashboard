@@ -13,7 +13,7 @@ export default async function SignIn({ searchParams }: { searchParams: { callbac
     const session = await getServerSession(authOptions)
     const search = searchParams
 
-    console.log(search);
+    // console.log(search);
     // If the user is already logged in, redirect.
     // Note: Make sure not to redirect to the same page
     // To avoid an infinite loop!
