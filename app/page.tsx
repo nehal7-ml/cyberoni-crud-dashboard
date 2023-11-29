@@ -2,8 +2,5 @@
 import { redirect } from "next/navigation";
 
 export default function Home() {
-
-  return <>
-  <div>HOme</div>
-  </>
+  redirect('/dashboard/users/1');
 }

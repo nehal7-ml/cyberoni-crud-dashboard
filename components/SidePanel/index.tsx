@@ -52,7 +52,7 @@ async function SidePanel(props: React.BaseHTMLAttributes<HTMLDivElement>) {
 
                 </div>
                 {session && <div className="relative inline-block text-left px-5">
-                    <Link href={'/api/auth/signin'} className="flex gap-2 p-3  hover:bg-gray-300 hover:shadow-lg rounded-lg"><LogOutIcon /> LogOut</Link>
+                    <Link href={'/api/auth/signout'} className="flex gap-2 p-3  hover:bg-gray-300 hover:shadow-lg rounded-lg"><LogOutIcon /> LogOut</Link>
                 </div>}
             </div>
         </>

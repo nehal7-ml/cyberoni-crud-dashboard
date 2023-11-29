@@ -4,31 +4,39 @@ import { authOptions } from "@/lib/nextAuthAdapter"
 import ClientInput from "@/components/ClientInput"
 import { ArrowRight, ArrowRightCircle } from "lucide-react"
 import Image from "next/image"
-import { redirect } from "next/navigation"
+import { ReadonlyURLSearchParams, redirect } from "next/navigation"
 import { cookies } from 'next/headers'
+import { NextRequest } from "next/server"
 
-export default async function SignIn({ }) {
+export default async function SignIn({ searchParams }: { searchParams: { callbackUrl: string, error: string } }) {
 
     const session = await getServerSession(authOptions)
+    const search = searchParams
 
+    console.log(search);
     // If the user is already logged in, redirect.
     // Note: Make sure not to redirect to the same page
     // To avoid an infinite loop!
+
+
     if (session) {
         redirect('/')
     }
 
-    
+
     const csrfToken = cookies().get('next-auth.csrf-token')?.value.split('|')[0]
 
     return (
         <>
             <div className="container mx-auto max-w-md">
-                <div></div>
+                
                 <form method="POST" action={'/api/auth/callback/credentials'} className="flex flex-col p-5 lg:p-10 bg-gray-50 text-gray-950 rounded-[30px] shadow-lg">
                     <Image className="mx-auto" src={"/signin-1.png"} alt="signin" height={500} width={300} />
                     <h1 className="text-bold text-4xl">Sign In</h1>
-
+                    {search.error === 'CredentialsSignin' ?
+                    <div className="bg-rose-500/80 rounded-lg px-4 py-1 text-gray-200 my-3 ring-red-600 ring-2">
+                        Wrong credentials try again with correct credentials
+                    </div> : <></>}
                     <input name="csrfToken" type="hidden" defaultValue={csrfToken} />
                     <div className="relative my-10">
 
