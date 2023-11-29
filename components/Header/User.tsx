@@ -13,8 +13,6 @@ export default function User({ session }: { session: Session }) {
   if (!email) return null;
 
   return (
-    <div className="relative inline-block text-left">
-        <Link href={'/api/auth/signin'} className="flex gap-2 hover:bg-red-600 hover:shadow-lg rounded-lg"><LogOutIcon/> LogOut</Link>
-    </div>
+ <></>
   );
 }

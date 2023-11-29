@@ -21,9 +21,6 @@ export default async function RootLayout({
   return (
     <html lang="en">
       <body className={`${inter.className} bg-blacktext-white `}>
-        <Suspense>
-          <Header></Header>
-        </Suspense>
         {children}
       </body>
     </html>

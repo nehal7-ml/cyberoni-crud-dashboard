@@ -3,15 +3,15 @@ import { motion } from "framer-motion"
 import React from 'react'
 import { MAIN_LOGO } from "../assets"
 import Image from "next/image"
-function logo() {
+function Logo() {
     return (
         <>
             <motion.div>
                 <Image
                     src={MAIN_LOGO}
                     alt="CyberOni logo"
-                    width="30"
-                    height="30"
+                    width="100"
+                    height="100"
                     className="mr-2 rounded-sm animate-bounce"
                 ></Image>
             </motion.div>
@@ -20,4 +20,4 @@ function logo() {
     )
 }
 
-export default logo
+export default Logo
