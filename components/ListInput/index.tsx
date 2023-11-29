@@ -40,9 +40,9 @@ function ListInput({ label, initial, onChange }: { label: string, initial: strin
             <label>{label}</label>
 
             <div className="flex flex-wrap gap-2 my-1">
-                {list.map(tag => (
+                {list.map((tag, index) => (
                     <div
-                        key={tag}
+                        key={index}
                         className="bg-blue-200 text-blue-800 p-2 rounded flex items-center justify-around"
                     >
                         <span className="line-clamp-1">{tag}</span>

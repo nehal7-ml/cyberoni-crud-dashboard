@@ -249,7 +249,7 @@ model Service {
   imageId            String?
   SubServices        SubService[]
   ServiceDescription ServiceDescription[]
-  CaseStudy          CaseStudy[]
+  CaseStudies          CaseStudy[]
   faqs               FAQ[]
 
   @@index([imageId])

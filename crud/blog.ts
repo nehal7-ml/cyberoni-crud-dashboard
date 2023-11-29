@@ -17,7 +17,7 @@ export type CreateBlogDTO = {
     tags: CreateTagDTO[]
 }
 
-export type DisplayBlogDTO = Blog
+export type DisplayBlogDTO = Blog &{author: User}
 
 async function create(blog: CreateBlogDTO, prismaClient: PrismaClient) {
     const blogs = prismaClient.blog;
@@ -94,7 +94,8 @@ async function getAll(page: number, pageSize: number, prismaClient: PrismaClient
         },
         include: {
             // reviews: true,
-            tags: true
+            tags: true,
+            author:true
 
         }
     })

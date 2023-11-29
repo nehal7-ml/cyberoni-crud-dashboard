@@ -37,6 +37,7 @@ function CaseStudyForm({ method, action, initial, types }: { method: 'POST' | 'P
 
     });
 
+    console.log(types);
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
         const apiUrl = process.env.NEXT_PUBLIC_API_URL;
@@ -113,11 +114,12 @@ function CaseStudyForm({ method, action, initial, types }: { method: 'POST' | 'P
                         <div className="mb-4">
                             <label className="block text-sm font-medium text-gray-700">Type:</label>
                             <select
-                                name="type"
+                                name="serviceId"
                                 className="mt-1 p-2 border rounded w-full"
-                                value={caseData.serviceId}
+                                value={caseData.serviceId|| ""}
                                 onChange={handleInputChange}
                             >
+                                <option disabled>Select Service</option>
                                 {types.map((type, index) => (<option value={type.id} key={index}>{type.title}</option>))}
                             </select>
                         </div>

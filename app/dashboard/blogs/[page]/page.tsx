@@ -1,8 +1,8 @@
 import Pagination from "@/components/Pagination";
 import Table from "@/components/Table"
 import { TableItem } from "@/components/TableItem";
-import { DisplayBlogDTO } from "@/crud/blog";
-import { getAllRecordsDTO } from "@/crud/commonDTO";
+import { DisplayBlogDTO, getAll } from "@/crud/blog";
+import { prisma } from "@/prisma/prismaClient";
 import React from 'react'
 
 export const dynamic= 'force-dynamic'
@@ -16,8 +16,8 @@ async function Blogs({ params }: { params: { page: string } }) {
           const row: any = [];
           row.push(value.title);
           row.push(value.featured);
-          row.push(value.date);
-          row.push(value.userId);
+          row.push(value.date.toLocaleDateString());
+          row.push(value.author.firstName? value.author.firstName: value.author.email);
           row.push('default');
 
           return <TableItem type="blogs" key={value.id} index={value.id} row={row}></TableItem>
@@ -28,13 +28,8 @@ async function Blogs({ params }: { params: { page: string } }) {
   )
 }
 async function getData(page: number) {
-  let apiUrl = process.env.API_URL;
-  let res = await fetch(`${apiUrl}/blogs/all/${page}`);
-  if (res.status == 200) {
-    let resJson = await res.json();
-    console.log(resJson);
-    return (resJson.data as getAllRecordsDTO);
-  }
-
+  let res = await getAll(page, 10, prisma)
+  console.log(res);
+  return res
 }
 export default Blogs

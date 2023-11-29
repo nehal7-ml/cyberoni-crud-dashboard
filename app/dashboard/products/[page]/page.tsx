@@ -2,7 +2,8 @@ import Pagination from "@/components/Pagination";
 import Table from "@/components/Table"
 import { TableItem } from "@/components/TableItem";
 import { getAllRecordsDTO } from "@/crud/commonDTO";
-import { displayProductDTO } from "@/crud/product";
+import { displayProductDTO, getAll } from "@/crud/product";
+import { prisma } from "@/prisma/prismaClient";
 import React, { useEffect, useState } from 'react'
 export const dynamic = 'force-dynamic';
 async function Products({ params }: { params: { page: string } }) {
@@ -35,12 +36,8 @@ async function Products({ params }: { params: { page: string } }) {
 
 async function getData(page: number) {
   let apiUrl = process.env.API_URL
-  let res = await fetch(`${apiUrl}/products/all/${page}`);
-  if (res.status == 200) {
-    let resJson = await res.json();
-    // console.log(resJson.data);
-    return (resJson.data as getAllRecordsDTO);
-  }
+  let res = await getAll(page, 10, prisma)
+  return res
 
 }
 export default Products
