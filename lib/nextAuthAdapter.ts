@@ -45,13 +45,20 @@ export const authOptions: NextAuthOptions = {
 
 
 async function authorize(credentials: Record<"password" | "username", string> | undefined, req: Pick<RequestInternal, "query" | "body" | "headers" | "method">) {
-    const user = await authorizeWithPassword({ email: credentials?.username!, password: credentials?.password! }, prisma)
-    // console.log(user);
-    // If no error and we have user data, return it
-    if (user) {
-        return user
+    try {
+        const user = await authorizeWithPassword({ email: credentials?.username!, password: credentials?.password! }, prisma)
+        if (user) {
+            return user
+        }
+        else return null
+        // console.log(user);
+    } catch (error) {
+        console.log(error);
+        return null
+
     }
-    return null
+    // If no error and we have user data, return it
+
 }
 
 // export default function MyAdapter(client: PrismaClient, options = {}): Adapter {

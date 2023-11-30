@@ -15,7 +15,7 @@ function BlogForm({ method, action, initial }: { method: 'POST' | 'PUT', action:
     const [notifyType, setNotifyType] = useState<'success' | 'fail'>('fail');
     const [initialContent, setInitialContent] = useState(initial?.content || "");
 
-    const [json, setJson] = useState("{}");
+
     const [blogData, setBlogData] = useState<CreateBlogDTO>({
         title: '',
         subTitle: '',
@@ -28,6 +28,8 @@ function BlogForm({ method, action, initial }: { method: 'POST' | 'PUT', action:
         images: []
 
     });
+    const [rawJson, setRawJson] = useState(JSON.stringify(blogData,null, 2));
+    const [json, setJson] = useState<{ [key: string]: any }>({});
 
     const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => {
         const { name, value } = e.target;
@@ -111,7 +113,7 @@ function BlogForm({ method, action, initial }: { method: 'POST' | 'PUT', action:
 
     function parseJson(json: string) {
         try {
-            setBlogData(JSON.parse(json))
+            setJson(JSON.parse(json))
         } catch (error) {
             console.log("invalid JSON");
             alert("Error parsing JSON");
@@ -119,6 +121,18 @@ function BlogForm({ method, action, initial }: { method: 'POST' | 'PUT', action:
         }
 
     }
+
+    useEffect(() => {
+        console.log(Object.keys(blogData));
+        if (Object.keys(json).length > 0) {
+            for (let key of Object.keys(blogData)) {
+                console.log(key,json[key]);
+                setBlogData(prev => ({ ...prev, [key]: json[key] || "" }));
+
+            }
+        }
+
+    }, [json]);
 
     return (
         <div className="light:bg-gray-100 light:text-black dark:bg-gray-700 dark:text-gray-800  bg-gray-100 min-h-screen flex items-center justify-center ">
@@ -133,14 +147,14 @@ function BlogForm({ method, action, initial }: { method: 'POST' | 'PUT', action:
                             name="json"
                             id=""
                             rows={7}
-                            value={json}
-                            onChange={(event) => setJson(event.target.value)}
+                            value={rawJson}
+                            onChange={(event) => setRawJson(event.target.value)}
                         >
                         </textarea>
                         <button
                             className="w-full bg-blue-500 text-white p-2 rounded hover:bg-blue-600 focus:outline-none focus:ring focus:ring-blue-300"
                             type="button"
-                            onClick={() => parseJson(json)}
+                            onClick={() => parseJson(rawJson)}
                         >Parse Json</button>
                     </div>
                     <div className="my-4 text-center font-bold  flex items-center justify-center gap-3"><hr className="w-1/3" /> OR <hr className="w-1/3" /></div>
