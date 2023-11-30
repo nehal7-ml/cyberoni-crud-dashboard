@@ -15,6 +15,7 @@ function BlogForm({ method, action, initial }: { method: 'POST' | 'PUT', action:
     const [notifyType, setNotifyType] = useState<'success' | 'fail'>('fail');
     const [initialContent, setInitialContent] = useState(initial?.content || "");
 
+    const [json, setJson] = useState("{}");
     const [blogData, setBlogData] = useState<CreateBlogDTO>({
         title: '',
         subTitle: '',
@@ -108,11 +109,41 @@ function BlogForm({ method, action, initial }: { method: 'POST' | 'PUT', action:
     }
 
 
+    function parseJson(json: string) {
+        try {
+            setBlogData(JSON.parse(json))
+        } catch (error) {
+            console.log("invalid JSON");
+            alert("Error parsing JSON");
+
+        }
+
+    }
+
     return (
         <div className="light:bg-gray-100 light:text-black dark:bg-gray-700 dark:text-gray-800  bg-gray-100 min-h-screen flex items-center justify-center ">
             <div className="bg-white shadow-md rounded p-8 max-w-3xl w-full">
                 <h2 className="text-2xl font-semibold mb-4">Create Blog</h2>
                 <form onSubmit={handleSubmit} className="h-fit">
+
+                    <div className="mb-4">
+                        <label className="block" htmlFor="json">Json input auto fill: </label>
+                        <textarea
+                            className={"w-full ring-2 invalid:ring-red-500 p-3"}
+                            name="json"
+                            id=""
+                            rows={7}
+                            value={json}
+                            onChange={(event) => setJson(event.target.value)}
+                        >
+                        </textarea>
+                        <button
+                            className="w-full bg-blue-500 text-white p-2 rounded hover:bg-blue-600 focus:outline-none focus:ring focus:ring-blue-300"
+                            type="button"
+                            onClick={() => parseJson(json)}
+                        >Parse Json</button>
+                    </div>
+                    <div className="my-4 text-center font-bold  flex items-center justify-center gap-3"><hr className="w-1/3" /> OR <hr className="w-1/3" /></div>
                     <div className="mb-4">
                         <label className="block text-sm font-medium text-gray-700">Title:</label>
                         <input

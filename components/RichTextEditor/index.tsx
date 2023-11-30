@@ -3,6 +3,8 @@ import { useState, useEffect, ChangeEvent } from "react";
 import { Editor as TinyMCE } from 'tinymce'
 import { Editor as RichTextEditor, IAllProps } from '@tinymce/tinymce-react';
 import { bufferToB64 } from "@/lib/utils";
+import Script from "next/script";
+import { markdownPlugin } from "./plugins/MarkDown";
 
 
 const filePickerCallback = async function loadFromComputer(cb: (value: string, meta?: Record<string, any>) => void, value: string, meta: Record<string, any>) {
@@ -83,27 +85,16 @@ const Editor = ({ defaultValue, onChange }: { defaultValue?: string, onChange: (
 
                         ],
                         toolbar1: "insertfile undo redo | styleselect | bold italic | alignleft aligncenter alignright alignjustify | bullist numlist outdent indent  | fullscreen",
-                        toolbar2: "link image code media ",
+                        toolbar2: "link image code media  markdown",
                         file_picker_types: 'image',
                         file_picker_callback: filePickerCallback,
                         image_advtab: true,
-                        textpattern_patterns: [
-                            { start: '*', end: '*', format: 'italic' },
-                            { start: '**', end: '**', format: 'bold' },
-                            { start: '#', format: 'h1' },
-                            { start: '##', format: 'h2' },
-                            { start: '###', format: 'h3' },
-                            { start: '####', format: 'h4' },
-                            { start: '#####', format: 'h5' },
-                            { start: '######', format: 'h6' },
-                            { start: '1. ', cmd: 'InsertOrderedList' },
-                            { start: '* ', cmd: 'InsertUnorderedList' },
-                            { start: '- ', cmd: 'InsertUnorderedList' },
-                            { start: '//brb', replacement: 'Be Right Back' },
-                            { start: '```', end: '```', replacement: '' }
-                        ],
                         extended_valid_elements: 'script[language|type|src]',
-                        protect: [/<script>[\s\S]*?<\/script>/g]
+                        protect: [/<script>[\s\S]*?<\/script>/g],
+                        setup: (editor)=> {
+                           markdownPlugin(editor);
+                            
+                        }
                     }}
                     initialValue={initialValue}
                     onEditorChange={updatePreviewAndHandleChange}
