@@ -5,6 +5,8 @@ import { getAllRecordsDTO } from "./commonDTO";
 
 import bcrypt from 'bcrypt'
 import { sendPasswordEmail } from "@/lib/sendgrid";
+import { generatePassword } from "@/lib/utils";
+import { verify } from "jsonwebtoken";
 
 
 export type CredentialAuthDTO = {
@@ -98,6 +100,24 @@ async function update(userId: string, user: CreateUserDTO, prismaClient: PrismaC
 
         return updatedUser
     }
+
+}
+
+export async function reset(token: string, prismaClient: PrismaClient) {
+    const users = prismaClient.user;
+    const { email } = verify(token as string, process.env.NEXTAUTH_SECRET as string) as { email: string};
+
+    const password = generatePassword()
+    const hashedPassword = await bcrypt.hash(password, 10)
+    const updated = await users.update({
+        where: { email }, data: {
+
+            password: hashedPassword
+        }
+    });
+    await sendPasswordEmail({ email, password, subject: "New Cyberoni Crud credentials" })
+    return true;
+
 
 }
 async function remove(userId: string, prismaClient: PrismaClient) {

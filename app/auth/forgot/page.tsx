@@ -1,17 +1,21 @@
 import ClientInput from "@/components/ClientInput"
-import { RotateCcw } from "lucide-react"
+import { sendPasswordReset } from "@/lib/sendgrid";
+import { sign } from "jsonwebtoken";
+import { CheckCircle2, RotateCcw, XCircle } from "lucide-react"
 import React from 'react'
 
-function ForgotPassword() {
+function ForgotPassword({ searchParams }: { searchParams: { success: string } }) {
 
- async  function resetPassword() {
+  let success = searchParams.success === "true" ? true : searchParams.success === "false" ? false : null
+  async function resetPassword(formData: FormData) {
     'use server'
-
+    const email = formData.get('username');
+    await sendPasswordReset(email as string, sign({ email }, process.env.NEXTAUTH_SECRET as string));
 
   }
   return (
     <div>
-      <form action="">
+      {success === null ? <form action={resetPassword}>
         <h1 className="text-bold text-4xl">Reset Password</h1>
 
         <div className="relative my-10">
@@ -31,11 +35,24 @@ function ForgotPassword() {
           <button className="flex rounded-xl hover:shadow-md p-4 font-bold text-2xl gap-2 text-center justify-center items-center" type="submit">
             <div className="flex-1">Reset password</div>
             <div className="w-10 h-10 rounded-full bg-black flex justify-center items-center">
-            <RotateCcw className="text-white" />
+              <RotateCcw className="text-white" />
             </div>
 
           </button></div>
-      </form>
+      </form> :
+        success === true ? <>
+          <div className="flex gap-3 p-4 ring-green-500 bg-green-400/60 ring-2 ">
+            <CheckCircle2 className="text-emerald-900" /> Successfully reset Password check email
+          </div>
+        </> :
+
+          success === false ? <>
+            <div className="flex gap-3 p-4 ring-red-500 bg-rose-400/60 ring-2 ">
+            <XCircle className="text-rose-900" /> Failed to reset Password
+          </div>
+          </> : <></>
+
+      }
     </div>
   )
 }

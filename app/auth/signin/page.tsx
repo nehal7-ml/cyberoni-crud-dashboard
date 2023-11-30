@@ -7,6 +7,7 @@ import Image from "next/image"
 import { ReadonlyURLSearchParams, redirect } from "next/navigation"
 import { cookies } from 'next/headers'
 import { NextRequest } from "next/server"
+import Link from "next/link"
 
 export default async function SignIn({ searchParams }: { searchParams: { callbackUrl: string, error: string } }) {
 
@@ -72,6 +73,8 @@ export default async function SignIn({ searchParams }: { searchParams: { callbac
                             </div>
 
                         </button></div>
+
+                        <Link className="text-blue-500 hover:underline text-center text-sm" href={'/auth/forgot'}>Forgot Password?</Link>
                 </form>
             </div>
         </>
