@@ -29,14 +29,13 @@ export default async function SignIn({ searchParams }: { searchParams: { callbac
     return (
         <>
             <div className="container mx-auto max-w-md">
-                
-                <form method="POST" action={'/api/auth/callback/credentials'} className="flex flex-col p-5 lg:p-10 bg-gray-50 text-gray-950 rounded-[30px] shadow-lg">
-                    <Image className="mx-auto" src={"/signin-1.png"} alt="signin" height={500} width={300} />
+
+                <form method="POST" action={'/api/auth/callback/credentials'} className="flex flex-col p-5 lg:p-10 bg-gray-50 text-gray-950">
                     <h1 className="text-bold text-4xl">Sign In</h1>
                     {search.error === 'CredentialsSignin' ?
-                    <div className="bg-rose-500/80 rounded-lg px-4 py-1 text-gray-200 my-3 ring-red-600 ring-2">
-                        Wrong credentials try again with correct credentials
-                    </div> : <></>}
+                        <div className="bg-rose-500/80 rounded-lg px-4 py-1 text-gray-200 my-3 ring-red-600 ring-2">
+                            Wrong credentials try again with correct credentials
+                        </div> : <></>}
                     <input name="csrfToken" type="hidden" defaultValue={csrfToken} />
                     <div className="relative my-10">
 
