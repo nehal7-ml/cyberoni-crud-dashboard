@@ -8,7 +8,7 @@ import { CreateServiceDescription } from "@/crud/service";
 function DescriptionForm({ initial, handleDescritionChange }: { initial?: ServiceDescription & { image: Image }, handleDescritionChange: (description: CreateServiceDescription) => void }) {
 
     const form = useRef<HTMLFormElement>(null)
-    const [description, setDescription] = useState<CreateServiceDescription>({
+    const [description, setDescription] = useState<CreateServiceDescription>(initial||{
         content: '',
         title: '',
         imageOnLeft: false,
@@ -24,7 +24,7 @@ function DescriptionForm({ initial, handleDescritionChange }: { initial?: Servic
     }
     function handleSubmit(e: React.FormEvent) {
         // Send the productData to your backend for creating the product
-        e.preventDefault()
+        e.preventDefault();
         const formData= new FormData(e.target as HTMLFormElement)
         console.log(formData.get('imageOnLeft'));
         handleDescritionChange({
@@ -32,7 +32,16 @@ function DescriptionForm({ initial, handleDescritionChange }: { initial?: Servic
             content: formData.get('content') as string,
             imageOnLeft: formData.get('imageOnLeft') === 'on' ? true : false as boolean,
             image: description.image
+        });
+        (e.target as HTMLFormElement).reset()
+        setDescription({
+            content: '',
+            title: '',
+            imageOnLeft: false,
+            image: { src: '' }
         })
+
+        
     }
     return (
         <div className="light:bg-gray-100 light:text-black dark:bg-gray-700 dark:text-gray-800 min-h-screen flex items-center justify-center">
@@ -58,7 +67,7 @@ function DescriptionForm({ initial, handleDescritionChange }: { initial?: Servic
                             required
                         />
                     </div>
-                    <AddImage onImagesChange={handleChangedImage} defaultImages={initial?.image ? [initial.image] : []} maxImages={1} />
+                    <AddImage onImagesChange={handleChangedImage} defaultImages={description.image.src ? [description.image] : []} maxImages={1} />
                     <div className="mb-4 flex gap-4">
                         <label className="block text-sm font-medium text-gray-700">Image on left:</label>
                         <input

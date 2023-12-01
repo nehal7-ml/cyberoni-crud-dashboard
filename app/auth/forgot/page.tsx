@@ -4,9 +4,10 @@ import { sign } from "jsonwebtoken";
 import { CheckCircle2, RotateCcw, XCircle } from "lucide-react"
 import React from 'react'
 
-function ForgotPassword({ searchParams }: { searchParams: { success: string } }) {
+function ForgotPassword({ searchParams }: { searchParams: { success: string, sent: string } }) {
 
   let success = searchParams.success === "true" ? true : searchParams.success === "false" ? false : null
+  let sent = searchParams.sent === "true" ? true : false
   async function resetPassword(formData: FormData) {
     'use server'
     const email = formData.get('username');

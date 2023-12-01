@@ -249,7 +249,7 @@ model Service {
   imageId            String?
   SubServices        SubService[]
   ServiceDescription ServiceDescription[]
-  CaseStudies          CaseStudy[]
+  CaseStudies        CaseStudy[]
   faqs               FAQ[]
 
   @@index([imageId])
@@ -430,10 +430,7 @@ model Tag {
   services    Service[]
   subServices SubService[]
   prompts     GptPrompt[]
-  Event       Event?       @relation(fields: [eventId], references: [id])
-  eventId     String?
-
-  @@index([eventId])
+  events      Event[]
 }
 
 model Property {

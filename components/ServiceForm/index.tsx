@@ -166,6 +166,14 @@ function SerivceForm({ method, action, initial }: { method: 'POST' | 'PUT', acti
                             {serviceData.ServiceDescription?.map((section, index) => {
 
                                 return <div className={`flex gap-5 w-full my-4 border-dotted border-2 p-2 ${section.imageOnLeft ? 'flex-row' : 'flex-row-reverse'}`} key={index}>
+                                    <div className="flex justify-end ">
+                                        <button className="self-end   mx-10 my-3" onClick={() => setServiceData(prev =>
+                                        ({
+                                            ...prev,
+                                            ServiceDescription: prev.ServiceDescription.filter((desc, ind) => (ind !== index))
+
+                                        }))} ><X color="red" className="cursor-pointer" /></button>
+                                    </div>
                                     <div className="w-1/3 ">
                                         <Image src={section.image.src} alt={`${index}-section`} height={500} width={500} ></Image>
                                     </div>
@@ -196,18 +204,18 @@ function SerivceForm({ method, action, initial }: { method: 'POST' | 'PUT', acti
                             />
                         </div>
                         <div className="mb-4">
-                      
+
                             <ListInput
                                 label="Value Brought"
                                 initial={serviceData.valueBrought}
-                                onChange={(values)=> setServiceData(prev=>({...prev, valueBrought: values}))}
+                                onChange={(values) => setServiceData(prev => ({ ...prev, valueBrought: values }))}
                             />
                         </div >
                         <div className="mb-4">
                             <ListInput
                                 label="Skills used"
                                 initial={serviceData.skillsUsed}
-                                onChange={(values)=> setServiceData(prev=>({...prev, skillsUsed: values}))}
+                                onChange={(values) => setServiceData(prev => ({ ...prev, skillsUsed: values }))}
                             />
                         </div >
 

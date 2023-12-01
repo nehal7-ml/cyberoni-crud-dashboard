@@ -45,13 +45,13 @@ function AddImage({ defaultImages, onImagesChange, maxImages, submit }: { defaul
 
     const handleRemoveImage = async (imageToRemove: CreateImageDTO) => {
 
-        const res = await fetch('/api/image', {
-            method: 'POST', body: JSON.stringify({
+        // const res = await fetch('/api/image', {
+        //     method: 'POST', body: JSON.stringify({
 
-                image: imageToRemove,
-                request: 'DELETE',
-            })
-        })
+        //         image: imageToRemove,
+        //         request: 'DELETE',
+        //     })
+        // })
         const newFiles = images.filter(image => image.src !== imageToRemove.src);
         setImages(newFiles);
         onImagesChange(newFiles);
