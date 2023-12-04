@@ -4,7 +4,7 @@ import { useEffect, useState } from "react";
 import AddImagesAndTags from "../AddImagesAndTags";
 import Notification from "../Notification";
 import { CreateBlogDTO, DisplayBlogDTO } from "@/crud/blog";
-import { useParams } from "next/navigation";
+import { redirect, useParams } from "next/navigation";
 import { CreateImageDTO } from "@/crud/images";
 import { CreateTagDTO } from "@/crud/tags";
 import Editor from "../RichTextEditor";
@@ -75,6 +75,9 @@ function BlogForm({ method, action, initial }: { method: 'POST' | 'PUT', action:
             setNotifyType('success');
             setNotifyMessage(resJson.message);
             setNotify(true);
+
+            redirect(`/blogs/view/${resJson.message.data.id}`)
+
 
         } else {
             setNotifyType('fail');

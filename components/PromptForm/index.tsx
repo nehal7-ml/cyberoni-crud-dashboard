@@ -6,6 +6,7 @@ import { CreateTagDTO } from "@/crud/tags";
 import React, { useState } from 'react';
 import Notification, { NotificationType } from "@/components/Notification";
 import ListInput from "../ListInput";
+import { redirect } from "next/navigation";
 
 const GptPromptForm = ({ method, action, initial }: { method: 'POST' | 'PUT', action: string, initial?: CreateGptPromptDTO }) => {
 
@@ -53,6 +54,8 @@ const GptPromptForm = ({ method, action, initial }: { method: 'POST' | 'PUT', ac
         console.log(res.status);
         if (res.status == 200) {
             message('success', resJson.message)
+            redirect(`/prompts/view/${resJson.message.data.id}`)
+
 
         } else {
             message('fail', resJson.message)

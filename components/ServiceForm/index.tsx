@@ -13,6 +13,7 @@ import { Service } from "@prisma/client";
 import Image from "next/image";
 import DescriptionForm from "./DescriptionSection";
 import ListInput from "../ListInput";
+import { redirect } from "next/navigation";
 
 function SerivceForm({ method, action, initial }: { method: 'POST' | 'PUT', action: string, initial?: DisplayServiceDTO }) {
     const [notify, setNotify] = useState(false);
@@ -73,7 +74,8 @@ function SerivceForm({ method, action, initial }: { method: 'POST' | 'PUT', acti
         let resJson = await res.json();
 
         if (res.status == 200) {
-            message('success', resJson.message)
+            message('success', resJson.message);
+            redirect(`/services/view/${resJson.message.data.id}`)
 
         } else {
             message('fail', resJson.message)

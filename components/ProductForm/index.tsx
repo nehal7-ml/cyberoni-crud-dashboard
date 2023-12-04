@@ -10,6 +10,7 @@ import { CreateSupplierDTO } from "@/crud/supplier";
 import { X } from "lucide-react";
 import { FormProps } from "@/crud/commonDTO";
 import { ProductStatus, Supplier } from "@prisma/client";
+import { redirect } from "next/navigation";
 
 
 
@@ -61,6 +62,8 @@ const ProductForm = ({ method, action, initial }: FormProps) => {
 
         if (res.status == 200) {
             message('success', resJson.mesage)
+            redirect(`/products/view/${resJson.message.data.id}`)
+
 
         } else {
             message('fail', resJson.mesage)
