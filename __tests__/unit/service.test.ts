@@ -12,7 +12,7 @@ describe("test crud function for services", () => {
     const testService: CreateServiceDTO = {
         hourlyRate: 100,
         previewContent: "test preview content",
-        skillsUsed: "Web,Design",
+        skillsUsed: ["Web","Design"],
         title: "Service Title",
         ServiceDescription: [{
             content: "test content",
@@ -24,7 +24,7 @@ describe("test crud function for services", () => {
             }
         }],
 
-        valueBrought: "test value",
+        valueBrought: ["test value"],
         image: {
             src: "https://picsum.photos/200",
             name: "test image",
@@ -34,13 +34,13 @@ describe("test crud function for services", () => {
                 complexity: 10,
                 department: "test deparment",
                 description: "subservice description",
-                discounts: "",
+                discounts: [],
                 estimated_hours_times_fifty_percent: 100,
                 estimated_hours_times_one_hundred_percent: 200,
                 overheadCost: 1000,
-                pricingModel: "",
+                pricingModel: 'DEFAULT',
                 title: "Subservice-1",
-                serviceDeliverables: "",
+                serviceDeliverables: [],
                 serviceUsageScore: 10,
                 skillLevel: "100",
 

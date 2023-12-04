@@ -1,16 +1,16 @@
-import { createTagDTO } from "@/crud/tags";
+import { CreateTagDTO } from "@/crud/tags";
 import { X } from "lucide-react";
 import React, { useEffect, useState } from 'react'
 
 type chipProps = {
-    handleRemoveTag: (tag: createTagDTO) => void;
-    tags: Array<createTagDTO>;
+    handleRemoveTag: (tag: CreateTagDTO) => void;
+    tags: Array<CreateTagDTO>;
 }
 
 function TagChips({ tags, handleRemoveTag }: chipProps) {
-    const [currentTags, setTags] = useState<createTagDTO[]>(tags);
+    const [currentTags, setTags] = useState<CreateTagDTO[]>(tags);
 
-    const handleClick = (tagToRemove: createTagDTO) => {
+    const handleClick = (tagToRemove: CreateTagDTO) => {
         setTags(prevTags => { return prevTags.filter(tag => tag.name === tagToRemove.name); });
         handleRemoveTag(tagToRemove)
     };

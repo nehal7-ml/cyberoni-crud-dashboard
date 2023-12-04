@@ -6,6 +6,7 @@ import { reset } from "@/crud/user";
 
 export const { POST, DELETE, GET, PATCH, PUT } = apiHandler({ GET: get });
 
+export const dynamic='force-dynamic'
 
 async function get(req: NextRequest) {
     const token = req.nextUrl.searchParams.get('token');

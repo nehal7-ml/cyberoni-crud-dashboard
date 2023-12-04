@@ -9,6 +9,8 @@ import { cookies } from 'next/headers'
 import { NextRequest } from "next/server"
 import Link from "next/link"
 
+export const dynamic='force-dynamic'
+
 export default async function SignIn({ searchParams }: { searchParams: { callbackUrl: string, error: string } }) {
 
     const session = await getServerSession(authOptions)

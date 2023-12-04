@@ -1,6 +1,6 @@
 import { NextApiRequest, NextApiResponse } from "next";
 import { prisma } from "@/prisma/prismaClient";
-import { createGptPromptDTO, read, remove as removePrompt, update } from "@/crud/prompt";
+import { CreateGptPromptDTO, read, remove as removePrompt, update } from "@/crud/prompt";
 import { NextRequest, NextResponse } from 'next/server'
 import apiHandler from "@/errorHandler";
 
@@ -10,7 +10,7 @@ export const { POST, DELETE, GET, PATCH, PUT } = apiHandler({ GET: get, PUT: put
 async function put(req: NextRequest, { params }: { params: { id: string } }) {
 
     const promptId = params.id as string;
-    const prompt = await req.json() as createGptPromptDTO;
+    const prompt = await req.json() as CreateGptPromptDTO;
     const updatedUser = await update(promptId, prompt, prisma);
     return NextResponse.json({ message: "update success", data: updatedUser });
 }

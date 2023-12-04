@@ -132,7 +132,7 @@ function BlogForm({ method, action, initial }: { method: 'POST' | 'PUT', action:
             }
         }
 
-    }, [json]);
+    }, [blogData, json]);
 
     return (
         <div className="light:bg-gray-100 light:text-black dark:bg-gray-700 dark:text-gray-800  bg-gray-100 min-h-screen flex items-center justify-center ">

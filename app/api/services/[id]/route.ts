@@ -1,6 +1,6 @@
 import { NextApiRequest, NextApiResponse } from "next";
 import { prisma } from "@/prisma/prismaClient";
-import { createServiceDTO, read, remove as removeService, update } from "@/crud/service";
+import { CreateServiceDTO, read, remove as removeService, update } from "@/crud/service";
 import { NextRequest, NextResponse } from 'next/server'
 import apiHandler from "@/errorHandler";
 
@@ -8,7 +8,7 @@ export const { POST, DELETE, GET, PATCH, PUT } = apiHandler({ GET: get, PUT: put
 async function put(req: NextRequest, { params }: { params: { id: string } }) {
 
     const serviceId = params.id as string;
-    const service = await req.json() as createServiceDTO;
+    const service = await req.json() as CreateServiceDTO;
     const updatedUser = await update(serviceId, service, prisma);
     return NextResponse.json({ message: "update success", data: updatedUser });
 }
