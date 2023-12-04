@@ -95,7 +95,6 @@ function BlogForm({ method, action, initial }: { method: 'POST' | 'PUT', action:
     }
 
 
-    const params = useParams();
 
     useEffect(() => {
         if (initial) setBlogData(initial)

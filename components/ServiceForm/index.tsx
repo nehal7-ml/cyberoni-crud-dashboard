@@ -35,6 +35,8 @@ function SerivceForm({ method, action, initial }: { method: 'POST' | 'PUT', acti
     });
 
     const [descriptionForm, setDescriptionForm] = useState(false);
+    const [rawJson, setRawJson] = useState(JSON.stringify(serviceData,null, 2));
+    const [json, setJson] = useState<{ [key: string]: any }>({});
 
     const handleNumberInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
         const { name, value } = e.target;
@@ -134,6 +136,28 @@ function SerivceForm({ method, action, initial }: { method: 'POST' | 'PUT', acti
         if (initial) setServiceData(initial as CreateServiceDTO)
     }, [initial]);
 
+    
+    function parseJson(json: string) {
+        try {
+            setJson(JSON.parse(json))
+        } catch (error) {
+            console.log("invalid JSON");
+            alert("Error parsing JSON");
+
+        }
+
+    }
+    useEffect(() => {
+        console.log(Object.keys(serviceData));
+        if (Object.keys(json).length > 0) {
+            for (let key of Object.keys(serviceData)) {
+                console.log(key,json[key]);
+                setServiceData(prev => ({ ...prev, [key]: json[key] || "" }));
+
+            }
+        }
+
+    }, [json, serviceData]);
 
     return (
         <>
@@ -141,6 +165,23 @@ function SerivceForm({ method, action, initial }: { method: 'POST' | 'PUT', acti
                 <div className="bg-white shadow-md rounded p-8 max-w-4xl w-full overflow-y-scroll max-h-screen">
                     <h2 className="text-2xl font-semibold mb-4">Create Service</h2>
                     <form onSubmit={handleSubmit} className="flex flex-col">
+                    <div className="mb-4">
+                        <label className="block" htmlFor="json">Json input auto fill: </label>
+                        <textarea
+                            className={"w-full ring-2 invalid:ring-red-500 p-3"}
+                            name="json"
+                            id=""
+                            rows={7}
+                            value={rawJson}
+                            onChange={(event) => setRawJson(event.target.value)}
+                        >
+                        </textarea>
+                        <button
+                            className="w-full bg-blue-500 text-white p-2 rounded hover:bg-blue-600 focus:outline-none focus:ring focus:ring-blue-300"
+                            type="button"
+                            onClick={() => parseJson(rawJson)}
+                        >Parse Json</button>
+                    </div>
                         <div className="mb-4">
                             <label className="block text-sm font-medium text-gray-700">Title:</label>
                             <input
