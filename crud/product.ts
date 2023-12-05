@@ -49,7 +49,7 @@ async function create(product: CreateProductDTO, prismaClient: PrismaClient) {
         data: {
             ...product,
             tags: { connectOrCreate: connectTag(product.tags) },
-            images: { connectOrCreate: connectImage(product.images) },
+            images: connectImage(product.images),
             suppliers: {
                 create: [
                     ...product.suppliers as CreateSupplierDTO[]
@@ -91,7 +91,7 @@ async function update(productId: string, product: CreateProductDTO, prismaClient
         data: {
             ...product,
             tags: { connectOrCreate: connectTag(product.tags) },
-            images: { connectOrCreate: connectImage(product.images) },
+            images:  connectImage(product.images),
             suppliers: suplierUpdate
         }
     });

@@ -8,7 +8,7 @@ import React, { useState } from 'react';
 import Notification, { NotificationType } from "@/components/Notification";
 import { FormProps } from "@/crud/commonDTO";
 import PasswordGenerator from "../PasswordInput";
-import { redirect } from "next/navigation";
+import { redirect, useRouter } from "next/navigation";
 
 
 const apiUrl = process.env.NEXT_PUBLIC_API_URL;
@@ -59,6 +59,8 @@ const UserForm = ({ method, action, initial }: FormProps) => {
             image: images[0]
         }))
     }
+    const router = useRouter()
+
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
         const headers = {
@@ -71,7 +73,7 @@ const UserForm = ({ method, action, initial }: FormProps) => {
 
         if (res.status == 200) {
             message('success', resJson.message)
-            redirect(`/users/view/${resJson.message.data.id}`)
+            router.replace(`/users/view/${resJson.data.id}`)
 
         } else {
             message('fail', resJson.message)

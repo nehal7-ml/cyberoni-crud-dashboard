@@ -6,7 +6,7 @@ import { CreateTagDTO } from "@/crud/tags";
 import React, { useState } from 'react';
 import Notification, { NotificationType } from "@/components/Notification";
 import ListInput from "../ListInput";
-import { redirect } from "next/navigation";
+import { redirect, useRouter } from "next/navigation";
 
 const GptPromptForm = ({ method, action, initial }: { method: 'POST' | 'PUT', action: string, initial?: CreateGptPromptDTO }) => {
 
@@ -39,7 +39,7 @@ const GptPromptForm = ({ method, action, initial }: { method: 'POST' | 'PUT', ac
             [name]: value,
         }));
     };
-
+ const router = useRouter()
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
         const apiUrl = process.env.NEXT_PUBLIC_API_URL;
@@ -54,7 +54,7 @@ const GptPromptForm = ({ method, action, initial }: { method: 'POST' | 'PUT', ac
         console.log(res.status);
         if (res.status == 200) {
             message('success', resJson.message)
-            redirect(`/prompts/view/${resJson.message.data.id}`)
+            router.replace(`/prompts/view/${resJson.data.id}`)
 
 
         } else {

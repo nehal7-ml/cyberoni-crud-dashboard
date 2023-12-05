@@ -6,7 +6,7 @@ import { CreateTagDTO } from "@/crud/tags";
 import { EventStatus } from "@prisma/client";
 import React, { useEffect, useState } from 'react';
 import Notification, { NotificationType } from "@/components/Notification";
-import { redirect } from "next/navigation";
+import { redirect, useRouter } from "next/navigation";
 
 
 
@@ -52,6 +52,7 @@ const EventForm = ({ method, action, initial }: { method: 'POST' | 'PUT', action
         }
 
     };
+    const router = useRouter()
 
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
@@ -66,7 +67,7 @@ const EventForm = ({ method, action, initial }: { method: 'POST' | 'PUT', action
 
         if (res.status == 200) {
             message('success', resJson.mesage)
-            redirect(`/events/view/${resJson.message.data.id}`)
+            router.replace(`/events/view/${resJson.data.id}`)
 
         } else {
             message('fail', resJson.mesage)

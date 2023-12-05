@@ -13,7 +13,7 @@ import { Service } from "@prisma/client";
 import Image from "next/image";
 import DescriptionForm from "./DescriptionSection";
 import ListInput from "../ListInput";
-import { redirect } from "next/navigation";
+import { redirect, useRouter } from "next/navigation";
 
 function SerivceForm({ method, action, initial }: { method: 'POST' | 'PUT', action: string, initial?: DisplayServiceDTO }) {
     const [notify, setNotify] = useState(false);
@@ -63,7 +63,7 @@ function SerivceForm({ method, action, initial }: { method: 'POST' | 'PUT', acti
         }))
 
     }
-
+    const router = useRouter()
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
         const apiUrl = process.env.NEXT_PUBLIC_API_URL;
@@ -77,7 +77,7 @@ function SerivceForm({ method, action, initial }: { method: 'POST' | 'PUT', acti
 
         if (res.status == 200) {
             message('success', resJson.message);
-            redirect(`/services/view/${resJson.message.data.id}`)
+            router.replace(`/services/view/${resJson.data.id}`)
 
         } else {
             message('fail', resJson.message)

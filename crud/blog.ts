@@ -1,6 +1,6 @@
 import { Blog, PrismaClient, User } from "@prisma/client";
-import { CreateTagDTO, connectOrCreateObject as connectTags, } from "./tags";
-import { CreateImageDTO, connectOrCreateObject as connectImages, } from "./images";
+import { CreateTagDTO, TagSchema, connectOrCreateObject as connectTags, } from "./tags";
+import { CreateImageDTO, ImageSchema, connectOrCreateObject as connectImages, } from "./images";
 
 
 
@@ -24,7 +24,7 @@ async function create(blog: CreateBlogDTO, prismaClient: PrismaClient) {
     let createdblog = await blogs.create({
         data: {
             ...blog,
-            images: { connect: blog.images.map(image => { return { id: image.id as string } }) },
+            images: connectImages(blog.images),
             tags: { connectOrCreate: connectTags(blog.tags) },
             author: { connect: { email: blog.author.email } }
         }
@@ -34,13 +34,52 @@ async function create(blog: CreateBlogDTO, prismaClient: PrismaClient) {
 
 }
 
+
+export const BlogSchema={
+    "type": "object",
+    "properties": {
+      "title": { "type": "string" },
+      "subTitle": { "type": "string" },
+      "description": { "type": "string" },
+      "featured": { "type": "boolean" },
+      "date": { "type": "string", "format": "date-time" },
+      "content": { "type": "string" },
+      "templateId": { "type": "string"},
+      "author": {
+        "type": "object",
+        "properties": {
+          "id": { "type": ["string"] },
+          "email": { "type": "string", "format": "email" }
+        },
+        "required": ["email"]
+      },
+      "images": {
+        "type": "array",
+        "items": {
+          "$ref": "#/definitions/CreateImageDTO"
+        }
+      },
+      "tags": {
+        "type": "array",
+        "items": {
+          "$ref": "#/definitions/CreateTagDTO"
+        }
+      }
+    },
+    "required": ["title", "subTitle", "description", "featured", "date", "content", "author", "images", "tags"],
+    "definitions": {
+      "CreateImageDTO": ImageSchema,
+      "CreateTagDTO":TagSchema
+    }
+  }
+  
 async function update(blogId: string, blog: CreateBlogDTO, prismaClient: PrismaClient) {
     const blogs = prismaClient.blog;
     const updatedBlog = await blogs.update({
         where: { id: blogId },
         data: {
             ...blog,
-            images: { connectOrCreate: connectImages(blog.images) },
+            images:connectImages(blog.images),
             tags: { connectOrCreate: connectTags(blog.tags) },
             author: { connect: { email: blog.author.email } }
         }

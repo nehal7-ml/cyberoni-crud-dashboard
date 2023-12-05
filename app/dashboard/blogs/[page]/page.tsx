@@ -29,7 +29,7 @@ async function Blogs({ params }: { params: { page: string } }) {
 }
 async function getData(page: number) {
   let res = await getAll(page, 10, prisma)
-  console.log(res);
+  // console.log(res);
   return res
 }
 export default Blogs

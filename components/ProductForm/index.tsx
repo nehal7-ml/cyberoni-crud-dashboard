@@ -10,7 +10,7 @@ import { CreateSupplierDTO } from "@/crud/supplier";
 import { X } from "lucide-react";
 import { FormProps } from "@/crud/commonDTO";
 import { ProductStatus, Supplier } from "@prisma/client";
-import { redirect } from "next/navigation";
+import { redirect, useRouter } from "next/navigation";
 
 
 
@@ -48,6 +48,7 @@ const ProductForm = ({ method, action, initial }: FormProps) => {
             [name]: value,
         }));
     };
+    const router = useRouter()
 
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
@@ -62,7 +63,7 @@ const ProductForm = ({ method, action, initial }: FormProps) => {
 
         if (res.status == 200) {
             message('success', resJson.mesage)
-            redirect(`/products/view/${resJson.message.data.id}`)
+            router.replace(`/products/view/${resJson.data.id}`)
 
 
         } else {

@@ -3,11 +3,17 @@
 import { useEffect, useState } from "react";
 import AddImagesAndTags from "../AddImagesAndTags";
 import Notification from "../Notification";
-import { CreateBlogDTO, DisplayBlogDTO } from "@/crud/blog";
-import { redirect, useParams } from "next/navigation";
+import { BlogSchema, CreateBlogDTO, DisplayBlogDTO } from "@/crud/blog";
+import { redirect, useParams, useRouter } from "next/navigation";
 import { CreateImageDTO } from "@/crud/images";
 import { CreateTagDTO } from "@/crud/tags";
 import Editor from "../RichTextEditor";
+import Ajv from 'ajv'
+import addFormats from "ajv-formats"
+const ajv = new Ajv()
+addFormats(ajv)
+const validate = ajv.compile(BlogSchema);
+
 
 function BlogForm({ method, action, initial }: { method: 'POST' | 'PUT', action: string, initial?: CreateBlogDTO }) {
     const [notify, setNotify] = useState(false);
@@ -28,7 +34,7 @@ function BlogForm({ method, action, initial }: { method: 'POST' | 'PUT', action:
         images: []
 
     });
-    const [rawJson, setRawJson] = useState(JSON.stringify(blogData,null, 2));
+    const [rawJson, setRawJson] = useState(JSON.stringify(blogData, null, 2));
     const [json, setJson] = useState<{ [key: string]: any }>({});
 
     const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => {
@@ -58,6 +64,7 @@ function BlogForm({ method, action, initial }: { method: 'POST' | 'PUT', action:
             [name]: checked,
         }));
     };
+    const router = useRouter();
 
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
@@ -76,7 +83,7 @@ function BlogForm({ method, action, initial }: { method: 'POST' | 'PUT', action:
             setNotifyMessage(resJson.message);
             setNotify(true);
 
-            redirect(`/blogs/view/${resJson.message.data.id}`)
+            router.replace(`/blogs/view/${resJson.data.id}`)
 
 
         } else {
@@ -115,7 +122,28 @@ function BlogForm({ method, action, initial }: { method: 'POST' | 'PUT', action:
 
     function parseJson(json: string) {
         try {
-            setJson(JSON.parse(json))
+            const newData = JSON.parse(json)
+
+            const valid = validate(newData);
+            if (!valid) alert(validate.errors);
+            else {
+
+                setJson(newData);
+                if (Object.keys(newData).length > 0) {
+                    console.log(newData);
+                    for (let key of Object.keys(blogData)) {
+                        console.log(key, newData[key]);
+                        setBlogData(prev => ({ ...prev, [key]: newData[key] }));
+
+                    }
+                }
+
+                if (newData.content as string) {
+                    setInitialContent(newData.content as string);
+                }
+
+            }
+
         } catch (error) {
             console.log("invalid JSON");
             alert("Error parsing JSON");
@@ -124,17 +152,6 @@ function BlogForm({ method, action, initial }: { method: 'POST' | 'PUT', action:
 
     }
 
-    useEffect(() => {
-        console.log(Object.keys(blogData));
-        if (Object.keys(json).length > 0) {
-            for (let key of Object.keys(blogData)) {
-                console.log(key,json[key]);
-                setBlogData(prev => ({ ...prev, [key]: json[key] || "" }));
-
-            }
-        }
-
-    }, [blogData, json]);
 
     return (
         <div className="light:bg-gray-100 light:text-black dark:bg-gray-700 dark:text-gray-800  bg-gray-100 min-h-screen flex items-center justify-center ">
