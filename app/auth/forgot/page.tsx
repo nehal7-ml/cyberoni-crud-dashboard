@@ -13,7 +13,7 @@ function ForgotPassword({ searchParams }: { searchParams: { success: string, sen
 
   let success = searchParams.success === "true" ? true : searchParams.success === "false" ? false : null
   let sent = searchParams.sent === "true" ? true : searchParams.success === "false" ? false : null
-  let error = searchParams.error
+  let error = searchParams.error || null
   console.log(error);
   async function resetPassword(formData: FormData) {
     'use server'

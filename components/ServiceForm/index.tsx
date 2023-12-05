@@ -177,7 +177,7 @@ function SerivceForm({ method, action, initial }: { method: 'POST' | 'PUT', acti
         <>
             <div className="light:bg-gray-100 light:text-black dark:bg-gray-700 dark:text-gray-800 min-h-screen flex items-center justify-center container mx-auto">
                 <div className="bg-white shadow-md rounded p-8 max-w-4xl w-full overflow-y-scroll max-h-screen">
-                    <h2 className="text-2xl font-semibold mb-4">Create Service</h2>
+                    <h2 className="text-2xl font-semibold mb-4"> {method === 'PUT' ? 'Update' : 'Create'} Service</h2>
                     <form onSubmit={handleSubmit} className="flex flex-col">
                     <div className="mb-4">
                         <label className="block" htmlFor="json">Json input auto fill: </label>
