@@ -1,7 +1,7 @@
 'use client'
 import AddImagesAndTags from "@/components/AddImagesAndTags"
 import { CreateImageDTO } from "@/crud/images";
-import { CreateServiceDTO, CreateServiceDescription, DisplayServiceDTO } from "@/crud/service";
+import { CreateServiceDTO, CreateServiceDescription, DisplayServiceDTO, ServiceSchema } from "@/crud/service";
 import { CreateTagDTO } from "@/crud/tags";
 import React, { useEffect, useState } from 'react'
 import { PlusCircle, X } from "lucide-react";
@@ -14,6 +14,12 @@ import Image from "next/image";
 import DescriptionForm from "./DescriptionSection";
 import ListInput from "../ListInput";
 import { redirect, useRouter } from "next/navigation";
+import Ajv from 'ajv'
+import addFormats from "ajv-formats"
+
+const ajv = new Ajv()
+//addFormats(ajv)
+const validate = ajv.compile(ServiceSchema);
 
 function SerivceForm({ method, action, initial }: { method: 'POST' | 'PUT', action: string, initial?: DisplayServiceDTO }) {
     const [notify, setNotify] = useState(false);
@@ -77,7 +83,7 @@ function SerivceForm({ method, action, initial }: { method: 'POST' | 'PUT', acti
 
         if (res.status == 200) {
             message('success', resJson.message);
-            router.replace(`/services/view/${resJson.data.id}`)
+            router.replace(`/dashboard/services/view/${resJson.data.id}`)
 
         } else {
             message('fail', resJson.message)
@@ -139,7 +145,24 @@ function SerivceForm({ method, action, initial }: { method: 'POST' | 'PUT', acti
     
     function parseJson(json: string) {
         try {
-            setJson(JSON.parse(json))
+            const newData = JSON.parse(json)
+
+            const valid = validate(newData);
+            if (!valid) alert(validate.errors);
+            else {
+
+                setJson(newData);
+                if (Object.keys(newData).length > 0) {
+                    console.log(newData);
+                    for (let key of Object.keys(serviceData)) {
+                        setServiceData(prev => ({ ...prev, [key]: newData[key] }));
+
+                    }
+                }
+
+
+            }
+
         } catch (error) {
             console.log("invalid JSON");
             alert("Error parsing JSON");
@@ -147,17 +170,8 @@ function SerivceForm({ method, action, initial }: { method: 'POST' | 'PUT', acti
         }
 
     }
-    useEffect(() => {
-        console.log(Object.keys(serviceData));
-        if (Object.keys(json).length > 0) {
-            for (let key of Object.keys(serviceData)) {
-                console.log(key,json[key]);
-                setServiceData(prev => ({ ...prev, [key]: json[key] || "" }));
 
-            }
-        }
 
-    }, [json, serviceData]);
 
     return (
         <>

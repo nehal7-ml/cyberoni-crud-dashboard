@@ -63,7 +63,7 @@ const ProductForm = ({ method, action, initial }: FormProps) => {
 
         if (res.status == 200) {
             message('success', resJson.mesage)
-            router.replace(`/products/view/${resJson.data.id}`)
+            router.replace(`/dashboard/products/view/${resJson.data.id}`)
 
 
         } else {

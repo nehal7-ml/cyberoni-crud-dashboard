@@ -1,7 +1,7 @@
 import { Service, PrismaClient, Prisma, Image, Tag, SubService, ServiceDescription, FAQ } from "@prisma/client";
-import { CreateTagDTO, create as createTag, connectOrCreateObject as connectTags } from "./tags";
-import { CreateImageDTO, create as createImage, connectOrCreateObject } from "./images";
-import { CreateSubServiceDTO, create as createSubService, update as updateSubService } from "./subService";
+import { CreateTagDTO, create as createTag, connectOrCreateObject as connectTags, TagSchema } from "./tags";
+import { CreateImageDTO, create as createImage, connectOrCreateObject as connectImage, ImageSchema } from "./images";
+import { CreateSubServiceDTO, SubserviceSchema, create as createSubService, update as updateSubService } from "./subService";
 import { prisma } from "@/prisma/prismaClient";
 
 
@@ -40,6 +40,74 @@ export type DisplayServiceDTO = Service & {
 
 }
 
+export const ServiceSchema = {
+    "type": "object",
+    "properties": {
+        "title": { "type": "string" },
+        "previewContent": { "type": "string" },
+        "ServiceDescription": {
+            "type": "array",
+            "items": {
+                "$ref": "#/definitions/CreateServiceDescription"
+            }
+        },
+        "hourlyRate": { "type": "number" },
+        "valueBrought": {
+            "type": "array",
+            "items": { "type": "string" }
+        },
+        "skillsUsed": {
+            "type": "array",
+            "items": { "type": "string" }
+        },
+        "htmlEmbed": { "type": ["string"] },
+        "image": { "$ref": "#/definitions/CreateImageDTO" },
+        "SubServices": {
+            "type": "array",
+            "items": { "$ref": "#/definitions/CreateSubServiceDTO" }
+        },
+        "tags": {
+            "type": "array",
+            "items": { "$ref": "#/definitions/CreateTagDTO" }
+        },
+        "faqs": {
+            "type": "array",
+            "items": { "$ref": "#/definitions/CreateFaqDTO" }
+        }
+    },
+    "required": ["title", "previewContent", "ServiceDescription", "hourlyRate", "valueBrought", "skillsUsed"],
+    "definitions": {
+        "CreateServiceDescription": {
+            "type": "object",
+            "properties": {
+                "id": { "type": ["string"] },
+                "title": { "type": "string" },
+                "content": { "type": "string" },
+                "imageOnLeft": { "type": "boolean" },
+                "image": { "$ref": "#/definitions/CreateImageDTO" }
+            },
+            "required": ["title", "content", "imageOnLeft", "image"],
+            "definitions": {
+                "CreateImageDTO": {
+                    // Include the JSON schema for CreateImageDTO here
+                }
+            }
+        }
+        ,
+        "CreateImageDTO": ImageSchema,
+        "CreateTagDTO": TagSchema,
+        "CreateSubServiceDTO": SubserviceSchema,
+        "CreateFaqDTO": {
+            "type": "object",
+            "properties": {
+                "question": { "type": "string" },
+                "answer": { "type": "string" }
+            },
+            "required": ["question", "answer"]
+        }
+
+    }
+}
 
 async function create(service: CreateServiceDTO, prismaClient: PrismaClient) {
     const services = prismaClient.service;
@@ -52,7 +120,7 @@ async function create(service: CreateServiceDTO, prismaClient: PrismaClient) {
             valueBrought: service.valueBrought,
             skillsUsed: service.skillsUsed,
             htmlEmbed: service.htmlEmbed,
-            image: service.image ? { connect: { id: service.image?.id } } : {},
+            image: service.image ? (service.image.id ? { connect: { id: service.image.id } } : { create: service.image }) : {},
             tags: { connectOrCreate: connectTags(service.tags || []) },
             faqs: {
                 create: service.faqs ? service.faqs : []
@@ -85,7 +153,7 @@ async function create(service: CreateServiceDTO, prismaClient: PrismaClient) {
                 {
                     data: {
                         ...description,
-                        image: { connect: { id: description.image.id } },
+                        image: description.image.id ? { connect: { id: description.image.id } } : { create: description.image },
                         service: { connect: { id: createdservice.id } }
                     },
 

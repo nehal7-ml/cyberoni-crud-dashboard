@@ -73,7 +73,7 @@ const UserForm = ({ method, action, initial }: FormProps) => {
 
         if (res.status == 200) {
             message('success', resJson.message)
-            router.replace(`/users/view/${resJson.data.id}`)
+            router.replace(`/dashboard/users/view/${resJson.data.id}`)
 
         } else {
             message('fail', resJson.message)

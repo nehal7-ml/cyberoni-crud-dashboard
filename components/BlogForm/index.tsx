@@ -83,7 +83,7 @@ function BlogForm({ method, action, initial }: { method: 'POST' | 'PUT', action:
             setNotifyMessage(resJson.message);
             setNotify(true);
 
-            router.replace(`/blogs/view/${resJson.data.id}`)
+            router.replace(`/dashboard/blogs/view/${resJson.data.id}`)
 
 
         } else {

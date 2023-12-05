@@ -67,7 +67,7 @@ const EventForm = ({ method, action, initial }: { method: 'POST' | 'PUT', action
 
         if (res.status == 200) {
             message('success', resJson.mesage)
-            router.replace(`/events/view/${resJson.data.id}`)
+            router.replace(`/dashboard/events/view/${resJson.data.id}`)
 
         } else {
             message('fail', resJson.mesage)

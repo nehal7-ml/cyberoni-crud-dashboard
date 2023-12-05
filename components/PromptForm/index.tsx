@@ -54,7 +54,7 @@ const GptPromptForm = ({ method, action, initial }: { method: 'POST' | 'PUT', ac
         console.log(res.status);
         if (res.status == 200) {
             message('success', resJson.message)
-            router.replace(`/prompts/view/${resJson.data.id}`)
+            router.replace(`/dashboard/prompts/view/${resJson.data.id}`)
 
 
         } else {
