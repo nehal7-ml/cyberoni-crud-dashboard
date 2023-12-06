@@ -8,6 +8,7 @@ import { prisma } from "@/prisma/prismaClient";
 export type CreateServiceDTO = {
     title: string;
     previewContent: string;
+    featured: boolean;
     ServiceDescription: CreateServiceDescription[];
     hourlyRate: number;
     valueBrought: string[];
@@ -115,6 +116,7 @@ async function create(service: CreateServiceDTO, prismaClient: PrismaClient) {
     let createdservice = await services.create({
         data: {
             title: service.title,
+            featured: service.featured,
             previewContent: service.previewContent,
             hourlyRate: service.hourlyRate,
             valueBrought: service.valueBrought,
@@ -177,6 +179,7 @@ async function update(serviceId: string, service: CreateServiceDTO, prismaClient
             where: { id: serviceId },
             data: {
                 title: service.title,
+                featured: service.featured,
                 previewContent: service.previewContent,
                 hourlyRate: service.hourlyRate,
                 valueBrought: service.valueBrought,

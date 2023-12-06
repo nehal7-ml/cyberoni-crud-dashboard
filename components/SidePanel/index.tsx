@@ -1,6 +1,6 @@
 import React, { useState } from "react"
 import { useRouter } from 'next/router';
-import { BookOpen, BrainCircuit, CalendarCheck2, Cpu, LogOutIcon, Microscope, Package, User } from "lucide-react";
+import { BookOpen, BrainCircuit, CalendarCheck2, Cpu, LinkIcon, LogOutIcon, Microscope, Package, User } from "lucide-react";
 import Link from "next/link";
 import { Session, getServerSession } from "next-auth";
 import Logo from "../shared/logo";
@@ -43,6 +43,11 @@ async function SidePanel(props: React.BaseHTMLAttributes<HTMLDivElement>) {
 
                         <BookOpen />
                         <div className="text-left pl-3">Blogs</div>
+                    </Link>
+                    <Link className={`flex justify-start items-center  hover:bg-blue-600  text-gray-800 hover:cursor-pointer  p-5 rounded-lg hover:text-white`} href={"/dashboard/referrals/1"}>
+
+                        <LinkIcon/>
+                        <div className="text-left pl-3">Referral Links</div>
                     </Link>
                     <Link className={`flex justify-start items-center  hover:bg-blue-600  text-gray-800 hover:cursor-pointer  p-5 rounded-lg hover:text-white`} href={"/dashboard/casestudies/1"}>
 
