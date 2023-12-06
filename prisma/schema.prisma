@@ -244,7 +244,7 @@ model Service {
   valueBrought       Json
   skillsUsed         Json
   htmlEmbed          String?
-  featured           Boolean @default(false)
+  featured           Boolean              @default(false)
   reviews            Review[]
   tags               Tag[]
   imageId            String?
@@ -426,16 +426,17 @@ model Event {
 model Referral {
   id          String           @id @default(uuid())
   prefix      String?
-  username    String?
   type        ReferralType     @default(REDIRECT)
   campaignId  String
   expires     DateTime
   description String           @db.Text
   priority    ReferralPriority @default(LOW)
-  redirect     String
+  redirect    String
   link        String
   fallback    String
   click       Int
+
+  @@unique([type, prefix], name: "referralId")
 }
 
 model Tag {

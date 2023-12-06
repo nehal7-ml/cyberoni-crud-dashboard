@@ -2,7 +2,6 @@ import { PrismaClient, Referral, ReferralPriority, ReferralType } from "@prisma/
 
 export type CreateReferralDTO = {
     prefix: string | null;
-    username: string | null;
     type: ReferralType;
     campaignId: string;
     expires: Date;

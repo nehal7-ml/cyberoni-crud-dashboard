@@ -20,9 +20,9 @@ async function Events({ params }: { params: { page: string } }) {
           row.push((new Date(value.expires)).toLocaleDateString());
           row.push(value.click);
           row.push(value.type);
-          row.push(value.type =="AFFILIATE" ?value.username:value.prefix);
+          row.push(value.prefix);
 
-          return <TableItem type="events" key={value.id} index={value.id} row={row}></TableItem>
+          return <TableItem type="referrals" key={value.id} index={value.id} row={row}></TableItem>
         })} 
         </Table>
         <Pagination currentPage={page} totalPages={data?.totalPages || 0}></Pagination>

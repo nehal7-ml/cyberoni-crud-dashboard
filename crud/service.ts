@@ -298,4 +298,12 @@ async function getAll(page: number, pageSize: number, prismaClient: PrismaClient
 
 }
 
+
+export async function getFeatured(prisma:PrismaClient) {
+    const services = prisma.service;
+    const records = await services.findMany({where: {featured: true}, take:5, orderBy: {hourlyRate:'desc'}})
+    return records
+
+}
+
 export { create, update, remove, read, getAll }

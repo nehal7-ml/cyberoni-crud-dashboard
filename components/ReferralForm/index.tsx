@@ -22,7 +22,6 @@ const ReferralForm = ({ method, action, initial }: { method: 'POST' | 'PUT', act
         fallback: '/',
         link: '',
         prefix: '',
-        username: '',
         priority: ReferralPriority.LOW,
         type: ReferralType.REDIRECT,
         redirect: ''
@@ -117,32 +116,22 @@ const ReferralForm = ({ method, action, initial }: { method: 'POST' | 'PUT', act
                             ))}
                         </select>
                     </div>
-                    {
-                        referralData.type === "REDIRECT" ?
-                            <div className="mb-4">
-                                <label className="block text-sm font-medium text-gray-700">prefix :</label>
-                                <input
-                                    type="text"
-                                    name="prefix"
-                                    className="mt-1 p-2 border rounded w-full invalid:ring-2 invalid:ring-rose-600 invalid:text-rose-500 invalid:outline-red-500"
-                                    value={referralData.prefix as string}
-                                    onChange={handleInputChange}
-                                    required
-                                />
-                            </div> : <div className="mb-4">
-                                <label className="block text-sm font-medium text-gray-700">username :</label>
-                                <input
-                                    type="text"
-                                    name="username"
-                                    className="mt-1 p-2 border rounded w-full"
-                                    value={referralData.username as string}
-                                    onChange={handleInputChange}
-                                    required
-                                />
-                            </div>
 
 
-                    }
+                    <div className="mb-4">
+                        {<label className="block text-sm font-medium text-gray-700">{referralData.type === "REDIRECT" ? 'prefix' : 'username'} :</label>}
+                        <input
+                            type="text"
+                            name="prefix"
+                            className="mt-1 p-2 border rounded w-full invalid:ring-2 invalid:ring-rose-600 invalid:text-rose-500 invalid:outline-red-500"
+                            value={referralData.prefix as string}
+                            onChange={handleInputChange}
+                            required
+                        />
+                    </div>
+
+
+
                     <div className="mb-4">
                         <label className="block text-sm font-medium text-gray-700">Expires :</label>
                         <input
@@ -161,10 +150,11 @@ const ReferralForm = ({ method, action, initial }: { method: 'POST' | 'PUT', act
                     <div className="mb-4">
                         <label className="block text-sm font-medium text-gray-700">Redirect Link:</label>
                         <input
+                            disabled
                             type="url"
                             name="redirect"
                             className="mt-1 p-2 border rounded w-full invalid:ring-2 invalid:ring-rose-600 invalid:text-rose-500 invalid:outline-red-500"
-                            value={referralData.redirect}
+                            value={`${referralData.type==='REDIRECT'? '/referrals': '/affiliate'}/${referralData.prefix}`}
                             onChange={handleInputChange}
                             required
                         />
