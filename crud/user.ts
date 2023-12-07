@@ -160,7 +160,7 @@ export async function getUserByEmail(email: string, prismaClient: PrismaClient) 
     const users = prismaClient.user;
     const existingUsers = await users.findUnique({ where: { email: email } })
     if (existingUsers) return existingUsers
-    else throw { status: 400, message: `GuruAgent ${email} doesn't exists` };
+    else throw { status: 400, message: `User ${email} doesn't exists` };
 }
 
 export async function authorizeWithPassword({ email, password }: CredentialAuthDTO, prisma: PrismaClient) {

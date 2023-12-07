@@ -1,5 +1,5 @@
 import ClientInput from "@/components/ClientInput"
-import { read } from "@/crud/user";
+import { getUserByEmail } from "@/crud/user";
 import { sendPasswordReset } from "@/lib/sendgrid";
 import { prisma } from "@/prisma/prismaClient";
 import { sign } from "jsonwebtoken";
@@ -7,29 +7,28 @@ import { CheckCircle2, RotateCcw, XCircle } from "lucide-react"
 import { redirect } from "next/navigation";
 import React from 'react'
 
-export const dynamic='force-dynamic'
+export const dynamic = 'force-dynamic'
 
 function ForgotPassword({ searchParams }: { searchParams: { success: string, sent: string, error: string } }) {
 
   let success = searchParams.success === "true" ? true : searchParams.success === "false" ? false : null
   let sent = searchParams.sent === "true" ? true : searchParams.success === "false" ? false : null
   let error = searchParams.error || null
-  console.log(error);
   async function resetPassword(formData: FormData) {
     'use server'
     const email = formData.get('username');
     try {
-      const exist = await read(email as string, prisma);
-      if (exist) {
-        const res = await sendPasswordReset(email as string, sign({ email }, process.env.NEXTAUTH_SECRET as string));
-        if (res === 202) redirect('/auth/forgot?sent=true');
-        else redirect('/auth/forgot?sent=false');
-      }
+      await getUserByEmail(email as string, prisma);
     } catch (error) {
       console.log(error);
       redirect('/auth/forgot?error=NotFound');
 
     }
+    const res = await sendPasswordReset(email as string, sign({ email }, process.env.NEXTAUTH_SECRET as string));
+    if (res === 202) redirect('/auth/forgot?sent=true');
+    else redirect('/auth/forgot?sent=false');
+
+
 
 
   }

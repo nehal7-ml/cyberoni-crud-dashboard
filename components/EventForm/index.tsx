@@ -66,11 +66,11 @@ const EventForm = ({ method, action, initial }: { method: 'POST' | 'PUT', action
         let resJson = await res.json();
 
         if (res.status == 200) {
-            message('success', resJson.mesage)
+            message('success', resJson.message)
             router.replace(`/dashboard/events/view/${resJson.data.id}`)
 
         } else {
-            message('fail', resJson.mesage)
+            message('fail', resJson.message)
 
         }
     };

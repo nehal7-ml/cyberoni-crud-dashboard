@@ -73,11 +73,11 @@ const ReferralForm = ({ method, action, initial }: { method: 'POST' | 'PUT', act
         let resJson = await res.json();
 
         if (res.status == 200) {
-            message('success', resJson.mesage)
+            message('success', resJson.message)
             router.replace(`/dashboard/referrals/view/${resJson.data.id}`)
 
         } else {
-            message('fail', resJson.mesage)
+            message('fail', resJson.message)
 
         }
     };
