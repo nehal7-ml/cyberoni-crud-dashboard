@@ -14,6 +14,7 @@ const ReferralForm = ({ method, action, initial }: { method: 'POST' | 'PUT', act
     const [notifyMessage, setNotifyMessage] = useState("");
     const [notifyType, setNotifyType] = useState<'success' | 'fail'>('fail');
 
+    const [linkType, setLinkType] = useState<'External' | 'Internal'>('External');
     const [referralData, setReferralData] = useState<CreateReferralDTO>(initial || {
         campaignId: '',
         description: '',
@@ -56,11 +57,20 @@ const ReferralForm = ({ method, action, initial }: { method: 'POST' | 'PUT', act
 
     const handleSubmit = async (e: FormEvent) => {
         e.preventDefault();
-        const apiUrl = process.env.NEXT_PUBLIC_API_URL;
+        const appUrl = process.env.NEXT_PUBLIC_APP_URL;
 
-        const verify = await fetch(referralData.redirect);
-        if (verify.status !== 200) {
-            alert('Invalid redirect link, it\'s not reachable')
+
+        try {
+            const verify = await fetch(linkType === 'External' ? referralData.link : `${appUrl}${referralData.link}`, { mode:'no-cors'});
+            console.log(verify);
+            if (verify.status !== 0) {
+                console.log(verify.status);
+                alert('Invalid Page link, it\'s not reachable')
+                return
+            }
+        } catch (error) {
+            console.log(error);
+            alert('Invalid Page link, it\'s not reachable')
             return
         }
 
@@ -154,11 +164,29 @@ const ReferralForm = ({ method, action, initial }: { method: 'POST' | 'PUT', act
                         />
                     </div>
 
+                    <div className="my-4">
+                        <select
+                            name="type"
+                            className="mt-1 p-2 border rounded w-full  invalid:ring-2 invalid:ring-rose-600 invalid:text-rose-500 invalid:outline-red-500"
+                            value={linkType}
+                            onChange={(e) => setLinkType(e.target.value as ('External' | 'Internal'))}
+                            required
+                        >
+                            <option value={'External'}>
+                                Link to external Website
+                            </option>
+                            <option value={'Internal'}>
+                                Internal
+                            </option>
+                        </select>
+
+                    </div>
+
                     <div className="mb-4">
                         <label className="block text-sm font-medium text-gray-700">Redirect Link:</label>
                         <input
                             disabled
-                            type="url"
+                            type="text"
                             name="redirect"
                             className="mt-1 p-2 border rounded w-full invalid:ring-2 invalid:ring-rose-600 invalid:text-rose-500 invalid:outline-red-500"
                             value={`${referralData.type === 'REDIRECT' ? '/referrals' : '/affiliate'}/${referralData.prefix}`}
@@ -169,7 +197,7 @@ const ReferralForm = ({ method, action, initial }: { method: 'POST' | 'PUT', act
                     <div className="mb-4">
                         <label className="block text-sm font-medium text-gray-700">Page To Link:</label>
                         <input
-                            type="url"
+                            type="text"
                             name="link"
                             className="mt-1 p-2 border rounded w-full invalid:ring-2 invalid:ring-rose-600 invalid:text-rose-500 invalid:outline-red-500"
                             value={referralData.link}
@@ -180,13 +208,30 @@ const ReferralForm = ({ method, action, initial }: { method: 'POST' | 'PUT', act
                     <div className="mb-4">
                         <label className="block text-sm font-medium text-gray-700">fallback Link:</label>
                         <input
-                            type="url"
+                            type="text"
                             name="fallback"
                             className="mt-1 p-2 border rounded w-full invalid:ring-2 invalid:ring-rose-600 invalid:text-rose-500 invalid:outline-red-500"
                             value={referralData.fallback}
                             onChange={handleLinkChange}
                             required
                         />
+                    </div>
+
+                    <div className="mb-4">
+                        <label className="block text-sm font-medium text-gray-700">Refrral type:</label>
+                        <select
+                            name="type"
+                            className="mt-1 p-2 border rounded w-full  invalid:ring-2 invalid:ring-rose-600 invalid:text-rose-500 invalid:outline-red-500"
+                            value={referralData.priority}
+                            onChange={handleInputChange}
+                            required
+                        >
+                            {Object.values(ReferralPriority).map(priority => (
+                                <option key={priority} value={priority}>
+                                    {priority}
+                                </option>
+                            ))}
+                        </select>
                     </div>
 
                     <div className="mb-4">
