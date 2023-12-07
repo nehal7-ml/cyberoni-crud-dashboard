@@ -14,7 +14,7 @@ const ReferralForm = ({ method, action, initial }: { method: 'POST' | 'PUT', act
     const [notifyMessage, setNotifyMessage] = useState("");
     const [notifyType, setNotifyType] = useState<'success' | 'fail'>('fail');
 
-    const [referralData, setEventData] = useState<CreateReferralDTO>(initial || {
+    const [referralData, setReferralData] = useState<CreateReferralDTO>(initial || {
         campaignId: '',
         description: '',
         click: 0,
@@ -33,19 +33,19 @@ const ReferralForm = ({ method, action, initial }: { method: 'POST' | 'PUT', act
 
         if (name === 'expires') {
             console.log(new Date(value));
-            setEventData(prevData => ({
+            setReferralData(prevData => ({
                 ...prevData,
                 expires: new Date(value),
             }));
 
         } if (name === 'isVirtual') {
-            setEventData(prevData => ({
+            setReferralData(prevData => ({
                 ...prevData,
                 isVirtual: value === 'on',
             }));
         } else {
 
-            setEventData(prevData => ({
+            setReferralData(prevData => ({
                 ...prevData,
                 [name]: value,
             }));
@@ -57,6 +57,13 @@ const ReferralForm = ({ method, action, initial }: { method: 'POST' | 'PUT', act
     const handleSubmit = async (e: FormEvent) => {
         e.preventDefault();
         const apiUrl = process.env.NEXT_PUBLIC_API_URL;
+
+        const verify = await fetch(referralData.redirect);
+        if (verify.status !== 200) {
+            alert('Invalid redirect link, it\'s not reachable')
+            return
+        }
+
         const headers = {
             'Content-Type': 'application/json',
             'Authorization': 'Bearer your-access-token',
@@ -84,12 +91,12 @@ const ReferralForm = ({ method, action, initial }: { method: 'POST' | 'PUT', act
     }
 
 
-    function handleChangedImage(images: CreateImageDTO[], tags: CreateTagDTO[]) {
-        setEventData((prevData) => ({
+    function handleLinkChange(e: React.ChangeEvent<HTMLInputElement>) {
+        const { value, name } = e.target
+        setReferralData(prevData => ({
             ...prevData,
-            image: images[0],
-            tags
-        }))
+            [name]: value,
+        }));
 
     }
 
@@ -142,7 +149,7 @@ const ReferralForm = ({ method, action, initial }: { method: 'POST' | 'PUT', act
                             required
                             onChange={(referral) => {
                                 setDate(referral.target.value);
-                                setEventData(prev => ({ ...prev, date: new Date(referral.target.value) }))
+                                setReferralData(prev => ({ ...prev, date: new Date(referral.target.value) }))
                             }}
                         />
                     </div>
@@ -154,7 +161,7 @@ const ReferralForm = ({ method, action, initial }: { method: 'POST' | 'PUT', act
                             type="url"
                             name="redirect"
                             className="mt-1 p-2 border rounded w-full invalid:ring-2 invalid:ring-rose-600 invalid:text-rose-500 invalid:outline-red-500"
-                            value={`${referralData.type==='REDIRECT'? '/referrals': '/affiliate'}/${referralData.prefix}`}
+                            value={`${referralData.type === 'REDIRECT' ? '/referrals' : '/affiliate'}/${referralData.prefix}`}
                             onChange={handleInputChange}
                             required
                         />
@@ -162,24 +169,22 @@ const ReferralForm = ({ method, action, initial }: { method: 'POST' | 'PUT', act
                     <div className="mb-4">
                         <label className="block text-sm font-medium text-gray-700">Page To Link:</label>
                         <input
-                            type="text"
+                            type="url"
                             name="link"
-                            pattern="^/(.*){1,}$"
                             className="mt-1 p-2 border rounded w-full invalid:ring-2 invalid:ring-rose-600 invalid:text-rose-500 invalid:outline-red-500"
                             value={referralData.link}
-                            onChange={handleInputChange}
+                            onChange={handleLinkChange}
                             required
                         />
                     </div>
                     <div className="mb-4">
                         <label className="block text-sm font-medium text-gray-700">fallback Link:</label>
                         <input
-                            type="text"
+                            type="url"
                             name="fallback"
-                            pattern="^/(.*){1,}$"
                             className="mt-1 p-2 border rounded w-full invalid:ring-2 invalid:ring-rose-600 invalid:text-rose-500 invalid:outline-red-500"
                             value={referralData.fallback}
-                            onChange={handleInputChange}
+                            onChange={handleLinkChange}
                             required
                         />
                     </div>

@@ -63,7 +63,7 @@ function ForgotPassword({ searchParams }: { searchParams: { success: string, sen
             </button></div>
         </form> :
 
-        error === 'Notfound' ?
+        error === 'NotFound' ?
           <>
             <Message message="User Not found" type="red" />
 
