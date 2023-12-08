@@ -10,6 +10,7 @@ import { Service, ServiceDescription, SubService } from "@prisma/client";
 describe("test crud function for services", () => {
 
     const testService: CreateServiceDTO = {
+        featured:false,
         hourlyRate: 100,
         previewContent: "test preview content",
         skillsUsed: ["Web","Design"],
