@@ -1,39 +1,20 @@
+'use client'
 import ClientInput from "@/components/ClientInput"
-import { getUserByEmail } from "@/crud/user";
-import { sendPasswordReset } from "@/lib/sendgrid";
-import { prisma } from "@/prisma/prismaClient";
-import { sign } from "jsonwebtoken";
-import { CheckCircle2, RotateCcw, XCircle } from "lucide-react"
-import { redirect } from "next/navigation";
-import React from 'react'
 
-export const dynamic = 'force-dynamic'
+
+import { CheckCircle2, RotateCcw, XCircle } from "lucide-react"
+import React from 'react'
+import { resetPassword } from "./submit";
+import { Message } from "@/components/AuthMessage";
 
 function ForgotPassword({ searchParams }: { searchParams: { success: string, sent: string, error: string } }) {
 
   let success = searchParams.success === "true" ? true : searchParams.success === "false" ? false : null
   let sent = searchParams.sent === "true" ? true : searchParams.success === "false" ? false : null
   let error = searchParams.error || null
-  async function resetPassword(formData: FormData) {
-    'use server'
-    const email = formData.get('username');
-    try {
-      await getUserByEmail(email as string, prisma);
-    } catch (error) {
-      console.log(error);
-      redirect('/auth/forgot?error=NotFound');
 
-    }
-    const res = await sendPasswordReset(email as string, sign({ email }, process.env.NEXTAUTH_SECRET as string));
-    if (res === 202) redirect('/auth/forgot?sent=true');
-    else redirect('/auth/forgot?sent=false');
-
-
-
-
-  }
   return (
-    <div>
+    <div className="">
       {(success === null && sent === null && error === null) ?
 
         <form action={resetPassword}>
@@ -70,7 +51,7 @@ function ForgotPassword({ searchParams }: { searchParams: { success: string, sen
           sent === true ? <Message message="Password reset link has been sent check email" type="green" /> :
             sent === false ? <Message message="Faield to send message" type="red" /> :
               success === true ? <>
-                <Message message="Password reset check email for new password" type="green" />
+                <Message message="Pssword reset check email for new password" type="green" />
               </> :
 
                 success === false ? <Message message="Failed to reset Password" type="red" />
@@ -82,13 +63,6 @@ function ForgotPassword({ searchParams }: { searchParams: { success: string, sen
 }
 
 
-function Message({ message, type }: { message: string, type: 'green' | 'red' }) {
-  return (<>
 
-    <div className={`flex gap-3 p-4 ${type === 'green' ? 'ring-green-500 bg-green-400/60' : 'ring-red-500 bg-rose-400/60'}  ring-2 `}>
-      {type === 'green' ? <CheckCircle2 className="text-emerald-900" /> : <XCircle className="text-rose-900" />} {message}
-    </div>
-  </>)
-}
 
 export default ForgotPassword

@@ -104,11 +104,10 @@ async function update(userId: string, user: CreateUserDTO, prismaClient: PrismaC
 
 }
 
-export async function reset(token: string, prismaClient: PrismaClient) {
+export async function reset(token: string, password: string, prismaClient: PrismaClient) {
     const users = prismaClient.user;
     const { email } = verify(token as string, process.env.NEXTAUTH_SECRET as string) as { email: string};
 
-    const password = generatePassword()
     const hashedPassword = await bcrypt.hash(password, 10)
     const updated = await users.update({
         where: { email }, data: {
