@@ -26,7 +26,7 @@ export async function resetPassword(state: {
             console.log(error);
             state.success= false
 
-            state.error= (error as Error).cause as string
+            state.error=( error as Error).toString()
         }
     } else {
         state.success= false
