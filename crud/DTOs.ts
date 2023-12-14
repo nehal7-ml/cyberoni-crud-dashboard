@@ -1,6 +1,6 @@
-import { Blog, Image, Service, ServiceDescription, SubService, Tag, User } from "@prisma/client";
+import { Blog, Image, PricingModel, Service, ServiceDescription, SubService, Tag, User } from "@prisma/client";
 import { CreateTagDTO } from "./tags";
-import { CreateSubServiceDTO } from "./subService";
+
 
 
 export type CreateBlogDTO = {
@@ -55,5 +55,27 @@ export type DisplayServiceDTO = Service & {
     SubServices?: SubService[];
     ServiceDescription?: (ServiceDescription & { image: Image; })[];
 
+};
+export type CreateSubServiceDTO = {
+    id?: string;
+    title: string;
+    pricingModel: PricingModel;
+    discounts: Discount[];
+    serviceDeliverables: string[];
+    serviceUsageScore: number;
+    description: string;
+    department: string;
+    estimated_hours_times_fifty_percent: number;
+    estimated_hours_times_one_hundred_percent: number;
+    overheadCost: number;
+    complexity: number;
+    skillLevel: string;
+    image?: CreateImageDTO;
+    tags?: CreateTagDTO[];
+};
+
+export type Discount = {
+    name: string;
+    value: string;
 };
 

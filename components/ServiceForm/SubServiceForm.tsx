@@ -1,7 +1,7 @@
 'use client'
 import AddImagesAndTags from "@/components/AddImagesAndTags"
 import { CreateImageDTO } from "@/crud/DTOs";
-import { CreateSubServiceDTO, Discount } from "@/crud/subService";
+import { CreateSubServiceDTO, Discount } from "@/crud/DTOs";
 import { CreateTagDTO } from "@/crud/tags";
 import React, { useState } from 'react'
 import ListInput from "../ListInput";

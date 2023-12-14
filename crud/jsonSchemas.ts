@@ -1,4 +1,5 @@
-import { SubserviceSchema } from "./subService";
+import { PricingModel } from "@prisma/client";
+
 import { TagSchema } from "./tags";
 
 export const ImageSchema = {
@@ -11,6 +12,47 @@ export const ImageSchema = {
     "required": ["src"]
 };
 
+export const SubserviceSchema = {
+    "type": "object",
+    "properties": {
+        "id": { "type": "string" },
+        "title": { "type": "string" },
+        "pricingModel": { enum: [PricingModel.DEFAULT, PricingModel.AGGRESSIVE] },
+        "discounts": {
+            "type": "array",
+            "items": {
+                "type": "object",
+                "properties": {
+                    "name": { "type": "string" },
+                    "value": { "type": "string" }
+                },
+                "required": ["name", "value"]
+            }
+        },
+        "serviceDeliverables": {
+            "type": "array",
+            "items": { "type": "string" }
+        },
+        "serviceUsageScore": { "type": "number" },
+        "description": { "type": "string" },
+        "department": { "type": "string" },
+        "estimated_hours_times_fifty_percent": { "type": "number" },
+        "estimated_hours_times_one_hundred_percent": { "type": "number" },
+        "overheadCost": { "type": "number" },
+        "complexity": { "type": "number" },
+        "skillLevel": { "type": "string" },
+        "image": { "$ref": "#/definitions/CreateImageDTO" },
+        "tags": {
+            "type": "array",
+            "items": { "$ref": "#/definitions/CreateTagDTO" }
+        }
+    },
+    "required": ["title", "pricingModel", "discounts", "serviceDeliverables", "serviceUsageScore", "description", "department", "estimated_hours_times_fifty_percent", "estimated_hours_times_one_hundred_percent", "overheadCost", "complexity", "skillLevel"],
+    "definitions": {
+        "CreateImageDTO": ImageSchema,
+        "CreateTagDTO": TagSchema
+    }
+};
 
 export const BlogSchema = {
     "type": "object",

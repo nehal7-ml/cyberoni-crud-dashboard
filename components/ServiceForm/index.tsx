@@ -6,7 +6,7 @@ import { ServiceSchema } from "@/crud/jsonSchemas";
 import { CreateTagDTO } from "@/crud/tags";
 import React, { useEffect, useState } from 'react'
 import { PlusCircle, X } from "lucide-react";
-import { CreateSubServiceDTO } from "@/crud/subService";
+import { CreateSubServiceDTO } from "@/crud/DTOs";
 
 import Notification, { NotificationType } from "@/components/Notification";
 import CreateSubServcie from "./SubServiceForm";

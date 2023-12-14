@@ -1,6 +1,6 @@
 'use client'
 
-import { Discount } from "@/crud/subService";
+import { Discount } from "@/crud/DTOs";
 import { useEffect, useState } from "react";
 
 function DiscountsForm({ initial, onChange }: { initial?: Discount[], onChange: (values: Discount[]) => void }) {
