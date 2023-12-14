@@ -10,10 +10,11 @@ import { cookies } from 'next/headers'
 import { NextRequest } from "next/server"
 import Link from "next/link"
 import LoginForm from "@/components/LoginForm"
+import { DisplayUserDTO } from "@/crud/user"
 
-export const dynamic='force-dynamic'
+export const dynamic = 'force-dynamic'
 
-export default async   function SignIn() {
+export default async function SignIn() {
 
     const session = await getServerSession(authOptions)
 
@@ -24,11 +25,12 @@ export default async   function SignIn() {
 
 
     if (session) {
-        redirect('/')
+        const user = session.user as DisplayUserDTO;
+        if (user.role == 'ADMIN' || user.role == 'SUPERUSER') redirect('/')
     }
 
     return (
         <LoginForm />
     )
-  
+
 }
