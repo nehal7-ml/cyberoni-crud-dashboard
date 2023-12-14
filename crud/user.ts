@@ -106,7 +106,7 @@ async function update(userId: string, user: CreateUserDTO, prismaClient: PrismaC
 
 export async function reset(token: string, password: string, prismaClient: PrismaClient) {
     const users = prismaClient.user;
-    const { email } = verify(token as string, process.env.NEXTAUTH_SECRET as string) as { email: string};
+    const { email } = verify(token as string, process.env.NEXTAUTH_SECRET as string) as { email: string };
 
     const hashedPassword = await bcrypt.hash(password, 10)
     const updated = await users.update({
@@ -166,7 +166,7 @@ export async function getUserByEmail(email: string, prismaClient: PrismaClient) 
 export async function authorizeWithPassword({ email, password }: CredentialAuthDTO, prisma: PrismaClient) {
     const users = prisma.user
     const user = await users.findUnique({ where: { email: email.toLowerCase() } })
-    if (!user) throw { message: `Invalid credentials account doesn't exist`, status: 400 };
+    if (!user || user.role === 'CUSTOMER' || user.role === 'USER') throw { message: `Invalid credentials account doesn't exist or insufucient permissions`, status: 400 };
 
     else {
         const authorized = await bcrypt.compare(password, user.password as string)

@@ -16,7 +16,9 @@ export default withAuth(
 
                 // console.log("authorize",token);
 
-                if (token) return true
+                if (token) {
+                    return (isAdmin(token) || isSuper(token))
+                } 
                 else return false
             },
 
@@ -41,4 +43,4 @@ function isUser(token: JWT | null) {
 }
 
 
-export const config = { matcher: ["/dashboard/:path*", "/api/((?!auth).*)", "/"] }
+export const config = { matcher: ["/", "/dashboard/:path*", "/api/((?!auth).*)"] }
