@@ -70,7 +70,7 @@ function ForgotPassword({ searchParams }: { searchParams: { success: string, sen
           sent === true ? <Message message="Password reset link has been sent check email" type="green" /> :
             sent === false ? <Message message="Faield to send message" type="red" /> :
               success === true ? <>
-                <Message message="Pssword reset check email for new password" type="green" />
+                <Message message="Password reset check email for new password" type="green" />
               </> :
 
                 success === false ? <Message message="Failed to reset Password" type="red" />
