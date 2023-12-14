@@ -29,6 +29,7 @@ export const authOptions: NextAuthOptions = {
             if (trigger === "update" && session?.name) {
                 // Note, that `session` can be any arbitrary object, remember to validate it!
                 token.name = session.name
+                //token.user = user
             }
             return token
         },
