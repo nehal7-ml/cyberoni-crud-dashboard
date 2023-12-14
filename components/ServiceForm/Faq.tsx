@@ -1,4 +1,4 @@
-import { CreateFaqDTO } from "@/crud/service";
+import { CreateFaqDTO } from "@/crud/DTOs";
 import { FAQ } from "@prisma/client";
 import React, { useEffect, useState } from 'react';
 

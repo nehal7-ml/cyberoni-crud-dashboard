@@ -1,6 +1,6 @@
 'use client'
 import AddImagesAndTags from "@/components/AddImagesAndTags";
-import { CreateImageDTO } from "@/crud/images";
+import { CreateImageDTO } from "@/crud/DTOs";
 import { CreateGptPromptDTO } from "@/crud/prompt";
 import { CreateTagDTO } from "@/crud/tags";
 import React, { useState } from 'react';

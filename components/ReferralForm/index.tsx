@@ -1,6 +1,6 @@
 'use client'
 import { CreateReferralDTO } from "@/crud/referral";
-import { CreateImageDTO } from "@/crud/images";
+import { CreateImageDTO } from "@/crud/DTOs";
 import { CreateTagDTO } from "@/crud/tags";
 import { EventStatus, ReferralPriority, ReferralType } from "@prisma/client";
 import React, { FormEvent, useEffect, useState } from 'react';

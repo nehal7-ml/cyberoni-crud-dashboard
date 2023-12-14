@@ -1,4 +1,5 @@
-import { create, CreateServiceDTO } from "@/crud/service";
+import { create } from "@/crud/service";
+import { CreateServiceDTO } from "@/crud/DTOs";
 import apiHandler from "@/errorHandler";
 import { prisma } from "@/prisma/prismaClient";
 import { NextApiRequest, NextApiResponse } from "next";

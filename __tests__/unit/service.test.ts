@@ -1,7 +1,8 @@
 /**
  * @jest-environment node
  */
-import { CreateServiceDTO, create, read, remove, update } from "@/crud/service";
+import { create, read, remove, update } from "@/crud/service";
+import { CreateServiceDTO } from "@/crud/DTOs";
 import { prisma } from "@/prisma/prismaClient";
 import { describe, expect, it, afterAll } from "@jest/globals";
 import { Service, ServiceDescription, SubService } from "@prisma/client";

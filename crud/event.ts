@@ -1,5 +1,5 @@
 import { Event, EventStatus, PrismaClient, User } from "@prisma/client";
-import { CreateImageDTO } from "./images";
+import { CreateImageDTO } from "./DTOs";
 import { CreateTagDTO , connectOrCreateObject as connectTag} from "./tags";
 
 

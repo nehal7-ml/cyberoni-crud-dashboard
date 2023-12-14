@@ -1,5 +1,5 @@
 import { Image, PrismaClient } from "@prisma/client";
-import { CreateImageDTO } from "./images";
+import { CreateImageDTO } from "./DTOs";
 export type CaseStudyType = 'ECOMMERCE' | 'LANDING' | 'SOFTWARE' | 'GRAPHICS';
 export type CreateCaseStudy = {
     id?: string;

@@ -1,118 +1,16 @@
-import { Service, PrismaClient, Prisma, Image, Tag, SubService, ServiceDescription, FAQ } from "@prisma/client";
-import { CreateTagDTO, create as createTag, connectOrCreateObject as connectTags, TagSchema } from "./tags";
-import { CreateImageDTO, create as createImage, connectOrCreateObject as connectImage, ImageSchema } from "./images";
-import { CreateSubServiceDTO, SubserviceSchema, create as createSubService, update as updateSubService } from "./subService";
+import { PrismaClient, Prisma, FAQ } from "@prisma/client";
+import { create as createTag, connectOrCreateObject as connectTags } from "./tags";
+import { create as createImage, connectOrCreateObject as connectImage, createObject } from "./images";
+import { CreateImageDTO } from "./DTOs";
+import { create as createSubService, update as updateSubService } from "./subService";
 import { prisma } from "@/prisma/prismaClient";
+import { uploadFile } from "@/lib/cloudinary";
+import { CreateServiceDTO } from "./DTOs";
 
-
-export type CreateServiceDTO = {
-    title: string;
-    previewContent: string;
-    featured: boolean;
-    ServiceDescription: CreateServiceDescription[];
-    hourlyRate: number;
-    valueBrought: string[];
-    skillsUsed: string[];
-    htmlEmbed?: string;
-    image?: CreateImageDTO;
-    SubServices?: CreateSubServiceDTO[];
-    tags?: CreateTagDTO[];
-    faqs?: CreateFaqDTO[]
-}
-
-export type CreateServiceDescription = {
-    id?: string;
-    title: string;
-    content: string;
-    imageOnLeft: boolean;
-    image: CreateImageDTO
-
-}
-export type CreateFaqDTO = {
-    question: string;
-    answer: string;
-}
-
-export type DisplayServiceDTO = Service & {
-    image?: Image,
-    tags?: Tag[],
-    SubServices?: SubService[],
-    ServiceDescription?: (ServiceDescription & { image: Image })[]
-
-}
-
-export const ServiceSchema = {
-    "type": "object",
-    "properties": {
-        "title": { "type": "string" },
-        "previewContent": { "type": "string" },
-        "ServiceDescription": {
-            "type": "array",
-            "items": {
-                "$ref": "#/definitions/CreateServiceDescription"
-            }
-        },
-        "hourlyRate": { "type": "number" },
-        "valueBrought": {
-            "type": "array",
-            "items": { "type": "string" }
-        },
-        "skillsUsed": {
-            "type": "array",
-            "items": { "type": "string" }
-        },
-        "htmlEmbed": { "type": ["string"] },
-        "image": { "$ref": "#/definitions/CreateImageDTO" },
-        "SubServices": {
-            "type": "array",
-            "items": { "$ref": "#/definitions/CreateSubServiceDTO" }
-        },
-        "tags": {
-            "type": "array",
-            "items": { "$ref": "#/definitions/CreateTagDTO" }
-        },
-        "faqs": {
-            "type": "array",
-            "items": { "$ref": "#/definitions/CreateFaqDTO" }
-        }
-    },
-    "required": ["title", "previewContent", "ServiceDescription", "hourlyRate", "valueBrought", "skillsUsed"],
-    "definitions": {
-        "CreateServiceDescription": {
-            "type": "object",
-            "properties": {
-                "id": { "type": ["string"] },
-                "title": { "type": "string" },
-                "content": { "type": "string" },
-                "imageOnLeft": { "type": "boolean" },
-                "image": { "$ref": "#/definitions/CreateImageDTO" }
-            },
-            "required": ["title", "content", "imageOnLeft", "image"],
-            "definitions": {
-                "CreateImageDTO": {
-                    // Include the JSON schema for CreateImageDTO here
-                }
-            }
-        }
-        ,
-        "CreateImageDTO": ImageSchema,
-        "CreateTagDTO": TagSchema,
-        "CreateSubServiceDTO": SubserviceSchema,
-        "CreateFaqDTO": {
-            "type": "object",
-            "properties": {
-                "question": { "type": "string" },
-                "answer": { "type": "string" }
-            },
-            "required": ["question", "answer"]
-        }
-
-    }
-}
 
 async function create(service: CreateServiceDTO, prismaClient: PrismaClient) {
     const services = prismaClient.service;
-
+    let image = await createObject(service.image)
     let createdservice = await services.create({
         data: {
             title: service.title,
@@ -122,7 +20,7 @@ async function create(service: CreateServiceDTO, prismaClient: PrismaClient) {
             valueBrought: service.valueBrought,
             skillsUsed: service.skillsUsed,
             htmlEmbed: service.htmlEmbed,
-            image: service.image ? (service.image.id ? { connect: { id: service.image.id } } : { create: service.image }) : {},
+            image: image ? { create: image } : {},
             tags: { connectOrCreate: connectTags(service.tags || []) },
             faqs: {
                 create: service.faqs ? service.faqs : []
@@ -172,6 +70,7 @@ async function create(service: CreateServiceDTO, prismaClient: PrismaClient) {
 
 async function update(serviceId: string, service: CreateServiceDTO, prismaClient: PrismaClient) {
     const services = prismaClient.service;
+    let image = await createObject(service.image)
 
     // let currentService = await services.findUnique({ where: { id: serviceId } })
     let updatedService = await services.update(
@@ -185,7 +84,7 @@ async function update(serviceId: string, service: CreateServiceDTO, prismaClient
                 valueBrought: service.valueBrought,
                 skillsUsed: service.skillsUsed,
                 htmlEmbed: service.htmlEmbed,
-                image: service.image ? { update: service.image } : {},
+                image: image ? { update: image } : {},
                 tags: { connectOrCreate: connectTags(service.tags || []) },
 
 
@@ -299,9 +198,9 @@ async function getAll(page: number, pageSize: number, prismaClient: PrismaClient
 }
 
 
-export async function getFeatured(prisma:PrismaClient) {
+export async function getFeatured(prisma: PrismaClient) {
     const services = prisma.service;
-    const records = await services.findMany({where: {featured: true}, take:5, orderBy: {hourlyRate:'desc'}})
+    const records = await services.findMany({ where: { featured: true }, take: 5, orderBy: { hourlyRate: 'desc' } })
     return records
 
 }

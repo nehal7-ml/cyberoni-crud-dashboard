@@ -1,6 +1,8 @@
 import { PricingModel, PrismaClient, SubService } from "@prisma/client"
-import { CreateImageDTO, ImageSchema } from "./images";
+import { ImageSchema } from "./jsonSchemas";
+import { CreateImageDTO } from "./DTOs";
 import { connectOrCreateObject, CreateTagDTO, TagSchema } from "./tags";
+import { createObject } from "./images";
 export type CreateSubServiceDTO = {
     id?: string;
     title: string;
@@ -70,6 +72,8 @@ export const SubserviceSchema = {
 
 export async function create(newSubService: CreateSubServiceDTO, serviceId: string, prismaClient: PrismaClient) {
     const subServices = prismaClient.subService;
+    let image = await createObject(newSubService.image)
+
     const newRecord = await subServices.create({
         data: {
             title: newSubService.title,
@@ -84,7 +88,7 @@ export async function create(newSubService: CreateSubServiceDTO, serviceId: stri
             serviceDeliverables: newSubService.serviceDeliverables,
             serviceUsageScore: newSubService.serviceUsageScore,
             skillLevel: newSubService.skillLevel,
-            image: { create: newSubService.image },
+            image: { create: image },
             tags: { connectOrCreate: connectOrCreateObject(newSubService.tags || []) },
             service: { connect: { id: serviceId } }
         }
@@ -99,6 +103,8 @@ export async function create(newSubService: CreateSubServiceDTO, serviceId: stri
 export async function update(subServiceID: string, subService: CreateSubServiceDTO, serviceId: string, prismaClient: PrismaClient) {
 
     const subServices = prismaClient.subService;
+    let image = await createObject(subService.image)
+
     const newRecord = await subServices.update({
         where: { id: subServiceID },
         data: {
@@ -114,7 +120,7 @@ export async function update(subServiceID: string, subService: CreateSubServiceD
             serviceDeliverables: subService.serviceDeliverables,
             serviceUsageScore: subService.serviceUsageScore,
             skillLevel: subService.skillLevel,
-            image: { update: subService.image },
+            image: { update: image },
             tags: { connectOrCreate: connectOrCreateObject(subService.tags || []) },
             service: { connect: { id: serviceId } }
         }

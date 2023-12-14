@@ -3,9 +3,10 @@
 import { useEffect, useState } from "react";
 import AddImagesAndTags from "../AddImagesAndTags";
 import Notification from "../Notification";
-import { BlogSchema, CreateBlogDTO, DisplayBlogDTO } from "@/crud/blog";
+import { BlogSchema } from "@/crud/jsonSchemas";
+import { CreateBlogDTO, DisplayBlogDTO } from "@/crud/DTOs";
 import { redirect, useParams, useRouter } from "next/navigation";
-import { CreateImageDTO } from "@/crud/images";
+import { CreateImageDTO } from "@/crud/DTOs";
 import { CreateTagDTO } from "@/crud/tags";
 import Editor from "../RichTextEditor";
 import Ajv from 'ajv'

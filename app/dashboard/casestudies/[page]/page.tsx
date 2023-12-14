@@ -1,7 +1,7 @@
 import Pagination from "@/components/Pagination";
 import Table from "@/components/Table"
 import { TableItem } from "@/components/TableItem";
-import { DisplayBlogDTO } from "@/crud/blog";
+import { DisplayBlogDTO } from "@/crud/DTOs";
 import { getAll } from "@/crud/casestudy";
 import { getAllRecordsDTO } from "@/crud/commonDTO";
 import React from 'react'
