@@ -4,7 +4,7 @@ import { bufferToB64, generateUUID } from "@/lib/utils";
 import React, { useEffect, useState } from 'react'
 import { FileUploader } from "react-drag-drop-files";
 import Loading from "../Loading";
-import { PlusCircle, X } from "lucide-react";
+import { Edit, PlusCircle, X, XCircle } from "lucide-react";
 
 function AddImage({ defaultImages, onImagesChange, maxImages, submit }: { defaultImages?: CreateImageDTO[], onImagesChange: (images: CreateImageDTO[]) => void, maxImages?: number, submit?: boolean }) {
     const [images, setImages] = useState<CreateImageDTO[]>(defaultImages || []);
@@ -108,6 +108,10 @@ function AddImage({ defaultImages, onImagesChange, maxImages, submit }: { defaul
         }
     }, [submit]);
 
+    function updateImage(image:CreateImageDTO){
+        setImage(image); 
+        setImageModal(true) 
+    }
     return (
         <>
             <h2 className="text-lg font-semibold mb-2">Add Images</h2>
@@ -116,18 +120,28 @@ function AddImage({ defaultImages, onImagesChange, maxImages, submit }: { defaul
                     {images.map(image => (
                         <div
                             key={image.src}
-                            className="bg-gray-200 p-2 rounded"
+                            className="relative bg-gray-200 p-2 rounded flex flex-col"
                         >
                             {/* eslint-disable-next-line @next/next/no-img-element */}
-                            <img src={image.src} alt={image.name as string} className="w-20 h-20 object-cover cursor-pointer" onClick={() => { setImage(image); setImageModal(true) }} />
-                            <div>{image.name}</div>
-                            <div className="flex justify-center items-center">
+                            <img src={image.src} alt={image.name as string} className="w-20 h-20 object-cover cursor-pointer" onClick={() => { updateImage(image)}} />
+                            <div className="w-20 hover:w-auto p-1 line-clamp-1 text-ellipsis hover:overflow-visible hover:shadow-md hover:line-clamp-none hover:whitespace-nowrap">{image.name}</div>
+                            <div className="absolute right-2 top-1  flex justify-center items-center">
                                 <button
                                     type="button"
                                     className="ml-2 text-red-600 hover:text-red-800 focus:outline-none focus:ring focus:ring-red-300"
                                     onClick={() => handleRemoveImage(image)}
                                 >
-                                    X
+                                    <XCircle />
+                                </button>
+                            </div>
+
+                            <div className="  flex justify-center items-center">
+                                <button
+                                    type="button"
+                                    className="ml-2 text-blue-600 hover:shadow-md rounded-md p-1 hover:text-blue-800 focus:outline-none focus:ring focus:ring-red-300"
+                                    onClick={() => updateImage(image)}
+                                >
+                                   <Edit />
                                 </button>
                             </div>
                         </div>

@@ -10,8 +10,8 @@ function Logo() {
                 <Image
                     src={MAIN_LOGO}
                     alt="CyberOni logo"
-                    width="100"
-                    height="100"
+                    width={50}
+                    height={50}
                     className="mr-2 rounded-sm animate-bounce"
                 ></Image>
             </motion.div>
