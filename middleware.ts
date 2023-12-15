@@ -13,9 +13,9 @@ export default withAuth(
         callbacks: {
             authorized: async ({ token, req }) => {
 
-                console.log("authorize",(isAdmin(token) || isSuper(token)));
 
                 if (token) {
+                    console.log("authorize",(isAdmin(token) || isSuper(token)));
                     return (isAdmin(token) || isSuper(token))
                 } 
                 else return false
