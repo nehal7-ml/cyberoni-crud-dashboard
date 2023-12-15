@@ -52,13 +52,13 @@ function ResetPasswordForm() {
         {state.success === true ?
             <div>
                 <Message message="Password reset Sucessfull" type="green" />
-                <Link href={'/auth/signion'} className="text-blue-600 underline cursor-pointer">click to login</Link>
+                <Link href={'/api/auth/signin'} className="text-blue-600 underline cursor-pointer">click to login</Link>
 
             </div >
             : state.error ?
 
                 <>
-                    <Message message={`Error occured ${err}`} type="red" />
+                    <Message message={`Error occured: ${state.error}`} type="red" />
 
                 </> :
 
