@@ -1,6 +1,14 @@
 import { PricingModel } from "@prisma/client";
 
-import { TagSchema } from "./tags";
+export const TagSchema = {
+    "type": "object",
+    "properties": {
+        "id": { "type": ["string"] },
+        "name": { "type": "string" }
+    },
+    "required": ["name"]
+};
+
 
 export const ImageSchema = {
     "type": "object",
@@ -90,7 +98,9 @@ export const BlogSchema = {
         "CreateImageDTO": ImageSchema,
         "CreateTagDTO": TagSchema
     }
-}; export const ServiceSchema = {
+};
+
+export const ServiceSchema = {
     "type": "object",
     "properties": {
         "title": { "type": "string" },
@@ -156,4 +166,4 @@ export const BlogSchema = {
             "required": ["question", "answer"]
         }
     }
-};
+}; 
