@@ -202,6 +202,8 @@ const ReferralForm = ({ method, action, initial }: { method: 'POST' | 'PUT', act
                             className="mt-1 p-2 border rounded w-full invalid:ring-2 invalid:ring-rose-600 invalid:text-rose-500 invalid:outline-red-500"
                             value={referralData.link}
                             onChange={handleLinkChange}
+                            pattern={linkType=="External"? '^(ftp|http|https):\/\/[^ "]+$': '^\/.*$'}
+                            title="Enter valid url: https://...(external)) or /..(internal)"
                             required
                         />
                     </div>

@@ -172,6 +172,9 @@ function AddImage({ defaultImages, onImagesChange, maxImages, submit }: { defaul
                                     handleChange={handleAddImage}
                                     name="file"
                                     types={fileTypes}
+                                    text="file"
+                                    
+                                    
                                 />
                             </div>
                             <div className="my-4 flex gap-4 justify-center items-center">
