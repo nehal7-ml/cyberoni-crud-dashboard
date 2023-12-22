@@ -10,14 +10,17 @@ import { redirect, useRouter } from "next/navigation";
 
 
 const ReferralForm = ({ method, action, initial }: { method: 'POST' | 'PUT', action: string, initial?: CreateReferralDTO }) => {
-    const appUrl = process.env.NEXT_PUBLIC_APP_URL;
+    const appUrl = process.env.NEXT_PUBLIC_APP_URL as string;
 
     const [notify, setNotify] = useState(false);
     const [notifyMessage, setNotifyMessage] = useState("");
     const [notifyType, setNotifyType] = useState<'success' | 'fail'>('fail');
-
-    const [linkType, setLinkType] = useState<'External' | 'Internal'>('External');
-    const [referralData, setReferralData] = useState<CreateReferralDTO>(initial || {
+    const [invalidLink, setInvalidLink] = useState(false);
+    const [linkType, setLinkType] = useState<'External' | 'Internal'>(initial?.link.includes(appUrl)? 'Internal': 'External');
+    const [referralData, setReferralData] = useState<CreateReferralDTO>(initial? {
+        ...initial,
+        link: initial?.link.includes(appUrl)? `${initial.link.replace(appUrl,'')}`: initial.link
+    } : {
         campaignId: '',
         description: '',
         click: 0,
@@ -57,35 +60,44 @@ const ReferralForm = ({ method, action, initial }: { method: 'POST' | 'PUT', act
         e.preventDefault();
 
 
-        try {
-            const verify = await fetch(linkType === 'External' ? referralData.link : `${appUrl}${referralData.link}`, { mode:'no-cors'});
-            console.log(verify);
-            if (verify.status !== 0) {
-                console.log(verify.status);
-                alert('Invalid Page link, it\'s not reachable')
-                return
-            }
-        } catch (error) {
-            console.log(error);
-            alert('Invalid Page link, it\'s not reachable')
-            return
-        }
+        
 
         const headers = {
             'Content-Type': 'application/json',
             'Authorization': 'Bearer your-access-token',
         };
         // Send the userData to your backend for creating the user
-        console.log(referralData);
-        const res = await fetch(`${action}`, { method, body: JSON.stringify(referralData), headers })
+        const payload =  {...referralData}
+
+        try {
+            if(linkType ==='Internal') {
+                Object.assign(payload, {
+                    link: `${appUrl}${referralData.link}`
+                })
+            }
+        } catch (error) {
+            return
+        }
+        console.log(payload);
+
+        const res = await fetch(`${action}`, { method, body: JSON.stringify(payload), headers })
         let resJson = await res.json();
 
-        if (res.status == 200) {
+        if (res.status === 200) {
             message('success', resJson.message)
-            router.replace(`/dashboard/referrals/view/${resJson.data.id}`)
+            router.refresh()
+            window.location.reload()
 
         } else {
+            if(linkType ==='Internal') {
+                referralData.link = `${referralData.link.replace(appUrl,'')}`
+            }
+
             message('fail', resJson.message)
+
+            if(res.status===406) {
+                setInvalidLink(true)
+            }
 
         }
     };
@@ -101,6 +113,7 @@ const ReferralForm = ({ method, action, initial }: { method: 'POST' | 'PUT', act
 
     function handleLinkChange(e: React.ChangeEvent<HTMLInputElement>) {
         const { value, name } = e.target
+        setInvalidLink(false)
         if(linkType ==='External') {
 
             setReferralData(prevData => ({
@@ -111,7 +124,7 @@ const ReferralForm = ({ method, action, initial }: { method: 'POST' | 'PUT', act
         if(linkType ==='Internal') {
             setReferralData(prevData => ({
                 ...prevData,
-                [name]: `${appUrl}${value}`,
+                [name]: `${value}`,
             }));
         }
         
@@ -207,7 +220,7 @@ const ReferralForm = ({ method, action, initial }: { method: 'POST' | 'PUT', act
                         <input
                             type="text"
                             name="link"
-                            className="mt-1 p-2 border rounded w-full invalid:ring-2 invalid:ring-rose-600 invalid:text-rose-500 invalid:outline-red-500"
+                            className={`mt-1 p-2 border rounded w-full ${invalidLink? 'ring-rose-600 text-rose-500 outline-red-500' : ''} invalid:ring-2 invalid:ring-rose-600 invalid:text-rose-500 invalid:outline-red-500`}
                             value={referralData.link}
                             onChange={handleLinkChange}
                             pattern={linkType=="External"? '^(ftp|http|https):\/\/[^ "]+$': '^\/.*$'}
