@@ -10,6 +10,8 @@ import { redirect, useRouter } from "next/navigation";
 
 
 const ReferralForm = ({ method, action, initial }: { method: 'POST' | 'PUT', action: string, initial?: CreateReferralDTO }) => {
+    const appUrl = process.env.NEXT_PUBLIC_APP_URL;
+
     const [notify, setNotify] = useState(false);
     const [notifyMessage, setNotifyMessage] = useState("");
     const [notifyType, setNotifyType] = useState<'success' | 'fail'>('fail');
@@ -20,7 +22,7 @@ const ReferralForm = ({ method, action, initial }: { method: 'POST' | 'PUT', act
         description: '',
         click: 0,
         expires: new Date(),
-        fallback: '/',
+        fallback: '',
         link: '',
         prefix: '',
         priority: ReferralPriority.LOW,
@@ -39,12 +41,8 @@ const ReferralForm = ({ method, action, initial }: { method: 'POST' | 'PUT', act
                 expires: new Date(value),
             }));
 
-        } if (name === 'isVirtual') {
-            setReferralData(prevData => ({
-                ...prevData,
-                isVirtual: value === 'on',
-            }));
-        } else {
+        } 
+        else {
 
             setReferralData(prevData => ({
                 ...prevData,
@@ -57,7 +55,6 @@ const ReferralForm = ({ method, action, initial }: { method: 'POST' | 'PUT', act
 
     const handleSubmit = async (e: FormEvent) => {
         e.preventDefault();
-        const appUrl = process.env.NEXT_PUBLIC_APP_URL;
 
 
         try {
@@ -79,6 +76,7 @@ const ReferralForm = ({ method, action, initial }: { method: 'POST' | 'PUT', act
             'Authorization': 'Bearer your-access-token',
         };
         // Send the userData to your backend for creating the user
+        console.log(referralData);
         const res = await fetch(`${action}`, { method, body: JSON.stringify(referralData), headers })
         let resJson = await res.json();
 
@@ -103,10 +101,20 @@ const ReferralForm = ({ method, action, initial }: { method: 'POST' | 'PUT', act
 
     function handleLinkChange(e: React.ChangeEvent<HTMLInputElement>) {
         const { value, name } = e.target
-        setReferralData(prevData => ({
-            ...prevData,
-            [name]: value,
-        }));
+        if(linkType ==='External') {
+
+            setReferralData(prevData => ({
+                ...prevData,
+                [name]: value,
+            }));
+        } 
+        if(linkType ==='Internal') {
+            setReferralData(prevData => ({
+                ...prevData,
+                [name]: `${appUrl}${value}`,
+            }));
+        }
+        
 
     }
 
@@ -189,7 +197,7 @@ const ReferralForm = ({ method, action, initial }: { method: 'POST' | 'PUT', act
                             type="text"
                             name="redirect"
                             className="mt-1 p-2 border rounded w-full invalid:ring-2 invalid:ring-rose-600 invalid:text-rose-500 invalid:outline-red-500"
-                            value={`${referralData.type === 'REDIRECT' ? '/referrals' : '/affiliate'}/${referralData.prefix}`}
+                            value={`${appUrl}${referralData.type === 'REDIRECT' ? `/referrals` : `/affiliate`}/${referralData.prefix}`}
                             onChange={handleInputChange}
                             required
                         />
@@ -215,6 +223,8 @@ const ReferralForm = ({ method, action, initial }: { method: 'POST' | 'PUT', act
                             className="mt-1 p-2 border rounded w-full invalid:ring-2 invalid:ring-rose-600 invalid:text-rose-500 invalid:outline-red-500"
                             value={referralData.fallback}
                             onChange={handleLinkChange}
+                            pattern={linkType=="External"? '^(ftp|http|https):\/\/[^ "]+$': '^\/.*$'}
+                            title="Enter valid url: https://...(external)) or /..(internal)"
                             required
                         />
                     </div>

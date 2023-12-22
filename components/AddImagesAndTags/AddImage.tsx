@@ -52,7 +52,7 @@ function AddImage({ defaultImages, onImagesChange, maxImages, submit }: { defaul
         }
 
         setLoading(false);
-
+        console.log("loaded Image");
     };
 
     const handleRemoveImage = async (imageToRemove: CreateImageDTO) => {
@@ -187,7 +187,7 @@ function AddImage({ defaultImages, onImagesChange, maxImages, submit }: { defaul
 
                 </div>
                 {loading &&
-                    <div className="fixed top-0 left-0 w-screen h-screen z-[100]  backdrop-blur-md">
+                    <div role="status" className="fixed top-0 left-0 w-screen h-screen z-[100]  backdrop-blur-md">
                         <Loading />
                     </div>}
             </div>

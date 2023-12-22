@@ -28,20 +28,24 @@ describe('test addimage component', () => {
         });
     });
     it('should test adding a image from disk', async () => {
-        const { container } = render(<AddImage onImagesChange={() => { }} />);
+        const { container , getByText, getByAltText} = render(<AddImage onImagesChange={() => { }} />);
 
         // Trigger file upload
         const fileInput = container.querySelector('input[name="file"]') as HTMLElement;
+        const save = getByText('Save')
         const file = new File(['(binary content)'], 'uploadedimage.jpg', { type: 'image/jpeg' });
-        fireEvent.change(fileInput, { target: { files: [file] } });
-
+        fireEvent.change(fileInput, { target: { file: [file] } });
         // Wait for the loading indicator to disappear
         await waitFor(() => {
-            expect(screen.queryByText(/loading/i)).toBeNull();
+            expect(screen.queryByRole('status')).toBeNull();
+            
         });
+        //console.log(save);
+        fireEvent.click(save)
 
-        // Assert that the uploaded image is added
         const uploadedImageElement = screen.getByAltText('uploadedimage.jpg');
         expect(uploadedImageElement).toBeDefined();
+        // Assert that the uploaded image is added
+        
     })
 });
