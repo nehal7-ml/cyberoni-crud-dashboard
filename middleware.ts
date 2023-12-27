@@ -15,7 +15,7 @@ export default withAuth(
 
 
                 if (token) {
-                    console.log("authorize",(isAdmin(token) || isSuper(token)));
+                    //console.log("authorize",(isAdmin(token) || isSuper(token)));
                     return (isAdmin(token) || isSuper(token))
                 } 
                 else return false

@@ -44,7 +44,7 @@ function LoginForm() {
                         <ClientInput
                             className="peer shadow-lg appearance-none border rounded-xl w-full py-4 px-4 bg-transparent text-gray-700  leading-tight focus:outline-none focus:shadow-outline"
                             name="username"
-                            id="username"
+                            id="email"
                             type="email"
                             placeholder=""
                             required
@@ -62,7 +62,7 @@ function LoginForm() {
                             placeholder=""
                             required
                         />
-                        <label className="block absolute top-0 left-3 -translate-y-3 peer-focus:-translate-y-3 peer-placeholder-shown:translate-y-3 peer-focus:text-blue-500 bg-gray-50  px-1 text-gray-500 transition-all   text-sm font-bold mb-2" htmlFor="email">
+                        <label className="block absolute top-0 left-3 -translate-y-3 peer-focus:-translate-y-3 peer-placeholder-shown:translate-y-3 peer-focus:text-blue-500 bg-gray-50  px-1 text-gray-500 transition-all   text-sm font-bold mb-2" htmlFor="password">
                             Password
                         </label>
                     </div>
