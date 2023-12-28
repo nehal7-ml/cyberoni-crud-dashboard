@@ -1,11 +1,10 @@
 'use client'
 import { CreateReferralDTO } from "@/crud/referral";
-import { CreateImageDTO } from "@/crud/DTOs";
-import { CreateTagDTO } from "@/crud/tags";
 import { EventStatus, ReferralPriority, ReferralType } from "@prisma/client";
-import React, { FormEvent, useEffect, useState } from 'react';
+import React, { FormEvent, useEffect, useRef, useState } from 'react';
 import Notification, { NotificationType } from "@/components/Notification";
 import { redirect, useRouter } from "next/navigation";
+import { stripSlashes } from "@/lib/utils";
 
 
 
@@ -16,10 +15,15 @@ const ReferralForm = ({ method, action, initial }: { method: 'POST' | 'PUT', act
     const [notifyMessage, setNotifyMessage] = useState("");
     const [notifyType, setNotifyType] = useState<'success' | 'fail'>('fail');
     const [invalidLink, setInvalidLink] = useState(false);
-    const [linkType, setLinkType] = useState<'External' | 'Internal'>(initial?.link.includes(appUrl)? 'Internal': 'External');
-    const [referralData, setReferralData] = useState<CreateReferralDTO>(initial? {
+    const [linkType, setLinkType] = useState<'External' | 'Internal'>(initial?.link.includes(appUrl) ? 'Internal' : 'External');
+    const [referralData, setReferralData] = useState<CreateReferralDTO>(initial ? {
         ...initial,
-        link: initial?.link.includes(appUrl)? `${initial.link.replace(appUrl,'')}`: initial.link
+        link: initial?.link.includes(appUrl) ? `${initial.link.replace(appUrl, '')}` : initial.link,
+        utmProps: initial.utmProps? initial.utmProps : {
+            utm_campaign: '',
+            utm_medium: '',
+            utm_source: '',
+        }
     } : {
         campaignId: '',
         description: '',
@@ -30,10 +34,28 @@ const ReferralForm = ({ method, action, initial }: { method: 'POST' | 'PUT', act
         prefix: '',
         priority: ReferralPriority.LOW,
         type: ReferralType.REDIRECT,
-        redirect: ''
+        redirect: '',
+        utmProps: {
+            utm_campaign: '',
+            utm_medium: '',
+            utm_source: '',
+        } 
     });
     const [date, setDate] = useState(((initial?.expires) || (new Date())).toISOString().split('T')[0]);
+    const utmPraram = useRef(new URLSearchParams(initial?.utmProps? initial.utmProps: {}) )
+    function handleUtmChange(e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) {
+        const { name, value } = e.target;
 
+        setReferralData(prev => ({
+            ...prev,
+            utmProps: {
+                ...prev.utmProps,
+                [name]: value
+            }
+        }))
+
+        utmPraram.current.set(name, value)
+    }
     const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => {
         const { name, value } = e.target;
 
@@ -44,7 +66,7 @@ const ReferralForm = ({ method, action, initial }: { method: 'POST' | 'PUT', act
                 expires: new Date(value),
             }));
 
-        } 
+        }
         else {
 
             setReferralData(prevData => ({
@@ -59,18 +81,15 @@ const ReferralForm = ({ method, action, initial }: { method: 'POST' | 'PUT', act
     const handleSubmit = async (e: FormEvent) => {
         e.preventDefault();
 
-
-        
-
         const headers = {
             'Content-Type': 'application/json',
             'Authorization': 'Bearer your-access-token',
         };
         // Send the userData to your backend for creating the user
-        const payload =  {...referralData}
+        const payload = { ...referralData }
 
         try {
-            if(linkType ==='Internal') {
+            if (linkType === 'Internal') {
                 Object.assign(payload, {
                     link: `${appUrl}${referralData.link}`
                 })
@@ -85,17 +104,16 @@ const ReferralForm = ({ method, action, initial }: { method: 'POST' | 'PUT', act
 
         if (res.status === 200) {
             message('success', resJson.message)
-            router.refresh()
-            window.location.reload()
+            router.push(`/dashboard/referrals/view/${resJson.data.id}`)
 
         } else {
-            if(linkType ==='Internal') {
-                referralData.link = `${referralData.link.replace(appUrl,'')}`
+            if (linkType === 'Internal') {
+                referralData.link = `${referralData.link.replace(appUrl, '')}`
             }
 
             message('fail', resJson.message)
 
-            if(res.status===406) {
+            if (res.status === 406) {
                 setInvalidLink(true)
             }
 
@@ -114,20 +132,20 @@ const ReferralForm = ({ method, action, initial }: { method: 'POST' | 'PUT', act
     function handleLinkChange(e: React.ChangeEvent<HTMLInputElement>) {
         const { value, name } = e.target
         setInvalidLink(false)
-        if(linkType ==='External') {
+        if (linkType === 'External') {
 
             setReferralData(prevData => ({
                 ...prevData,
                 [name]: value,
             }));
-        } 
-        if(linkType ==='Internal') {
+        }
+        if (linkType === 'Internal') {
             setReferralData(prevData => ({
                 ...prevData,
                 [name]: `${value}`,
             }));
         }
-        
+
 
     }
 
@@ -210,7 +228,7 @@ const ReferralForm = ({ method, action, initial }: { method: 'POST' | 'PUT', act
                             type="text"
                             name="redirect"
                             className="mt-1 p-2 border rounded w-full invalid:ring-2 invalid:ring-rose-600 invalid:text-rose-500 invalid:outline-red-500"
-                            value={`${appUrl}${referralData.type === 'REDIRECT' ? `/referrals` : `/affiliate`}/${referralData.prefix}`}
+                            value={ `${stripSlashes(appUrl)}${referralData.type === 'REDIRECT' ? `/referrals` : `/affiliate`}/${referralData.prefix}?${utmPraram.current.toString()}`}
                             onChange={handleInputChange}
                             required
                         />
@@ -220,10 +238,10 @@ const ReferralForm = ({ method, action, initial }: { method: 'POST' | 'PUT', act
                         <input
                             type="text"
                             name="link"
-                            className={`mt-1 p-2 border rounded w-full ${invalidLink? 'ring-rose-600 text-rose-500 outline-red-500' : ''} invalid:ring-2 invalid:ring-rose-600 invalid:text-rose-500 invalid:outline-red-500`}
+                            className={`mt-1 p-2 border rounded w-full ${invalidLink ? 'ring-rose-600 text-rose-500 outline-red-500' : ''} invalid:ring-2 invalid:ring-rose-600 invalid:text-rose-500 invalid:outline-red-500`}
                             value={referralData.link}
                             onChange={handleLinkChange}
-                            pattern={linkType=="External"? '^(ftp|http|https):\/\/[^ "]+$': '^\/.*$'}
+                            pattern={linkType == "External" ? '^(ftp|http|https):\/\/[^ "]+$' : '^\/.*$'}
                             title="Enter valid url: https://...(external)) or /..(internal)"
                             required
                         />
@@ -236,7 +254,7 @@ const ReferralForm = ({ method, action, initial }: { method: 'POST' | 'PUT', act
                             className="mt-1 p-2 border rounded w-full invalid:ring-2 invalid:ring-rose-600 invalid:text-rose-500 invalid:outline-red-500"
                             value={referralData.fallback}
                             onChange={handleLinkChange}
-                            pattern={linkType=="External"? '^(ftp|http|https):\/\/[^ "]+$': '^\/.*$'}
+                            pattern={linkType == "External" ? '^(ftp|http|https):\/\/[^ "]+$' : '^\/.*$'}
                             title="Enter valid url: https://...(external)) or /..(internal)"
                             required
                         />
@@ -279,6 +297,36 @@ const ReferralForm = ({ method, action, initial }: { method: 'POST' | 'PUT', act
                             onChange={handleInputChange}
                             required
                         />
+                    </div>
+                    <div className="pl-4 flex flex-col gap-2">
+                        <div>UTM Properties :</div>
+                        <div className="mb-4">
+                            <label className="block text-sm font-medium text-gray-700">Source :</label>
+                            <input
+                                name="utm_source"
+                                className="mt-1 p-2 border rounded w-full invalid:ring-2 invalid:ring-rose-600 invalid:text-rose-500 invalid:outline-red-500"
+                                value={(referralData.utmProps as Record<string, string>).utm_source}
+                                onChange={handleUtmChange}
+                            />
+                        </div>
+                        <div className="mb-4">
+                            <label className="block text-sm font-medium text-gray-700">Medium :</label>
+                            <input
+                                name="utm_medium"
+                                className="mt-1 p-2 border rounded w-full invalid:ring-2 invalid:ring-rose-600 invalid:text-rose-500 invalid:outline-red-500"
+                                value={(referralData.utmProps as Record<string, string>).utm_medium}
+                                onChange={handleUtmChange}
+                            />
+                        </div>
+                        <div className="mb-4">
+                            <label className="block text-sm font-medium text-gray-700">Campaign Name: </label>
+                            <input
+                                name="utm_campaign"
+                                className="mt-1 p-2 border rounded w-full invalid:ring-2 invalid:ring-rose-600 invalid:text-rose-500 invalid:outline-red-500"
+                                value={(referralData.utmProps as Record<string, string>).utm_campaign}
+                                onChange={handleUtmChange}
+                            />
+                        </div>
                     </div>
                     <button
                         type="submit"

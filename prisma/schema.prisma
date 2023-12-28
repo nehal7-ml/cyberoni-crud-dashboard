@@ -435,7 +435,7 @@ model Referral {
   link        String
   fallback    String
   click       Int
-
+  utmProps    Json?
   @@unique([type, prefix], name: "referralId")
 }
 
