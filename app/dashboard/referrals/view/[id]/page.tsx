@@ -1,6 +1,6 @@
 import EventForm from "@/components/EventForm";
 import ReferralForm from "@/components/ReferralForm";
-import { read } from "@/crud/referral";
+import { CreateReferralDTO, read } from "@/crud/referral";
 import { prisma } from "@/prisma/prismaClient";
 import { redirect } from "next/navigation";
 
@@ -12,7 +12,7 @@ const CreateEventForm = async ({ params }: { params: { id: string } }) => {
   const { ...referral } = res
   // console.log(event);
   return (
-    <ReferralForm method="PUT" initial={referral} action={`/api/referrals/${params.id}`} />
+    <ReferralForm method="PUT" initial={referral as CreateReferralDTO} action={`/api/referrals/${params.id}`} />
   )
 };
 
