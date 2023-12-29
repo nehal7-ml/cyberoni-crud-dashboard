@@ -4,15 +4,6 @@ export type CreateTagDTO = {
     name: string;
 }
 
-export const TagSchema ={
-    "type": "object",
-    "properties": {
-      "id": { "type": ["string"] },
-      "name": { "type": "string" }
-    },
-    "required": ["name"]
-  }
-  
 export async function create(newTag: CreateTagDTO, prismaClient: PrismaClient) {
     const tags = prismaClient.tag;
     const newRecord = await tags.create({ data: newTag });

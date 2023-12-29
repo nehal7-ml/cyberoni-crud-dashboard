@@ -1,5 +1,5 @@
 import { CaseStudy, Event, GptPrompt, Service } from "@prisma/client";
-import { CreateBlogDTO, DisplayBlogDTO } from "./blog";
+import { CreateBlogDTO, DisplayBlogDTO } from "./DTOs";
 import { CreateProductDTO, displayProductDTO } from "./product";
 import { CreateUserDTO, DisplayUserDTO } from "./user";
 import { createEventDTO } from "./event";

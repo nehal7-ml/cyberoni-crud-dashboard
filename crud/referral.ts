@@ -10,7 +10,12 @@ export type CreateReferralDTO = {
     link: string;
     fallback: string;
     redirect: string
-    click: number
+    click: number;
+    utmProps: {
+        utm_medium: string;
+        utm_campaign: string;
+        utm_source: string;
+    }  | {};
 }
 
 

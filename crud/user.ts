@@ -1,5 +1,6 @@
 import { User, PrismaClient, Role } from "@prisma/client";
-import { connectOrCreateObject, CreateImageDTO } from "./images";
+import { connectOrCreateObject, createObject } from "./images";
+import { CreateImageDTO } from "./DTOs";
 import { CreateAddressDTO } from "./address";
 import { getAllRecordsDTO } from "./commonDTO";
 
@@ -35,6 +36,8 @@ export type DisplayUserDTO = {
 async function create(user: CreateUserDTO, prismaClient: PrismaClient) {
     const users = prismaClient.user;
     const existingUser = await users.findUnique({ where: { email: user.email } })
+    let image = await createObject(user.image)
+
     if (existingUser) throw { status: 400, message: `User ${user.email} already exists` };
     else {
         const hashedPassword = await bcrypt.hash(user.password, 10)
@@ -45,7 +48,7 @@ async function create(user: CreateUserDTO, prismaClient: PrismaClient) {
                 password: hashedPassword,
                 firstName: user.firstName,
                 lastName: user.lastName,
-                image: { create: user.image },
+                image:  image ? { create: image } : {},
                 address: { create: user.address },
                 role: user.role,
             }
@@ -64,6 +67,8 @@ async function update(userId: string, user: CreateUserDTO, prismaClient: PrismaC
 
     if (!existingUser) throw { status: 400, message: `User ${user.email} doesn't exists` };
     else {
+        let image = await createObject(user.image)
+
         let hashedPassword = user.password.length >= 8 ? await bcrypt.hash(user.password, 10) : existingUser.password;
 
         let updatedUser = await users.update({
@@ -78,7 +83,7 @@ async function update(userId: string, user: CreateUserDTO, prismaClient: PrismaC
                             id: user.image?.id as string
                         },
                         data: {
-                            ...user.image
+                            ...image
                         }
                     }
                 },
@@ -103,11 +108,10 @@ async function update(userId: string, user: CreateUserDTO, prismaClient: PrismaC
 
 }
 
-export async function reset(token: string, prismaClient: PrismaClient) {
+export async function reset(token: string, password: string, prismaClient: PrismaClient) {
     const users = prismaClient.user;
-    const { email } = verify(token as string, process.env.NEXTAUTH_SECRET as string) as { email: string};
+    const { email } = verify(token as string, process.env.NEXTAUTH_SECRET as string) as { email: string };
 
-    const password = generatePassword()
     const hashedPassword = await bcrypt.hash(password, 10)
     const updated = await users.update({
         where: { email }, data: {
@@ -166,7 +170,7 @@ export async function getUserByEmail(email: string, prismaClient: PrismaClient) 
 export async function authorizeWithPassword({ email, password }: CredentialAuthDTO, prisma: PrismaClient) {
     const users = prisma.user
     const user = await users.findUnique({ where: { email: email.toLowerCase() } })
-    if (!user) throw { message: `Invalid credentials account doesn't exist`, status: 400 };
+    if (!user || user.role === 'CUSTOMER' || user.role === 'USER') throw { message: `Invalid credentials account doesn't exist or insufucient permissions`, status: 400 };
 
     else {
         const authorized = await bcrypt.compare(password, user.password as string)

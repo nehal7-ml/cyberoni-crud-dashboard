@@ -5,7 +5,7 @@ import AddImage from "../AddImagesAndTags/AddImage";
 import Image from "next/image";
 import { PlusCircle, X } from "lucide-react";
 import UserPersonaForm from "./UserPersonaForm";
-import { CreateImageDTO } from "@/crud/images";
+import { CreateImageDTO } from "@/crud/DTOs";
 import ListInput from "../ListInput";
 import Notification from "../Notification";
 import { Service } from "@prisma/client";

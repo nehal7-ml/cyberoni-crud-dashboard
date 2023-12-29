@@ -1,8 +1,7 @@
 import { NextRequestWithAuth, withAuth } from "next-auth/middleware"
 import { DisplayUserDTO } from "./crud/user"
 import { JWT } from "next-auth/jwt";
-import { NextResponse } from "next/server";
-import { redirect } from "next/navigation";
+
 
 export default withAuth(
     // `withAuth` augments your `Request` with the user's token.
@@ -14,9 +13,11 @@ export default withAuth(
         callbacks: {
             authorized: async ({ token, req }) => {
 
-                // console.log("authorize",token);
 
-                if (token) return true
+                if (token) {
+                    //console.log("authorize",(isAdmin(token) || isSuper(token)));
+                    return (isAdmin(token) || isSuper(token))
+                } 
                 else return false
             },
 
@@ -41,4 +42,4 @@ function isUser(token: JWT | null) {
 }
 
 
-export const config = { matcher: ["/dashboard/:path*", "/api/((?!auth).*)", "/"] }
+export const config = { matcher: ["/", "/dashboard/:path*", "/api/((?!auth).*)"] }

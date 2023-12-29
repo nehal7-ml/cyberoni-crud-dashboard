@@ -1,7 +1,8 @@
 import Pagination from "@/components/Pagination";
 import Table from "@/components/Table"
 import { TableItem } from "@/components/TableItem";
-import { DisplayBlogDTO, getAll } from "@/crud/blog";
+import { getAll } from "@/crud/blog";
+import { DisplayBlogDTO } from "@/crud/DTOs";
 import { prisma } from "@/prisma/prismaClient";
 import React from 'react'
 

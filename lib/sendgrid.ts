@@ -41,7 +41,7 @@ export async function sendPasswordReset(email: string, token: string, subject: s
             <p>Click on the link to reset Password:</p>
             <div>
                 <p>username: ${email}</p>
-                <a href="${process.env.NEXTAUTH_URL}/api/auth/reset?token=${token}">Reset Password</a>
+                <a href="${process.env.NEXTAUTH_URL}/auth/reset?token=${token}">Reset Password</a>
             </div>          
           <section>
         `

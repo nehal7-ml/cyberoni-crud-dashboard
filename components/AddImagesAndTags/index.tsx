@@ -1,4 +1,4 @@
-import { CreateImageDTO } from "@/crud/images";
+import { CreateImageDTO } from "@/crud/DTOs";
 import { CreateTagDTO } from "@/crud/tags";
 import React, { useState } from 'react';
 import AddImage from "./AddImage";

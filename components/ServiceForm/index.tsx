@@ -1,11 +1,12 @@
 'use client'
 import AddImagesAndTags from "@/components/AddImagesAndTags"
-import { CreateImageDTO } from "@/crud/images";
-import { CreateServiceDTO, CreateServiceDescription, DisplayServiceDTO, ServiceSchema } from "@/crud/service";
+import { CreateImageDTO } from "@/crud/DTOs";
+import { CreateServiceDTO, CreateServiceDescription, DisplayServiceDTO } from "@/crud/DTOs";
+import { ServiceSchema } from "@/crud/jsonSchemas";
 import { CreateTagDTO } from "@/crud/tags";
 import React, { useEffect, useState } from 'react'
 import { PlusCircle, X } from "lucide-react";
-import { CreateSubServiceDTO } from "@/crud/subService";
+import { CreateSubServiceDTO } from "@/crud/DTOs";
 
 import Notification, { NotificationType } from "@/components/Notification";
 import CreateSubServcie from "./SubServiceForm";

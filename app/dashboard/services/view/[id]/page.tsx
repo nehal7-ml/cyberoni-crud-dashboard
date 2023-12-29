@@ -2,7 +2,8 @@
 import React from 'react'
 
 import SerivceForm from "@/components/ServiceForm";
-import { DisplayServiceDTO, read } from "@/crud/service";
+import { read } from "@/crud/service";
+import { DisplayServiceDTO } from "@/crud/DTOs";
 import { prisma } from "@/prisma/prismaClient";
 
 async function CreateServcie({params}: {params: {id:string}}) {

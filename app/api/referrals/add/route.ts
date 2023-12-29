@@ -1,5 +1,6 @@
 import { create, CreateReferralDTO } from "@/crud/referral";
 import apiHandler from "@/errorHandler";
+import { HttpError } from "@/lib/utils";
 import { prisma } from "@/prisma/prismaClient";
 import { PrismaClientKnownRequestError } from "@prisma/client/runtime/library";
 import { NextApiRequest, NextApiResponse } from "next";
@@ -13,8 +14,10 @@ async function post(req: Request) {
     if (req.method === "POST") {
         const referral = await req.json() as CreateReferralDTO;
         try {
-            const newEvent = await create(referral, prisma);
-            return NextResponse.json({ message: "Add success", data: newEvent });
+            const res = await fetch(referral.link)
+            if (res.status >= 400) throw HttpError(406, 'Link in unreachable')
+            const newReferral = await create(referral, prisma);
+            return NextResponse.json({ message: "Add success", data: newReferral });
         } catch (error) {
             console.log(error);
             const err = error as PrismaClientKnownRequestError

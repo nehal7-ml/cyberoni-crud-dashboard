@@ -2,8 +2,8 @@
 import { Image, ServiceDescription } from "@prisma/client";
 import AddImage from "../AddImagesAndTags/AddImage";
 import React, { useRef, useState } from "react";
-import { CreateImageDTO } from "@/crud/images";
-import { CreateServiceDescription } from "@/crud/service";
+import { CreateImageDTO } from "@/crud/DTOs";
+import { CreateServiceDescription } from "@/crud/DTOs";
 
 function DescriptionForm({ initial, handleDescritionChange }: { initial?: ServiceDescription & { image: Image }, handleDescritionChange: (description: CreateServiceDescription) => void }) {
 

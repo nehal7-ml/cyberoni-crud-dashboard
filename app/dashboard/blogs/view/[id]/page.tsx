@@ -1,5 +1,6 @@
 import BlogForm from "@/components/BlogForm";
-import { CreateBlogDTO, read } from "@/crud/blog";
+import { read } from "@/crud/blog";
+import { CreateBlogDTO } from "@/crud/DTOs";
 import { prisma } from "@/prisma/prismaClient";
 
 async function UpdateBlogForm({ params }: { params: { id: string } }) {

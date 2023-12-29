@@ -135,3 +135,13 @@ export function generatePassword() {
   }
   return newPassword;
 }
+
+export function stripSlashes(str:string) {
+  // Remove leading slashes
+  str = str.replace(/^\/+/g, '');
+  
+  // Remove trailing slashes
+  str = str.replace(/\/+$/g, '');
+
+  return str;
+}

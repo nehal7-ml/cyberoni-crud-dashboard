@@ -19,6 +19,7 @@ export const authOptions: NextAuthOptions = {
     ],
     pages: {
         signIn: '/auth/signin',
+        
     },
 
 
@@ -28,6 +29,7 @@ export const authOptions: NextAuthOptions = {
             if (trigger === "update" && session?.name) {
                 // Note, that `session` can be any arbitrary object, remember to validate it!
                 token.name = session.name
+                //token.user = user
             }
             return token
         },
@@ -36,8 +38,6 @@ export const authOptions: NextAuthOptions = {
 
             return session
         },
-
-
 
     }
 };
