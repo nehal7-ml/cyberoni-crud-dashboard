@@ -228,7 +228,7 @@ const ReferralForm = ({ method, action, initial }: { method: 'POST' | 'PUT', act
                             type="text"
                             name="redirect"
                             className="mt-1 p-2 border rounded w-full invalid:ring-2 invalid:ring-rose-600 invalid:text-rose-500 invalid:outline-red-500"
-                            value={`${appUrl}${referralData.type === 'REDIRECT' ? '/referrals' : '/affiliate'}/${referralData.prefix}?${utmPraram.current.toString()}`}
+                            value={`${stripSlashes(appUrl)}${referralData.type === 'REDIRECT' ? '/referrals' : '/affiliate'}/${referralData.prefix}?${utmPraram.current.toString()}`}
                             onChange={handleInputChange}
                             required
                         />
