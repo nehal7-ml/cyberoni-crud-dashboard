@@ -73,6 +73,7 @@ model User {
   updatedAt      DateTime         @default(now()) @updatedAt
   Session        Session[]
   Payment        Payment[]
+  BlogComment    BlogComment[]
 
   @@index([addressId])
   @@index([imageId])
@@ -194,14 +195,15 @@ model BlogTemplate {
 model BlogComment {
   id        String   @id @default(uuid())
   comment   String   @db.Text
-  name      String
-  email     String
   Blog      Blog     @relation(fields: [blogId], references: [id], onDelete: Cascade)
   blogId    String
   createdAt DateTime @default(now())
   updatedAt DateTime @default(now()) @updatedAt
+  User      User     @relation(fields: [userId], references: [id])
+  userId    String
 
   @@index([blogId])
+  @@index([userId])
 }
 
 model BlogLike {
@@ -436,6 +438,7 @@ model Referral {
   fallback    String
   click       Int
   utmProps    Json?
+
   @@unique([type, prefix], name: "referralId")
 }
 
