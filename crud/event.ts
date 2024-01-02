@@ -1,6 +1,8 @@
+import 'server-only';
 import { Event, EventStatus, PrismaClient, User } from "@prisma/client";
 import { CreateImageDTO } from "./DTOs";
-import { CreateTagDTO , connectOrCreateObject as connectTag} from "./tags";
+import { connectOrCreateObject as connectTag } from "./tags";
+import { CreateTagDTO } from "./DTOs";
 
 
 export type createEventDTO = {

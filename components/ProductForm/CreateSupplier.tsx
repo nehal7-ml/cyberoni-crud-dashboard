@@ -2,7 +2,7 @@
 import AddImagesAndTags from "@/components/AddImagesAndTags"
 import { CreateImageDTO } from "@/crud/DTOs";
 import { CreateSupplierDTO } from "@/crud/supplier";
-import { CreateTagDTO } from "@/crud/tags";
+import { CreateTagDTO } from "@/crud/DTOs";
 import { Supplier } from "@prisma/client";
 import { title } from "process";
 import React, { useEffect, useState } from 'react'

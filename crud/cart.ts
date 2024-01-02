@@ -1,5 +1,5 @@
 import { Product, CartItem, PrismaClient } from "@prisma/client";
-
+import 'server-only';
 export type createCartItemDTO = {
     quantity: number;
     productId: string;

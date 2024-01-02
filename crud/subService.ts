@@ -1,3 +1,4 @@
+import 'server-only';
 import { PrismaClient, SubService } from "@prisma/client"
 import { connectOrCreateObject } from "./tags";
 import { createObject } from "./images";

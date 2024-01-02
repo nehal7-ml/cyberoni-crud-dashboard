@@ -3,7 +3,7 @@ import AddImagesAndTags from "@/components/AddImagesAndTags"
 import { CreateImageDTO } from "@/crud/DTOs";
 import { CreateServiceDTO, CreateServiceDescription, DisplayServiceDTO } from "@/crud/DTOs";
 import { ServiceSchema } from "@/crud/jsonSchemas";
-import { CreateTagDTO } from "@/crud/tags";
+import { CreateTagDTO } from "@/crud/DTOs";
 import React, { useEffect, useState } from 'react'
 import { PlusCircle, X } from "lucide-react";
 import { CreateSubServiceDTO } from "@/crud/DTOs";
@@ -150,7 +150,7 @@ function SerivceForm({ method, action, initial }: { method: 'POST' | 'PUT', acti
             const newData = JSON.parse(json)
 
             const valid = validate(newData);
-            if (!valid) alert(validate.errors);
+            if (!valid) alert( validate.errors?.map(err=>(`${err.instancePath} ${err.message} (${err.schemaPath}) `)).join('\n'));
             else {
 
                 setJson(newData);

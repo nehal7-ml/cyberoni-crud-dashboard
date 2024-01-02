@@ -1,9 +1,6 @@
+import 'server-only';
 import { PrismaClient, Tag } from "@prisma/client"
-export type CreateTagDTO = {
-    id?: string;
-    name: string;
-}
-
+import { CreateTagDTO } from "./DTOs";
 export async function create(newTag: CreateTagDTO, prismaClient: PrismaClient) {
     const tags = prismaClient.tag;
     const newRecord = await tags.create({ data: newTag });

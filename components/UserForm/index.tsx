@@ -1,6 +1,6 @@
 'use client'
 import AddImage from "@/components/AddImagesAndTags/AddImage";
-import { CreateAddressDTO } from "@/crud/address";
+import { CreateAddressDTO } from "@/crud/DTOs";
 import { CreateImageDTO } from "@/crud/DTOs";
 import { CreateUserDTO } from "@/crud/user";
 import { Role } from "@prisma/client";

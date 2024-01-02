@@ -1,3 +1,4 @@
+import 'server-only';
 import { Image, PrismaClient } from "@prisma/client";
 import { CreateImageDTO } from "./DTOs";
 import { connectOrCreateObject } from "./images";

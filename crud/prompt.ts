@@ -1,5 +1,7 @@
+import 'server-only';
 import { GptPrompt, Image, PrismaClient, Review, Tag } from "@prisma/client";
-import { connectOrCreateObject as connectTag, CreateTagDTO } from "./tags";
+import { connectOrCreateObject as connectTag } from "./tags";
+import { CreateTagDTO } from "./DTOs";
 import { connectOrCreateObject as connectImage } from "./images";
 import { CreateImageDTO } from "./DTOs";
 

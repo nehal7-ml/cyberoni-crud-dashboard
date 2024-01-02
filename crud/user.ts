@@ -1,7 +1,8 @@
+import 'server-only';
 import { User, PrismaClient, Role } from "@prisma/client";
 import { connectOrCreateObject, createObject } from "./images";
 import { CreateImageDTO } from "./DTOs";
-import { CreateAddressDTO } from "./address";
+import { CreateAddressDTO } from "./DTOs";
 import { getAllRecordsDTO } from "./commonDTO";
 
 import bcrypt from 'bcrypt'

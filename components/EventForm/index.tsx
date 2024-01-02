@@ -2,7 +2,7 @@
 import AddImagesAndTags from "@/components/AddImagesAndTags";
 import { createEventDTO } from "@/crud/event";
 import { CreateImageDTO } from "@/crud/DTOs";
-import { CreateTagDTO } from "@/crud/tags";
+import { CreateTagDTO } from "@/crud/DTOs";
 import { EventStatus } from "@prisma/client";
 import React, { useEffect, useState } from 'react';
 import Notification, { NotificationType } from "@/components/Notification";

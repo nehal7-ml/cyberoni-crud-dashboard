@@ -2,7 +2,7 @@
 import AddImagesAndTags from "@/components/AddImagesAndTags"
 import { CreateImageDTO } from "@/crud/DTOs";
 import { CreateSubServiceDTO, Discount } from "@/crud/DTOs";
-import { CreateTagDTO } from "@/crud/tags";
+import { CreateTagDTO } from "@/crud/DTOs";
 import React, { useState } from 'react'
 import ListInput from "../ListInput";
 import DiscountsForm from "./Discount";
@@ -81,7 +81,7 @@ function CreateSubService({ subService, handleSubServiceAdd }: { subService?: Cr
             const newData = JSON.parse(json)
 
             const valid = validate(newData);
-            if (!valid) alert(validate.errors?.toString());
+            if (!valid) alert( validate.errors?.map(err=>(`${err.instancePath} ${err.message} (${err.schemaPath}) `)).join('\n'));
             else {
 
                if (Object.keys(newData).length > 0) {

@@ -9,14 +9,17 @@ export type HttpError = Error & {
 
 
 export default function errorHandler(error: HttpError | PrismaClientInitializationError | PrismaClientKnownRequestError | PrismaClientUnknownRequestError) {
-    if (error.message) {
+    if ((error as HttpError).status) {
         let sendingError = error as HttpError
-        console.error("Error: ",error);
+        console.error("Error HTTP: ", error);
         return NextResponse.json({ message: sendingError.message }, { status: sendingError.status || 500 })
 
-    } if (error.cause) {
-        console.error("Error: ",error);
-        return NextResponse.json({ message: error.message }, { status: 500 })
+    } else  {
+        let err = error as PrismaClientInitializationError | PrismaClientKnownRequestError | PrismaClientUnknownRequestError
+        if((err as PrismaClientKnownRequestError ).code ==='P2025' && err.message.includes('BlogToUser')) {
+            return NextResponse.json({ message: "Author email not found"}, { status: 400 })
+        }
+        return NextResponse.json({ message: err.cause}, { status: 500 })
 
     }
 

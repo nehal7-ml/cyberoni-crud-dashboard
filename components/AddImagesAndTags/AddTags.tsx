@@ -1,5 +1,5 @@
 'use client'
-import { CreateTagDTO } from "@/crud/tags";
+import { CreateTagDTO } from "@/crud/DTOs";
 import React, { useEffect, useState } from 'react'
 
 function AddTags({ defaultTags, onTagsChange }: { defaultTags?: CreateTagDTO[], onTagsChange: (tags: CreateTagDTO[]) => void }) {

@@ -1,3 +1,4 @@
+import 'server-only';
 import { deleteFile, uploadFile } from "@/lib/cloudinary";
 import { Image, PrismaClient } from "@prisma/client";
 import { CreateImageDTO } from "./DTOs";

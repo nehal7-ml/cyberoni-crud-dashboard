@@ -2,7 +2,7 @@
 import AddImagesAndTags from "@/components/AddImagesAndTags";
 import { CreateImageDTO } from "@/crud/DTOs";
 import { CreateGptPromptDTO } from "@/crud/prompt";
-import { CreateTagDTO } from "@/crud/tags";
+import { CreateTagDTO } from "@/crud/DTOs";
 import React, { useState } from 'react';
 import Notification, { NotificationType } from "@/components/Notification";
 import ListInput from "../ListInput";

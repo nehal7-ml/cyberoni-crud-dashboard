@@ -1,3 +1,4 @@
+import 'server-only';
 import { PrismaClient, Referral, ReferralPriority, ReferralType } from "@prisma/client";
 
 export type CreateReferralDTO = {

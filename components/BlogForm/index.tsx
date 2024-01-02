@@ -4,10 +4,9 @@ import { useEffect, useState } from "react";
 import AddImagesAndTags from "../AddImagesAndTags";
 import Notification from "../Notification";
 import { BlogSchema } from "@/crud/jsonSchemas";
-import { CreateBlogDTO, DisplayBlogDTO } from "@/crud/DTOs";
+import { CreateBlogDTO, CreateTagDTO, DisplayBlogDTO } from "@/crud/DTOs";
 import { redirect, useParams, useRouter } from "next/navigation";
 import { CreateImageDTO } from "@/crud/DTOs";
-import { CreateTagDTO } from "@/crud/tags";
 import Editor from "../RichTextEditor";
 import Ajv from 'ajv'
 import addFormats from "ajv-formats"
@@ -126,7 +125,7 @@ function BlogForm({ method, action, initial }: { method: 'POST' | 'PUT', action:
             const newData = JSON.parse(json)
 
             const valid = validate(newData);
-            if (!valid) alert(validate.errors);
+            if (!valid) alert( validate.errors?.map(err=>(`${err.instancePath} ${err.message} (${err.schemaPath}) `)).join('\n'));
             else {
 
                 setJson(newData);

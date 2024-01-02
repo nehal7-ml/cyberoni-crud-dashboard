@@ -1,7 +1,4 @@
 import { Blog, Image, PricingModel, Service, ServiceDescription, SubService, Tag, User } from "@prisma/client";
-import { CreateTagDTO } from "./tags";
-
-
 
 export type CreateBlogDTO = {
     title: string;
@@ -77,5 +74,17 @@ export type CreateSubServiceDTO = {
 export type Discount = {
     name: string;
     value: string;
+};
+export type CreateAddressDTO = {
+    id?: string;
+    street: string;
+    city: string;
+    state: string;
+    zipCode: string;
+    country: string;
+};
+export type CreateTagDTO = {
+    id?: string;
+    name: string;
 };
 
