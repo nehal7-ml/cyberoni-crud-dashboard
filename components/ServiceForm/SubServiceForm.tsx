@@ -7,7 +7,13 @@ import React, { useState } from 'react'
 import ListInput from "../ListInput";
 import DiscountsForm from "./Discount";
 import { PricingModel } from "@prisma/client";
+import Ajv from 'ajv'
+import addFormats from "ajv-formats"
+import { SubserviceSchema } from "@/crud/jsonSchemas";
 
+const ajv = new Ajv()
+//addFormats(ajv)
+const validate = ajv.compile(SubserviceSchema);
 function CreateSubService({ subService, handleSubServiceAdd }: { subService?: CreateSubServiceDTO, handleSubServiceAdd: (subservice: CreateSubServiceDTO) => void }) {
     const [subServiceData, setSubServiceData] = useState<CreateSubServiceDTO>(subService || {
         description: '',
@@ -25,11 +31,12 @@ function CreateSubService({ subService, handleSubServiceAdd }: { subService?: Cr
         tags: [],
         image: { src: "" }
     });
+    const [rawJson, setRawJson] = useState(JSON.stringify(subServiceData, null, 2));
 
     const [discounts, setDiscounts] = useState<Discount[]>(subService?.discounts || []);
 
 
-    const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement |HTMLSelectElement>) => {
+    const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => {
         const { name, value } = e.target;
         setSubServiceData(prevData => ({
             ...prevData,
@@ -68,6 +75,33 @@ function CreateSubService({ subService, handleSubServiceAdd }: { subService?: Cr
             [name]: value
         })
     }
+
+    function parseJson(json: string) {
+        try {
+            const newData = JSON.parse(json)
+
+            const valid = validate(newData);
+            if (!valid) alert(validate.errors?.toString());
+            else {
+
+               if (Object.keys(newData).length > 0) {
+                    console.log(newData);
+                    for (let key of Object.keys(subServiceData)) {
+                        setSubServiceData(prev => ({ ...prev, [key]: newData[key] }));
+
+                    }
+                }
+
+
+            }
+
+        } catch (error) {
+            console.log("invalid JSON");
+            alert("Error parsing JSON");
+
+        }
+
+    }
     return (
         <>
             <div className="light:bg-gray-100 light:text-black dark:bg-gray-700 dark:text-gray-800 min-h-screen flex items-center justify-center">
@@ -77,6 +111,23 @@ function CreateSubService({ subService, handleSubServiceAdd }: { subService?: Cr
                     <h2 className="text-2xl font-semibold mb-4">Add Sub Service</h2>
                     <form onSubmit={handleSubmit}>
                         <div className="mb-4">
+                            <label className="block" htmlFor="json">Json input auto fill: </label>
+                            <textarea
+                                className={"w-full ring-2 invalid:ring-red-500 p-3"}
+                                name="json"
+                                id=""
+                                rows={7}
+                                value={rawJson}
+                                onChange={(event) => setRawJson(event.target.value)}
+                            >
+                            </textarea>
+                            <button
+                                className="w-full bg-blue-500 text-white p-2 rounded hover:bg-blue-600 focus:outline-none focus:ring focus:ring-blue-300"
+                                type="button"
+                                onClick={() => parseJson(rawJson)}
+                            >Parse Json</button>
+                        </div>
+                        <div className="mb-4">
                             <label className="block text-sm font-medium text-gray-700">Title:</label>
                             <input
                                 type="text"
@@ -84,6 +135,7 @@ function CreateSubService({ subService, handleSubServiceAdd }: { subService?: Cr
                                 className="mt-1 p-2 border rounded w-full"
                                 value={subServiceData.title}
                                 onChange={handleInputChange}
+                                required
                             />
                         </div>
                         <div className="mb-4">
@@ -94,6 +146,7 @@ function CreateSubService({ subService, handleSubServiceAdd }: { subService?: Cr
                                 className="mt-1 p-2 border rounded w-full"
                                 value={subServiceData.department}
                                 onChange={handleInputChange}
+                                required
                             />
                         </div>
 
@@ -105,6 +158,7 @@ function CreateSubService({ subService, handleSubServiceAdd }: { subService?: Cr
                                 className="mt-1 p-2 border rounded w-full"
                                 value={subServiceData.estimated_hours_times_fifty_percent == 0 ? "" : subServiceData.estimated_hours_times_fifty_percent}
                                 onChange={handleNumberInputChange}
+                                required
                             />
                         </div>
                         <div className="mb-4">
@@ -115,6 +169,7 @@ function CreateSubService({ subService, handleSubServiceAdd }: { subService?: Cr
                                 className="mt-1 p-2 border rounded w-full"
                                 value={subServiceData.estimated_hours_times_one_hundred_percent == 0 ? "" : subServiceData.estimated_hours_times_one_hundred_percent}
                                 onChange={handleNumberInputChange}
+                                required
                             />
                         </div>
                         <div className="mb-4">
@@ -125,6 +180,7 @@ function CreateSubService({ subService, handleSubServiceAdd }: { subService?: Cr
                                 className="mt-1 p-2 border rounded w-full"
                                 value={subServiceData.overheadCost == 0 ? "" : subServiceData.overheadCost}
                                 onChange={handleNumberInputChange}
+                                required
                             />
                         </div>
                         <div className="mb-4">
@@ -135,6 +191,7 @@ function CreateSubService({ subService, handleSubServiceAdd }: { subService?: Cr
                                 className="mt-1 p-2 border rounded w-full"
                                 value={subServiceData.serviceUsageScore == 0 ? "" : subServiceData.serviceUsageScore}
                                 onChange={handleNumberInputChange}
+                                required
                             />
                         </div>
                         <div className="mb-4">
@@ -145,6 +202,7 @@ function CreateSubService({ subService, handleSubServiceAdd }: { subService?: Cr
                                 className="mt-1 p-2 border rounded w-full"
                                 value={subServiceData.complexity == 0 ? "" : subServiceData.complexity}
                                 onChange={handleNumberInputChange}
+                                required
                             />
                         </div>
 
@@ -156,6 +214,7 @@ function CreateSubService({ subService, handleSubServiceAdd }: { subService?: Cr
                                 className="mt-1 p-2 border rounded w-full"
                                 value={subServiceData.description}
                                 onChange={handleInputChange}
+                                required
                             />
                         </div>
                         <div>
@@ -176,9 +235,9 @@ function CreateSubService({ subService, handleSubServiceAdd }: { subService?: Cr
                                 className="mt-1 p-2 border rounded w-full"
                                 value={subServiceData.pricingModel}
                                 onChange={handleInputChange}
-                            > 
-                                {Object.keys(PricingModel).map((pricingModel, index) =>(<option key={index} value={pricingModel}>{pricingModel}</option>))}
-                            
+                            >
+                                {Object.keys(PricingModel).map((pricingModel, index) => (<option key={index} value={pricingModel}>{pricingModel}</option>))}
+
                             </select>
                         </div>
                         <AddImagesAndTags maxImages={1} onImagesAndTagsChange={handleChangedImage}></AddImagesAndTags>
