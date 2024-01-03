@@ -14,7 +14,7 @@ import { SubserviceSchema } from "@/crud/jsonSchemas";
 const ajv = new Ajv()
 //addFormats(ajv)
 const validate = ajv.compile(SubserviceSchema);
-function CreateSubService({ subService, handleSubServiceAdd }: { subService?: CreateSubServiceDTO, handleSubServiceAdd: (subservice: CreateSubServiceDTO) => void }) {
+function CreateSubService({ subService, handleSubServiceChange }: { subService?: CreateSubServiceDTO, handleSubServiceChange: (subservice: CreateSubServiceDTO) => void }) {
     const [subServiceData, setSubServiceData] = useState<CreateSubServiceDTO>(subService || {
         description: '',
         title: "",
@@ -55,7 +55,25 @@ function CreateSubService({ subService, handleSubServiceAdd }: { subService?: Cr
     const handleSubmit = (e: React.FormEvent) => {
         e.preventDefault();
         // Send the productData to your backend for creating the product
-        handleSubServiceAdd(subServiceData)
+        handleSubServiceChange(subServiceData);
+        (e.target as HTMLFormElement).reset()
+
+        setSubServiceData({
+            description: '',
+            title: "",
+            complexity: 0,
+            department: "",
+            discounts: [],
+            estimated_hours_times_fifty_percent: 0,
+            estimated_hours_times_one_hundred_percent: 0,
+            pricingModel: PricingModel.DEFAULT,
+            overheadCost: 0,
+            serviceDeliverables: [],
+            serviceUsageScore: 0,
+            skillLevel: "",
+            tags: [],
+            image: { src: "" }
+        })
     };
 
 
@@ -64,7 +82,7 @@ function CreateSubService({ subService, handleSubServiceAdd }: { subService?: Cr
 
         setSubServiceData({
             ...subServiceData,
-            [name]: Number(e.target.value)
+            [name]: value === "" ? "" : Number(value),
         })
     }
 
@@ -151,56 +169,56 @@ function CreateSubService({ subService, handleSubServiceAdd }: { subService?: Cr
                         </div>
 
                         <div className="mb-4">
-                            <label className="block text-sm font-medium text-gray-700">Estimated time for 50%:</label>
+                            <label className="block text-sm font-medium text-gray-700">Estimated time for 50% (number of Hours):</label>
                             <input
                                 type="number"
                                 name="estimated_hours_times_fifty_percent"
                                 className="mt-1 p-2 border rounded w-full"
-                                value={subServiceData.estimated_hours_times_fifty_percent == 0 ? "" : subServiceData.estimated_hours_times_fifty_percent}
+                                value={ subServiceData.estimated_hours_times_fifty_percent}
                                 onChange={handleNumberInputChange}
                                 required
                             />
                         </div>
                         <div className="mb-4">
-                            <label className="block text-sm font-medium text-gray-700">Estimated time for 100%:</label>
+                            <label className="block text-sm font-medium text-gray-700">Estimated time for 100% (number of hours):</label>
                             <input
                                 type="number"
                                 name="estimated_hours_times_one_hundred_percent"
                                 className="mt-1 p-2 border rounded w-full"
-                                value={subServiceData.estimated_hours_times_one_hundred_percent == 0 ? "" : subServiceData.estimated_hours_times_one_hundred_percent}
+                                value={subServiceData.estimated_hours_times_one_hundred_percent}
                                 onChange={handleNumberInputChange}
                                 required
                             />
                         </div>
                         <div className="mb-4">
-                            <label className="block text-sm font-medium text-gray-700">Over-head Cost:</label>
+                            <label className="block text-sm font-medium text-gray-700">Over-head Cost ($):</label>
                             <input
                                 type="number"
                                 name="overheadCost"
                                 className="mt-1 p-2 border rounded w-full"
-                                value={subServiceData.overheadCost == 0 ? "" : subServiceData.overheadCost}
+                                value={subServiceData.overheadCost}
                                 onChange={handleNumberInputChange}
                                 required
                             />
                         </div>
                         <div className="mb-4">
-                            <label className="block text-sm font-medium text-gray-700">Service Usage Score:</label>
+                            <label className="block text-sm font-medium text-gray-700">Service Usage Score  (out of 100):</label>
                             <input
                                 type="number"
                                 name="serviceUsageScore"
                                 className="mt-1 p-2 border rounded w-full"
-                                value={subServiceData.serviceUsageScore == 0 ? "" : subServiceData.serviceUsageScore}
+                                value={subServiceData.serviceUsageScore}
                                 onChange={handleNumberInputChange}
                                 required
                             />
                         </div>
                         <div className="mb-4">
-                            <label className="block text-sm font-medium text-gray-700">Complexity:</label>
+                            <label className="block text-sm font-medium text-gray-700">Complexity (out of 10):</label>
                             <input
                                 type="number"
                                 name="complexity"
                                 className="mt-1 p-2 border rounded w-full"
-                                value={subServiceData.complexity == 0 ? "" : subServiceData.complexity}
+                                value={subServiceData.complexity}
                                 onChange={handleNumberInputChange}
                                 required
                             />

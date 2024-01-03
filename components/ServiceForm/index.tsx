@@ -10,7 +10,7 @@ import { CreateSubServiceDTO } from "@/crud/DTOs";
 
 import Notification, { NotificationType } from "@/components/Notification";
 import CreateSubServcie from "./SubServiceForm";
-import { Service } from "@prisma/client";
+import { PricingModel, Service } from "@prisma/client";
 import Image from "next/image";
 import DescriptionForm from "./DescriptionSection";
 import ListInput from "../ListInput";
@@ -40,6 +40,22 @@ function SerivceForm({ method, action, initial }: { method: 'POST' | 'PUT', acti
         ServiceDescription: [],
         tags: [],
         image: undefined
+    });
+    const [editSubservice, setEditSubservice] = useState<CreateSubServiceDTO>({
+        description: '',
+        title: "",
+        complexity: 0,
+        department: "",
+        discounts: [],
+        estimated_hours_times_fifty_percent: 0,
+        estimated_hours_times_one_hundred_percent: 0,
+        pricingModel: PricingModel.DEFAULT,
+        overheadCost: 0,
+        serviceDeliverables: [],
+        serviceUsageScore: 0,
+        skillLevel: "",
+        tags: [],
+        image: { src: "" }
     });
 
     const [descriptionForm, setDescriptionForm] = useState(false);
@@ -111,12 +127,12 @@ function SerivceForm({ method, action, initial }: { method: 'POST' | 'PUT', acti
     };
 
 
-    function handleSubServiceAdd(subService: CreateSubServiceDTO) {
+    function handleSubServiceChange(subService: CreateSubServiceDTO) {
 
-        console.log(subService);
+        // console.log(subService);
         setServiceData((prevData) => ({
             ...prevData,
-            SubServices: [...(prevData.SubServices || []), subService]
+            SubServices: [...serviceData.SubServices?? [], subService]
         }))
 
         setShowDialog(false)
@@ -150,7 +166,7 @@ function SerivceForm({ method, action, initial }: { method: 'POST' | 'PUT', acti
             const newData = JSON.parse(json)
 
             const valid = validate(newData);
-            if (!valid) alert( validate.errors?.map(err=>(`${err.instancePath} ${err.message} (${err.schemaPath}) `)).join('\n'));
+            if (!valid) alert(validate.errors?.map(err => (`${err.instancePath} ${err.message} (${err.schemaPath}) `)).join('\n'));
             else {
 
                 setJson(newData);
@@ -206,20 +222,21 @@ function SerivceForm({ method, action, initial }: { method: 'POST' | 'PUT', acti
                                 className="mt-1 p-2 border rounded w-full"
                                 value={serviceData.title}
                                 onChange={handleInputChange}
+                                required
                             />
                         </div>
                         <div className="mb-4">
-                        <label className="block text-sm font-medium text-gray-700">
-                            Featured:
-                            <input
-                                type="checkbox"
-                                name="featured"
-                                className="ml-2"
-                                checked={serviceData.featured}
-                                onChange={handleCheckboxChange}
-                            />
-                        </label>
-                    </div>
+                            <label className="block text-sm font-medium text-gray-700">
+                                Featured:
+                                <input
+                                    type="checkbox"
+                                    name="featured"
+                                    className="ml-2"
+                                    checked={serviceData.featured}
+                                    onChange={handleCheckboxChange}
+                                />
+                            </label>
+                        </div>
                         <div className="mb-4">
                             <label className="block text-sm font-medium text-gray-700">Hourly Rate:</label>
                             <input
@@ -228,6 +245,7 @@ function SerivceForm({ method, action, initial }: { method: 'POST' | 'PUT', acti
                                 className="mt-1 p-2 border rounded w-full"
                                 value={serviceData.hourlyRate == 0 ? '' : serviceData.hourlyRate}
                                 onChange={handleNumberInputChange}
+                                required
                             />
                         </div>
 
@@ -271,6 +289,8 @@ function SerivceForm({ method, action, initial }: { method: 'POST' | 'PUT', acti
                                 className="mt-1 p-2 border rounded w-full"
                                 value={serviceData.previewContent}
                                 onChange={handleInputChange}
+                                required
+
                             />
                         </div>
                         <div className="mb-4">
@@ -293,7 +313,10 @@ function SerivceForm({ method, action, initial }: { method: 'POST' | 'PUT', acti
                             {serviceData.SubServices?.map((subService, index) => {
                                 return (
                                     <div key={index} className="bg-blue-200 text-blue-800 p-2 rounded flex items-center">
-                                        <span>{subService.title}</span>
+                                        <button onClick={() => {
+                                            setEditSubservice(subService);
+                                            setShowDialog(true);
+                                        }}><span>{subService.title}</span></button>
                                         <button
                                             type="button"
                                             className="ml-2 text-red-600 hover:text-red-800 focus:outline-none focus:ring focus:ring-red-300"
@@ -320,7 +343,7 @@ function SerivceForm({ method, action, initial }: { method: 'POST' | 'PUT', acti
                         <div className="flex justify-end z-30 ">
                             <button className="self-end   mx-10 my-3" onClick={() => setShowDialog(!showDialog)} ><X color="red" className="cursor-pointer" /></button>
                         </div>
-                        <CreateSubServcie handleSubServiceAdd={handleSubServiceAdd}></CreateSubServcie>
+                        <CreateSubServcie subService={editSubservice} handleSubServiceChange={handleSubServiceChange}></CreateSubServcie>
                     </div>
                     <div className={`fixed flex flex-col w-screen top-0 left-0 justify-center ${descriptionForm ? '' : ' hidden'}`}>
                         <div className="flex justify-end z-30">

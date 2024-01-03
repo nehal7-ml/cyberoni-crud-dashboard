@@ -16,6 +16,7 @@ const GptPromptForm = ({ method, action, initial }: { method: 'POST' | 'PUT', ac
 
     const [gptPromptData, setGptPromptData] = useState<CreateGptPromptDTO>(initial || {
         description: '',
+        title: '',
         prompt: '',
         model: '',
         temperature: 0,
@@ -100,6 +101,16 @@ const GptPromptForm = ({ method, action, initial }: { method: 'POST' | 'PUT', ac
             <div className="bg-white shadow-md rounded p-8 max-w-md w-full overflow-scroll max-h-screen m-1">
                 <h2 className="text-2xl font-semibold mb-4">{method === 'POST' ? 'Create' : 'Update'} GPT Prompt</h2>
                 <form onSubmit={handleSubmit}>
+                    <div className="mb-4">
+                        <label className="block text-sm font-medium text-gray-700">Title:</label>
+                        <input
+                            type="text"
+                            name="title"
+                            className="mt-1 p-2 border rounded w-full"
+                            value={gptPromptData.title}
+                            onChange={handleInputChange}
+                        />
+                    </div>
                     <div className="mb-4">
                         <label className="block text-sm font-medium text-gray-700">Description:</label>
                         <input

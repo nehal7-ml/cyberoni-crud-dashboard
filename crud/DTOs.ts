@@ -90,6 +90,7 @@ export type CreateTagDTO = {
 export type CreateGptPromptDTO = {
     id?: string;
     description: string;
+    title: string;
     prompt: string;
     model: string;
     temperature: number;
