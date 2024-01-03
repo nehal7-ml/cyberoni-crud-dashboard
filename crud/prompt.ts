@@ -1,36 +1,10 @@
 import 'server-only';
-import { GptPrompt, Image, PrismaClient, Review, Tag } from "@prisma/client";
+import { PrismaClient } from "@prisma/client";
 import { connectOrCreateObject as connectTag } from "./tags";
-import { CreateTagDTO } from "./DTOs";
 import { connectOrCreateObject as connectImage } from "./images";
-import { CreateImageDTO } from "./DTOs";
+import { CreateGptPromptDTO } from "./DTOs";
+import { DisplayPrompt } from "./DTOs";
 
-export type CreateGptPromptDTO = {
-    id?: string
-    description: string;
-    prompt: string;
-    temperature: number;
-    max_tokens: number;
-    top_p: number;
-    best_of: number;
-    frequency_penalty: number;
-    presence_penalty: number;
-    stop: string[];     // comma separaetd sequences
-    timesUsed: number;
-    timesIntegrated: number;
-    costPerToken: number;
-    profitMargin: number;
-    tags: CreateTagDTO[];
-    image?: CreateImageDTO | null;
-
-}
-
-export type DisplayPrompt = GptPrompt & {
-    stop: string[];
-    reviews?: Review[],
-    image?: Image,
-    tags: Tag[]
-}
 async function create(prompt: CreateGptPromptDTO, prismaClient: PrismaClient) {
     const prompts = prismaClient.gptPrompt;
     let createdprompt = await prompts.create({

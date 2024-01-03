@@ -1,4 +1,5 @@
-import { create, CreateGptPromptDTO } from "@/crud/prompt";
+import { create } from "@/crud/prompt";
+import { CreateGptPromptDTO } from "@/crud/DTOs";
 import apiHandler from "@/errorHandler";
 import { prisma } from "@/prisma/prismaClient";
 import { NextApiRequest, NextApiResponse } from "next";

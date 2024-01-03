@@ -1,4 +1,4 @@
-import { Blog, Image, PricingModel, Service, ServiceDescription, SubService, Tag, User } from "@prisma/client";
+import { Blog, GptPrompt, Image, PricingModel, Review, Service, ServiceDescription, SubService, Tag, User } from "@prisma/client";
 
 export type CreateBlogDTO = {
     title: string;
@@ -86,5 +86,32 @@ export type CreateAddressDTO = {
 export type CreateTagDTO = {
     id?: string;
     name: string;
+};
+export type CreateGptPromptDTO = {
+    id?: string;
+    description: string;
+    prompt: string;
+    model: string;
+    temperature: number;
+    max_tokens: number;
+    top_p: number;
+    best_of: number;
+    frequency_penalty: number;
+    presence_penalty: number;
+    stop: string[]; // comma separaetd sequences
+    timesUsed: number;
+    timesIntegrated: number;
+    costPerToken: number;
+    profitMargin: number;
+    tags: CreateTagDTO[];
+    image?: CreateImageDTO | null;
+    botUrl?: string;
+
+};
+export type DisplayPrompt = GptPrompt & {
+    stop: string[];
+    reviews?: Review[];
+    image?: Image;
+    tags: Tag[];
 };
 

@@ -19,7 +19,7 @@ export default function errorHandler(error: HttpError | PrismaClientInitializati
         if((err as PrismaClientKnownRequestError ).code ==='P2025' && err.message.includes('BlogToUser')) {
             return NextResponse.json({ message: "Author email not found"}, { status: 400 })
         }
-        return NextResponse.json({ message: err.cause}, { status: 500 })
+        return NextResponse.json({ message: err.message}, { status: 500 })
 
     }
 

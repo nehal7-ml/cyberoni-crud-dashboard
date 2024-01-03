@@ -1,7 +1,7 @@
 'use client'
 import AddImagesAndTags from "@/components/AddImagesAndTags";
 import { CreateImageDTO } from "@/crud/DTOs";
-import { CreateGptPromptDTO } from "@/crud/prompt";
+import { CreateGptPromptDTO } from "@/crud/DTOs";
 import { CreateTagDTO } from "@/crud/DTOs";
 import React, { useState } from 'react';
 import Notification, { NotificationType } from "@/components/Notification";
@@ -17,6 +17,7 @@ const GptPromptForm = ({ method, action, initial }: { method: 'POST' | 'PUT', ac
     const [gptPromptData, setGptPromptData] = useState<CreateGptPromptDTO>(initial || {
         description: '',
         prompt: '',
+        model: '',
         temperature: 0,
         max_tokens: 0,
         top_p: 0,
@@ -30,16 +31,17 @@ const GptPromptForm = ({ method, action, initial }: { method: 'POST' | 'PUT', ac
         profitMargin: 0,
         tags: [],
         image: undefined,
+        botUrl: undefined,
     });
 
-    const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
+    const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => {
         const { name, value } = e.target;
         setGptPromptData(prevData => ({
             ...prevData,
             [name]: value,
         }));
     };
- const router = useRouter()
+    const router = useRouter()
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
         const apiUrl = process.env.NEXT_PUBLIC_API_URL;
@@ -119,6 +121,39 @@ const GptPromptForm = ({ method, action, initial }: { method: 'POST' | 'PUT', ac
                         />
                     </div>
                     <div className="mb-4">
+                        <label className="block text-sm font-medium text-gray-700">Model:</label>
+
+                        <select
+                            name="status"
+                            className="mt-1 p-2 border rounded w-full"
+                            value={gptPromptData.model}
+                            onChange={handleInputChange}
+                        >
+
+                            <option value={"gpt-3.5-turbo"}>
+                                gpt-3.5-turbo
+                            </option>
+                            <option value={"gpt-4-32k"}>
+                                gpt-4-32k
+                            </option>
+                            <option value={"gpt-4-1106-preview"}>
+                                gpt-4-1106-preview
+                            </option>
+
+
+                        </select>
+                    </div>
+                    <div className="mb-4">
+                        <label className="block text-sm font-medium text-gray-700">GPT url:</label>
+                        <input
+                            type="url"
+                            name="botUrl"
+                            className="mt-1 p-2 border rounded w-full"
+                            value={gptPromptData.botUrl}
+                            onChange={handleInputChange}
+                        />
+                    </div>
+                    <div className="mb-4">
                         <ListInput initial={gptPromptData.stop} label="Stop sequences (comma separated):" onChange={(value) => handleListInput('stop', value)} />
                     </div>
                     <div className="grid grid-cols-2 gap-1 ">
@@ -133,7 +168,7 @@ const GptPromptForm = ({ method, action, initial }: { method: 'POST' | 'PUT', ac
                             />
                         </div>
                         <div className="mb-4">
-                            <label className="block text-sm font-medium text-gray-700">best of:</label>
+                            <label className="block text-sm font-medium text-gray-700">best of (number of completions):</label>
                             <input
                                 type="number"
                                 name="best_of"

@@ -3,7 +3,7 @@ import { CreateBlogDTO, DisplayBlogDTO } from "./DTOs";
 import { CreateProductDTO, displayProductDTO } from "./product";
 import { CreateUserDTO, DisplayUserDTO } from "./user";
 import { createEventDTO } from "./event";
-import { CreateGptPromptDTO } from "./prompt";
+import { CreateGptPromptDTO } from "./DTOs";
 
 export type getAllRecordsDTO = {
     records: DisplayUserDTO[] | displayProductDTO[] | DisplayBlogDTO[] | Service[] | Event[] | GptPrompt[] | CaseStudy[];
