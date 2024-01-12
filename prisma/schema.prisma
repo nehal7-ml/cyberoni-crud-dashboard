@@ -346,7 +346,7 @@ model SubService {
   complexity                                Int
   overheadCost                              Int
   service                                   Service      @relation(fields: [serviceId], references: [id], onDelete: Cascade)
-  imageId                                   String
+  imageId                                   String?
   serviceId                                 String
 
   @@index([imageId])

@@ -11,6 +11,7 @@ import { Service, ServiceDescription, SubService } from "@prisma/client";
 describe("test crud function for services", () => {
 
     const testService: CreateServiceDTO = {
+
         featured:false,
         hourlyRate: 100,
         previewContent: "test preview content",
@@ -22,7 +23,7 @@ describe("test crud function for services", () => {
             imageOnLeft: true,
             image: {
                 src: "https://picsum.photos/200",
-                name: "test image",
+                name: "test image 2",
             }
         }],
 
@@ -45,6 +46,7 @@ describe("test crud function for services", () => {
                 serviceDeliverables: [],
                 serviceUsageScore: 10,
                 skillLevel: "100",
+
 
             }
         ],
@@ -70,10 +72,14 @@ describe("test crud function for services", () => {
         const updatedService = await update(createdService.id, {
             ...testService,
             title: "updated",
+            image:  {
+                src: "https://picsum.photos/200",
+                name: "updated-image"
+            }
             
         }, prisma);
         expect(updatedService.title).toBe('updated');
-
+        expect(updatedService.image?.name).toBe('updated-image');
 
     }, 10000)
 
@@ -89,8 +95,8 @@ describe("test crud function for services", () => {
 
 
     afterAll(async () => {
-        await remove(createdService.id, prisma);
+        if(createdService.id)  await remove(createdService.id, prisma);
 
-    })
+    }, 10000)
 })
 

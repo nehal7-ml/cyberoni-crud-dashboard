@@ -1,11 +1,11 @@
 import 'server-only';
 import { PrismaClient, SubService } from "@prisma/client"
-import { connectOrCreateObject } from "./tags";
-import { createObject } from "./images";
+import { createObject as createImageObject, create as createImage, connectOrCreateObject as connectImage, } from "./images";
+import { create as createTag, connectOrCreateObject as connectTags } from "./tags";
 import { CreateSubServiceDTO } from "./DTOs";
 export async function create(newSubService: CreateSubServiceDTO, serviceId: string, prismaClient: PrismaClient) {
     const subServices = prismaClient.subService;
-    let image = await createObject(newSubService.image)
+    let image = await createImageObject(newSubService.image)
 
     const newRecord = await subServices.create({
         data: {
@@ -22,7 +22,7 @@ export async function create(newSubService: CreateSubServiceDTO, serviceId: stri
             serviceUsageScore: newSubService.serviceUsageScore,
             skillLevel: newSubService.skillLevel,
             image: { create: image },
-            tags: { connectOrCreate: connectOrCreateObject(newSubService.tags || []) },
+            tags: { connectOrCreate: connectTags(newSubService.tags || []) },
             service: { connect: { id: serviceId } }
         }
     })
@@ -36,7 +36,7 @@ export async function create(newSubService: CreateSubServiceDTO, serviceId: stri
 export async function update(subServiceID: string, subService: CreateSubServiceDTO, serviceId: string, prismaClient: PrismaClient) {
 
     const subServices = prismaClient.subService;
-    let image = await createObject(subService.image)
+    let image = await createImageObject(subService.image)
 
     const newRecord = await subServices.update({
         where: { id: subServiceID },
@@ -53,8 +53,15 @@ export async function update(subServiceID: string, subService: CreateSubServiceD
             serviceDeliverables: subService.serviceDeliverables,
             serviceUsageScore: subService.serviceUsageScore,
             skillLevel: subService.skillLevel,
-            image: { update: image },
-            tags: { connectOrCreate: connectOrCreateObject(subService.tags || []) },
+            image: image && image.id ? {
+                update: {
+                    where: {
+                        id: image.id
+                    },
+                    data: image,
+                }
+            } : image && image?.id == null ? { create: image } : {},
+            tags: { connectOrCreate: connectTags(subService.tags || []) },
             service: { connect: { id: serviceId } }
         }
     })
@@ -62,4 +69,68 @@ export async function update(subServiceID: string, subService: CreateSubServiceD
     return newRecord;
 }
 
+
+export async function createSubservicesObject(subServices: CreateSubServiceDTO[]) {
+
+    const createObject = []
+    for (const subService of subServices) {
+        const subImage = await createImageObject(subService.image)
+        createObject.push({
+            ...subService,
+            image: subImage ? { create: subImage } : {},
+            tags: { connectOrCreate: connectTags(subService.tags || []) },
+
+        })
+    }
+
+
+    return createObject
+}
+
+export async function updateSubServiceObject(subServices: CreateSubServiceDTO[]) {
+
+    let createOrUpdate: {
+        create: any[],
+        update: any[]
+    } = {
+        create: [],
+        update: [],
+
+    };
+
+    for (const subService of subServices) {
+        const image = await createImageObject(subService.image)
+
+        if (subService.id) {
+            createOrUpdate.update.push({
+                where: {
+                    id: subService.id
+                },
+                data: {
+                    ...subService,
+                    image: image && image.id ? {
+                        update: {
+                            where: {
+                                id: image.id
+                            },
+                            data: image,
+                        }
+                    } : image && image?.id == null ? { create: image } : {},
+                }
+            })
+
+        } else {
+            createOrUpdate.create.push({
+                ...subService,
+                image: image ? { create: image } : {},
+
+            })
+        }
+
+    }
+
+
+    return createOrUpdate
+
+}
 

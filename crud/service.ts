@@ -1,9 +1,9 @@
 import 'server-only';
 import { PrismaClient, Prisma, FAQ } from "@prisma/client";
 import { create as createTag, connectOrCreateObject as connectTags } from "./tags";
-import { create as createImage, connectOrCreateObject as connectImage, createObject } from "./images";
-import { CreateImageDTO } from "./DTOs";
-import { create as createSubService, update as updateSubService } from "./subService";
+import { create as createImage, connectOrCreateObject as connectImage, createObject as createImageObject } from "./images";
+import { CreateImageDTO, CreateServiceDescription, CreateSubServiceDTO } from "./DTOs";
+import { create as createSubService, createSubservicesObject, update as updateSubService, updateSubServiceObject } from "./subService";
 import { prisma } from "@/prisma/prismaClient";
 import { uploadFile } from "@/lib/cloudinary";
 import { CreateServiceDTO } from "./DTOs";
@@ -11,7 +11,7 @@ import { CreateServiceDTO } from "./DTOs";
 
 async function create(service: CreateServiceDTO, prismaClient: PrismaClient) {
     const services = prismaClient.service;
-    let image = await createObject(service.image)
+    let image = await createImageObject(service.image)
     let createdservice = await services.create({
         data: {
             title: service.title,
@@ -25,6 +25,12 @@ async function create(service: CreateServiceDTO, prismaClient: PrismaClient) {
             tags: { connectOrCreate: connectTags(service.tags || []) },
             faqs: {
                 create: service.faqs ? service.faqs : []
+            },
+            SubServices: {
+                create: await createSubservicesObject(service.SubServices as CreateSubServiceDTO[])
+            },
+            ServiceDescription: {
+                create: await createServiceDescriptionObject(service.ServiceDescription as CreateServiceDescription[])
             }
         },
         include: {
@@ -39,39 +45,13 @@ async function create(service: CreateServiceDTO, prismaClient: PrismaClient) {
         }
     });
 
-    if (service.SubServices && service.SubServices?.length > 0) {
-
-        for (const subService of service.SubServices) {
-            const newSubService = await createSubService(subService, createdservice.id, prismaClient);
-
-        }
-
-    }
-
-    if (service.ServiceDescription && service.ServiceDescription?.length > 0) {
-        for (let description of service.ServiceDescription) {
-            await prisma.serviceDescription.create(
-                {
-                    data: {
-                        ...description,
-                        image: description.image.id ? { connect: { id: description.image.id } } : { create: description.image },
-                        service: { connect: { id: createdservice.id } }
-                    },
-
-                }
-
-            )
-
-        }
-    }
-
     return createdservice
 
 }
 
 async function update(serviceId: string, service: CreateServiceDTO, prismaClient: PrismaClient) {
     const services = prismaClient.service;
-    let image = await createObject(service.image)
+    let image = await createImageObject(service.image)
 
     // let currentService = await services.findUnique({ where: { id: serviceId } })
     let updatedService = await services.update(
@@ -85,16 +65,17 @@ async function update(serviceId: string, service: CreateServiceDTO, prismaClient
                 valueBrought: service.valueBrought,
                 skillsUsed: service.skillsUsed,
                 htmlEmbed: service.htmlEmbed,
-                image: image ? {
-                    upsert: {
+                image: image && image.id ? {
+                    update: {
                         where: {
                             id: image.id
                         },
-                        update: image,
-                        create: image
+                        data: image,
                     }
-                } : {},
+                } : image && image?.id == null ? { create: image } : {},
                 tags: { connectOrCreate: connectTags(service.tags || []) },
+                SubServices: await updateSubServiceObject(service.SubServices as CreateSubServiceDTO[]),
+                ServiceDescription: await updateServiceDescriptionObject(service.ServiceDescription)
 
 
             },
@@ -105,45 +86,7 @@ async function update(serviceId: string, service: CreateServiceDTO, prismaClient
                 ServiceDescription: true,
             }
         });
-    if (service.SubServices && service.SubServices?.length > 0) {
 
-        for (const subService of service.SubServices) {
-            if (subService.id) {
-                const newSubService = await updateSubService(subService.id, subService, updatedService.id, prismaClient);
-            }
-            else {
-                const newSubService = await createSubService(subService, updatedService.id, prismaClient);
-            }
-        }
-
-    }
-
-
-
-    if (service.ServiceDescription && service.ServiceDescription?.length > 0) {
-        for (let description of service.ServiceDescription) {
-
-            if (description.id) {
-
-
-            } else {
-                await prisma.serviceDescription.create(
-                    {
-                        data: {
-                            ...description,
-                            image: { connect: { id: description.image.id } },
-                            service: { connect: { id: updatedService.id } }
-                        }
-                    }
-
-                )
-
-            }
-
-
-
-        }
-    }
 
 
     return updatedService
@@ -214,4 +157,73 @@ export async function getFeatured(prisma: PrismaClient) {
 
 }
 
+
+async function createServiceDescriptionObject(descriptions: CreateServiceDescription[]) {
+
+    let create = [];
+
+    for (const description of descriptions) {
+        const subImage = await createImageObject(description.image)
+        create.push({
+            ...description,
+            image: subImage ? { create: subImage } : {},
+        })
+    }
+
+
+    return create
+
+}
+
+
+async function updateServiceDescriptionObject(descriptions: CreateServiceDescription[]) {
+
+    let createOrUpdate: {
+        create: any[],
+        update: any[]
+    } = {
+        create: [],
+        update: [],
+
+    };
+
+    for (const description of descriptions) {
+        const image = await createImageObject(description.image)
+
+        if (description.id) {
+            createOrUpdate.update.push({
+
+
+                where: {
+                    id: description.id
+                },
+                data: {
+                    ...description,
+                    image: image && image.id ? {
+                        update: {
+                            where: {
+                                id: image.id
+                            },
+                            data: image,
+                        }
+                    } : image && image?.id == null ? { create: image } : {},
+                }
+
+            })
+
+        } else {
+            createOrUpdate.create.push({
+                ...description,
+                image: image ? { create: image } : {},
+
+
+            })
+        }
+
+    }
+
+
+    return createOrUpdate
+
+}
 export { create, update, remove, read, getAll }
