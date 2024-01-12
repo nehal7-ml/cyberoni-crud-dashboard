@@ -11,16 +11,16 @@ describe("test crud function for referrals", () => {
 
     const testreferral: CreateReferralDTO = {
         campaignId: "tetsca",
-        click:0,
-        description:'Test linbk',
+        click: 0,
+        description: 'Test linbk',
         expires: new Date(),
         fallback: '/',
-        link:'',
+        link: '',
         prefix: 'testprefix',
         priority: 'LOW',
-        redirect:'/referral/testprefix',
-        type:'REDIRECT'
-
+        redirect: '/referral/testprefix',
+        type: 'REDIRECT',
+        utmProps: {}
     }
 
     let createdreferral: Referral

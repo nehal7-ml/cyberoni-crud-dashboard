@@ -85,7 +85,15 @@ async function update(serviceId: string, service: CreateServiceDTO, prismaClient
                 valueBrought: service.valueBrought,
                 skillsUsed: service.skillsUsed,
                 htmlEmbed: service.htmlEmbed,
-                image: image ? { update: image } : {},
+                image: image ? {
+                    upsert: {
+                        where: {
+                            id: image.id
+                        },
+                        update: image,
+                        create: image
+                    }
+                } : {},
                 tags: { connectOrCreate: connectTags(service.tags || []) },
 
 

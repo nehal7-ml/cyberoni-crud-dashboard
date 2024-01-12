@@ -37,7 +37,7 @@ function CaseStudyForm({ method, action, initial, types }: { method: 'POST' | 'P
 
     });
 
-    console.log(types);
+    // console.log(types);
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
         const apiUrl = process.env.NEXT_PUBLIC_API_URL;
