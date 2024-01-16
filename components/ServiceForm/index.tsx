@@ -42,7 +42,7 @@ function SerivceForm({ method, action, initial }: { method: 'POST' | 'PUT', acti
         tags: [],
         image: undefined
     });
-    const [editSubservice, setEditSubservice] = useState<CreateSubServiceDTO | null>(null);
+    const [editSubservice, setEditSubservice] = useState<number >(-1);
 
     const [descriptionForm, setDescriptionForm] = useState(false);
     const [rawJson, setRawJson] = useState(JSON.stringify(serviceData, null, 2));
@@ -113,33 +113,12 @@ function SerivceForm({ method, action, initial }: { method: 'POST' | 'PUT', acti
     };
 
 
-    function handleSubServiceChange(subService: CreateSubServiceDTO) {
+    function handleSubServiceChange(subServices: CreateSubServiceDTO[]) {
 
-        console.log(subService);
-        if (subService.id) {
-            setServiceData((prevData) => ({
-                ...prevData,
-                SubServices: prevData.SubServices?.map(prev => {
-
-                    if (prev.id === subService.id) {
-                        return subService
-                    } else {
-                        return prev
-                    }
-                })
-            }))
-
-        } else {
-
-            console.log("adding...");
-            setServiceData((prevData) => ({
-                ...prevData,
-                SubServices: [...prevData.SubServices ?? [], { ...subService, id: generateUUID() }]
-            }))
-
-
-
-        }
+        setServiceData((prevData) => ({
+            ...prevData,
+            SubServices: subServices
+        }))
 
         setShowDialog(false)
 
@@ -291,9 +270,7 @@ function SerivceForm({ method, action, initial }: { method: 'POST' | 'PUT', acti
 
                             <div className="w-full flex justify-center items-end  p-2">
                                 <button type="button" onClick={() => {
-
-                                    setEditSubservice(null);
-                                    setDescriptionForm(true)
+                                   setDescriptionForm(true)
                                 }} className="p-2 hover:shadow-lg hover:bg-blue-600 bg-blue-500 rounded-full" >
                                     <PlusCircle className=" text-white" />
                                 </button>
@@ -334,7 +311,7 @@ function SerivceForm({ method, action, initial }: { method: 'POST' | 'PUT', acti
                                 return (
                                     <div key={index} className="bg-blue-200 text-blue-800 p-2 rounded flex items-center">
                                         <button type="button" onClick={() => {
-                                            setEditSubservice(subService);
+                                            setEditSubservice(index);
                                             setShowDialog(true);
                                         }}><span>{subService.title}</span></button>
                                         <button
@@ -347,7 +324,10 @@ function SerivceForm({ method, action, initial }: { method: 'POST' | 'PUT', acti
                                     </div>)
                             })}
 
-                            <button type="button" onClick={() => setShowDialog(!showDialog)} className="w-full bg-blue-500 text-white p-2 rounded hover:bg-blue-600 focus:outline-none focus:ring focus:ring-blue-300">Add Subservice</button>
+                            <button type="button" onClick={() =>{
+                                                                            setEditSubservice(-1);
+
+                                setShowDialog(!showDialog)}} className="w-full bg-blue-500 text-white p-2 rounded hover:bg-blue-600 focus:outline-none focus:ring focus:ring-blue-300">Add Subservice</button>
                         </div>
 
                         <AddImagesAndTags maxImages={1} onImagesAndTagsChange={handleChangedImage} images={serviceData?.image ? [serviceData?.image] : []} tags={serviceData?.tags}></AddImagesAndTags>
@@ -363,7 +343,7 @@ function SerivceForm({ method, action, initial }: { method: 'POST' | 'PUT', acti
                         <div className="flex justify-end z-30 ">
                             <button className="self-end   mx-10 my-3" onClick={() => setShowDialog(!showDialog)} ><X color="red" className="cursor-pointer" /></button>
                         </div>
-                        <CreateSubServcie subService={editSubservice} handleSubServiceChange={handleSubServiceChange}></CreateSubServcie>
+                        <CreateSubServcie current={editSubservice} subServices={serviceData.SubServices ?? []} handleSubServiceChange={handleSubServiceChange}></CreateSubServcie>
                     </div>
                     <div className={`fixed flex flex-col w-screen top-0 left-0 justify-center ${descriptionForm ? '' : ' hidden'}`}>
                         <div className="flex justify-end z-30">

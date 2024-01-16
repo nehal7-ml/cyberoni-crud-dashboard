@@ -15,8 +15,8 @@ const ajv = new Ajv()
 //addFormats(ajv)
 const validate = ajv.compile(SubserviceSchema);
 
-function SubServiceForm({ subService, handleSubServiceChange }: { subService?: CreateSubServiceDTO | null, handleSubServiceChange: (subservice: CreateSubServiceDTO) => void }) {
-    const [subServiceData, setSubServiceData] = useState<CreateSubServiceDTO>(subService || {
+function SubServiceForm({ subServices, current, handleSubServiceChange }: { subServices: CreateSubServiceDTO[], current: number, handleSubServiceChange: (subservice: CreateSubServiceDTO[]) => void }) {
+    const [subServiceData, setSubServiceData] = useState<CreateSubServiceDTO>(current >= 0 ? subServices[current] : {
         description: '',
         title: "",
         complexity: 0,
@@ -33,9 +33,6 @@ function SubServiceForm({ subService, handleSubServiceChange }: { subService?: C
         image: { src: "" }
     });
     const [rawJson, setRawJson] = useState(JSON.stringify(subServiceData, null, 2));
-
-    const [discounts, setDiscounts] = useState<Discount[]>(subService?.discounts || []);
-
 
     const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => {
         const { name, value } = e.target;
@@ -56,7 +53,16 @@ function SubServiceForm({ subService, handleSubServiceChange }: { subService?: C
     const handleSubmit = (e: React.FormEvent) => {
         e.preventDefault();
         // Send the productData to your backend for creating the product
-        handleSubServiceChange(subServiceData);
+
+        if (current >= 0) {
+            subServices[current] = subServiceData
+            handleSubServiceChange(subServices);
+        } else {
+            handleSubServiceChange([...subServices, subServiceData]);
+
+
+        }
+
         (e.target as HTMLFormElement).reset()
 
         setSubServiceData({
@@ -123,17 +129,17 @@ function SubServiceForm({ subService, handleSubServiceChange }: { subService?: C
     }
 
     useEffect(() => {
-        if (subService) {
-            setSubServiceData(subService)
+        if (subServices[current] ?? false) {
+            setSubServiceData(subServices[current])
         }
-    }, [subService]);
+    }, [current, subServices]);
     return (
         <>
             <div className="light:bg-gray-100 light:text-black dark:bg-gray-700 dark:text-gray-800 min-h-screen flex items-center justify-center">
                 <div className="bg-black backdrop-blur-lg bg-opacity-50 absolute inset-0 w-screen h-full z-10"></div>
 
                 <div className=" fixed top-0 bg-white shadow-md rounded p-8 max-w-4xl w-full overflow-scroll max-h-screen z-50">
-                    <h2 className="text-2xl font-semibold mb-4">{subService ? 'Update' : 'Add'} Sub Service</h2>
+                    <h2 className="text-2xl font-semibold mb-4">{current >= 0 ? 'Update' : 'Add'} Sub Service</h2>
                     <form onSubmit={handleSubmit}>
                         <div className="mb-4">
                             <label className="block" htmlFor="json">Json input auto fill: </label>
@@ -243,7 +249,7 @@ function SubServiceForm({ subService, handleSubServiceChange }: { subService?: C
                             />
                         </div>
                         <div>
-                            <DiscountsForm initial={subService?.discounts} onChange={(values) => setSubServiceData(prev => ({ ...prev, discounts: values }))} />
+                            <DiscountsForm initial={subServiceData?.discounts} onChange={(values) => setSubServiceData(prev => ({ ...prev, discounts: values }))} />
                         </div>
                         <div className="mb-4">
                             <ListInput
@@ -270,7 +276,7 @@ function SubServiceForm({ subService, handleSubServiceChange }: { subService?: C
                             type="submit"
                             className="w-full bg-blue-500 text-white p-2 rounded hover:bg-blue-600 focus:outline-none focus:ring focus:ring-blue-300"
                         >
-                            {subService ? 'Update' : 'Add'} Sub Service
+                            {current >= 0 ? 'Update' : 'Add'} Sub Service
                         </button>
                     </form>
                 </div>

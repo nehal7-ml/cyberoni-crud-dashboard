@@ -194,8 +194,6 @@ async function updateServiceDescriptionObject(descriptions: CreateServiceDescrip
 
         if (description.id) {
             createOrUpdate.update.push({
-
-
                 where: {
                     id: description.id
                 },
