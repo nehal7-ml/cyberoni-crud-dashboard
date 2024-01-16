@@ -5,7 +5,7 @@ import { CreateServiceDTO, CreateServiceDescription, DisplayServiceDTO } from "@
 import { ServiceSchema } from "@/crud/jsonSchemas";
 import { CreateTagDTO } from "@/crud/DTOs";
 import React, { useEffect, useState } from 'react'
-import { PlusCircle, X } from "lucide-react";
+import { Edit, PlusCircle, X } from "lucide-react";
 import { CreateSubServiceDTO } from "@/crud/DTOs";
 
 import Notification, { NotificationType } from "@/components/Notification";
@@ -310,10 +310,14 @@ function SerivceForm({ method, action, initial }: { method: 'POST' | 'PUT', acti
                             {serviceData.SubServices?.map((subService, index) => {
                                 return (
                                     <div key={index} className="bg-blue-200 text-blue-800 p-2 rounded flex items-center">
-                                        <button type="button" onClick={() => {
+                                        <button type="button" className="flex gap-2" onClick={() => {
                                             setEditSubservice(index);
                                             setShowDialog(true);
-                                        }}><span>{subService.title}</span></button>
+                                        }}>
+                                            <span>{subService.title}</span>
+                                            <Edit />
+
+                                        </button>
                                         <button
                                             type="button"
                                             className="ml-2 text-red-600 hover:text-red-800 focus:outline-none focus:ring focus:ring-red-300"
