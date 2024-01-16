@@ -138,7 +138,7 @@ function SerivceForm({ method, action, initial }: { method: 'POST' | 'PUT', acti
             }))
 
 
-            
+
         }
 
         setShowDialog(false)
@@ -198,8 +198,8 @@ function SerivceForm({ method, action, initial }: { method: 'POST' | 'PUT', acti
             }
 
         } catch (error) {
-            console.log("invalid JSON");
-            alert("Error parsing JSON");
+            console.log("invalid JSON", error);
+            alert("Error parsing JSON" + error);
 
         }
 

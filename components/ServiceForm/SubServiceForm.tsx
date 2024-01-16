@@ -115,8 +115,8 @@ function SubServiceForm({ subService, handleSubServiceChange }: { subService?: C
             }
 
         } catch (error) {
-            console.log("invalid JSON");
-            alert("Error parsing JSON");
+            console.log("invalid JSON", error);
+            alert("Error parsing JSON" + error);
 
         }
 
