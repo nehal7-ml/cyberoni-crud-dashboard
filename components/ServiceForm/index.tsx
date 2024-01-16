@@ -42,7 +42,7 @@ function SerivceForm({ method, action, initial }: { method: 'POST' | 'PUT', acti
         tags: [],
         image: undefined
     });
-    const [editSubservice, setEditSubservice] = useState<number >(-1);
+    const [editSubservice, setEditSubservice] = useState<number>(-1);
 
     const [descriptionForm, setDescriptionForm] = useState(false);
     const [rawJson, setRawJson] = useState(JSON.stringify(serviceData, null, 2));
@@ -270,7 +270,7 @@ function SerivceForm({ method, action, initial }: { method: 'POST' | 'PUT', acti
 
                             <div className="w-full flex justify-center items-end  p-2">
                                 <button type="button" onClick={() => {
-                                   setDescriptionForm(true)
+                                    setDescriptionForm(true)
                                 }} className="p-2 hover:shadow-lg hover:bg-blue-600 bg-blue-500 rounded-full" >
                                     <PlusCircle className=" text-white" />
                                 </button>
@@ -306,7 +306,7 @@ function SerivceForm({ method, action, initial }: { method: 'POST' | 'PUT', acti
                             />
                         </div >
 
-                        <div className="my-4 flex flex-wrap gap-2">
+                        <div className="my-4 flex flex-wrap gap-10">
                             {serviceData.SubServices?.map((subService, index) => {
                                 return (
                                     <div key={index} className="bg-blue-200 text-blue-800 p-2 rounded flex items-center">
@@ -328,10 +328,11 @@ function SerivceForm({ method, action, initial }: { method: 'POST' | 'PUT', acti
                                     </div>)
                             })}
 
-                            <button type="button" onClick={() =>{
-                                                                            setEditSubservice(-1);
+                            <button type="button" onClick={() => {
+                                setEditSubservice(-1);
 
-                                setShowDialog(!showDialog)}} className="w-full bg-blue-500 text-white p-2 rounded hover:bg-blue-600 focus:outline-none focus:ring focus:ring-blue-300">Add Subservice</button>
+                                setShowDialog(!showDialog)
+                            }} className="w-full bg-blue-500 text-white p-2 rounded hover:bg-blue-600 focus:outline-none focus:ring focus:ring-blue-300">Add Subservice</button>
                         </div>
 
                         <AddImagesAndTags maxImages={1} onImagesAndTagsChange={handleChangedImage} images={serviceData?.image ? [serviceData?.image] : []} tags={serviceData?.tags}></AddImagesAndTags>
@@ -343,12 +344,12 @@ function SerivceForm({ method, action, initial }: { method: 'POST' | 'PUT', acti
                         </button>
                     </form>
 
-                    <div className={`fixed flex flex-col w-screen top-0 left-0 justify-center ${showDialog ? '' : ' hidden'}`}>
+                    {showDialog && <div className={`fixed flex flex-col w-screen top-0 left-0 justify-center ${showDialog ? '' : ' hidden'}`}>
                         <div className="flex justify-end z-30 ">
                             <button className="self-end   mx-10 my-3" onClick={() => setShowDialog(!showDialog)} ><X color="red" className="cursor-pointer" /></button>
                         </div>
                         <CreateSubServcie current={editSubservice} subServices={serviceData.SubServices ?? []} handleSubServiceChange={handleSubServiceChange}></CreateSubServcie>
-                    </div>
+                    </div>}
                     <div className={`fixed flex flex-col w-screen top-0 left-0 justify-center ${descriptionForm ? '' : ' hidden'}`}>
                         <div className="flex justify-end z-30">
                             <button type="button" className="self-end mx-10 my-3" onClick={() => setDescriptionForm(false)} ><X color="red" className="cursor-pointer" /></button>
