@@ -17,6 +17,7 @@ import ListInput from "../ListInput";
 import { redirect, useRouter } from "next/navigation";
 import Ajv from 'ajv'
 import addFormats from "ajv-formats"
+import { generateUUID } from "@/lib/utils";
 
 const ajv = new Ajv()
 //addFormats(ajv)
@@ -41,22 +42,7 @@ function SerivceForm({ method, action, initial }: { method: 'POST' | 'PUT', acti
         tags: [],
         image: undefined
     });
-    const [editSubservice, setEditSubservice] = useState<CreateSubServiceDTO>({
-        description: '',
-        title: "",
-        complexity: 0,
-        department: "",
-        discounts: [],
-        estimated_hours_times_fifty_percent: 0,
-        estimated_hours_times_one_hundred_percent: 0,
-        pricingModel: PricingModel.DEFAULT,
-        overheadCost: 0,
-        serviceDeliverables: [],
-        serviceUsageScore: 0,
-        skillLevel: "",
-        tags: [],
-        image: { src: "" }
-    });
+    const [editSubservice, setEditSubservice] = useState<CreateSubServiceDTO | null>(null);
 
     const [descriptionForm, setDescriptionForm] = useState(false);
     const [rawJson, setRawJson] = useState(JSON.stringify(serviceData, null, 2));
@@ -129,21 +115,51 @@ function SerivceForm({ method, action, initial }: { method: 'POST' | 'PUT', acti
 
     function handleSubServiceChange(subService: CreateSubServiceDTO) {
 
-        // console.log(subService);
-        setServiceData((prevData) => ({
-            ...prevData,
-            SubServices: [...serviceData.SubServices?? [], subService]
-        }))
+        console.log(subService);
+        if (subService.id) {
+            setServiceData((prevData) => ({
+                ...prevData,
+                SubServices: prevData.SubServices?.map(prev => {
+
+                    if (prev.id === subService.id) {
+                        return subService
+                    } else {
+                        return prev
+                    }
+                })
+            }))
+
+        } else {
+
+            console.log("adding...");
+            setServiceData((prevData) => ({
+                ...prevData,
+                SubServices: [...prevData.SubServices ?? [], { ...subService, id: generateUUID() }]
+            }))
+
+
+            
+        }
 
         setShowDialog(false)
 
     }
 
     function handleRemoveSubService(subServiceToRemove: CreateSubServiceDTO) {
-        setServiceData((prevData) => ({
-            ...prevData,
-            SubServices: prevData.SubServices?.filter(subService => subService.id !== subServiceToRemove.id)
-        }))
+
+        if (subServiceToRemove.id) {
+            setServiceData((prevData) => ({
+                ...prevData,
+                SubServices: prevData.SubServices?.filter(subService => subService.id !== subServiceToRemove.id)
+            }))
+
+        } else {
+            setServiceData((prevData) => ({
+                ...prevData,
+                SubServices: prevData.SubServices?.filter(subService => subService.title !== subServiceToRemove.title)
+            }))
+        }
+
 
     }
 
@@ -274,7 +290,11 @@ function SerivceForm({ method, action, initial }: { method: 'POST' | 'PUT', acti
                             })}
 
                             <div className="w-full flex justify-center items-end  p-2">
-                                <button type="button" onClick={() => setDescriptionForm(true)} className="p-2 hover:shadow-lg hover:bg-blue-600 bg-blue-500 rounded-full" >
+                                <button type="button" onClick={() => {
+
+                                    setEditSubservice(null);
+                                    setDescriptionForm(true)
+                                }} className="p-2 hover:shadow-lg hover:bg-blue-600 bg-blue-500 rounded-full" >
                                     <PlusCircle className=" text-white" />
                                 </button>
                             </div>
@@ -313,7 +333,7 @@ function SerivceForm({ method, action, initial }: { method: 'POST' | 'PUT', acti
                             {serviceData.SubServices?.map((subService, index) => {
                                 return (
                                     <div key={index} className="bg-blue-200 text-blue-800 p-2 rounded flex items-center">
-                                        <button onClick={() => {
+                                        <button type="button" onClick={() => {
                                             setEditSubservice(subService);
                                             setShowDialog(true);
                                         }}><span>{subService.title}</span></button>

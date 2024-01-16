@@ -160,12 +160,14 @@ export async function getFeatured(prisma: PrismaClient) {
 
 async function createServiceDescriptionObject(descriptions: CreateServiceDescription[]) {
 
-    let create = [];
+    let create= [];
 
     for (const description of descriptions) {
         const subImage = await createImageObject(description.image)
         create.push({
-            ...description,
+            title: description.title,
+            content: description.content,
+            imageOnLeft: description.imageOnLeft,
             image: subImage ? { create: subImage } : {},
         })
     }
@@ -198,7 +200,9 @@ async function updateServiceDescriptionObject(descriptions: CreateServiceDescrip
                     id: description.id
                 },
                 data: {
-                    ...description,
+                    title: description.title,
+                    content: description.content,
+                    imageOnLeft: description.imageOnLeft,
                     image: image && image.id ? {
                         update: {
                             where: {
@@ -213,7 +217,9 @@ async function updateServiceDescriptionObject(descriptions: CreateServiceDescrip
 
         } else {
             createOrUpdate.create.push({
-                ...description,
+                title: description.title,
+                content: description.content,
+                imageOnLeft: description.imageOnLeft,
                 image: image ? { create: image } : {},
 
 

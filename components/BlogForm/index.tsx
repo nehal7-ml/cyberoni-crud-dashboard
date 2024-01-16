@@ -145,7 +145,7 @@ function BlogForm({ method, action, initial }: { method: 'POST' | 'PUT', action:
             }
 
         } catch (error) {
-            console.log("invalid JSON");
+            console.log("invalid JSON", error);
             alert("Error parsing JSON");
 
         }

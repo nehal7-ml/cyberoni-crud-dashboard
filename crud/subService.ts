@@ -76,7 +76,18 @@ export async function createSubservicesObject(subServices: CreateSubServiceDTO[]
     for (const subService of subServices) {
         const subImage = await createImageObject(subService.image)
         createObject.push({
-            ...subService,
+            title: subService.title,
+            complexity: subService.complexity,
+            department: subService.department,
+            description: subService.description,
+            discounts: subService.discounts,
+            estimated_hours_times_fifty_percent: subService.estimated_hours_times_fifty_percent,
+            estimated_hours_times_one_hundred_percent: subService.estimated_hours_times_one_hundred_percent,
+            overheadCost: subService.overheadCost,
+            pricingModel: subService.pricingModel,
+            serviceDeliverables: subService.serviceDeliverables,
+            serviceUsageScore: subService.serviceUsageScore,
+            skillLevel: subService.skillLevel,
             image: subImage ? { create: subImage } : {},
             tags: { connectOrCreate: connectTags(subService.tags || []) },
 
@@ -107,7 +118,18 @@ export async function updateSubServiceObject(subServices: CreateSubServiceDTO[])
                     id: subService.id
                 },
                 data: {
-                    ...subService,
+                    title: subService.title,
+                    complexity: subService.complexity,
+                    department: subService.department,
+                    description: subService.description,
+                    discounts: subService.discounts,
+                    estimated_hours_times_fifty_percent: subService.estimated_hours_times_fifty_percent,
+                    estimated_hours_times_one_hundred_percent: subService.estimated_hours_times_one_hundred_percent,
+                    overheadCost: subService.overheadCost,
+                    pricingModel: subService.pricingModel,
+                    serviceDeliverables: subService.serviceDeliverables,
+                    serviceUsageScore: subService.serviceUsageScore,
+                    skillLevel: subService.skillLevel,
                     image: image && image.id ? {
                         update: {
                             where: {
@@ -121,7 +143,18 @@ export async function updateSubServiceObject(subServices: CreateSubServiceDTO[])
 
         } else {
             createOrUpdate.create.push({
-                ...subService,
+                title: subService.title,
+                complexity: subService.complexity,
+                department: subService.department,
+                description: subService.description,
+                discounts: subService.discounts,
+                estimated_hours_times_fifty_percent: subService.estimated_hours_times_fifty_percent,
+                estimated_hours_times_one_hundred_percent: subService.estimated_hours_times_one_hundred_percent,
+                overheadCost: subService.overheadCost,
+                pricingModel: subService.pricingModel,
+                serviceDeliverables: subService.serviceDeliverables,
+                serviceUsageScore: subService.serviceUsageScore,
+                skillLevel: subService.skillLevel,
                 image: image ? { create: image } : {},
 
             })
