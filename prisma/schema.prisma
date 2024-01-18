@@ -74,6 +74,7 @@ model User {
   Session        Session[]
   Payment        Payment[]
   BlogComment    BlogComment[]
+  Order          Order[]
 
   @@index([addressId])
   @@index([imageId])
@@ -91,6 +92,7 @@ model Address {
   Property      Property[]
   coordinatesId String?
   GuruUser      GuruAgent[]
+  Order         Order[]
 
   @@index([coordinatesId])
 }
@@ -148,6 +150,7 @@ model Product {
   reviews              Review[]
   amazonProductId      String?
   cjDropShippingId     String?
+  Order                Order[]
 
   @@index([amazonProductId])
   @@index([cjDropShippingId])
@@ -162,7 +165,18 @@ model CjShipping {
 }
 
 model Order {
-  id String @id @default(uuid())
+  id        String      @id @default(uuid())
+  user      User        @relation(fields: [userId], references: [id])
+  product   Product     @relation(fields: [productId], references: [id])
+  address   Address     @relation(fields: [addressId], references: [id])
+  userId    String
+  productId String
+  addressId String
+  status    OrderStatus @default(CREATED)
+
+  @@index([productId])
+  @@index([userId])
+  @@index([addressId])
 }
 
 model Blog {
@@ -587,4 +601,11 @@ enum GptPricing {
   LOW
   MODERATE
   AGGRESSIVE
+}
+
+enum OrderStatus {
+  CREATED
+  ACCEPTED
+  DISPATCHED
+  DELIVERED
 }
