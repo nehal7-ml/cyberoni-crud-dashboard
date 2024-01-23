@@ -23,7 +23,7 @@ function BlogForm({ method, action, initial }: { method: 'POST' | 'PUT', action:
     const [initialContent, setInitialContent] = useState(initial?.content || "");
 
 
-    const [blogData, setBlogData] = useState<CreateBlogDTO>({
+    const [blogData, setBlogData] = useState<CreateBlogDTO>(initial ||{
         title: '',
         subTitle: '',
         description: '',

@@ -8,6 +8,7 @@ interface DateInputProps {
 }
 
 const DateInput: React.FC<DateInputProps> = ({ onDateChange, name, id , value}) => {
+    //console.log("dateInput: ", value);
     const [selectedDate, setSelectedDate] = useState<string>(value?.toISOString().slice(0, 10) ?? "");
 
     const handleDateChange = (event: ChangeEvent<HTMLInputElement>) => {
