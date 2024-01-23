@@ -145,3 +145,21 @@ export function stripSlashes(str:string) {
 
   return str;
 }
+
+
+export function objectToSearchParams(obj: any): string {
+  const searchParams = new URLSearchParams();
+
+  for (const key in obj) {
+    if (obj[key] !== undefined && obj[key] !== null) {
+      if (Array.isArray(obj[key])) {
+        // If it's an array, add each element separately
+        obj[key].forEach((element: string |number) => searchParams.append(key, element.toString()));
+      } else {
+        searchParams.set(key, obj[key].toString());
+      }
+    }
+  }
+
+  return searchParams.toString();
+}

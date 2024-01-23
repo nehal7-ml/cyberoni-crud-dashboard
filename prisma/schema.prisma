@@ -187,7 +187,7 @@ model Blog {
   featured       Boolean       @default(false)
   images         Image[]
   author         User          @relation(fields: [userId], references: [id])
-  date           DateTime
+  date           DateTime      @default(now())
   content        String        @db.LongText
   tags           Tag[]
   template       BlogTemplate? @relation(fields: [blogTemplateId], references: [id])
@@ -196,6 +196,7 @@ model Blog {
   Views          Int           @default(0)
   Comments       BlogComment[]
   blogTemplateId String?
+  publishDate     DateTime    @default(now())
 
   @@index([userId])
   @@index([blogTemplateId])

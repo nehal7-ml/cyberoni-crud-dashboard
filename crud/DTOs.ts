@@ -6,6 +6,7 @@ export type CreateBlogDTO = {
     description: string;
     featured: boolean;
     date: Date;
+    publishDate: Date;
     content: string;
     templateId?: string;
     author: { id?: string; email: string; };

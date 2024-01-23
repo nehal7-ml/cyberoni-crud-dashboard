@@ -10,6 +10,7 @@ import { CreateImageDTO } from "@/crud/DTOs";
 import Editor from "../RichTextEditor";
 import Ajv from 'ajv'
 import addFormats from "ajv-formats"
+import DateInput from "../DateInput";
 const ajv = new Ajv()
 addFormats(ajv)
 const validate = ajv.compile(BlogSchema);
@@ -28,6 +29,7 @@ function BlogForm({ method, action, initial }: { method: 'POST' | 'PUT', action:
         description: '',
         featured: false,
         date: new Date(),
+        publishDate: new Date(),
         content: '',
         author: { email: '' },
         tags: [],
@@ -37,13 +39,13 @@ function BlogForm({ method, action, initial }: { method: 'POST' | 'PUT', action:
     const [rawJson, setRawJson] = useState(JSON.stringify(blogData, null, 2));
     const [json, setJson] = useState<{ [key: string]: any }>({});
 
-    const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => {
+    const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement> | { target: { name: string, value: string | number | Date } }) => {
         const { name, value } = e.target;
 
         if (name == "author") {
             setBlogData(prevData => ({
                 ...prevData,
-                author: { email: value },
+                author: { email: value as string },
             }));
         }
         else {
@@ -125,7 +127,7 @@ function BlogForm({ method, action, initial }: { method: 'POST' | 'PUT', action:
             const newData = JSON.parse(json)
 
             const valid = validate(newData);
-            if (!valid) alert( validate.errors?.map(err=>(`${err.instancePath} ${err.message} (${err.schemaPath}) `)).join('\n'));
+            if (!valid) alert(validate.errors?.map(err => (`${err.instancePath} ${err.message} (${err.schemaPath}) `)).join('\n'));
             else {
 
                 setJson(newData);
@@ -195,6 +197,14 @@ function BlogForm({ method, action, initial }: { method: 'POST' | 'PUT', action:
                             className="mt-1 p-2 border rounded w-full"
                             value={blogData.author.email}
                             onChange={handleInputChange}
+                        />
+                    </div>
+                    <div className="mb-4">
+                        <label className="block text-sm font-medium text-gray-700">Publish Date:</label>
+                        <DateInput
+                            name="publishDate"
+                            value={blogData.publishDate}
+                            onDateChange={handleInputChange}
                         />
                     </div>
                     <div className="mb-4">

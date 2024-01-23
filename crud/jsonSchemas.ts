@@ -70,6 +70,7 @@ export const BlogSchema = {
         "description": { "type": "string" },
         "featured": { "type": "boolean" },
         "date": { "type": "string", "format": "date-time" },
+        "publishDate": { "type": "string", "format": "date-time" },
         "content": { "type": "string" },
         "templateId": { "type": "string" },
         "author": {
