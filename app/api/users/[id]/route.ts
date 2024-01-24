@@ -9,7 +9,7 @@ async function put(req: NextRequest, { params }: { params: { id: string } }) {
 
     const userId = params.id as string;
     const user = await req.json() as CreateUserDTO;
-    console.log(user);
+    //console.log(user);
     const updatedUser = await update(userId, user, prisma);
     return NextResponse.json({ message: "update success", data: updatedUser });
 }
