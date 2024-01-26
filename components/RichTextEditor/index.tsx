@@ -89,8 +89,8 @@ const Editor = ({ defaultValue, onChange }: { defaultValue?: string, onChange: (
                         file_picker_types: 'image',
                         file_picker_callback: filePickerCallback,
                         image_advtab: true,
-                        extended_valid_elements: 'script[language|type|src]',
-                        protect: [/<script>[\s\S]*?<\/script>/g],
+                        extended_valid_elements: 'script[language|type|src], style',
+                        protect: [/<script>[\s\S]*?<\/script>/g , /<style>[\s\S]*?<\/style>/g],
                         setup: (editor)=> {
                            markdownPlugin(editor);
                             
