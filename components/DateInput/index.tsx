@@ -4,10 +4,11 @@ interface DateInputProps {
     onDateChange: (event: { target: { value: Date, name: string } }) => void;
     name: string;
     id?: string;
-    value?: Date
+    value?: Date;
+    required?: boolean;
 }
 
-const DateInput: React.FC<DateInputProps> = ({ onDateChange, name, id , value}) => {
+const DateInput: React.FC<DateInputProps> = ({ onDateChange, name, id , value, required}) => {
     //console.log("dateInput: ", value);
     const [selectedDate, setSelectedDate] = useState<string>(value?.toISOString().slice(0, 10) ?? "");
 
@@ -31,6 +32,7 @@ const DateInput: React.FC<DateInputProps> = ({ onDateChange, name, id , value}) 
                 value={selectedDate}
                 onChange={handleDateChange}
                 className="mt-1 p-2 border rounded-md focus:outline-none focus:ring focus:border-blue-300"
+                required={required ?? false}
             />
         </div>
     );

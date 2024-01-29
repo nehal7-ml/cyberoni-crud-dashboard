@@ -5,6 +5,7 @@ import React, { FormEvent, useEffect, useRef, useState } from 'react';
 import Notification, { NotificationType } from "@/components/Notification";
 import { redirect, useRouter } from "next/navigation";
 import { stripSlashes } from "@/lib/utils";
+import DateInput from "../DateInput";
 
 
 
@@ -19,7 +20,7 @@ const ReferralForm = ({ method, action, initial }: { method: 'POST' | 'PUT', act
     const [referralData, setReferralData] = useState<CreateReferralDTO>(initial ? {
         ...initial,
         link: initial?.link.includes(appUrl) ? `${initial.link.replace(appUrl, '')}` : initial.link,
-        utmProps: initial.utmProps? initial.utmProps : {
+        utmProps: initial.utmProps ? initial.utmProps : {
             utm_campaign: '',
             utm_medium: '',
             utm_source: '',
@@ -39,10 +40,10 @@ const ReferralForm = ({ method, action, initial }: { method: 'POST' | 'PUT', act
             utm_campaign: '',
             utm_medium: '',
             utm_source: '',
-        } 
+        }
     });
     const [date, setDate] = useState(((initial?.expires) || (new Date())).toISOString().split('T')[0]);
-    const utmPraram = useRef(new URLSearchParams(initial?.utmProps? initial.utmProps: {}) )
+    const utmPraram = useRef(new URLSearchParams(initial?.utmProps ? initial.utmProps : {}))
     function handleUtmChange(e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) {
         const { name, value } = e.target;
 
@@ -190,15 +191,12 @@ const ReferralForm = ({ method, action, initial }: { method: 'POST' | 'PUT', act
 
                     <div className="mb-4">
                         <label className="block text-sm font-medium text-gray-700">Expires :</label>
-                        <input
-                            type="date"
+                        <DateInput
                             name="expires"
-                            className="mt-1 p-2 border rounded w-full invalid:ring-2 invalid:ring-rose-600 invalid:text-rose-500 invalid:outline-red-500"
-                            value={(date)}
+                            value={referralData.expires}
                             required
-                            onChange={(referral) => {
-                                setDate(referral.target.value);
-                                setReferralData(prev => ({ ...prev, date: new Date(referral.target.value) }))
+                            onDateChange={(referral) => {
+                                setReferralData(prev => ({ ...prev, expires: new Date(referral.target.value) }))
                             }}
                         />
                     </div>
