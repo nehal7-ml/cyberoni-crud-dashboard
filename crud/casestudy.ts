@@ -1,7 +1,7 @@
 import 'server-only';
 import { Image, PrismaClient } from "@prisma/client";
 import { CreateImageDTO } from "./DTOs";
-import { connectOrCreateObject } from "./images";
+import { connectOrCreateObject, createImageJson } from "./images";
 export type CaseStudyType = 'ECOMMERCE' | 'LANDING' | 'SOFTWARE' | 'GRAPHICS';
 export type CreateCaseStudy = {
     id?: string;
@@ -35,12 +35,15 @@ export type UserPersona = {
 }
 export async function create(caseStudy: CreateCaseStudy, prisma: PrismaClient) {
     const cases = prisma.caseStudy;
-    const images = await connectOrCreateObject(caseStudy.images, []);
-    const competetiveAnalysis = await connectOrCreateObject(caseStudy.competetiveAnalysis, []);
-    const wireFrames = await connectOrCreateObject(caseStudy.wireFrames!, []);
-    const hifiDesign = await connectOrCreateObject(caseStudy.hifiDesign!, []);
-    const userFlow = await connectOrCreateObject(caseStudy.userFlow!, []);
-    const architecture = await connectOrCreateObject(caseStudy.architecture!, []);
+    let images = await connectOrCreateObject(caseStudy.images, []);
+    let competetiveAnalysis = await connectOrCreateObject(caseStudy.competetiveAnalysis, []);
+    let wireFrames = await connectOrCreateObject(caseStudy.wireFrames!, []);
+    let hifiDesign = await connectOrCreateObject(caseStudy.hifiDesign!, []);
+    let userFlow = await connectOrCreateObject(caseStudy.userFlow!, []);
+    let architecture = await connectOrCreateObject(caseStudy.architecture!, []);
+
+
+    
     const newCase = await cases.create({
         data: {
             title: caseStudy.title,
@@ -49,16 +52,16 @@ export async function create(caseStudy: CreateCaseStudy, prisma: PrismaClient) {
             userResearch: caseStudy.userResearch,
             keyLearning: caseStudy.keyLearning,
             possibleSolutions: caseStudy.possibleSolutions,
-            competetiveAnalysis: competetiveAnalysis,
             problemStatement: caseStudy.problemStatement,
             uniqueFeatures: caseStudy.uniqueFeatures,
             userPersonas: caseStudy.userPersonas,
             userProblems: caseStudy.userProblems,
-            architecture: architecture,
-            hifiDesign: hifiDesign,
-            images: images,
-            userFlow: userFlow,
-            wireFrames: wireFrames,
+            architecture: createImageJson(architecture),
+            hifiDesign: createImageJson(hifiDesign),
+            images: createImageJson(images),
+            userFlow: createImageJson(userFlow),
+            wireFrames: createImageJson(wireFrames),
+            competetiveAnalysis: createImageJson(competetiveAnalysis),
             type: caseStudy.serviceId ? { connect: { id: caseStudy.serviceId } } : {},
         }
     })
@@ -76,12 +79,14 @@ export async function read(caseStudyId: string, prisma: PrismaClient) {
 export async function update(caseStudyId: string, caseStudy: CreateCaseStudy, prisma: PrismaClient) {
     const cases = prisma.caseStudy;
     const oldCase = await cases.findUnique({ where: { id: caseStudyId }});
-    const images = await connectOrCreateObject(caseStudy.images, oldCase?.images as Image[]);
-    const competetiveAnalysis = await connectOrCreateObject(caseStudy.competetiveAnalysis, oldCase?.images as Image[]);
-    const wireFrames = await connectOrCreateObject(caseStudy.wireFrames!, oldCase?.wireFrames as Image[]);
-    const hifiDesign = await connectOrCreateObject(caseStudy.hifiDesign!, oldCase?.hifiDesign as Image[]);
-    const userFlow = await connectOrCreateObject(caseStudy.userFlow!, oldCase?.userFlow as Image[]);
-    const architecture = await connectOrCreateObject(caseStudy.architecture!, oldCase?.architecture as Image[]);
+    let images = await connectOrCreateObject(caseStudy.images, oldCase?.images as Image[]);
+    let competetiveAnalysis = await connectOrCreateObject(caseStudy.competetiveAnalysis, oldCase?.images as Image[]);
+    let wireFrames = await connectOrCreateObject(caseStudy.wireFrames!, oldCase?.wireFrames as Image[]);
+    let hifiDesign = await connectOrCreateObject(caseStudy.hifiDesign!, oldCase?.hifiDesign as Image[]);
+    let userFlow = await connectOrCreateObject(caseStudy.userFlow!, oldCase?.userFlow as Image[]);
+    let architecture = await connectOrCreateObject(caseStudy.architecture!, oldCase?.architecture as Image[]);
+
+
     const updatedCaseStudy = await cases.update({
         where: { id: caseStudyId }, data: {
             title: caseStudy.title,
@@ -90,16 +95,16 @@ export async function update(caseStudyId: string, caseStudy: CreateCaseStudy, pr
             userResearch: caseStudy.userResearch,
             keyLearning: caseStudy.keyLearning,
             possibleSolutions: caseStudy.possibleSolutions,
-            competetiveAnalysis: competetiveAnalysis,
+            competetiveAnalysis: createImageJson(competetiveAnalysis),
             problemStatement: caseStudy.problemStatement,
             uniqueFeatures: caseStudy.uniqueFeatures,
             userPersonas: caseStudy.userPersonas,
             userProblems: caseStudy.userProblems,
-            architecture: architecture,
-            hifiDesign: hifiDesign,
-            images: images,
-            userFlow: userFlow,
-            wireFrames: wireFrames,
+            architecture: createImageJson(architecture),
+            hifiDesign: createImageJson(hifiDesign),
+            images: createImageJson(images),
+            userFlow: createImageJson(userFlow),
+            wireFrames: createImageJson(wireFrames),
             type: caseStudy.serviceId ? { connect: { id: caseStudy.serviceId } } : {},
 
         }

@@ -8,6 +8,7 @@ async function UpdateCaseForm({ params }: { params: { id: string } }) {
     const caseStudy = await read(params.id, prisma) as CreateCaseStudy
     const service = await getAll(0, 0, prisma);
 
+    console.log(caseStudy);
     if (caseStudy) return (
         <CaseStudyForm types={service.records} initial={caseStudy} method="PUT" action={`/api/casestudies/${params.id}`} />
     )

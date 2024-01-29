@@ -2,6 +2,7 @@ import 'server-only';
 import { deleteFile, uploadFile } from "@/lib/cloudinary";
 import { Image, PrismaClient } from "@prisma/client";
 import { CreateImageDTO } from "./DTOs";
+import { createCartItemDTO } from "./cart";
 
 export async function create(newImage: CreateImageDTO, prismaClient: PrismaClient) {
     const images = prismaClient.image;
@@ -71,4 +72,26 @@ function getUploadAndDeleteLists(oldFiles: CreateImageDTO[], newFiles: CreateIma
 
 
     };
+}
+
+
+export function createImageJson(images: {
+    create: CreateImageDTO[];
+    update?: {
+        where: {
+            id: string;
+        };
+        data: CreateImageDTO;
+    }[] | undefined;
+    delete?: {
+        id: string;
+    }[] | undefined;
+}): CreateImageDTO[] {
+
+
+    const updateImages: CreateImageDTO[] = images.update ? images.update?.map(update => (update.data)) : []
+    const caseImage: CreateImageDTO[] = [...updateImages, ...images.create]
+
+    return caseImage
+
 }

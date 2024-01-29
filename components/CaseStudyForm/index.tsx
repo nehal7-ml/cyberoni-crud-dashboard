@@ -17,7 +17,7 @@ function CaseStudyForm({ method, action, initial, types }: { method: 'POST' | 'P
     const [userPersonaForm, setUserPersonaForm] = useState(false);
       
     const [caseData, setCaseData] = useState<CreateCaseStudy>(initial || {
-        serviceId: '',
+        serviceId: types[0].id,
         architecture: [],
         competetiveAnalysis: [],
         goals: [],
@@ -80,6 +80,7 @@ function CaseStudyForm({ method, action, initial, types }: { method: 'POST' | 'P
     }
 
     function handleImageChange(name: string, images: CreateImageDTO[]) {
+        console.log(images);
         setCaseData(prevData => ({
             ...prevData,
             [name]: images
@@ -112,7 +113,7 @@ function CaseStudyForm({ method, action, initial, types }: { method: 'POST' | 'P
                             />
                         </div>
                         <div className="mb-4">
-                            <label className="block text-sm font-medium text-gray-700">Type:</label>
+                            <label className="block text-sm font-medium text-gray-700">Service :</label>
                             <select
                                 name="serviceId"
                                 className="mt-1 p-2 border rounded w-full"
