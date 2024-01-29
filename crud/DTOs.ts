@@ -92,8 +92,8 @@ export type CreateGptPromptDTO = {
     id?: string;
     description: string;
     title: string;
-    prompt: string;
-    model: string;
+    prompt: string | null;
+    model: string | null;
     temperature: number;
     max_tokens: number;
     top_p: number;

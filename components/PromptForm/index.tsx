@@ -127,7 +127,7 @@ const GptPromptForm = ({ method, action, initial }: { method: 'POST' | 'PUT', ac
                             name="prompt"
                             rows={3}
                             className="mt-1 p-2 border rounded w-full"
-                            value={gptPromptData.prompt}
+                            value={gptPromptData.prompt as string}
                             onChange={handleInputChange}
                         />
                     </div>
@@ -137,7 +137,7 @@ const GptPromptForm = ({ method, action, initial }: { method: 'POST' | 'PUT', ac
                         <select
                             name="status"
                             className="mt-1 p-2 border rounded w-full"
-                            value={gptPromptData.model}
+                            value={gptPromptData.model as string}
                             onChange={handleInputChange}
                         >
 

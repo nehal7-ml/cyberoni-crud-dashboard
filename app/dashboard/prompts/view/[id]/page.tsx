@@ -13,7 +13,7 @@ const UpdateGptPromptForm = async ({ params }: { params: { id: string } }) => {
 
   //console.log(prompt);
   return (
-    <GptPromptForm method="PUT" initial={prompt} action={`/api/prompts/${params.id}`} />
+    <GptPromptForm method="PUT" initial={prompt as CreateGptPromptDTO} action={`/api/prompts/${params.id}`} />
   )
 };
 
