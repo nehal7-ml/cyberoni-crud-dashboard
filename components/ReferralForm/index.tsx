@@ -194,7 +194,7 @@ const ReferralForm = ({ method, action, initial }: { method: 'POST' | 'PUT', act
                         <DateInput
                             name="expires"
                             value={referralData.expires}
-                            required
+                            required={true}
                             onDateChange={(referral) => {
                                 setReferralData(prev => ({ ...prev, expires: new Date(referral.target.value) }))
                             }}
@@ -203,7 +203,7 @@ const ReferralForm = ({ method, action, initial }: { method: 'POST' | 'PUT', act
 
                     <div className="my-4">
                         <select
-                            name="type"
+                            name="linkType"
                             className="mt-1 p-2 border rounded w-full  invalid:ring-2 invalid:ring-rose-600 invalid:text-rose-500 invalid:outline-red-500"
                             value={linkType}
                             onChange={(e) => setLinkType(e.target.value as ('External' | 'Internal'))}
@@ -228,7 +228,7 @@ const ReferralForm = ({ method, action, initial }: { method: 'POST' | 'PUT', act
                             className="mt-1 p-2 border rounded w-full invalid:ring-2 invalid:ring-rose-600 invalid:text-rose-500 invalid:outline-red-500"
                             value={`${stripSlashes(appUrl)}${referralData.type === 'REDIRECT' ? '/referrals' : '/affiliate'}/${referralData.prefix}?${utmPraram.current.toString()}`}
                             onChange={handleInputChange}
-                            required
+                            required 
                         />
                     </div>
                     <div className="mb-4">
@@ -261,7 +261,7 @@ const ReferralForm = ({ method, action, initial }: { method: 'POST' | 'PUT', act
                     <div className="mb-4">
                         <label className="block text-sm font-medium text-gray-700">Refrral type:</label>
                         <select
-                            name="type"
+                            name="priority"
                             className="mt-1 p-2 border rounded w-full  invalid:ring-2 invalid:ring-rose-600 invalid:text-rose-500 invalid:outline-red-500"
                             value={referralData.priority}
                             onChange={handleInputChange}
