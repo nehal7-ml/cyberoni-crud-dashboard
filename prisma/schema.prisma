@@ -52,29 +52,30 @@ model VerificationToken {
 }
 
 model User {
-  id             String          @id @default(cuid())
+  id             String            @id @default(cuid())
   firstName      String?
   lastName       String?
-  email          String          @unique
+  email          String            @unique
   emailVerified  DateTime?
-  password       String          @default("")
-  image          Image?          @relation(fields: [imageId], references: [id])
+  password       String            @default("")
+  image          Image?            @relation(fields: [imageId], references: [id])
   addressId      String?
-  role           Role            @default(USER)
-  address        Address?        @relation(fields: [addressId], references: [id])
+  role           Role              @default(USER)
+  address        Address?          @relation(fields: [addressId], references: [id])
   accounts       Account[]
   blogs          Blog[]
   reviews        Review[]
   imageId        String?
-  CartItem       CartItem[]
+  CartItem       ProductCartItem[]
   ApiCredentials ApiCredential[]
   BlogLike       BlogLike[]
-  createdAt      DateTime        @default(now())
-  updatedAt      DateTime        @default(now()) @updatedAt
+  createdAt      DateTime          @default(now())
+  updatedAt      DateTime          @default(now()) @updatedAt
   Session        Session[]
   Payment        Payment[]
   BlogComment    BlogComment[]
   Order          Order[]
+  ServiceCart    ServiceCart[]
 
   @@index([addressId])
   @@index([imageId])
@@ -104,7 +105,7 @@ model Coordinates {
   Address   Address[]
 }
 
-model CartItem {
+model ProductCartItem {
   id        String  @id @default(uuid())
   quantity  Int
   productId String
@@ -114,6 +115,58 @@ model CartItem {
 
   @@index([productId])
   @@index([userId])
+}
+
+model ServiceCart {
+  id             String            @id @default(uuid())
+  user           User?             @relation(fields: [userId], references: [id])
+  userId         String?
+  items          ServiceCartItem[]
+  status         ServiceCartStatus @default(PENDING)
+  ServicePayment ServicePayment[]
+  @@index([userId])
+}
+
+model ServiceCartItem {
+  id            String       @id @default(uuid())
+  service       Service?     @relation(fields: [serviceId], references: [id])
+  amount        Int          @default(0)
+  addons        SubService[]
+  serviceId     String?
+  ServiceCart   ServiceCart  @relation(fields: [serviceCartId], references: [id])
+  serviceCartId String
+
+  @@index([serviceId])
+  @@index([serviceCartId])
+}
+
+model ServicePayment {
+  id            String        @id @default(uuid())
+  paymentId     String        @unique
+  status        PaymentStatus @default(PENDING)
+  order         ServiceCart   @relation(fields: [serviceCartId], references: [id])
+  serviceCartId String
+
+  @@index([serviceCartId])
+}
+
+enum ServiceCartStatus {
+  ABANDONED
+  EMPTY
+  PENDING
+  PAID
+}
+
+enum ServiceOrderStatus {
+  DELIVERED
+  INPROGRESS
+  CANCELLED
+}
+
+enum PaymentStatus {
+  PAID
+  PENDING
+  DISPUTED
 }
 
 model ApiCredential {
@@ -129,15 +182,15 @@ model ApiCredential {
 }
 
 model Product {
-  id                   String        @id @default(uuid())
+  id                   String            @id @default(uuid())
   sku                  String
   name                 String
-  status               ProductStatus @default(SOLDOUT)
+  status               ProductStatus     @default(SOLDOUT)
   ratings              Int?
   inventory            Int
   productBreakdown     String?
-  shippingReturnPolicy String        @db.Text
-  description          String        @db.Text
+  shippingReturnPolicy String            @db.Text
+  description          String            @db.Text
   tags                 Tag[]
   price                Int
   profitMargin         Int
@@ -145,7 +198,7 @@ model Product {
   category             String
   subcategory          String?
   images               Image[]
-  cart                 CartItem[]
+  cart                 ProductCartItem[]
   suppliers            Supplier[]
   reviews              Review[]
   amazonProductId      String?
@@ -196,7 +249,7 @@ model Blog {
   Views          Int           @default(0)
   Comments       BlogComment[]
   blogTemplateId String?
-  publishDate     DateTime    @default(now())
+  publishDate    DateTime      @default(now())
 
   @@index([userId])
   @@index([blogTemplateId])
@@ -271,6 +324,7 @@ model Service {
   ServiceDescription ServiceDescription[]
   CaseStudies        CaseStudy[]
   faqs               FAQ[]
+  ServiceCartItem    ServiceCartItem[]
 
   @@index([imageId])
 }
@@ -345,24 +399,25 @@ model Image {
 }
 
 model SubService {
-  id                                        String       @id @default(uuid())
-  image                                     Image?       @relation(fields: [imageId], references: [id])
+  id                                        String            @id @default(uuid())
+  image                                     Image?            @relation(fields: [imageId], references: [id])
   title                                     String
-  pricingModel                              PricingModel @default(DEFAULT)
+  pricingModel                              PricingModel      @default(DEFAULT)
   discounts                                 Json?
   serviceDeliverables                       Json?
   tags                                      Tag[]
   serviceUsageScore                         Int
-  description                               String       @db.Text
+  description                               String            @db.Text
   department                                String
   estimated_hours_times_fifty_percent       Int
   estimated_hours_times_one_hundred_percent Int
   skillLevel                                String
   complexity                                Int
   overheadCost                              Int
-  service                                   Service      @relation(fields: [serviceId], references: [id], onDelete: Cascade)
+  service                                   Service           @relation(fields: [serviceId], references: [id], onDelete: Cascade)
   imageId                                   String?
   serviceId                                 String
+  ServiceCartItem                           ServiceCartItem[]
 
   @@index([imageId])
   @@index([serviceId])
