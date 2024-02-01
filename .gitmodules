@@ -1,0 +1,3 @@
+[submodule "prisma"]
+	path = prisma
+	url = https://github.com/nehal7-ml/CyberShopTechPrismaSchema.git
