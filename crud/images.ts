@@ -2,7 +2,6 @@ import 'server-only';
 import { deleteFile, uploadFile } from "@/lib/cloudinary";
 import { Image, PrismaClient } from "@prisma/client";
 import { CreateImageDTO } from "./DTOs";
-import { createCartItemDTO } from "./cart";
 
 export async function create(newImage: CreateImageDTO, prismaClient: PrismaClient) {
     const images = prismaClient.image;
