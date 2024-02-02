@@ -24,9 +24,12 @@ function CaseStudyForm({ method, action, initial, types }: {
     const [notifyMessage, setNotifyMessage] = useState("");
     const [notifyType, setNotifyType] = useState<'success' | 'fail'>('fail');
     const [userPersonaForm, setUserPersonaForm] = useState(false);
-    const [caseData, setCaseData] = useState<CreateCaseStudy>(initial || {
+    const [caseData, setCaseData] = useState<CreateCaseStudy>(initial ? {
+        ...initial,
+        serviceId: initial?.serviceId ?? types[0].id
+    } : {
         serviceId: types[0].id,
-        subServiceId: null,
+        subServices: [],
         architecture: [],
         competetiveAnalysis: [],
         goals: [],
@@ -45,7 +48,6 @@ function CaseStudyForm({ method, action, initial, types }: {
         hifiDesign: []
 
     });
-
     // console.log(types);
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
@@ -72,9 +74,33 @@ function CaseStudyForm({ method, action, initial, types }: {
         }
     };
 
+    const handleAddSubService = (e: React.ChangeEvent<HTMLSelectElement>) => {
+        const { name, value } = e.target;
+        let uniqueValues = new Set(caseData.subServices);
+        if (value && !uniqueValues.has({ id: value })) {
+            setCaseData(prevData => ({
+                ...prevData,
+                subServices: prevData.subServices.concat([{ id: value }]),
+            }));
+        }
+
+    }
+
+    const handleRemoveSubService = (id: string) => {
+
+        setCaseData(prevData => ({
+            ...prevData,
+            subServices: prevData.subServices.filter(subService => subService.id !== id),
+        }));
+
+
+    }
     const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => {
         const { name, value } = e.target;
-
+        if (name === 'serviceId') setCaseData(prevData => ({
+            ...prevData,
+            subServices: [],
+        }));
         setCaseData(prevData => ({
             ...prevData,
             [name]: value,
@@ -126,7 +152,7 @@ function CaseStudyForm({ method, action, initial, types }: {
                             <select
                                 name="serviceId"
                                 className="mt-1 p-2 border rounded w-full"
-                                value={caseData.serviceId || ""}
+                                value={caseData.serviceId || types[0].id}
                                 onChange={handleInputChange}
                             >
                                 <option disabled>Select Service</option>
@@ -137,15 +163,33 @@ function CaseStudyForm({ method, action, initial, types }: {
 
                         <div className="mb-4">
                             <label className="block text-sm font-medium text-gray-700">Sub Service :</label>
+                            <div className="flex flex-wrap gap-2 my-1">
+                                {caseData.subServices.map((tag, index) => (
+                                    <div
+                                        key={index}
+                                        className="bg-blue-200 text-blue-800 p-2 rounded flex items-center justify-around"
+                                    >
+                                        <span className="line-clamp-1">{
+                                            types.filter(obj => obj.id === caseData.serviceId)[0].SubServices.filter(s => s.id === tag.id)[0].title
+                                        }</span>
+                                        <button
+                                            type="button"
+                                            className="ml-2 text-red-600 hover:text-red-800 focus:outline-none focus:ring focus:ring-red-300"
+                                            onClick={() => handleRemoveSubService(tag.id)}
+                                        >
+                                            X
+                                        </button>
+                                    </div>
+                                ))}
+                            </div>
                             <select
                                 name="subServiceId"
-                                className={`mt-1 p-2 border rounded w-full ${caseData.subServiceId ? '' : 'text-gray-400'} disabled:bg-gray-400 disabled:text-gray-400`}
-                                value={caseData.subServiceId || ""}
-                                onChange={handleInputChange}
+                                className={`mt-1 p-2 border rounded w-full  disabled:bg-gray-400 disabled:text-gray-400`}
+                                onChange={handleAddSubService}
                                 disabled={caseData.serviceId && caseData.serviceId?.length > 0 ? false : true}
                             >
-                                <option value={""} className="text-gray-400">Select SubService</option>
-                                {types[types.findIndex(obj => obj.id === caseData.serviceId)].SubServices.map((type, index) => (<option className="text-black" value={type.id} key={index}>{type.title}</option>))}
+                                <option value={''} className="text-gray-400">Select SubService</option>
+                                {caseData.serviceId && types.filter(obj => obj.id === caseData.serviceId)[0].SubServices.map((type, index) => (<option className="text-black" value={type.id} key={index}>{type.title}</option>))}
                             </select>
                         </div>
 

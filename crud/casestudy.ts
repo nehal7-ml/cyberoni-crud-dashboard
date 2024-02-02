@@ -23,7 +23,7 @@ export async function create(caseStudy: CreateCaseStudy, prisma: PrismaClient) {
     let architecture = await connectOrCreateObject(caseStudy.architecture!, []);
 
 
-    
+
     const newCase = await cases.create({
         data: {
             title: caseStudy.title,
@@ -43,7 +43,7 @@ export async function create(caseStudy: CreateCaseStudy, prisma: PrismaClient) {
             wireFrames: createImageJson(wireFrames),
             competetiveAnalysis: createImageJson(competetiveAnalysis),
             type: caseStudy.serviceId ? { connect: { id: caseStudy.serviceId } } : {},
-            subService: caseStudy.subServiceId ? { connect: {id: caseStudy.subServiceId } } : {}
+            subServices: caseStudy.subServices ? { connect: caseStudy.subServices } : {}
         }
     })
 
@@ -51,7 +51,10 @@ export async function create(caseStudy: CreateCaseStudy, prisma: PrismaClient) {
 
 export async function read(caseStudyId: string, prisma: PrismaClient) {
     const cases = prisma.caseStudy;
-    const caseStudy = await cases.findUnique({ where: { id: caseStudyId } })
+    const caseStudy = await cases.findUnique({
+        where: { id: caseStudyId },
+        include: { subServices: { select: { id: true } } }
+    })
     return caseStudy as unknown as CreateCaseStudy
 
 
@@ -59,7 +62,7 @@ export async function read(caseStudyId: string, prisma: PrismaClient) {
 
 export async function update(caseStudyId: string, caseStudy: CreateCaseStudy, prisma: PrismaClient) {
     const cases = prisma.caseStudy;
-    const oldCase = await cases.findUnique({ where: { id: caseStudyId }});
+    const oldCase = await cases.findUnique({ where: { id: caseStudyId } });
     let images = await connectOrCreateObject(caseStudy.images, oldCase?.images as Image[]);
     let competetiveAnalysis = await connectOrCreateObject(caseStudy.competetiveAnalysis, oldCase?.images as Image[]);
     let wireFrames = await connectOrCreateObject(caseStudy.wireFrames!, oldCase?.wireFrames as Image[]);
@@ -87,7 +90,7 @@ export async function update(caseStudyId: string, caseStudy: CreateCaseStudy, pr
             userFlow: createImageJson(userFlow),
             wireFrames: createImageJson(wireFrames),
             type: caseStudy.serviceId ? { connect: { id: caseStudy.serviceId } } : {},
-            subService: caseStudy.subServiceId ? { connect: {id: caseStudy.subServiceId } } : {}
+            subServices: caseStudy.subServices ? { connect: caseStudy.subServices } : {}
         }
     })
     return updatedCaseStudy
@@ -109,6 +112,11 @@ export async function getAll(page: number, pageSize: number, prismaClient: Prism
         skip: (page - 1) * pageSize, take: pageSize,
         where: {
         },
+        include: {
+            subServices: true,
+            type: true
+
+        }
 
     })
 

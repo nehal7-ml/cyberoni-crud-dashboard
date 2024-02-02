@@ -192,7 +192,7 @@ export type CreateCaseStudy = {
     id?: string;
     title: string;
     serviceId?: string;
-    subServiceId?: string|null;
+    subServices: { id: string }[];
     preview: string;
     problemStatement: string;
     userProblems: string[]; //comma seaprated
