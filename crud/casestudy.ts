@@ -2,28 +2,8 @@ import 'server-only';
 import { Image, PrismaClient } from "@prisma/client";
 import { CreateImageDTO } from "./DTOs";
 import { connectOrCreateObject, createImageJson } from "./images";
+import { CreateCaseStudy } from "./DTOs";
 export type CaseStudyType = 'ECOMMERCE' | 'LANDING' | 'SOFTWARE' | 'GRAPHICS';
-export type CreateCaseStudy = {
-    id?: string;
-    title: string;
-    serviceId?: string;
-    preview: string;
-    problemStatement: string;
-    userProblems: string[]; //comma seaprated
-    possibleSolutions: string[];  //comma seaprated
-    goals: string[]; //comma seaprated
-    images: CreateImageDTO[];
-    uniqueFeatures: string;
-    userResearch: string;
-    keyLearning: string;
-    userPersonas: UserPersona[],
-    competetiveAnalysis: CreateImageDTO[],
-    wireFrames?: CreateImageDTO[];
-    hifiDesign?: CreateImageDTO[];
-    userFlow?: CreateImageDTO[];
-    architecture?: CreateImageDTO[];
-}
-
 export type UserPersona = {
     bio: string;
     name: string;
@@ -63,6 +43,7 @@ export async function create(caseStudy: CreateCaseStudy, prisma: PrismaClient) {
             wireFrames: createImageJson(wireFrames),
             competetiveAnalysis: createImageJson(competetiveAnalysis),
             type: caseStudy.serviceId ? { connect: { id: caseStudy.serviceId } } : {},
+            subService: caseStudy.subServiceId ? { connect: {id: caseStudy.subServiceId } } : {}
         }
     })
 
@@ -71,7 +52,7 @@ export async function create(caseStudy: CreateCaseStudy, prisma: PrismaClient) {
 export async function read(caseStudyId: string, prisma: PrismaClient) {
     const cases = prisma.caseStudy;
     const caseStudy = await cases.findUnique({ where: { id: caseStudyId } })
-    return caseStudy as CreateCaseStudy
+    return caseStudy as unknown as CreateCaseStudy
 
 
 }
@@ -106,7 +87,7 @@ export async function update(caseStudyId: string, caseStudy: CreateCaseStudy, pr
             userFlow: createImageJson(userFlow),
             wireFrames: createImageJson(wireFrames),
             type: caseStudy.serviceId ? { connect: { id: caseStudy.serviceId } } : {},
-
+            subService: caseStudy.subServiceId ? { connect: {id: caseStudy.subServiceId } } : {}
         }
     })
     return updatedCaseStudy

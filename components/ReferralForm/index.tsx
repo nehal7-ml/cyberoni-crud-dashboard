@@ -1,5 +1,5 @@
 'use client'
-import { CreateReferralDTO } from "@/crud/referral";
+import { CreateReferralDTO } from "@/crud/DTOs";
 import { EventStatus, ReferralPriority, ReferralType } from "@prisma/client";
 import React, { FormEvent, useEffect, useRef, useState } from 'react';
 import Notification, { NotificationType } from "@/components/Notification";
@@ -16,6 +16,7 @@ const ReferralForm = ({ method, action, initial }: { method: 'POST' | 'PUT', act
     const [notifyMessage, setNotifyMessage] = useState("");
     const [notifyType, setNotifyType] = useState<'success' | 'fail'>('fail');
     const [invalidLink, setInvalidLink] = useState(false);
+    const [expiry, setExpiry] = useState(false);
     const [linkType, setLinkType] = useState<'External' | 'Internal'>(initial?.link.includes(appUrl) ? 'Internal' : 'External');
     const [referralData, setReferralData] = useState<CreateReferralDTO>(initial ? {
         ...initial,
@@ -29,7 +30,7 @@ const ReferralForm = ({ method, action, initial }: { method: 'POST' | 'PUT', act
         campaignId: '',
         description: '',
         click: 0,
-        expires: new Date(),
+        expires: null,
         fallback: '',
         link: '',
         prefix: '',
@@ -187,19 +188,29 @@ const ReferralForm = ({ method, action, initial }: { method: 'POST' | 'PUT', act
                         />
                     </div>
 
-
-
                     <div className="mb-4">
+                        <label htmlFor="expiry">
+                            <input onChange={() => {
+                                if(!expiry) setReferralData(prev=>({...prev, expires: new Date()})) 
+                                setExpiry(prev => !prev)
+                                
+                                
+                                }} id="expiry" type="checkbox"></input>
+                            <p>Expires?</p>
+                        </label>
+                    </div>
+
+                    {expiry && <div className="mb-4">
                         <label className="block text-sm font-medium text-gray-700">Expires :</label>
                         <DateInput
                             name="expires"
-                            value={referralData.expires}
+                            value={referralData.expires as Date}
                             required={true}
                             onDateChange={(referral) => {
                                 setReferralData(prev => ({ ...prev, expires: new Date(referral.target.value) }))
                             }}
                         />
-                    </div>
+                    </div>}
 
                     <div className="my-4">
                         <select
@@ -228,7 +239,7 @@ const ReferralForm = ({ method, action, initial }: { method: 'POST' | 'PUT', act
                             className="mt-1 p-2 border rounded w-full invalid:ring-2 invalid:ring-rose-600 invalid:text-rose-500 invalid:outline-red-500"
                             value={`${stripSlashes(appUrl)}${referralData.type === 'REDIRECT' ? '/referrals' : '/affiliate'}/${referralData.prefix}?${utmPraram.current.toString()}`}
                             onChange={handleInputChange}
-                            required 
+                            required
                         />
                     </div>
                     <div className="mb-4">

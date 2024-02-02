@@ -1,24 +1,6 @@
 import 'server-only';
-import { PrismaClient, Referral, ReferralPriority, ReferralType } from "@prisma/client";
-
-export type CreateReferralDTO = {
-    prefix: string | null;
-    type: ReferralType;
-    campaignId: string;
-    expires: Date;
-    description: string;
-    priority: ReferralPriority;
-    link: string;
-    fallback: string;
-    redirect: string
-    click: number;
-    utmProps: {
-        utm_medium: string;
-        utm_campaign: string;
-        utm_source: string;
-    }  | {};
-}
-
+import { PrismaClient, Referral } from "@prisma/client";
+import { CreateReferralDTO } from "./DTOs";
 
 export async function create(referral: CreateReferralDTO, prisma: PrismaClient) {
     const referrals = prisma.referral

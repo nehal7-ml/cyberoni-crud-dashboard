@@ -1,4 +1,5 @@
-import { Blog, GptPrompt, Image, PricingModel, Review, Service, ServiceCart, ServiceCartItem, ServiceDescription, SubService, Tag, User } from "@prisma/client";
+import { Blog, GptPrompt, Image, PricingModel, ReferralPriority, ReferralType, Review, Service, ServiceCart, ServiceCartItem, ServiceDescription, SubService, Tag, User } from "@prisma/client";
+import { UserPersona } from "./casestudy";
 
 export type CreateBlogDTO = {
     title: string;
@@ -169,3 +170,43 @@ export type DisplayServiceCartItemDTO = ServiceCartItem & {
     } | null,
     addons: SubService[]
 }
+export type CreateReferralDTO = {
+    prefix: string | null;
+    type: ReferralType;
+    campaignId: string;
+    expires: Date | null;
+    description: string;
+    priority: ReferralPriority;
+    link: string;
+    fallback: string;
+    redirect: string;
+    click: number;
+    utmProps: {
+        utm_medium: string;
+        utm_campaign: string;
+        utm_source: string;
+    } | {};
+};
+
+export type CreateCaseStudy = {
+    id?: string;
+    title: string;
+    serviceId?: string;
+    subServiceId?: string|null;
+    preview: string;
+    problemStatement: string;
+    userProblems: string[]; //comma seaprated
+    possibleSolutions: string[]; //comma seaprated
+    goals: string[]; //comma seaprated
+    images: CreateImageDTO[];
+    uniqueFeatures: string;
+    userResearch: string;
+    keyLearning: string;
+    userPersonas: UserPersona[];
+    competetiveAnalysis: CreateImageDTO[];
+    wireFrames?: CreateImageDTO[];
+    hifiDesign?: CreateImageDTO[];
+    userFlow?: CreateImageDTO[];
+    architecture?: CreateImageDTO[];
+};
+

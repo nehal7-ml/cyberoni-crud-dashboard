@@ -1,5 +1,6 @@
 'use client'
-import { CaseStudyType, CreateCaseStudy, UserPersona } from "@/crud/casestudy";
+import { CaseStudyType, UserPersona } from "@/crud/casestudy";
+import { CreateCaseStudy } from "@/crud/DTOs";
 import { useEffect, useState } from "react";
 import AddImage from "../AddImagesAndTags/AddImage";
 import Image from "next/image";
@@ -10,14 +11,22 @@ import ListInput from "../ListInput";
 import Notification from "../Notification";
 import { Service } from "@prisma/client";
 
-function CaseStudyForm({ method, action, initial, types }: { method: 'POST' | 'PUT', action: string,types: Service[] , initial?: CreateCaseStudy }) {
+type SubService = {
+    id: string;
+    title: string
+}
+function CaseStudyForm({ method, action, initial, types }: {
+    method: 'POST' | 'PUT', action: string, types: (Service & {
+        SubServices: SubService[]
+    })[], initial?: CreateCaseStudy
+}) {
     const [notify, setNotify] = useState(false);
     const [notifyMessage, setNotifyMessage] = useState("");
     const [notifyType, setNotifyType] = useState<'success' | 'fail'>('fail');
     const [userPersonaForm, setUserPersonaForm] = useState(false);
-      
     const [caseData, setCaseData] = useState<CreateCaseStudy>(initial || {
         serviceId: types[0].id,
+        subServiceId: null,
         architecture: [],
         competetiveAnalysis: [],
         goals: [],
@@ -117,13 +126,29 @@ function CaseStudyForm({ method, action, initial, types }: { method: 'POST' | 'P
                             <select
                                 name="serviceId"
                                 className="mt-1 p-2 border rounded w-full"
-                                value={caseData.serviceId|| ""}
+                                value={caseData.serviceId || ""}
                                 onChange={handleInputChange}
                             >
                                 <option disabled>Select Service</option>
                                 {types.map((type, index) => (<option value={type.id} key={index}>{type.title}</option>))}
+
                             </select>
                         </div>
+
+                        <div className="mb-4">
+                            <label className="block text-sm font-medium text-gray-700">Sub Service :</label>
+                            <select
+                                name="subServiceId"
+                                className={`mt-1 p-2 border rounded w-full ${caseData.subServiceId ? '' : 'text-gray-400'} disabled:bg-gray-400 disabled:text-gray-400`}
+                                value={caseData.subServiceId || ""}
+                                onChange={handleInputChange}
+                                disabled={caseData.serviceId && caseData.serviceId?.length > 0 ? false : true}
+                            >
+                                <option value={""} className="text-gray-400">Select SubService</option>
+                                {types[types.findIndex(obj => obj.id === caseData.serviceId)].SubServices.map((type, index) => (<option className="text-black" value={type.id} key={index}>{type.title}</option>))}
+                            </select>
+                        </div>
+
                         <div className="mb-4">
                             <label className="block text-sm font-medium text-gray-700">Preview:</label>
                             <textarea

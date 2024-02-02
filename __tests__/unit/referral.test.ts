@@ -1,7 +1,8 @@
 /**
  * @jest-environment node
  */
-import { CreateReferralDTO, create, read, remove, update } from "@/crud/referral";
+import { create, read, remove, update } from "@/crud/referral";
+import { CreateReferralDTO } from "@/crud/DTOs";
 import { prisma } from "@/prisma/prismaClient";
 import { describe, expect, it, afterAll } from "@jest/globals";
 import { Referral } from "@prisma/client";

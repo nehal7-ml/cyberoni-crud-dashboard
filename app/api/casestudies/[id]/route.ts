@@ -1,6 +1,7 @@
 import { NextApiRequest, NextApiResponse } from "next";
 import { prisma } from "@/prisma/prismaClient";
-import { CreateCaseStudy, read, remove as removeCaseStudy, update } from "@/crud/casestudy";
+import { read, remove as removeCaseStudy, update } from "@/crud/casestudy";
+import { CreateCaseStudy } from "@/crud/DTOs";
 import { NextRequest, NextResponse } from 'next/server'
 import apiHandler from "@/errorHandler";
 

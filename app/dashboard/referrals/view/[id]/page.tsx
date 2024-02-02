@@ -1,6 +1,7 @@
 import EventForm from "@/components/EventForm";
 import ReferralForm from "@/components/ReferralForm";
-import { CreateReferralDTO, read } from "@/crud/referral";
+import { read } from "@/crud/referral";
+import { CreateReferralDTO } from "@/crud/DTOs";
 import { prisma } from "@/prisma/prismaClient";
 import { redirect } from "next/navigation";
 

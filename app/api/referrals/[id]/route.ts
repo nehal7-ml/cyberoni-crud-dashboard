@@ -1,6 +1,7 @@
 import { NextApiRequest, NextApiResponse } from "next";
 import { prisma } from "@/prisma/prismaClient";
-import { CreateReferralDTO, read, remove as removeEvent, update } from "@/crud/referral";
+import { read, remove as removeEvent, update } from "@/crud/referral";
+import { CreateReferralDTO } from "@/crud/DTOs";
 import { NextRequest, NextResponse } from 'next/server'
 import apiHandler from "@/errorHandler";
 import { HttpError } from "@/lib/utils";

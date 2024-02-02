@@ -1,4 +1,5 @@
-import { create, CreateReferralDTO } from "@/crud/referral";
+import { create } from "@/crud/referral";
+import { CreateReferralDTO } from "@/crud/DTOs";
 import apiHandler from "@/errorHandler";
 import { HttpError } from "@/lib/utils";
 import { prisma } from "@/prisma/prismaClient";

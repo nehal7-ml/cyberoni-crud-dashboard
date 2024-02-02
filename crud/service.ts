@@ -138,6 +138,12 @@ async function getAll(page: number, pageSize: number, prismaClient: PrismaClient
         },
         include: {
             // reviews: true,
+            SubServices:{
+                select: {
+                    id:true,
+                    title:true
+                }
+            }
 
         }
     })
