@@ -55,7 +55,7 @@ export async function read(caseStudyId: string, prisma: PrismaClient) {
         where: { id: caseStudyId },
         include: { subServices: { select: { id: true } } }
     })
-    return caseStudy as unknown as CreateCaseStudy
+    return caseStudy 
 
 
 }
