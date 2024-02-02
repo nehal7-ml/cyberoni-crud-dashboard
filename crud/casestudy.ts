@@ -90,7 +90,7 @@ export async function update(caseStudyId: string, caseStudy: CreateCaseStudy, pr
             userFlow: createImageJson(userFlow),
             wireFrames: createImageJson(wireFrames),
             type: caseStudy.serviceId ? { connect: { id: caseStudy.serviceId } } : {},
-            subServices: caseStudy.subServices ? { connect: caseStudy.subServices } : {}
+            subServices: caseStudy.subServices ? { set: caseStudy.subServices } : {}
         }
     })
     return updatedCaseStudy
