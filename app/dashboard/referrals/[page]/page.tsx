@@ -17,7 +17,7 @@ async function Events({ params }: { params: { page: string } }) {
         {(data?.records as Referral[]).map((value, index) => {
           const row: any = [];
           row.push(value.campaignId)
-          row.push((new Date(value.expires)).toLocaleDateString());
+          row.push(value.expires? (new Date(value.expires)).toLocaleDateString(): 'NA');
           row.push(value.click);
           row.push(value.type);
           row.push(value.prefix);
