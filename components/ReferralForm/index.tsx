@@ -16,7 +16,7 @@ const ReferralForm = ({ method, action, initial }: { method: 'POST' | 'PUT', act
     const [notifyMessage, setNotifyMessage] = useState("");
     const [notifyType, setNotifyType] = useState<'success' | 'fail'>('fail');
     const [invalidLink, setInvalidLink] = useState(false);
-    const [expiry, setExpiry] = useState(false);
+    const [expiry, setExpiry] = useState(initial?.expires ? true : false);
     const [linkType, setLinkType] = useState<'External' | 'Internal'>(initial?.link.includes(appUrl) ? 'Internal' : 'External');
     const [referralData, setReferralData] = useState<CreateReferralDTO>(initial ? {
         ...initial,
@@ -189,13 +189,13 @@ const ReferralForm = ({ method, action, initial }: { method: 'POST' | 'PUT', act
                     </div>
 
                     <div className="mb-4">
-                        <label htmlFor="expiry">
+                        <label htmlFor="expiry" className="flex gap-2">
                             <input onChange={() => {
-                                if(!expiry) setReferralData(prev=>({...prev, expires: new Date()})) 
+                                if (!expiry) setReferralData(prev => ({ ...prev, expires: new Date() }))
+                                else setReferralData(prev => ({ ...prev, expires: null }))
                                 setExpiry(prev => !prev)
-                                
-                                
-                                }} id="expiry" type="checkbox"></input>
+
+                            }} id="expiry" type="checkbox" checked={expiry}></input>
                             <p>Expires?</p>
                         </label>
                     </div>
