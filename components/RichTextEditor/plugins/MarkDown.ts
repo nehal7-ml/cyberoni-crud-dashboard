@@ -150,7 +150,7 @@ export function markdownPlugin(editor: Editor) {
             const newModal = document.createElement('dialog');
             newModal.id = 'markdown-modal';
 
-            newModal.classList.add("w-screen", "h-screen", "fixed", "top-0", "left-0", "p-3", "z-50", "bg-black", "backdrop-blur-lg", "bg-opacity-50");
+            newModal.classList.add("w-screen", "h-screen", "fixed", "top-0", "left-0", "p-3", "z-[9999]", "bg-black", "backdrop-blur-lg", "bg-opacity-50");
             newModal.insertAdjacentHTML('afterbegin', `
                 <div  class="w-full h-full z-50 flex justify-center items-center p-10">
                     <div class="relative bg-white shadow-md rounded p-8 container w-full overflow-auto max-h-screen z-50 flex flex-col justify-center">
