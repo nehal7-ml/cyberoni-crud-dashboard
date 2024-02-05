@@ -142,17 +142,24 @@ export function markdownPlugin(editor: Editor) {
         tooltip: 'Markdown',
         icon: '#',
         onAction: function () {
-            console.log(editor.getContent());
+            const dialog = document.getElementById('markdown-modal') as HTMLDialogElement
+            if (dialog) {
+                dialog.show();
+                return;
+            }
             const newModal = document.createElement('dialog');
+            newModal.id = 'markdown-modal';
+
             newModal.classList.add("w-screen", "h-screen", "fixed", "top-0", "left-0", "p-3", "z-50", "bg-black", "backdrop-blur-lg", "bg-opacity-50");
             newModal.insertAdjacentHTML('afterbegin', `
                 <div  class="w-full h-full z-50 flex justify-center items-center p-10">
-
-                    <div class=" bg-white shadow-md rounded p-8 container w-full overflow-auto max-h-screen z-50 flex flex-col justify-center">
-                        <h1 class="font-bold text-4xl">Markdown</h1>
-                       <textarea id="markdown" rows="10" class="w-full h-fit max-h-[60vh]"> </textarea>
+                    <div class="relative bg-white shadow-md rounded p-8 container w-full overflow-auto max-h-screen z-50 flex flex-col justify-center">
+                        <div class="absolute top-2 right-2 hover:text-red-500">
+                        <button id="markdown-close" class="">❌</button></div>
+                        <h2 class="font-bold text-4xl">Markdown</h2>
+                       <textarea id="markdown" rows="30" class="w-full h-fit max-h-[60vh] border"> </textarea>
                         <button id="parse-markdown" class="w-full bg-blue-500 text-white p-2 rounded hover:bg-blue-600 focus:outline-none focus:ring focus:ring-blue-300">Parse</button>
-                    </div>               
+                    </div>
                 
                 </div> 
             
@@ -164,6 +171,9 @@ export function markdownPlugin(editor: Editor) {
 
                 const markdownRaw = (document.getElementById('markdown') as HTMLTextAreaElement).value;
                 editor.setContent("<pre>" + markdown(markdownRaw) + "</pre>", { format: 'raw' });
+                newModal.close()
+            })
+            document.getElementById('markdown-close')?.addEventListener('click', () => {
                 newModal.close()
             })
             // 
