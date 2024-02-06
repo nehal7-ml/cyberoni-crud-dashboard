@@ -1,3 +1,4 @@
+import CopyButton from "@/components/CopyButton";
 import Pagination from "@/components/Pagination";
 import Table from "@/components/Table"
 import { TableItem } from "@/components/TableItem";
@@ -13,9 +14,13 @@ async function Events({ params }: { params: { page: string } }) {
 
   return (
     <main className="flex flex-col items-center py-5">
-        <Table headers={['View','CampaignId', 'Expires','Clicks', 'Type', 'Prefix/Username']}>
+      <Table headers={['View', 'Referral/Affiliate Link', 'CampaignId', 'Expires', 'Clicks', 'Type', 'Prefix/Username']}>
         {(data?.records as Referral[]).map((value, index) => {
           const row: any = [];
+          row.push(
+              <CopyButton text={value.redirect} />
+
+          )
           row.push(value.campaignId)
           row.push(value.expires? (new Date(value.expires)).toLocaleDateString(): 'NA');
           row.push(value.click);

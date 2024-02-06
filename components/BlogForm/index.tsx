@@ -117,7 +117,7 @@ function BlogForm({ method, action, initial }: { method: 'POST' | 'PUT', action:
             tags
         }))
 
-        console.log(tags)
+        console.log(images)
 
     }
 

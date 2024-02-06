@@ -1,12 +1,12 @@
 import { Delete } from "lucide-react"
 import Link from "next/link"
 import { useRouter } from "next/navigation"
-import React, { DetailedHTMLProps } from "react"
+import React, { DetailedHTMLProps, ReactNode } from "react"
 import DeleteButton from "./DeleteButton"
 
 
 interface TableItemProps extends DetailedHTMLProps<React.HTMLAttributes<HTMLTableRowElement>, HTMLTableRowElement> {
-  row: (any)[],
+  row: (string | ReactNode)[],
   index: string,
   key: string | number,
   type: string,
@@ -21,7 +21,7 @@ export function TableItem(props: TableItemProps) {
       <td className="text-sm text-center text-blue-600 underline font-light px-6 py-4 whitespace-nowrap">
         <Link href={`/dashboard/${props.type}/view/${props.index}`}> {`${props.type}/view/${props.index}`}</Link>
       </td>
-      {props.row.map((item: any, index: number) => {
+      {props.row.map((item, index: number) => {
         return <td key={index} className="text-sm text-center text-gray-900 font-light px-6 py-4 whitespace-nowrap">
           {item}
         </td>

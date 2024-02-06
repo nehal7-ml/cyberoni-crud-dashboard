@@ -18,9 +18,12 @@ const ReferralForm = ({ method, action, initial }: { method: 'POST' | 'PUT', act
     const [invalidLink, setInvalidLink] = useState(false);
     const [expiry, setExpiry] = useState(initial?.expires ? true : false);
     const [linkType, setLinkType] = useState<'External' | 'Internal'>(initial?.link.includes(appUrl) ? 'Internal' : 'External');
+    const utmPraram = useRef(new URLSearchParams(initial?.utmProps ? initial.utmProps : {}))
+
     const [referralData, setReferralData] = useState<CreateReferralDTO>(initial ? {
         ...initial,
         link: initial?.link.includes(appUrl) ? `${initial.link.replace(appUrl, '')}` : initial.link,
+        redirect: `${stripSlashes(appUrl)}${initial.type === 'REDIRECT' ? '/referrals' : '/affiliate'}/${initial.prefix}?${utmPraram.current.toString()}`,
         utmProps: initial.utmProps ? initial.utmProps : {
             utm_campaign: '',
             utm_medium: '',
@@ -44,7 +47,6 @@ const ReferralForm = ({ method, action, initial }: { method: 'POST' | 'PUT', act
         }
     });
     const [date, setDate] = useState(((initial?.expires) || (new Date())).toISOString().split('T')[0]);
-    const utmPraram = useRef(new URLSearchParams(initial?.utmProps ? initial.utmProps : {}))
     function handleUtmChange(e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) {
         const { name, value } = e.target;
 

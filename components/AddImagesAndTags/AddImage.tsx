@@ -28,24 +28,12 @@ function AddImage({ defaultImages, onImagesChange, maxImages, submit }: { defaul
 
             if (images.length < (maxImages || 10)) {
 
-                // const res = await fetch('/api/image', {
-                //     method: 'POST', body: JSON.stringify({
-
-                //         image: {
-                //             src: newFileSrc,
-                //             name: newfile.name,
-                //         },
-                //         request: "UPLOAD"
-                //     })
-                // })
-                // const { image } = await res.json()
                 const image = {
                     src: newFileSrc,
                     name: newFile.name,
                 }
                 setImage(image);
                 //setImages(newfiles)
-                console.log(newfiles);
             } else {
                 console.log("notification sent");
             }
@@ -65,6 +53,7 @@ function AddImage({ defaultImages, onImagesChange, maxImages, submit }: { defaul
     function handleSave() {
         const currentImage = image;
         let toUpdate = images.filter(image => image.src === currentImage.src)[0];
+
         if (toUpdate) {
             let newFiles = images.map(image => {
                 if (image.src === currentImage.src) {
@@ -172,8 +161,7 @@ function AddImage({ defaultImages, onImagesChange, maxImages, submit }: { defaul
                                     handleChange={handleAddImage}
                                     name="file"
                                     types={fileTypes}
-                                    text="file"
-                                    
+                                    text="file"                                                                     
                                     
                                 />
                             </div>
