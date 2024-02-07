@@ -2,12 +2,12 @@
  * @jest-environment node
  * 
  */
-import { PrismaClient } from '@prisma/client';
+import { Prisma, PrismaClient } from '@prisma/client';
 import * as caseStudyFunctions from '@/crud/casestudy';
 import { describe, expect, it, afterAll, beforeAll, afterEach, jest } from "@jest/globals";
 import { mockDeep, mockReset, DeepMockProxy } from 'jest-mock-extended'
 import { CreateCaseStudy } from "@/crud/DTOs";
-import { JsonValue } from "@prisma/client/runtime/library";
+import { DefaultArgs, JsonValue } from "@prisma/client/runtime/library";
 import { MockContext, Context, createMockContext } from './context'
 
 let mockCtx: MockContext
@@ -17,7 +17,7 @@ let ctx: Context
 
 
 describe('Case Study Functions', () => {
-    let prismaMock: jest.Mocked<PrismaClient>;
+    let prismaMock:any
 
     beforeEach(() => {
         mockCtx = createMockContext()
