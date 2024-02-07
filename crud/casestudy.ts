@@ -47,6 +47,8 @@ export async function create(caseStudy: CreateCaseStudy, prisma: PrismaClient) {
         }
     })
 
+    return newCase
+
 }
 
 export async function read(caseStudyId: string, prisma: PrismaClient) {
