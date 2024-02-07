@@ -1,6 +1,6 @@
 import EventForm from "@/components/EventForm";
 import { read } from "@/crud/event";
-import { prisma } from "@/prisma/prismaClient";
+import { prisma } from "@/lib/prisma";
 import { redirect } from "next/navigation";
 
 import React, { useEffect, useState } from 'react';

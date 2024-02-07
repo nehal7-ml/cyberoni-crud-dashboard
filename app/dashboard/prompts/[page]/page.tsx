@@ -4,7 +4,7 @@ import { TableItem } from "@/components/TableItem";
 import { getAllRecordsDTO } from "@/crud/commonDTO";
 import { displayProductDTO } from "@/crud/product";
 import { getAll } from "@/crud/prompt";
-import { prisma } from "@/prisma/prismaClient";
+import { prisma } from "@/lib/prisma";
 import { GptPrompt } from "@prisma/client";
 import React, { useEffect, useState } from 'react'
 

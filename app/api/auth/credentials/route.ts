@@ -1,7 +1,7 @@
 import { CredentialAuthDTO, authorizeWithPassword } from "@/crud/user";
 import { NextRequest, NextResponse } from "next/server";
 import { HttpError } from "@/lib/utils";
-import { prisma } from "@/prisma/prismaClient";
+import { prisma } from "@/lib/prisma";
 
 export async function POST(req: NextRequest) {
     try {

@@ -4,7 +4,7 @@ import {  read, reset, update } from "@/crud/user";
 import { redirect } from "next/navigation";
 import { verify } from "jsonwebtoken";
 import { getUserByEmail } from "@/crud/user";
-import { prisma } from "@/prisma/prismaClient";
+import { prisma } from "@/lib/prisma";
 
 
 export async function resetPassword(state: {

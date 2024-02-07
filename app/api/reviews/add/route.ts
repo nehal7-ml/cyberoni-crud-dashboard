@@ -1,6 +1,6 @@
 import { create, createReviewDTO } from "@/crud/review";
 import apiHandler from "@/errorHandler";
-import { prisma } from "@/prisma/prismaClient";
+import { prisma } from "@/lib/prisma";
 import { NextApiRequest, NextApiResponse } from "next";
 import { NextResponse } from "next/server";
 

@@ -2,7 +2,7 @@ import CaseStudyForm from "@/components/CaseStudyForm";
 import { read } from "@/crud/casestudy";
 import { CreateCaseStudy } from "@/crud/DTOs";
 import { getAll } from "@/crud/service";
-import { prisma } from "@/prisma/prismaClient";
+import { prisma } from "@/lib/prisma";
 import { redirect } from "next/navigation";
 
 async function UpdateCaseForm({ params }: { params: { id: string } }) {

@@ -4,7 +4,7 @@ import React from 'react'
 import SerivceForm from "@/components/ServiceForm";
 import { read } from "@/crud/service";
 import { DisplayServiceDTO } from "@/crud/DTOs";
-import { prisma } from "@/prisma/prismaClient";
+import { prisma } from "@/lib/prisma";
 
 async function CreateServcie({params}: {params: {id:string}}) {
     const service=  await read(params.id, prisma) as DisplayServiceDTO

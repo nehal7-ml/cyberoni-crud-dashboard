@@ -1,7 +1,7 @@
 import GptPromptForm from "@/components/PromptForm";
 import { read } from "@/crud/prompt";
 import { CreateGptPromptDTO } from "@/crud/DTOs";
-import { prisma } from "@/prisma/prismaClient";
+import { prisma } from "@/lib/prisma";
 import { redirect } from "next/navigation";
 import React, { useEffect, useState } from 'react';
 

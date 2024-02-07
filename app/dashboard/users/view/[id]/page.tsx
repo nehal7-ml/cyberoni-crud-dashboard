@@ -1,7 +1,7 @@
 
 import { CreateUserDTO, read } from "@/crud/user";
 import UserForm from "@/components/UserForm";
-import { prisma } from "@/prisma/prismaClient";
+import { prisma } from "@/lib/prisma";
 
 
 
