@@ -15,8 +15,8 @@ import {
     $getNodeByKey,
     LexicalEditor,
     RangeSelection,
-    GridSelection,
-    NodeSelection
+    NodeSelection,
+    BaseSelection
 } from "lexical";
 import { $isLinkNode, TOGGLE_LINK_COMMAND } from "@lexical/link";
 import { $wrapNodesImpl } from "@lexical/selection/range-selection";
@@ -101,7 +101,7 @@ function FloatingLinkEditor({ editor }: { editor: LexicalEditor }) {
     const mouseDownRef = useRef(false);
     const [linkUrl, setLinkUrl] = useState("");
     const [isEditMode, setEditMode] = useState(false);
-    const [lastSelection, setLastSelection] = useState<RangeSelection | NodeSelection | GridSelection | null>(null);
+    const [lastSelection, setLastSelection] = useState<RangeSelection | NodeSelection |BaseSelection | null>(null);
 
     const updateLinkEditor = useCallback(() => {
         const selection = $getSelection();
