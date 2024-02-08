@@ -376,13 +376,13 @@ const ReferralForm = ({ method, action, initial }: { method: 'POST' | 'PUT', act
                         <div className="mb-4">
                             <label className="block text-sm font-medium text-gray-700">Earned Or Paid :</label>
                             <select
-                                name="utm_ad_type"
+                                name="utm_earned_or_paid"
                                 className="mt-1 p-2 border rounded w-full invalid:ring-2 invalid:ring-rose-600 invalid:text-rose-500 invalid:outline-red-500"
                                 value={(referralData.utmProps as Record<string, string>).utm_earned_or_paid ?? 'earned'}
                                 onChange={handleUtmChange}
                             > 
                             <option value="earned">Earned</option>
-                            <option value="paid">Pid</option>
+                                <option value="paid">Paid</option>
                            
                             </select>
                         </div>
