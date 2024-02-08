@@ -185,9 +185,14 @@ export type CreateReferralDTO = {
         utm_medium: string;
         utm_campaign: string;
         utm_source: string;
+        utm_segment: string;
+        utm_product_category: string;
+        utm_communication_theme: string
+        utm_ad_type: string;
+        utm_funnel_location: string;
+        utm_earned_or_paid: "earned" | "paid"
     } | {};
 };
-
 export type CreateCaseStudy = {
     id?: string;
     title: string;
