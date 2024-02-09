@@ -24,10 +24,18 @@ const ReferralForm = ({ method, action, initial }: { method: 'POST' | 'PUT', act
         ...initial,
         link: initial?.link.includes(appUrl) ? `${initial.link.replace(appUrl, '')}` : initial.link,
         redirect: `${stripSlashes(appUrl)}${initial.type === 'REDIRECT' ? '/referrals' : '/affiliate'}/${initial.prefix}?${utmPraram.current.toString()}`,
-        utmProps: initial.utmProps ? initial.utmProps : {
+        utmProps: initial.utmProps ? {
+            ...initial.utmProps
+        } : {
             utm_campaign: '',
             utm_medium: '',
             utm_source: '',
+            utm_ad_type: '',
+            utm_communication_theme: '',
+            utm_earned_or_paid: 'earned',
+            utm_funnel_location: '',
+            utm_product_category: "",
+            utm_segment: "",
         }
     } : {
         campaignId: '',
@@ -319,6 +327,64 @@ const ReferralForm = ({ method, action, initial }: { method: 'POST' | 'PUT', act
                                 value={(referralData.utmProps as Record<string, string>).utm_source}
                                 onChange={handleUtmChange}
                             />
+                        </div>
+                        <div className="mb-4">
+                            <label className="block text-sm font-medium text-gray-700">Segment :</label>
+                            <input
+                                name="utm_segment"
+                                className="mt-1 p-2 border rounded w-full invalid:ring-2 invalid:ring-rose-600 invalid:text-rose-500 invalid:outline-red-500"
+                                value={(referralData.utmProps as Record<string, string>).utm_segment ?? ""}
+                                onChange={handleUtmChange}
+                            />
+                        </div>
+                        <div className="mb-4">
+                            <label className="block text-sm font-medium text-gray-700">Product Category :</label>
+                            <input
+                                name="utm_product_category"
+                                className="mt-1 p-2 border rounded w-full invalid:ring-2 invalid:ring-rose-600 invalid:text-rose-500 invalid:outline-red-500"
+                                value={(referralData.utmProps as Record<string, string>).utm_product_category ?? ""}
+                                onChange={handleUtmChange}
+                            />
+                        </div>
+                        <div className="mb-4">
+                            <label className="block text-sm font-medium text-gray-700">Comunication Theme :</label>
+                            <input
+                                name="utm_communication_theme"
+                                className="mt-1 p-2 border rounded w-full invalid:ring-2 invalid:ring-rose-600 invalid:text-rose-500 invalid:outline-red-500"
+                                value={(referralData.utmProps as Record<string, string>).utm_communication_theme ?? ""}
+                                onChange={handleUtmChange}
+                            />
+                        </div>
+                        <div className="mb-4">
+                            <label className="block text-sm font-medium text-gray-700">Funnel Location :</label>
+                            <input
+                                name="utm_funnel_location"
+                                className="mt-1 p-2 border rounded w-full invalid:ring-2 invalid:ring-rose-600 invalid:text-rose-500 invalid:outline-red-500"
+                                value={(referralData.utmProps as Record<string, string>).utm_funnel_location}
+                                onChange={handleUtmChange}
+                            />
+                        </div>
+                        <div className="mb-4">
+                            <label className="block text-sm font-medium text-gray-700">Ad Type :</label>
+                            <input
+                                name="utm_ad_type"
+                                className="mt-1 p-2 border rounded w-full invalid:ring-2 invalid:ring-rose-600 invalid:text-rose-500 invalid:outline-red-500"
+                                value={(referralData.utmProps as Record<string, string>).utm_ad_type}
+                                onChange={handleUtmChange}
+                            />
+                        </div>
+                        <div className="mb-4">
+                            <label className="block text-sm font-medium text-gray-700">Earned Or Paid :</label>
+                            <select
+                                name="utm_earned_or_paid"
+                                className="mt-1 p-2 border rounded w-full invalid:ring-2 invalid:ring-rose-600 invalid:text-rose-500 invalid:outline-red-500"
+                                value={(referralData.utmProps as Record<string, string>).utm_earned_or_paid ?? 'earned'}
+                                onChange={handleUtmChange}
+                            > 
+                            <option value="earned">Earned</option>
+                                <option value="paid">Paid</option>
+                           
+                            </select>
                         </div>
                         <div className="mb-4">
                             <label className="block text-sm font-medium text-gray-700">Medium :</label>

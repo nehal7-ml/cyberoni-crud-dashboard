@@ -4,7 +4,7 @@ import Pagination from "@/components/Pagination";
 import { DisplayUserDTO, getAll } from "@/crud/user";
 import React, { useEffect, useState } from 'react'
 
-import { prisma } from "@/prisma/prismaClient";
+import { prisma } from "@/lib/prisma";
 export const dynamic = 'force-dynamic'
 
 async function Users({ params }: { params: { page: string } }) {

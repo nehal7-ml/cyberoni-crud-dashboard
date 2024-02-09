@@ -4,8 +4,7 @@ import { create as createTag, connectOrCreateObject as connectTags } from "./tag
 import { create as createImage, connectOrCreateObject as connectImage, createObject as createImageObject } from "./images";
 import { CreateImageDTO, CreateServiceDescription, CreateSubServiceDTO } from "./DTOs";
 import { create as createSubService, createSubservicesObject, update as updateSubService, updateSubServiceObject } from "./subService";
-import { prisma } from "@/prisma/prismaClient";
-import { uploadFile } from "@/lib/cloudinary";
+
 import { CreateServiceDTO } from "./DTOs";
 
 

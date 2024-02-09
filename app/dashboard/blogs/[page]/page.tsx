@@ -3,7 +3,7 @@ import Table from "@/components/Table"
 import { TableItem } from "@/components/TableItem";
 import { getAll } from "@/crud/blog";
 import { DisplayBlogDTO } from "@/crud/DTOs";
-import { prisma } from "@/prisma/prismaClient";
+import { prisma } from "@/lib/prisma";
 import React from 'react'
 
 export const dynamic= 'force-dynamic'

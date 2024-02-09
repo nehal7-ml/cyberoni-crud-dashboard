@@ -1,6 +1,6 @@
 import ProductForm from "@/components/ProductForm";
 import { CreateProductDTO, read } from "@/crud/product";
-import { prisma } from "@/prisma/prismaClient";
+import { prisma } from "@/lib/prisma";
 import { redirect } from "next/navigation";
 
 import React, { useEffect, useState } from 'react';

@@ -1,5 +1,5 @@
 import { create, createEventDTO } from "@/crud/event";
-import { prisma } from "@/prisma/prismaClient";
+import { prisma } from "@/lib/prisma";
 import { NextApiRequest, NextApiResponse } from "next";
 import { NextResponse } from "next/server";
 

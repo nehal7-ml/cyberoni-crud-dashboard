@@ -2,7 +2,7 @@ import EventForm from "@/components/EventForm";
 import ReferralForm from "@/components/ReferralForm";
 import { read } from "@/crud/referral";
 import { CreateReferralDTO } from "@/crud/DTOs";
-import { prisma } from "@/prisma/prismaClient";
+import { prisma } from "@/lib/prisma";
 import { redirect } from "next/navigation";
 
 import React, { useEffect, useState } from 'react';

@@ -5,7 +5,7 @@ import { DisplayBlogDTO } from "@/crud/DTOs";
 import { getAll } from "@/crud/casestudy";
 import { getAllRecordsDTO } from "@/crud/commonDTO";
 import React from 'react'
-import { prisma } from "@/prisma/prismaClient";
+import { prisma } from "@/lib/prisma";
 import { CaseStudy } from "@prisma/client";
 export const dynamic = 'force-dynamic'
 async function Blogs({ params }: { params: { page: string } }) {

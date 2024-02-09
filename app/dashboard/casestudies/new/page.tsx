@@ -1,6 +1,6 @@
 import CaseStudyForm from "@/components/CaseStudyForm";
 import { getAll } from "@/crud/service";
-import { prisma } from "@/prisma/prismaClient";
+import { prisma } from "@/lib/prisma";
 import { Service } from "@prisma/client";
 
 async function CreateBlogForm() {

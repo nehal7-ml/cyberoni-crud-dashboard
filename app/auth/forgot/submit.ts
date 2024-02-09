@@ -2,7 +2,7 @@
 
 import { getUserByEmail } from "@/crud/user";
 import { sendPasswordReset } from "@/lib/sendgrid";
-import { prisma } from "@/prisma/prismaClient";
+import { prisma } from "@/lib/prisma";
 import { sign } from "jsonwebtoken";
 import { redirect } from "next/navigation";
 

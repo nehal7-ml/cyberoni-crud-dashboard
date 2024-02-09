@@ -1,6 +1,6 @@
 import { getAll, read, remove, update } from "@/crud/review";
 import { NextApiRequest, NextApiResponse } from "next";
-import { prisma } from "@/prisma/prismaClient";
+import { prisma } from "@/lib/prisma";
 import { NextResponse } from 'next/server'
 import apiHandler from "@/errorHandler";
 

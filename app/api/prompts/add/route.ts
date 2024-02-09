@@ -1,7 +1,7 @@
 import { create } from "@/crud/prompt";
 import { CreateGptPromptDTO } from "@/crud/DTOs";
 import apiHandler from "@/errorHandler";
-import { prisma } from "@/prisma/prismaClient";
+import { prisma } from "@/lib/prisma";
 import { NextApiRequest, NextApiResponse } from "next";
 import { NextResponse } from "next/server";
 

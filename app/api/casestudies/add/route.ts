@@ -1,7 +1,7 @@
 import { create } from "@/crud/casestudy";
 import { CreateCaseStudy } from "@/crud/DTOs";
 import apiHandler from "@/errorHandler";
-import { prisma } from "@/prisma/prismaClient";
+import { prisma } from "@/lib/prisma";
 import { NextRequest, NextResponse } from "next/server";
 
 

@@ -3,7 +3,7 @@ import Pagination from "@/components/Pagination";
 import Table from "@/components/Table"
 import { TableItem } from "@/components/TableItem";
 import { getAll } from "@/crud/referral";
-import { prisma } from "@/prisma/prismaClient";
+import { prisma } from "@/lib/prisma";
 import { Event, Referral } from "@prisma/client";
 import React from 'react'
 export const dynamic = 'force-dynamic';

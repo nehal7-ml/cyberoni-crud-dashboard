@@ -1,7 +1,7 @@
 import { create } from "@/crud/images";
 import apiHandler from "@/errorHandler";
 import { deleteImage, uploadImage } from "@/lib/cloudinary";
-import { prisma } from "@/prisma/prismaClient";
+import { prisma } from "@/lib/prisma";
 import { Image } from "@prisma/client";
 import { NextRequest, NextResponse } from "next/server";
 

@@ -1,4 +1,4 @@
-import { prisma } from "@/prisma/prismaClient";
+import { prisma } from "@/lib/prisma";
 import { CreateUserDTO, read, remove as removeUser, update } from "@/crud/user";
 import { NextRequest, NextResponse } from 'next/server'
 import apiHandler from "@/errorHandler";

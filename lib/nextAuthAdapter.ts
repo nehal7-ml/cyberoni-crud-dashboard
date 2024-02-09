@@ -1,7 +1,7 @@
 import Credentials from "next-auth/providers/credentials";
 import { NextAuthOptions, RequestInternal } from "next-auth";
 import { authorizeWithPassword } from "@/crud/user";
-import { prisma } from "@/prisma/prismaClient";
+import { prisma } from "@/lib/prisma";
 
 export const authOptions: NextAuthOptions = {
     //adapter: MyAdapter(prisma),

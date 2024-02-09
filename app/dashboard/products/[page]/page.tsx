@@ -3,7 +3,7 @@ import Table from "@/components/Table"
 import { TableItem } from "@/components/TableItem";
 import { getAllRecordsDTO } from "@/crud/commonDTO";
 import { displayProductDTO, getAll } from "@/crud/product";
-import { prisma } from "@/prisma/prismaClient";
+import { prisma } from "@/lib/prisma";
 import React, { useEffect, useState } from 'react'
 export const dynamic = 'force-dynamic';
 async function Products({ params }: { params: { page: string } }) {
