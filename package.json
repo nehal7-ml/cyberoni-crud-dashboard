@@ -9,12 +9,12 @@
     "lint": "next lint"
   },
   "prisma": {
-    "schema": "node_modules/@nehal7-ml/cybershoptechprismaschema/schema.prisma"
+    "schema": "node_modules/@techwithty/cyberoni-schema/schema.prisma"
   },
   "dependencies": {
-    "@nehal7-ml/cybershoptechprismaschema": ">=1.0.2",
     "@prisma/client": "^5.7.1",
     "@sendgrid/mail": "^7.7.0",
+    "@techwithty/cyberoni-schema": "^1.0.3",
     "@tinymce/tinymce-react": "^4.3.0",
     "ajv": "^8.12.0",
     "ajv-formats": "^2.1.1",

@@ -57,7 +57,16 @@ export async function read(caseStudyId: string, prisma: PrismaClient) {
         where: { id: caseStudyId },
         include: { subServices: { select: { id: true } } }
     })
-    return caseStudy 
+    return { ...caseStudy,
+        competetiveAnalysis: caseStudy?.competetiveAnalysis as CreateImageDTO[],
+        architecture: caseStudy?.architecture as CreateImageDTO[],
+        images: caseStudy?.images as CreateImageDTO[],
+        hifiDesign: caseStudy?.hifiDesign as CreateImageDTO[],
+        userFlow: caseStudy?.userFlow as CreateImageDTO[],
+        wireFrames: caseStudy?.wireFrames as CreateImageDTO[],      
+   
+    } as CreateCaseStudy
+
 
 
 }
