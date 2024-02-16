@@ -49,10 +49,10 @@ export type CreateFaqDTO = {
 };
 
 export type DisplayServiceDTO = Service & {
-    image?: Image;
+    image?: Image | null;
     tags?: Tag[];
     SubServices?: SubService[];
-    ServiceDescription?: (ServiceDescription & { image: Image; })[];
+    ServiceDescription?: (ServiceDescription & { image: Image | null; })[];
 
 };
 export type CreateSubServiceDTO = {
