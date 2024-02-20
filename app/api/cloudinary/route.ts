@@ -9,7 +9,7 @@ export const { POST, DELETE, GET, PATCH, PUT } = apiHandler({ POST: post });
 
 async function post(req: NextRequest) {
 
-    const {file, fileType, requestType, fileId } =  await req.json();
+    const {file, fileType, requestType, src } =  await req.json();
 
     if(requestType ==='UPLOAD') {
         const response = await uploadFile(file, fileType);
@@ -17,7 +17,8 @@ async function post(req: NextRequest) {
     }
 
     if(requestType ==='DELETE') {
-        const response = await deleteFile(fileId, fileType);
+       
+        const response = await deleteFile(src, fileType);
         return NextResponse.json({ message: "success", data: {url: response.secure_url} });
     }
 

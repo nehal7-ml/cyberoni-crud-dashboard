@@ -14,8 +14,10 @@ export async function uploadFile(file: string, type: "image" | "video" | "raw" |
 }
 
 // include file extension when raw file
-export async function deleteFile(file_id: string, type: "image" | "video" | "raw" | "auto" = 'raw') {
-    const response = await cloudinary.uploader.destroy(file_id, { resource_type: type });
+export async function deleteFile(src: string, type: "image" | "video" | "raw" | "auto" = 'raw') {
+
+    const fileId = src.split('/').slice(-1)[0].split('.')[0]
+    const response = await cloudinary.uploader.destroy(fileId, { resource_type: type });
     return response
 }
 
@@ -24,8 +26,9 @@ export async function uploadImage(file: string) {
     return response
 }
 
-export async function deleteImage(file_id: string) {
-    const response = await cloudinary.uploader.destroy(file_id, { resource_type: 'image' });
+export async function deleteImage(src: string) {
+    const fileId = src.split('/').slice(-1)[0].split('.')[0]
+    const response = await cloudinary.uploader.destroy(fileId, { resource_type: 'image' });
     return response
 }
 

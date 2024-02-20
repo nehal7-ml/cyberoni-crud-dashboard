@@ -23,7 +23,7 @@ describe('Testing Cloudinary', () => {
     });
     it('delete Files to cloudinary', async () => {
 
-        const resp = await deleteFile(FileSrc.split('/').slice(-1)[0].split('.')[0]);
+        const resp = await deleteFile(FileSrc);
         expect(resp.result).toBe('ok')
     })
 
