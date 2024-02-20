@@ -4,6 +4,7 @@ import { TableItem } from "@/components/TableItem";
 import { getAll } from "@/crud/blog";
 import { DisplayBlogDTO } from "@/crud/DTOs";
 import { prisma } from "@/lib/prisma";
+import { Check } from "lucide-react";
 import React from 'react'
 
 export const dynamic= 'force-dynamic'
@@ -16,7 +17,7 @@ async function Blogs({ params }: { params: { page: string } }) {
         {(data?.records as DisplayBlogDTO[]).map((value, index) => {
           const row: any = [];
           row.push(value.title);
-          row.push(value.featured);
+          row.push(value.featured ? <Check className="text-green-500" /> : <></>);
           row.push(value.date.toLocaleDateString());
           row.push(value.author.firstName? value.author.firstName: value.author.email);
           row.push('default');
