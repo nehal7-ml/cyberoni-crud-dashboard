@@ -7,6 +7,7 @@ cloudinary.config({
     secure: true
 });
 
+export type FileType = "image" | "video" | "raw" | "auto" 
 
 export async function uploadFile(file: string, type: "image" | "video" | "raw" | "auto" = 'raw') {
     const response = await cloudinary.uploader.upload(file, { resource_type: type });
