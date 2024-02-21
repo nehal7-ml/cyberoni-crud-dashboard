@@ -7,7 +7,7 @@ const imageLocations = [
   "res.cloudinary.com",
   "www.facebook.com",
   "www.google.com",
-  "www.cjdropshipping.com/",
+  "www.cjdropshipping.com",
   "www.amazon.com",
   "example.com",
   "images.unsplash.com",

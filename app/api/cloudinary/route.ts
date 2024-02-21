@@ -17,7 +17,7 @@ async function post(req: NextRequest) {
 
     if (request.requestType === 'DELETE') {
 
-        const response = await deleteFile(request.src as string, request.fileType);
+        const response = await deleteFile(request.src as string);
         return NextResponse.json({ message: "success", data: { url: response.secure_url } });
     }
 

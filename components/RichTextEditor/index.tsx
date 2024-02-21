@@ -2,7 +2,7 @@ import { X } from "lucide-react";
 import { useState, useEffect, ChangeEvent, useRef } from "react";
 import { TinyMCE } from 'tinymce'
 import { Editor as RichTextEditor, IAllProps } from '@tinymce/tinymce-react';
-import { bufferToB64 } from "@/lib/utils";
+import { addAutoFormatParameter, bufferToB64 } from "@/lib/utils";
 import Script from "next/script";
 import { markdownPlugin } from "./plugins/MarkDown";
 import LoadingDots from "../shared/loading-dots";
@@ -33,15 +33,6 @@ const filePickerCallback = async function loadFromComputer(cb: (value: string, m
                 const base64 = (reader.result as string).split(',')[1];
                 const blobInfo = blobCache?.create(id, file, base64);
                 blobCache?.add(blobInfo);
-                // const res = await fetch('/api/cloudinary', {
-                //     method: 'POST', body: JSON.stringify({
-                //         file: newFileSrc,
-                //         fileType: 'image',
-                //         requestType: 'UPLOAD'
-                //     })
-                // })
-                // const response = (await res.json())
-                // console.log(response.data.url);
                 cb(blobInfo.blobUri(), { title: file.name });
             })
             reader.readAsDataURL(file);
@@ -70,7 +61,7 @@ const uploadImages = async (blobInfo: BlobInfo, progress: (value: number) => voi
     const { data } = await res.json();
     progress(100)
 
-    return data.url as string
+    return addAutoFormatParameter(data.url as string)
 }
 
 const deleteFile = async ({ src }: { src: string }) => {
