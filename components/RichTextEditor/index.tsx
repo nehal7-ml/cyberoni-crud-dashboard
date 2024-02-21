@@ -57,7 +57,7 @@ const filePickerCallback = async function loadFromComputer(cb: (value: string, m
 const uploadImages = async (blobInfo: BlobInfo, progress: (value: number) => void) => {
     progress(0)
     const file = bufferToB64(await blobInfo.blob().arrayBuffer(), blobInfo.blob().type)
-    progress(10)
+    progress(90)
     const res = await fetch('/api/cloudinary', {
         method: 'POST', body: JSON.stringify({
             file: file,
