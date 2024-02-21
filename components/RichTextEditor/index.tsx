@@ -1,9 +1,6 @@
-import { X } from "lucide-react";
 import { useState, useEffect, ChangeEvent, useRef } from "react";
-import { TinyMCE } from 'tinymce'
 import { Editor as RichTextEditor, IAllProps } from '@tinymce/tinymce-react';
 import { addAutoFormatParameter, bufferToB64 } from "@/lib/utils";
-import Script from "next/script";
 import { markdownPlugin } from "./plugins/MarkDown";
 import LoadingDots from "../shared/loading-dots";
 interface BlobInfo {
@@ -31,9 +28,9 @@ const filePickerCallback = async function loadFromComputer(cb: (value: string, m
                 if (!editorRef?.editor) return
                 const blobCache = editorRef?.editor?.editorUpload.blobCache;
                 const base64 = (reader.result as string).split(',')[1];
-                const blobInfo = blobCache?.create(id, file, base64);
+                const blobInfo = blobCache?.create(id, file as Blob, base64);
                 blobCache?.add(blobInfo);
-                cb(blobInfo.blobUri(), { title: file.name });
+                cb(blobInfo.blobUri(), { title: file?.name as string});
             })
             reader.readAsDataURL(file);
 
