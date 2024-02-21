@@ -5,8 +5,10 @@ import React, { useEffect, useState } from 'react'
 import { FileUploader } from "react-drag-drop-files";
 import Loading from "../Loading";
 import { Edit, PlusCircle, X, XCircle } from "lucide-react";
+import Notification, { useNotify } from "../Notification";
 
 function AddImage({ defaultImages, onImagesChange, maxImages, submit }: { defaultImages?: CreateImageDTO[], onImagesChange: (images: CreateImageDTO[]) => void, maxImages?: number, submit?: boolean }) {
+
     const [images, setImages] = useState<CreateImageDTO[]>(defaultImages || []);
 
     const [imageModal, setImageModal] = useState(false);
@@ -15,6 +17,7 @@ function AddImage({ defaultImages, onImagesChange, maxImages, submit }: { defaul
         src: ''
     });
 
+    const [notifyState, setNotifyState] = useNotify()
     const fileTypes = ["JPG", "PNG", "GIF"];
 
     const [loading, setLoading] = useState(false);
@@ -35,6 +38,13 @@ function AddImage({ defaultImages, onImagesChange, maxImages, submit }: { defaul
                 setImage(image);
                 //setImages(newfiles)
             } else {
+                // alert(`Only ${maxImages || 10} images allowed`)
+                setNotifyState({
+                    message: `Only ${maxImages || 10} images allowed`,
+                    type: 'fail',
+                    visible: true,
+
+                })
                 console.log("notification sent");
             }
         }
@@ -97,9 +107,9 @@ function AddImage({ defaultImages, onImagesChange, maxImages, submit }: { defaul
         }
     }, [submit]);
 
-    function updateImage(image:CreateImageDTO){
-        setImage(image); 
-        setImageModal(true) 
+    function updateImage(image: CreateImageDTO) {
+        setImage(image);
+        setImageModal(true)
     }
     return (
         <>
@@ -112,7 +122,7 @@ function AddImage({ defaultImages, onImagesChange, maxImages, submit }: { defaul
                             className="relative bg-gray-200 p-2 rounded flex flex-col"
                         >
                             {/* eslint-disable-next-line @next/next/no-img-element */}
-                            <img src={image.src} alt={image.name as string} className="w-20 h-20 object-cover cursor-pointer" onClick={() => { updateImage(image)}} />
+                            <img src={image.src} alt={image.name as string} className="w-20 h-20 object-cover cursor-pointer" onClick={() => { updateImage(image) }} />
                             <div className="w-20 hover:w-auto p-1 line-clamp-1 text-ellipsis hover:overflow-visible hover:shadow-md hover:line-clamp-none hover:whitespace-nowrap">{image.name}</div>
                             <div className="absolute right-2 top-1  flex justify-center items-center">
                                 <button
@@ -130,7 +140,7 @@ function AddImage({ defaultImages, onImagesChange, maxImages, submit }: { defaul
                                     className="ml-2 text-blue-600 hover:shadow-md rounded-md p-1 hover:text-blue-800 focus:outline-none focus:ring focus:ring-red-300"
                                     onClick={() => updateImage(image)}
                                 >
-                                   <Edit />
+                                    <Edit />
                                 </button>
                             </div>
                         </div>
@@ -161,8 +171,8 @@ function AddImage({ defaultImages, onImagesChange, maxImages, submit }: { defaul
                                     handleChange={handleAddImage}
                                     name="file"
                                     types={fileTypes}
-                                    text="file"                                                                     
-                                    
+                                    text="file"
+
                                 />
                             </div>
                             <div className="my-4 flex gap-4 justify-center items-center">
@@ -171,7 +181,11 @@ function AddImage({ defaultImages, onImagesChange, maxImages, submit }: { defaul
                                 </button>
                             </div>
                         </div>
+                        <div>
+                            <Notification {...notifyState} />
+                        </div>
                     </div>
+
 
                 </div>
                 {loading &&
