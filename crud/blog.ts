@@ -87,6 +87,9 @@ async function getAll(page: number, pageSize: number, prismaClient: PrismaClient
       tags: true,
       author: true
 
+    },
+    orderBy: {
+      date: 'desc'
     }
   })
 

@@ -1,5 +1,3 @@
-import { PropertyFile } from "@prisma/client";
-
 export interface HttpError extends Error {
   status: number;
   message: string;
@@ -136,10 +134,10 @@ export function generatePassword() {
   return newPassword;
 }
 
-export function stripSlashes(str:string) {
+export function stripSlashes(str: string) {
   // Remove leading slashes
   str = str.replace(/^\/+/g, '');
-  
+
   // Remove trailing slashes
   str = str.replace(/\/+$/g, '');
 
@@ -154,7 +152,7 @@ export function objectToSearchParams(obj: any): string {
     if (obj[key] !== undefined && obj[key] !== null) {
       if (Array.isArray(obj[key])) {
         // If it's an array, add each element separately
-        obj[key].forEach((element: string |number) => searchParams.append(key, element.toString()));
+        obj[key].forEach((element: string | number) => searchParams.append(key, element.toString()));
       } else {
         searchParams.set(key, obj[key].toString());
       }
@@ -162,4 +160,19 @@ export function objectToSearchParams(obj: any): string {
   }
 
   return searchParams.toString();
+}
+
+
+// Function to add f_auto parameter to the Cloudinary image URL
+export function addAutoFormatParameter(url: string): string {
+  // Check if the URL already contains "f_auto"
+  if (url.includes('f_auto')) {
+    return url; // Return URL unchanged if "f_auto" parameter is already present
+  }
+
+  // Insert "f_auto" parameter before "/v" in the URL
+  const indexOfVersion = url.indexOf('/v');
+  const urlWithAutoFormat = `${url.slice(0, indexOfVersion)}/f_auto${url.slice(indexOfVersion)}`;
+
+  return urlWithAutoFormat;
 }

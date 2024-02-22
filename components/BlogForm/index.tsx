@@ -253,7 +253,7 @@ function BlogForm({ method, action, initial }: { method: 'POST' | 'PUT', action:
                         </select>
                     </div>
                     <div className="mb-4">
-                        <AddImagesAndTags tags={blogData.tags} images={blogData.images} onImagesAndTagsChange={handleChangedImageAndTag} maxImages={10}></AddImagesAndTags>
+                        <AddImagesAndTags tags={blogData.tags} images={blogData.images} onImagesAndTagsChange={handleChangedImageAndTag} maxImages={1}></AddImagesAndTags>
                     </div>
                     <button
                         type="submit"

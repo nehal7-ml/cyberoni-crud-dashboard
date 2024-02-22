@@ -33,14 +33,14 @@ export async function connectOrCreateObject(newImages: CreateImageDTO[], oldImag
 
     for (let image of filesToUpload) {
         if (image && image.src.startsWith('data:')) {
-            const uploaded = await uploadFile(image.src, 'raw')
+            const uploaded = await uploadFile(image.src, 'image')
             image.src = uploaded.secure_url;
         }
 
     }
 
     for (let image of filesToDelete) {
-        const deleted = await deleteFile(image.src, 'raw')
+        const deleted = await deleteFile(image.src)
     }
 
     imageConnect.create = filesToUpload;
