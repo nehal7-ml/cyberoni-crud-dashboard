@@ -4,61 +4,62 @@ import { authorizeWithPassword } from "@/crud/user";
 import { prisma } from "@/lib/prisma";
 
 export const authOptions: NextAuthOptions = {
-    //adapter: MyAdapter(prisma),
-    providers: [
-        Credentials({
-            name: "credentials",
-            type: 'credentials',
-            credentials: {
-                username: { label: "Email", type: "text", placeholder: "jsmith@email.com" },
-                password: { label: "Password", type: "password" }
-            },
-            authorize,
+  //adapter: MyAdapter(prisma),
+  providers: [
+    Credentials({
+      name: "credentials",
+      type: "credentials",
+      credentials: {
+        username: {
+          label: "Email",
+          type: "text",
+          placeholder: "jsmith@email.com",
+        },
+        password: { label: "Password", type: "password" },
+      },
+      authorize,
+    }),
+  ],
+  pages: {
+    signIn: "/auth/signin",
+  },
 
-        })
-    ],
-    pages: {
-        signIn: '/auth/signin',
-        
+  callbacks: {
+    jwt: async ({ token, user, session, trigger }) => {
+      user && (token.user = user);
+      if (trigger === "update" && session?.name) {
+        // Note, that `session` can be any arbitrary object, remember to validate it!
+        token.name = session.name;
+        //token.user = user
+      }
+      return token;
     },
+    session: async ({ session, token }) => {
+      token.user && (session.user = token.user);
 
-
-    callbacks: {
-        jwt: async ({ token, user, session, trigger }) => {
-            user && (token.user = user)
-            if (trigger === "update" && session?.name) {
-                // Note, that `session` can be any arbitrary object, remember to validate it!
-                token.name = session.name
-                //token.user = user
-            }
-            return token
-        },
-        session: async ({ session, token }) => {
-            token.user && (session.user = token.user)
-
-            return session
-        },
-
-    }
+      return session;
+    },
+  },
 };
 
-
-
-async function authorize(credentials: Record<"password" | "username", string> | undefined, req: Pick<RequestInternal, "query" | "body" | "headers" | "method">) {
-    try {
-        const user = await authorizeWithPassword({ email: credentials?.username!, password: credentials?.password! }, prisma)
-        if (user) {
-            return user
-        }
-        else return null
-        // console.log(user);
-    } catch (error) {
-        console.log(error);
-        return null
-
-    }
-    // If no error and we have user data, return it
-
+async function authorize(
+  credentials: Record<"password" | "username", string> | undefined,
+  req: Pick<RequestInternal, "query" | "body" | "headers" | "method">,
+) {
+  try {
+    const user = await authorizeWithPassword(
+      { email: credentials?.username!, password: credentials?.password! },
+      prisma,
+    );
+    if (user) {
+      return user;
+    } else return null;
+    // console.log(user);
+  } catch (error) {
+    console.log(error);
+    return null;
+  }
+  // If no error and we have user data, return it
 }
 
 // export default function MyAdapter(client: PrismaClient, options = {}): Adapter {
