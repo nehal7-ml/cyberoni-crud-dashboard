@@ -4,9 +4,10 @@ import { CreateImageDTO } from "@/crud/DTOs";
 import { CreateGptPromptDTO } from "@/crud/DTOs";
 import { CreateTagDTO } from "@/crud/DTOs";
 import React, { useState } from "react";
-import Notification, { NotificationType } from "@/components/Notification";
+import Notification, { NotificationType, toast } from "@/components/Notification";
 import ListInput from "../ListInput";
 import { redirect, useRouter } from "next/navigation";
+
 
 const GptPromptForm = ({
   method,
@@ -76,14 +77,14 @@ const GptPromptForm = ({
       message("success", resJson.message);
       router.replace(`/dashboard/prompts/view/${resJson.data.id}`);
     } else {
-      message("fail", resJson.message);
+      message("error", resJson.message);
     }
   };
 
   function message(type: NotificationType, message: string) {
-    setNotify(true);
-    setNotifyType(type);
-    setNotifyMessage(message);
+    toast(message, {
+      type
+    })
   }
   function handleChangedImage(images: CreateImageDTO[], tags: CreateTagDTO[]) {
     setGptPromptData((prevData) => ({
@@ -273,12 +274,7 @@ const GptPromptForm = ({
           </button>
         </form>
       </div>
-      <Notification
-        visible={notify}
-        setVisible={setNotify}
-        message={notifyMessage}
-        type={notifyType}
-      ></Notification>
+      <Notification />
     </div>
   );
 };

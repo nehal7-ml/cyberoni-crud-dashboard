@@ -2,10 +2,11 @@
 import { CreateReferralDTO } from "@/crud/DTOs";
 import { EventStatus, ReferralPriority, ReferralType } from "@prisma/client";
 import React, { FormEvent, useEffect, useRef, useState } from "react";
-import Notification, { NotificationType } from "@/components/Notification";
+import Notification, { NotificationType, toast } from "@/components/Notification";
 import { redirect, useRouter } from "next/navigation";
 import { stripSlashes } from "@/lib/utils";
 import DateInput from "../DateInput";
+
 
 const ReferralForm = ({
   method,
@@ -150,7 +151,7 @@ const ReferralForm = ({
         referralData.link = `${referralData.link.replace(appUrl, "")}`;
       }
 
-      message("fail", resJson.message);
+      message("error", resJson.message);
 
       if (res.status === 406) {
         setInvalidLink(true);
@@ -159,12 +160,9 @@ const ReferralForm = ({
   };
 
   function message(type: NotificationType, message: string) {
-    setNotify(true);
-    setNotifyType(type);
-    setNotifyMessage(message);
-    setTimeout(() => {
-      setNotify(false);
-    }, 5000);
+    toast(message, {
+      type
+    })
   }
 
   function handleLinkChange(e: React.ChangeEvent<HTMLInputElement>) {
@@ -511,12 +509,7 @@ const ReferralForm = ({
           </button>
         </form>
       </div>
-      <Notification
-        visible={notify}
-        setVisible={setNotify}
-        message={notifyMessage}
-        type={notifyType}
-      ></Notification>
+      <Notification />
     </div>
   );
 };

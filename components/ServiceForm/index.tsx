@@ -12,7 +12,7 @@ import React, { useEffect, useState } from "react";
 import { Edit, PlusCircle, X } from "lucide-react";
 import { CreateSubServiceDTO } from "@/crud/DTOs";
 
-import Notification, { NotificationType } from "@/components/Notification";
+import Notification, { NotificationType, toast } from "@/components/Notification";
 import CreateSubServcie from "./SubServiceForm";
 import { PricingModel, Service } from "@prisma/client";
 import Image from "next/image";
@@ -108,14 +108,12 @@ function SerivceForm({
       message("success", resJson.message);
       router.replace(`/dashboard/services/view/${resJson.data.id}`);
     } else {
-      message("fail", resJson.message);
+      message("error", resJson.message);
     }
   };
 
   function message(type: NotificationType, message: string) {
-    setNotify(true);
-    setNotifyType(type);
-    setNotifyMessage(message);
+    toast (message, {type})
   }
 
   const handleCheckboxChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -442,12 +440,7 @@ function SerivceForm({
           </div>
         </div>
       </div>
-      <Notification
-        visible={notify}
-        setVisible={setNotify}
-        message={notifyMessage}
-        type={notifyType}
-      ></Notification>
+      <Notification></Notification>
     </>
   );
 }

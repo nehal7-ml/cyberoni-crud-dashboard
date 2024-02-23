@@ -1,61 +1,62 @@
 "use client";
-import { Check, X } from "lucide-react";
+import { Check, Info, X } from "lucide-react";
 import React, { useState, useEffect, Dispatch } from "react";
 
-export type NotificationType = "success" | "fail";
+export type NotificationType = "success" | "error" | "info";
+
+export type NotificationOptions = {
+  type?: NotificationType;
+  autoClose?: number | 5000;
+}
 export type NotificationProps = {
   message: string;
-  type: NotificationType;
-  visible: boolean;
-  setVisible?: Dispatch<boolean>;
-};
-const Notification = ({
-  message,
-  type,
-  visible,
-  setVisible,
-}: NotificationProps) => {
-  const [show, setShow] = useState(visible);
-  useEffect(() => {
-    setShow(visible);
-    if (visible) {
-      setTimeout(() => {
-        setShow(false);
-      }, 3000);
-    }
-  }, [setVisible, visible]);
-  const notificationClass = `fixed flex gap-5 w-fit bottom-4 right-4 p-4 rounded ${type === "success" ? "bg-green-500" : "bg-red-500"} ${visible ? "block opacity-100" : "hidden opacity-0"} transition-opacity duration-300 z-[99999] text-white font-semibold`;
-
-  return (
-    <>
-      {show ? (
-        <div className={notificationClass}>
-          {type === "success" ? (
-            <Check className="mr-2" />
-          ) : (
-            <X className="mr-2" />
-          )}
-          {message}
-        </div>
-      ) : (
-        <>
-          <div className="hidden"></div>
-        </>
-      )}
-    </>
-  );
+  options?: NotificationOptions
 };
 
-export const useNotify = (): [
-  NotificationProps,
-  Dispatch<NotificationProps>,
-] => {
-  const [notifyState, setNotifyState] = useState<NotificationProps>({
+let updateState: Dispatch<{
+  message: string,
+  type: NotificationType
+}>
+let updateShow: Dispatch<boolean>
+const Notification = () => {
+
+  const [show, setShow] = useState(false);
+  const [state, setState] = useState({
     message: "",
-    visible: false,
-    type: "success",
+    type: 'info'
   });
 
-  return [notifyState, setNotifyState as Dispatch<NotificationProps>];
+  updateState = setState;
+  updateShow = setShow;
+
+  return (
+    <div className={`fixed flex bottom-10 right-10 p-4 rounded ${state.type === 'success' ? 'bg-green-500 text-white' : state.type === 'error' ? 'bg-red-500 text-white' : 'bg-red-700 text-zinc-900'} ${show ? 'opacity-100 z-[10000]' : 'opacity-0'} transition-opacity duration-300  font-semibold `}>
+      {state.type === 'success' ? (
+        <Check className="mr-2" />
+      ) :
+        state.type === 'error' ?
+          (
+            <X className="mr-2" />
+          ) :
+          <Info className="mr-2" />
+
+      }
+      {state.message}
+
+    </div>
+  )
 };
+
+function toast(message: string, options: NotificationOptions) {
+  updateShow(true);
+  updateState({ message, type: options.type ?? 'info' })
+
+  setTimeout(() => {
+
+    updateShow(false);
+    updateState({message: "", type:'info'})
+  }, options?.autoClose ?? 5000)
+}
+
+export { toast };
 export default Notification;

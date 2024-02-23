@@ -2,6 +2,16 @@
 
 import { Discount } from "@/crud/DTOs";
 import { useEffect, useState } from "react";
+import { z } from 'zod';
+import  Notification, { toast } from '@/components/Notification'
+const valueSchema = z.number().min(1).max(25);
+const nameSchema = z.string().refine(name => /^[a-z0-9]+$/i.test(name), {
+  message: 'Discount Name must be alphanumeric',
+});
+const discountSchema = z.object({
+  name: nameSchema,
+  value: valueSchema,
+});
 
 function DiscountsForm({
   initial,
@@ -13,8 +23,10 @@ function DiscountsForm({
   const [list, setList] = useState<Discount[]>(initial || []);
   const [newTagName, setNewTagName] = useState<Discount>({
     name: "",
-    value: "",
+    value: 0,
   });
+
+
 
   const handleRemoveTag = (tagToRemove: Discount) => {
     let newTags = list.filter((tag) => tag !== tagToRemove);
@@ -24,17 +36,26 @@ function DiscountsForm({
   };
 
   const handleAddTag = () => {
-    if (newTagName.name.trim() && newTagName.value.trim()) {
-      let addedTags = newTagName;
-      let newTags = [...list, addedTags];
+    const result = discountSchema.safeParse(newTagName);
 
-      setList(newTags);
-      setNewTagName({
-        name: "",
-        value: "",
-      });
-      onChange(newTags);
+
+    if (!result.success) {
+      console.log(result.error.issues[0]);
+      toast(`${result.error.issues[0].code}: ${result.error.issues[0].path[0]} - ${result.error.issues[0].message}`, {
+        type: 'error',
+      })
+      return
     }
+    let addedTags = { ...newTagName, name: newTagName.name.toUpperCase() };
+    let newTags = [...list, addedTags];
+
+    setList(newTags);
+    setNewTagName({
+      name: "",
+      value: 0,
+    });
+    onChange(newTags);
+
   };
 
   useEffect(() => {
@@ -56,7 +77,7 @@ function DiscountsForm({
               className="flex items-center justify-around rounded bg-blue-200 p-2 text-blue-800"
             >
               <span className="line-clamp-1">{tag.name}</span>
-              <span className="line-clamp-1">{tag.value}</span>
+              <span className="line-clamp-1">{tag.value}%</span>
               <button
                 type="button"
                 className="ml-2 text-red-600 hover:text-red-800 focus:outline-none focus:ring focus:ring-red-300"
@@ -79,11 +100,13 @@ function DiscountsForm({
         />
         <input
           type="text"
-          className="mt-1 w-full rounded border p-2"
+          className="text-input"
           placeholder="Value of the discount"
-          value={newTagName.value}
+          value={newTagName.value.toString()}
+          title="Enter value between 1-25"
+          pattern="^(0*[1-9]|1[0-9]|2[0-5])$"
           onChange={(e) =>
-            setNewTagName((prev) => ({ ...prev, value: e.target.value }))
+            setNewTagName((prev) => ({ ...prev, value: isNaN(Number(e.target.value)) ? 0 : Number(e.target.value) }))
           }
         />
         <button
@@ -93,6 +116,7 @@ function DiscountsForm({
         >
           Add Discount
         </button>
+        <Notification />
       </div>
     </>
   );

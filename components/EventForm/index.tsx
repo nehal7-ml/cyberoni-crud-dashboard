@@ -5,8 +5,9 @@ import { CreateImageDTO } from "@/crud/DTOs";
 import { CreateTagDTO } from "@/crud/DTOs";
 import { EventStatus } from "@prisma/client";
 import React, { useEffect, useState } from "react";
-import Notification, { NotificationType } from "@/components/Notification";
+import Notification, { NotificationType, toast } from "@/components/Notification";
 import { redirect, useRouter } from "next/navigation";
+
 
 const EventForm = ({
   method,
@@ -85,17 +86,15 @@ const EventForm = ({
       message("success", resJson.message);
       router.replace(`/dashboard/events/view/${resJson.data.id}`);
     } else {
-      message("fail", resJson.message);
+      message("error", resJson.message);
     }
   };
 
   function message(type: NotificationType, message: string) {
-    setNotify(true);
-    setNotifyType(type);
-    setNotifyMessage(message);
-    setTimeout(() => {
-      setNotify(false);
-    }, 5000);
+    toast(`${message}`, {
+      autoClose: 5000,
+      type: type,
+    });
   }
 
   function handleChangedImage(images: CreateImageDTO[], tags: CreateTagDTO[]) {
@@ -226,12 +225,7 @@ const EventForm = ({
           </button>
         </form>
       </div>
-      <Notification
-        visible={notify}
-        setVisible={setNotify}
-        message={notifyMessage}
-        type={notifyType}
-      ></Notification>
+      <Notification />
     </div>
   );
 };

@@ -28,7 +28,8 @@
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
     "react-drag-drop-files": "^2.3.10",
-    "react-password-checklist": "^1.5.0"
+    "react-password-checklist": "^1.5.0",
+    "zod": "^3.22.4"
   },
   "devDependencies": {
     "@testing-library/jest-dom": "^6.1.4",

@@ -4,13 +4,14 @@ import { CreateImageDTO } from "@/crud/DTOs";
 import { CreateProductDTO } from "@/crud/product";
 import { CreateTagDTO } from "@/crud/DTOs";
 import React, { ChangeEvent, useEffect, useState } from "react";
-import Notification, { NotificationType } from "@/components/Notification";
+import Notification, { NotificationType, toast } from "@/components/Notification";
 import CreateSupplier from "./CreateSupplier";
 import { CreateSupplierDTO } from "@/crud/supplier";
 import { X } from "lucide-react";
 import { FormProps } from "@/crud/commonDTO";
 import { ProductStatus, Supplier } from "@prisma/client";
 import { redirect, useRouter } from "next/navigation";
+
 
 const ProductForm = ({ method, action, initial }: FormProps) => {
   const [notify, setNotify] = useState(false);
@@ -75,14 +76,14 @@ const ProductForm = ({ method, action, initial }: FormProps) => {
       message("success", resJson.mesage);
       router.replace(`/dashboard/products/view/${resJson.data.id}`);
     } else {
-      message("fail", resJson.mesage);
+      message("error", resJson.mesage);
     }
   };
 
   function message(type: NotificationType, message: string) {
-    setNotify(true);
-    setNotifyType(type);
-    setNotifyMessage(message);
+    toast(message, {
+      type
+    })
   }
 
   const handleNumberInputChange = (
@@ -345,12 +346,7 @@ const ProductForm = ({ method, action, initial }: FormProps) => {
           ></CreateSupplier>
         </div>
       </div>
-      <Notification
-        visible={notify}
-        setVisible={setNotify}
-        message={notifyMessage}
-        type={notifyType}
-      ></Notification>
+      <Notification />
     </div>
   );
 };

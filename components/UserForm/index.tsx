@@ -5,7 +5,7 @@ import { CreateImageDTO } from "@/crud/DTOs";
 import { CreateUserDTO } from "@/crud/user";
 import { Role } from "@prisma/client";
 import React, { useState } from "react";
-import Notification, { NotificationType } from "@/components/Notification";
+import Notification, { NotificationType, toast } from "@/components/Notification";
 import { FormProps } from "@/crud/commonDTO";
 import PasswordGenerator from "../PasswordInput";
 import { redirect, useRouter } from "next/navigation";
@@ -83,14 +83,16 @@ const UserForm = ({ method, action, initial }: FormProps) => {
       message("success", resJson.message);
       router.replace(`/dashboard/users/view/${resJson.data.id}`);
     } else {
-      message("fail", resJson.message);
+      message("error", resJson.message);
     }
   };
 
   function message(type: NotificationType, message: string) {
-    setNotify(true);
-    setNotifyType(type);
-    setNotifyMessage(message);
+    toast( 
+      message, {
+        type: type
+      }
+    )
   }
 
   return (
@@ -243,12 +245,7 @@ const UserForm = ({ method, action, initial }: FormProps) => {
           </button>
         </form>
       </div>
-      <Notification
-        visible={notify}
-        setVisible={setNotify}
-        message={notifyMessage}
-        type={notifyType}
-      ></Notification>
+      <Notification></Notification>
     </div>
   );
 };
