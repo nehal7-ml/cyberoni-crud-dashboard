@@ -1,6 +1,6 @@
 import React from "react";
 
-import SerivceForm from "@/components/ServiceForm";
+import ServiceForm from "@/components/ServiceForm";
 import { read } from "@/crud/service";
 import { DisplayServiceDTO } from "@/crud/DTOs";
 import { prisma } from "@/lib/prisma";
@@ -11,7 +11,7 @@ async function CreateServcie({ params }: { params: { id: string } }) {
   return (
     <>
       <div className="light:bg-gray-100 light:text-black flex min-h-screen items-center justify-center dark:bg-gray-700 dark:text-gray-800">
-        <SerivceForm
+        <ServiceForm
           initial={service}
           method={"PUT"}
           action={`/api/services/${params.id}`}

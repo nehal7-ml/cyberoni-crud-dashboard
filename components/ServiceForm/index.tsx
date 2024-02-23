@@ -27,7 +27,7 @@ const ajv = new Ajv();
 //addFormats(ajv)
 const validate = ajv.compile(ServiceSchema);
 
-function SerivceForm({
+function ServiceForm({
   method,
   action,
   initial,
@@ -445,4 +445,4 @@ function SerivceForm({
   );
 }
 
-export default SerivceForm;
+export default ServiceForm;
