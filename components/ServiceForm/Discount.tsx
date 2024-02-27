@@ -13,6 +13,21 @@ const discountSchema = z.object({
   value: valueSchema,
 });
 
+const Discounts = z.array(discountSchema).refine((discounts) => {
+  // Ensure unique discount names
+  const names = new Set();
+  for (const discount of discounts) {
+      if (names.has(discount.name)) {
+          return false;
+      }
+      names.add(discount.name);
+  }
+  return true;
+}, { message: 'Discount names must be unique' })
+
+
+
+
 function DiscountsForm({
   initial,
   onChange,
@@ -36,18 +51,26 @@ function DiscountsForm({
   };
 
   const handleAddTag = () => {
-    const result = discountSchema.safeParse(newTagName);
+    let discount = discountSchema.safeParse(newTagName);
 
 
-    if (!result.success) {
-      console.log(result.error.issues[0]);
-      toast(`${result.error.issues[0].code}: ${result.error.issues[0].path[0]} - ${result.error.issues[0].message}`, {
+    if (!discount.success) {
+      console.log(discount.error.issues[0]);
+      toast(`${discount.error.issues[0].code}: ${discount.error.issues[0].path[0]} - ${discount.error.issues[0].message}`, {
         type: 'error',
       })
       return
     }
     let addedTags = { ...newTagName, name: newTagName.name.toUpperCase() };
     let newTags = [...list, addedTags];
+    let uniqueDiscount = Discounts.safeParse(newTags);
+
+    if(!uniqueDiscount.success) {
+      toast(`${uniqueDiscount.error.issues[0].code}: ${uniqueDiscount.error.issues[0].path[0]} - ${uniqueDiscount.error.issues[0].message}`, {
+        type: 'error',
+      })
+      return
+    }
 
     setList(newTags);
     setNewTagName({
@@ -104,7 +127,7 @@ function DiscountsForm({
           placeholder="Value of the discount"
           value={newTagName.value.toString()}
           title="Enter value between 1-25"
-          pattern="^(0*[1-9]|1[0-9]|2[0-5])$"
+          pattern="^(0*[0-9]|1[0-9]|2[0-5])$"
           onChange={(e) =>
             setNewTagName((prev) => ({ ...prev, value: isNaN(Number(e.target.value)) ? 0 : Number(e.target.value) }))
           }

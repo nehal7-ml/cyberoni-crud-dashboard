@@ -24,7 +24,6 @@ export async function create(
       complexity: newSubService.complexity,
       department: newSubService.department,
       description: newSubService.description,
-      discounts: newSubService.discounts,
       estimated_hours_times_fifty_percent:
         newSubService.estimated_hours_times_fifty_percent,
       estimated_hours_times_one_hundred_percent:
@@ -59,7 +58,6 @@ export async function update(
       complexity: subService.complexity,
       department: subService.department,
       description: subService.description,
-      discounts: subService.discounts,
       estimated_hours_times_fifty_percent:
         subService.estimated_hours_times_fifty_percent,
       estimated_hours_times_one_hundred_percent:
@@ -72,13 +70,13 @@ export async function update(
       image:
         image && image.id
           ? {
-              update: {
-                where: {
-                  id: image.id,
-                },
-                data: image,
+            update: {
+              where: {
+                id: image.id,
               },
-            }
+              data: image,
+            },
+          }
           : image && image?.id == null
             ? { create: image }
             : {},
@@ -101,7 +99,6 @@ export async function createSubservicesObject(
       complexity: subService.complexity,
       department: subService.department,
       description: subService.description,
-      discounts: subService.discounts,
       estimated_hours_times_fifty_percent:
         subService.estimated_hours_times_fifty_percent,
       estimated_hours_times_one_hundred_percent:
@@ -119,9 +116,7 @@ export async function createSubservicesObject(
   return createObject;
 }
 
-export async function updateSubServiceObject(
-  subServices: CreateSubServiceDTO[],
-) {
+export async function updateSubServiceObject(  subServices: CreateSubServiceDTO[],) {
   let createOrUpdate: {
     create: any[];
     update: any[];
@@ -129,6 +124,8 @@ export async function updateSubServiceObject(
     create: [],
     update: [],
   };
+
+
 
   for (const subService of subServices) {
     const image = await createImageObject(subService.image);
@@ -143,7 +140,6 @@ export async function updateSubServiceObject(
           complexity: subService.complexity,
           department: subService.department,
           description: subService.description,
-          discounts: subService.discounts,
           estimated_hours_times_fifty_percent:
             subService.estimated_hours_times_fifty_percent,
           estimated_hours_times_one_hundred_percent:
@@ -156,13 +152,13 @@ export async function updateSubServiceObject(
           image:
             image && image.id
               ? {
-                  update: {
-                    where: {
-                      id: image.id,
-                    },
-                    data: image,
+                update: {
+                  where: {
+                    id: image.id,
                   },
-                }
+                  data: image,
+                },
+              }
               : image && image?.id == null
                 ? { create: image }
                 : {},
@@ -174,7 +170,6 @@ export async function updateSubServiceObject(
         complexity: subService.complexity,
         department: subService.department,
         description: subService.description,
-        discounts: subService.discounts,
         estimated_hours_times_fifty_percent:
           subService.estimated_hours_times_fifty_percent,
         estimated_hours_times_one_hundred_percent:
@@ -191,3 +186,4 @@ export async function updateSubServiceObject(
 
   return createOrUpdate;
 }
+

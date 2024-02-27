@@ -73,17 +73,15 @@ const ProductForm = ({ method, action, initial }: FormProps) => {
     let resJson = await res.json();
 
     if (res.status == 200) {
-      message("success", resJson.mesage);
+      message("success", resJson.message);
       router.replace(`/dashboard/products/view/${resJson.data.id}`);
     } else {
-      message("error", resJson.mesage);
+      message("error", resJson.message);
     }
   };
 
   function message(type: NotificationType, message: string) {
-    toast(message, {
-      type
-    })
+    toast(message, { type })
   }
 
   const handleNumberInputChange = (
@@ -131,7 +129,7 @@ const ProductForm = ({ method, action, initial }: FormProps) => {
   }
 
   useEffect(() => {
-    async function fetchSuppliers() {}
+    async function fetchSuppliers() { }
 
     fetchSuppliers();
   }, []);

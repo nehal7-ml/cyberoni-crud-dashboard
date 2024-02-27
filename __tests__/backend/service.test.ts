@@ -36,7 +36,6 @@ describe("test crud function for services", () => {
         complexity: 10,
         department: "test deparment",
         description: "subservice description",
-        discounts: [],
         estimated_hours_times_fifty_percent: 100,
         estimated_hours_times_one_hundred_percent: 200,
         overheadCost: 1000,

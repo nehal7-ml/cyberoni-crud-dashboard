@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import { useRouter } from "next/router";
 import {
+  BadgePercent,
   BookOpen,
   BrainCircuit,
   CalendarCheck2,
@@ -20,7 +21,7 @@ async function SidePanel(props: React.BaseHTMLAttributes<HTMLDivElement>) {
   return (
     <>
       <div className={props.className}>
-        <div className="flex items-center justify-center p-2">
+        <div className="flex items-center justify-center pl-2 h-1/6">
           <Link
             href="/dashboard"
             className="font-display flex items-center text-xl "
@@ -29,7 +30,7 @@ async function SidePanel(props: React.BaseHTMLAttributes<HTMLDivElement>) {
             <p className="subpixel-antialiased">CyberOni</p>
           </Link>
         </div>
-        <div className="container flex flex-grow flex-col gap-5 px-1 py-12 shadow-inner">
+        <div className="container flex flex-grow flex-col gap-5 px-1 py-4 h-4/6 overflow-y-auto shadow-inner">
           <Link
             className={`flex items-center justify-start  rounded-lg  p-2 text-gray-800  hover:cursor-pointer hover:bg-blue-600 hover:text-white`}
             href={"/dashboard/users/1"}
@@ -87,9 +88,16 @@ async function SidePanel(props: React.BaseHTMLAttributes<HTMLDivElement>) {
             <Microscope />
             <div className="pl-3 text-left">Case Studies</div>
           </Link>
+          <Link
+            className={`flex items-center justify-start  rounded-lg  p-2 text-gray-800  hover:cursor-pointer hover:bg-blue-600 hover:text-white`}
+            href={"/dashboard/discounts/1"}
+          >
+            <BadgePercent />
+            <div className="pl-3 text-left">Discounts</div>
+          </Link>
         </div>
         {session && (
-          <div className="relative inline-block px-5 text-left">
+          <div className="relative inline-block px-5 text-left h-1/6 shadow-inner w-full">
             <Link
               href={"/auth/forgot"}
               className="flex gap-2 rounded-lg  p-3 hover:bg-gray-300 hover:shadow-lg"

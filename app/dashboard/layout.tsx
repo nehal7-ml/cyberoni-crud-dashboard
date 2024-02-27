@@ -15,7 +15,7 @@ export default function DashboardLayout({
 }) {
   return (
     <section className="grid h-full w-full grid-cols-12 gap-2">
-      <SidePanel className="col-span-2 h-screen "></SidePanel>
+      <SidePanel className="col-span-2 h-screen  max-h-screen"></SidePanel>
       <div className="col-span-10 h-screen">
         <div className="flex justify-between">
           <h2 className="col-span-2"></h2>

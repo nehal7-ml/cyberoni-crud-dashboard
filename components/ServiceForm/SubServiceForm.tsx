@@ -32,7 +32,6 @@ function SubServiceForm({
           title: "",
           complexity: 0,
           department: "",
-          discounts: [],
           estimated_hours_times_fifty_percent: 0,
           estimated_hours_times_one_hundred_percent: 0,
           pricingModel: PricingModel.DEFAULT,
@@ -85,7 +84,6 @@ function SubServiceForm({
       title: "",
       complexity: 0,
       department: "",
-      discounts: [],
       estimated_hours_times_fifty_percent: 0,
       estimated_hours_times_one_hundred_percent: 0,
       pricingModel: PricingModel.DEFAULT,
@@ -283,14 +281,6 @@ function SubServiceForm({
                 value={subServiceData.description}
                 onChange={handleInputChange}
                 required
-              />
-            </div>
-            <div>
-              <DiscountsForm
-                initial={subServiceData?.discounts}
-                onChange={(values) =>
-                  setSubServiceData((prev) => ({ ...prev, discounts: values }))
-                }
               />
             </div>
             <div className="mb-4">
