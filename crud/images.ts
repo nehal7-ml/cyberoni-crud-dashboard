@@ -60,7 +60,7 @@ export async function connectOrCreateObject(
   }
 
   imageConnect.create = filesToUpload;
-  if (imageConnect.delete)
+  if (filesToDelete)
     imageConnect.delete = filesToDelete as { id: string }[];
   newImages.forEach((image) => {
     if (image.id) {
