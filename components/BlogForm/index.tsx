@@ -85,7 +85,7 @@ function BlogForm({ method, action, initial }: { method: 'POST' | 'PUT', action:
             setNotifyMessage(resJson.message);
             setNotify(true);
 
-            router.replace(`/dashboard/blogs/view/${resJson.data.id}`)
+            setTimeout(()=>router.replace(`/dashboard/blogs/view/${resJson.data.id}`), 2000)
 
 
         } else {
