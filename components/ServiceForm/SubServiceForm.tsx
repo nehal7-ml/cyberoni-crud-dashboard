@@ -5,10 +5,8 @@ import { CreateSubServiceDTO, Discount } from "@/crud/DTOs";
 import { CreateTagDTO } from "@/crud/DTOs";
 import React, { useEffect, useState } from "react";
 import ListInput from "../ListInput";
-import DiscountsForm from "./Discount";
 import { PricingModel } from "@prisma/client";
 import Ajv from "ajv";
-import addFormats from "ajv-formats";
 import { SubServiceSchema } from "@/crud/jsonSchemas";
 
 const ajv = new Ajv();
