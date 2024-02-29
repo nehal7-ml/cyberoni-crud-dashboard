@@ -64,6 +64,7 @@ function AddImage({
     };
 
     function handleSave() {
+
         const currentImage = image;
         let toUpdate = images.filter((image) => image.src === currentImage.src)[0];
 
@@ -80,6 +81,20 @@ function AddImage({
             onImagesChange(newFiles);
         } else if (currentImage.name && currentImage.src) {
             let newFiles = images;
+            if (images.length >= (maxImages || 10)) {
+                setNotifyState({
+                    message: `Only ${maxImages || 10} images allowed`,
+                    type: 'fail',
+                    visible: true,
+
+                })
+                setImage({
+                    name: '',
+                    src: ''
+                })
+                return
+
+            }
             newFiles.push(currentImage);
             onImagesChange(newFiles);
         }

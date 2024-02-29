@@ -55,19 +55,22 @@ export async function connectOrCreateObject(
     }
   }
 
-  for (let image of filesToDelete) {
-    const deleted = await deleteFile(image.src);
-  }
-
-  imageConnect.create = filesToUpload;
-  if (filesToDelete)
-    imageConnect.delete = filesToDelete as { id: string }[];
-  newImages.forEach((image) => {
-    if (image.id) {
-      imageConnect.update?.push({ where: { id: image.id }, data: image });
+    for (let image of filesToDelete) {
+      if (image && image.src.startsWith('https://res.cloudinary.com')) {
+         await deleteFile(image.src)
+      }
     }
-  });
-  return imageConnect;
+
+    imageConnect.create = filesToUpload;
+    if (filesToDelete.length > 0) imageConnect.delete = filesToDelete as { id: string }[];
+    newImages.forEach(image => {
+      if (image.id) {
+
+        imageConnect.update?.push({ where: { id: image.id }, data: image })
+      }
+    })
+    return imageConnect
+  
 }
 
 function getUploadAndDeleteLists(
