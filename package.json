@@ -14,7 +14,7 @@
   "dependencies": {
     "@prisma/client": "^5.7.1",
     "@sendgrid/mail": "^7.7.0",
-    "@techwithty/cyberoni-schema": "^1.0.3",
+    "@techwithty/cyberoni-schema": "^1.0.4",
     "@tinymce/tinymce-react": "^4.3.2",
     "ajv": "^8.12.0",
     "ajv-formats": "^2.1.1",
