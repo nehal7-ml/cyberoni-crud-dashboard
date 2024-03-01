@@ -294,6 +294,7 @@ function BlogForm({
                             images={blogData.images}
                             onImagesAndTagsChange={handleChangedImageAndTag}
                             maxImages={1}
+                            maxTags={10}
                         ></AddImagesAndTags>
                     </div>
                     <button

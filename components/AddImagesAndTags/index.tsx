@@ -6,6 +6,7 @@ import AddTags from "./AddTags";
 
 type AddImagesAndTagsProps = {
   maxImages?: number;
+  maxTags?: number;
   onImagesAndTagsChange: (
     images: CreateImageDTO[],
     tags: CreateTagDTO[],
@@ -17,6 +18,7 @@ type AddImagesAndTagsProps = {
 const AddImagesAndTags: React.FC<AddImagesAndTagsProps> = ({
   onImagesAndTagsChange,
   maxImages,
+  maxTags,
   images,
   tags,
 }) => {
@@ -34,7 +36,7 @@ const AddImagesAndTags: React.FC<AddImagesAndTagsProps> = ({
         onImagesChange={onImageChange}
         maxImages={maxImages}
       ></AddImage>
-      <AddTags defaultTags={tags} onTagsChange={onTagsChange}></AddTags>
+      <AddTags maxTags={maxTags} defaultTags={tags} onTagsChange={onTagsChange}></AddTags>
     </div>
   );
 };

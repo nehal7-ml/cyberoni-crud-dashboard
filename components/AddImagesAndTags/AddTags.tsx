@@ -1,16 +1,20 @@
 "use client";
 import { CreateTagDTO } from "@/crud/DTOs";
 import React, { useEffect, useState } from "react";
+import Notification, { toast } from "../Notification";
 
 function AddTags({
   defaultTags,
   onTagsChange,
+  maxTags
 }: {
   defaultTags?: CreateTagDTO[];
+    maxTags?: number;
   onTagsChange: (tags: CreateTagDTO[]) => void;
 }) {
   const [tags, setTags] = useState<CreateTagDTO[]>(defaultTags || []);
   const [newTagName, setNewTagName] = useState("");
+
 
   const handleRemoveTag = (tagToRemove: CreateTagDTO) => {
     let newTags = tags.filter((tag) => tag.name !== tagToRemove.name);
@@ -27,6 +31,13 @@ function AddTags({
         .filter((tag) => tag.trim() !== "");
       let newTags = [...tags, ...addedTags.map((tag) => ({ name: tag }))];
 
+      if (newTags.length > (maxTags || 10)) {
+        setNewTagName("");
+
+        toast(`Max ${maxTags || 10} allowed`, { type: 'error', autoClose: 3000 })
+
+        return
+      }
       setTags(newTags);
       setNewTagName("");
       onTagsChange(newTags);
@@ -74,6 +85,7 @@ function AddTags({
         >
           Add Tag
         </button>
+        <Notification />
       </div>
     </>
   );
