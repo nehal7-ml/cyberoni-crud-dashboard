@@ -13,6 +13,7 @@ import {
   CreateImageDTO,
   CreateServiceDescription,
   CreateSubServiceDTO,
+  UpdateServiceDTO,
 } from "./DTOs";
 import {
   create as createSubService,
@@ -22,11 +23,12 @@ import {
 } from "./subService";
 
 import { CreateServiceDTO } from "./DTOs";
+import { HttpError } from "@/lib/utils";
 
 async function create(service: CreateServiceDTO, prismaClient: PrismaClient) {
   const services = prismaClient.service;
   let image = await createImageObject(service.image);
-  let createdservice = await services.create({
+  let createdService = await services.create({
     data: {
       title: service.title,
       featured: service.featured,
@@ -63,7 +65,7 @@ async function create(service: CreateServiceDTO, prismaClient: PrismaClient) {
     },
   });
 
-  return createdservice;
+  return createdService;
 }
 
 async function update(
@@ -72,6 +74,18 @@ async function update(
   prismaClient: PrismaClient,
 ) {
   const services = prismaClient.service;
+  const oldService = await services.findUnique({
+    where: { id: serviceId }, include: {
+      SubServices: true,
+      image: true,
+      ServiceDescription: true,
+      faqs: true,
+      tags: true,
+
+    }
+  })
+
+  if (!oldService) throw HttpError(404, 'Service not found')
   let image = await createImageObject(service.image);
 
   // let currentService = await services.findUnique({ where: { id: serviceId } })
@@ -88,19 +102,20 @@ async function update(
       image:
         image && image.id
           ? {
-              update: {
-                where: {
-                  id: image.id,
-                },
-                data: image,
+            update: {
+              where: {
+                id: image.id,
               },
-            }
+              data: image,
+            },
+          }
           : image && image?.id == null
             ? { create: image }
             : {},
       tags: { connectOrCreate: connectTags(service.tags || []) },
       SubServices: await updateSubServiceObject(
         service.SubServices as CreateSubServiceDTO[],
+        oldService?.SubServices as CreateSubServiceDTO[]
       ),
       ServiceDescription: await updateServiceDescriptionObject(
         service.ServiceDescription,
@@ -149,9 +164,9 @@ async function read(serviceId: string, prismaClient: PrismaClient) {
 async function getServicesByName(
   serviceName: string,
   prismaClient: PrismaClient,
-) {}
+) { }
 
-async function getServicesByTag(tag: string, prismaClient: PrismaClient) {}
+async function getServicesByTag(tag: string, prismaClient: PrismaClient) { }
 
 async function getAll(
   page: number,
@@ -238,13 +253,13 @@ async function updateServiceDescriptionObject(
           image:
             image && image.id
               ? {
-                  update: {
-                    where: {
-                      id: image.id,
-                    },
-                    data: image,
+                update: {
+                  where: {
+                    id: image.id,
                   },
-                }
+                  data: image,
+                },
+              }
               : image && image?.id == null
                 ? { create: image }
                 : {},

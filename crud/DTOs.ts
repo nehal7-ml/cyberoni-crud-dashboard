@@ -51,6 +51,24 @@ export type CreateServiceDTO = {
   faqs?: CreateFaqDTO[];
 };
 
+
+export type UpdateServiceDTO = {
+  id: string
+  title: string;
+  previewContent: string;
+  featured: boolean;
+  ServiceDescription: CreateServiceDescription[];
+  hourlyRate: number;
+  valueBrought: string[];
+  skillsUsed: string[];
+  htmlEmbed?: string;
+  image?: CreateImageDTO;
+  SubServices?: { create?: CreateSubServiceDTO[], update?: CreateSubServiceDTO[], delete?: { id: string }[] };
+  tags?: CreateTagDTO[];
+  faqs?: CreateFaqDTO[];
+};
+
+
 export type CreateServiceDescription = {
   id?: string;
   title: string;

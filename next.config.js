@@ -1,7 +1,4 @@
 /** @type {import('next').NextConfig} */
-
-const { hostname } = require("os");
-
 const imageLocations = [
   "lh3.googleusercontent.com",
   "res.cloudinary.com",
@@ -20,6 +17,7 @@ const nextConfig = {
   swcMinify: true,
   images: {
     remotePatterns: imageLocations.map((location) => ({ hostname: location })),
+  
   },
   async headers() {
     return [

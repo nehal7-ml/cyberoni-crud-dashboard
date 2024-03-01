@@ -8,8 +8,10 @@ import {
 import {
   create as createTag,
   connectOrCreateObject as connectTags,
+  connectOrCreateObject,
 } from "./tags";
-import { CreateSubServiceDTO } from "./DTOs";
+import { CreateImageDTO, CreateSubServiceDTO, CreateTagDTO } from "./DTOs";
+import { CreateSupplierDTO } from "./supplier";
 export async function create(
   newSubService: CreateSubServiceDTO,
   serviceId: string,
@@ -116,39 +118,80 @@ export async function createSubservicesObject(
   return createObject;
 }
 
-export async function updateSubServiceObject(  subServices: CreateSubServiceDTO[],) {
-  let createOrUpdate: {
-    create: any[];
-    update: any[];
+export async function updateSubServiceObject(
+  newSubServices: CreateSubServiceDTO[],
+  oldSubServices: CreateSubServiceDTO[],
+) {
+  let createOrUpdateOrDelete: {
+    create: (Omit<CreateSubServiceDTO, "image" | "tags"> & {
+      image?:
+      | {
+        create?: CreateImageDTO;
+      }
+      | {},
+
+      tags?: {
+        connectOrCreate: {
+          where: { name: string };
+          create: CreateTagDTO;
+        }[];
+      };
+    })[];
+    update: {
+      where: {
+        id: string;
+      };
+
+      data: Omit<CreateSubServiceDTO, "image" | 'tags'> & {
+        image: {
+          update?: {
+            where: { id: string };
+            data: CreateImageDTO;
+          };
+          create?: CreateImageDTO;
+        },
+        tags?: {
+          connectOrCreate: {
+            where: { name: string };
+            create: CreateTagDTO;
+          }[];
+        }
+      };
+    }[];
+    delete: { id: string }[];
   } = {
     create: [],
     update: [],
+    delete: [],
   };
 
+  for (const old of oldSubServices) {
+    const subService = newSubServices.find(subService => subService.id === old.id)
+    if (!subService) {
+      createOrUpdateOrDelete.delete.push({ id: old.id as string })
 
+    } else {
+      const image = await createImageObject(subService.image);
 
-  for (const subService of subServices) {
-    const image = await createImageObject(subService.image);
-
-    if (subService.id) {
-      createOrUpdate.update.push({
+      createOrUpdateOrDelete.update.push({
         where: {
-          id: subService.id,
+          id: subService.id as string,
         },
         data: {
           title: subService.title,
-          complexity: subService.complexity,
-          department: subService.department,
-          description: subService.description,
-          estimated_hours_times_fifty_percent:
-            subService.estimated_hours_times_fifty_percent,
-          estimated_hours_times_one_hundred_percent:
-            subService.estimated_hours_times_one_hundred_percent,
-          overheadCost: subService.overheadCost,
-          pricingModel: subService.pricingModel,
-          serviceDeliverables: subService.serviceDeliverables,
-          serviceUsageScore: subService.serviceUsageScore,
-          skillLevel: subService.skillLevel,
+            complexity: subService.complexity,
+            department: subService.department,
+            description: subService.description,
+            estimated_hours_times_fifty_percent: subService.estimated_hours_times_fifty_percent,
+            estimated_hours_times_one_hundred_percent: subService.estimated_hours_times_one_hundred_percent,
+            overheadCost: subService.overheadCost,
+            pricingModel: subService.pricingModel,
+            serviceDeliverables: subService.serviceDeliverables,
+            serviceUsageScore: subService.serviceUsageScore,
+            skillLevel: subService.skillLevel,
+          tags: subService.tags
+            ? { connectOrCreate: connectOrCreateObject(subService.tags) }
+            : undefined,
           image:
             image && image.id
               ? {
@@ -164,26 +207,41 @@ export async function updateSubServiceObject(  subServices: CreateSubServiceDTO[
                 : {},
         },
       });
-    } else {
-      createOrUpdate.create.push({
-        title: subService.title,
-        complexity: subService.complexity,
-        department: subService.department,
-        description: subService.description,
-        estimated_hours_times_fifty_percent:
-          subService.estimated_hours_times_fifty_percent,
-        estimated_hours_times_one_hundred_percent:
-          subService.estimated_hours_times_one_hundred_percent,
-        overheadCost: subService.overheadCost,
-        pricingModel: subService.pricingModel,
-        serviceDeliverables: subService.serviceDeliverables,
-        serviceUsageScore: subService.serviceUsageScore,
-        skillLevel: subService.skillLevel,
-        image: image ? { create: image } : {},
-      });
+
+
     }
   }
 
-  return createOrUpdate;
-}
+  for (const subService of newSubServices) {
 
+    if (!subService.id) {
+
+      createOrUpdateOrDelete.create.push(
+        {
+          title: subService.title,
+          complexity: subService.complexity,
+          department: subService.department,
+          description: subService.description,
+          estimated_hours_times_fifty_percent: subService.estimated_hours_times_fifty_percent,
+          estimated_hours_times_one_hundred_percent: subService.estimated_hours_times_one_hundred_percent,
+          overheadCost: subService.overheadCost,
+          pricingModel: subService.pricingModel,
+          serviceDeliverables: subService.serviceDeliverables,
+          serviceUsageScore: subService.serviceUsageScore,
+          skillLevel: subService.skillLevel,
+          tags: subService.tags
+            ? { connectOrCreate: connectOrCreateObject(subService.tags) }
+            : undefined,
+          image: subService.image ? { create: subService.image } : {}
+
+
+        }
+
+      )
+    }
+
+
+  }
+
+  return createOrUpdateOrDelete;
+}
