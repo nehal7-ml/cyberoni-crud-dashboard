@@ -215,6 +215,7 @@ export async function updateSubServiceObject(
   for (const subService of newSubServices) {
 
     if (!subService.id) {
+      const image = await createImageObject(subService.image);
 
       createOrUpdateOrDelete.create.push(
         {
@@ -232,7 +233,7 @@ export async function updateSubServiceObject(
           tags: subService.tags
             ? { connectOrCreate: connectOrCreateObject(subService.tags) }
             : undefined,
-          image: subService.image ? { create: subService.image } : {}
+          image: subService.image ? { create: image } : {}
 
 
         }

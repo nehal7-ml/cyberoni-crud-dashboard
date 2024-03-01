@@ -78,7 +78,11 @@ async function update(
     where: { id: serviceId }, include: {
       SubServices: true,
       image: true,
-      ServiceDescription: true,
+      ServiceDescription: {
+        include: {
+          image: true
+        }
+      },
       faqs: true,
       tags: true,
 
@@ -119,6 +123,7 @@ async function update(
       ),
       ServiceDescription: await updateServiceDescriptionObject(
         service.ServiceDescription,
+        oldService?.ServiceDescription as CreateServiceDescription[]
       ),
     },
     include: {
@@ -229,27 +234,31 @@ async function createServiceDescriptionObject(
 
 async function updateServiceDescriptionObject(
   descriptions: CreateServiceDescription[],
+  oldDescriptions: CreateServiceDescription[]
 ) {
-  let createOrUpdate: {
+  let createOrUpdateOrDelete: {
     create: any[];
     update: any[];
+    delete: any[];
   } = {
     create: [],
     update: [],
+    delete: [],
   };
+  for (const oldDescription of oldDescriptions) {
+    const toUpdate = descriptions.find(description => description.id === oldDescription.id);
 
-  for (const description of descriptions) {
-    const image = await createImageObject(description.image);
+    if (toUpdate) {
+      const image = await createImageObject(toUpdate.image);
 
-    if (description.id) {
-      createOrUpdate.update.push({
+      createOrUpdateOrDelete.update.push({
         where: {
-          id: description.id,
+          id: toUpdate.id,
         },
         data: {
-          title: description.title,
-          content: description.content,
-          imageOnLeft: description.imageOnLeft,
+          title: toUpdate.title,
+          content: toUpdate.content,
+          imageOnLeft: toUpdate.imageOnLeft,
           image:
             image && image.id
               ? {
@@ -265,8 +274,25 @@ async function updateServiceDescriptionObject(
                 : {},
         },
       });
+
+
     } else {
-      createOrUpdate.create.push({
+      createOrUpdateOrDelete.delete.push({ id: oldDescription.id })
+
+    }
+
+
+
+
+  }
+
+
+  for (const description of descriptions) {
+
+    if (!description.id) {
+      const image = await createImageObject(description.image);
+
+      createOrUpdateOrDelete.create.push({
         title: description.title,
         content: description.content,
         imageOnLeft: description.imageOnLeft,
@@ -275,6 +301,6 @@ async function updateServiceDescriptionObject(
     }
   }
 
-  return createOrUpdate;
+  return createOrUpdateOrDelete;
 }
 export { create, update, remove, read, getAll };
