@@ -5,6 +5,7 @@ import { CreateTagDTO } from "./DTOs";
 import { connectOrCreateObject as connectImage } from "./images";
 import { CreateImageDTO } from "./DTOs";
 import { CreateSupplierDTO } from "./supplier";
+import { HttpError } from "@/lib/utils";
 
 export type CreateProductDTO = {
   sku: string;
@@ -50,7 +51,7 @@ async function create(product: CreateProductDTO, prismaClient: PrismaClient) {
   let createdproduct = await products.create({
     data: {
       ...product,
-      tags: { connectOrCreate: connectTag(product.tags) },
+      tags: { connectOrCreate: connectTag(product.tags, []).connectOrCreate },
       images: await connectImage(product.images, []),
       suppliers: {
         create: [...(product.suppliers as CreateSupplierDTO[])],
@@ -70,6 +71,7 @@ async function update(
     where: { id: productId },
     include: { images: true, tags: true },
   });
+  if(!oldProduct) throw HttpError(404, 'Product not found')
 
   const suplierUpdate = {
     create: [],
@@ -96,7 +98,7 @@ async function update(
     where: { id: productId },
     data: {
       ...product,
-      tags: { connectOrCreate: connectTag(product.tags) },
+      tags:connectTag(product.tags,oldProduct?.tags ),
       images: await connectImage(product.images, oldProduct!.images),
       suppliers: suplierUpdate,
     },

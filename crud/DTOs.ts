@@ -40,34 +40,16 @@ export type CreateServiceDTO = {
   title: string;
   previewContent: string;
   featured: boolean;
-  ServiceDescription: CreateServiceDescription[];
+  ServiceDescription: CreateServiceDescription[] 
   hourlyRate: number;
   valueBrought: string[];
   skillsUsed: string[];
   htmlEmbed?: string;
   image?: CreateImageDTO;
-  SubServices?: CreateSubServiceDTO[];
+  SubServices?: CreateSubServiceDTO[]
   tags?: CreateTagDTO[];
   faqs?: CreateFaqDTO[];
 };
-
-
-export type UpdateServiceDTO = {
-  id: string
-  title: string;
-  previewContent: string;
-  featured: boolean;
-  ServiceDescription: CreateServiceDescription[];
-  hourlyRate: number;
-  valueBrought: string[];
-  skillsUsed: string[];
-  htmlEmbed?: string;
-  image?: CreateImageDTO;
-  SubServices?: { create?: CreateSubServiceDTO[], update?: CreateSubServiceDTO[], delete?: { id: string }[] };
-  tags?: CreateTagDTO[];
-  faqs?: CreateFaqDTO[];
-};
-
 
 export type CreateServiceDescription = {
   id?: string;
@@ -204,18 +186,18 @@ export type CreateReferralDTO = {
   redirect: string;
   click: number;
   utmProps:
-  | {
-    utm_medium: string;
-    utm_campaign: string;
-    utm_source: string;
-    utm_segment: string;
-    utm_product_category: string;
-    utm_communication_theme: string;
-    utm_ad_type: string;
-    utm_funnel_location: string;
-    utm_earned_or_paid: "earned" | "paid";
-  }
-  | {};
+    | {
+        utm_medium: string;
+        utm_campaign: string;
+        utm_source: string;
+        utm_segment: string;
+        utm_product_category: string;
+        utm_communication_theme: string;
+        utm_ad_type: string;
+        utm_funnel_location: string;
+        utm_earned_or_paid: "earned" | "paid";
+      }
+    | {};
 };
 export type CreateCaseStudy = {
   id?: string;
@@ -239,11 +221,9 @@ export type CreateCaseStudy = {
   architecture?: CreateImageDTO[];
 };
 
-
 export type CreateDiscountDTO = {
   id?: string;
   name: string;
   value: number;
   expires?: Date;
-
-}
+};

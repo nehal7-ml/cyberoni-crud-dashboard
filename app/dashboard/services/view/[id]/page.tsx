@@ -2,11 +2,11 @@ import React from "react";
 
 import ServiceForm from "@/components/ServiceForm";
 import { read } from "@/crud/service";
-import { DisplayServiceDTO } from "@/crud/DTOs";
+import {  CreateServiceDTO } from "@/crud/DTOs";
 import { prisma } from "@/lib/prisma";
 
 async function CreateServcie({ params }: { params: { id: string } }) {
-  const service = (await read(params.id, prisma)) as DisplayServiceDTO;
+  const service = (await read(params.id, prisma)) as CreateServiceDTO;
   // console.log(service);
   return (
     <>

@@ -82,10 +82,8 @@ function AddImage({
         } else if (currentImage.name && currentImage.src) {
             let newFiles = images;
             if (images.length >= (maxImages || 10)) {
-                setNotifyState({
-                    message: `Only ${maxImages || 10} images allowed`,
-                    type: 'fail',
-                    visible: true,
+                toast(`Only ${maxImages || 10} images allowed`,{
+                    type: 'error'
 
                 })
                 setImage({

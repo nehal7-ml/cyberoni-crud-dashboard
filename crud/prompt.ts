@@ -4,13 +4,14 @@ import { connectOrCreateObject as connectTag } from "./tags";
 import { connectOrCreateObject as connectImage } from "./images";
 import { CreateGptPromptDTO } from "./DTOs";
 import { DisplayPrompt } from "./DTOs";
+import { HttpError } from "@/lib/utils";
 
 async function create(prompt: CreateGptPromptDTO, prismaClient: PrismaClient) {
   const prompts = prismaClient.gptPrompt;
   let createdprompt = await prompts.create({
     data: {
       ...prompt,
-      tags: { connectOrCreate: connectTag(prompt.tags) },
+      tags: { connectOrCreate: connectTag(prompt.tags, []).connectOrCreate },
       image: prompt.image ? { connect: { id: prompt.image.id! } } : {},
     },
   });
@@ -23,11 +24,13 @@ async function update(
   prismaClient: PrismaClient,
 ) {
   const prompts = prismaClient.gptPrompt;
+  let oldPrompt = await prompts.findUnique({ where: { id: promptId }, include: { image: true, tags: true } });
+  if (!oldPrompt) throw HttpError(404, "Prompt not found");
   let UpdatedPrompt = await prompts.update({
     where: { id: promptId },
     data: {
       ...prompt,
-      tags: { connectOrCreate: connectTag(prompt.tags) },
+      tags: connectTag(prompt.tags, oldPrompt.tags),
       image: prompt.image ? { connect: { id: prompt.image.id! } } : {},
     },
   });

@@ -2,6 +2,11 @@
 import { CreateTagDTO } from "@/crud/DTOs";
 import React, { useEffect, useState } from "react";
 import Notification, { toast } from "../Notification";
+import * as z from 'zod';
+
+// Define a Zod schema for tag names
+const TagNameSchema = z.string().regex(/^[a-zA-Z0-9-_;:]+$/).max(50);
+
 
 function AddTags({
   defaultTags,
@@ -28,8 +33,23 @@ function AddTags({
       let addedTags = newTagName
         .trim()
         .split(",")
-        .filter((tag) => tag.trim() !== "");
-      let newTags = [...tags, ...addedTags.map((tag) => ({ name: tag }))];
+        .filter((tag) => {
+          let valid = tag.trim() !== "";
+          if (!valid) {
+            toast("Invalid tag name", { type: 'error', autoClose: 3000 });
+            return false;
+          }
+          try {
+            // Validate the tag name using the Zod schema
+            TagNameSchema.parse(tag.trim());
+            return true;
+          } catch (error) {
+            toast("Invalid tag name", { type: 'error', autoClose: 3000 });
+            return false;
+          }
+        })
+        .map((tag) => ({ name: tag.trim() }));
+      let newTags = [...tags, ...addedTags];
 
       if (newTags.length > (maxTags || 10)) {
         setNewTagName("");
@@ -78,13 +98,22 @@ function AddTags({
           value={newTagName}
           onChange={(e) => setNewTagName(e.target.value)}
         />
-        <button
-          type="button"
-          className="mt-2 rounded bg-blue-500 p-2 text-white hover:bg-blue-600 focus:outline-none focus:ring focus:ring-blue-300"
-          onClick={handleAddTag}
-        >
-          Add Tag
-        </button>
+        <div className="flex gap-2">
+          <button
+            type="button"
+            className="mt-2 rounded bg-blue-500 p-2 text-white hover:bg-blue-600 focus:outline-none focus:ring focus:ring-blue-300"
+            onClick={handleAddTag}
+          >
+            Add Tag
+          </button>
+          <button
+            type="button"
+            className="mt-2 rounded bg-red-500 p-2 text-white hover:bg-red-600 focus:outline-none focus:ring focus:ring-red-300"
+            onClick={() => (setTags([]), onTagsChange([]))}
+          >
+            Delete All Tags
+          </button>
+        </div>
         <Notification />
       </div>
     </>

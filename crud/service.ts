@@ -13,7 +13,6 @@ import {
   CreateImageDTO,
   CreateServiceDescription,
   CreateSubServiceDTO,
-  UpdateServiceDTO,
 } from "./DTOs";
 import {
   create as createSubService,
@@ -38,7 +37,7 @@ async function create(service: CreateServiceDTO, prismaClient: PrismaClient) {
       skillsUsed: service.skillsUsed,
       htmlEmbed: service.htmlEmbed,
       image: image ? { create: image } : {},
-      tags: { connectOrCreate: connectTags(service.tags || []) },
+      tags: {connectOrCreate: connectTags(service.tags || [], []).connectOrCreate},
       faqs: {
         create: service.faqs ? service.faqs : [],
       },
@@ -116,7 +115,7 @@ async function update(
           : image && image?.id == null
             ? { create: image }
             : {},
-      tags: { connectOrCreate: connectTags(service.tags || []) },
+      tags: connectTags(service.tags || [], oldService.tags),
       SubServices: await updateSubServiceObject(
         service.SubServices as CreateSubServiceDTO[],
         oldService?.SubServices as CreateSubServiceDTO[]
@@ -153,7 +152,12 @@ async function read(serviceId: string, prismaClient: PrismaClient) {
   const existingservice = await services.findUnique({
     where: { id: serviceId },
     include: {
-      SubServices: true,
+      SubServices: {
+        include: {
+          image:true,
+          tags:true,
+        }
+      },
       ServiceDescription: {
         include: {
           image: true,

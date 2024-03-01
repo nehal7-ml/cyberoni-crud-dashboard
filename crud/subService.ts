@@ -36,7 +36,7 @@ export async function create(
       serviceUsageScore: newSubService.serviceUsageScore,
       skillLevel: newSubService.skillLevel,
       image: { create: image },
-      tags: { connectOrCreate: connectTags(newSubService.tags || []) },
+      tags: { connectOrCreate: connectTags(newSubService.tags || [], []).connectOrCreate },
       service: { connect: { id: serviceId } },
     },
   });
@@ -82,7 +82,7 @@ export async function update(
           : image && image?.id == null
             ? { create: image }
             : {},
-      tags: { connectOrCreate: connectTags(subService.tags || []) },
+      tags: { connectOrCreate: connectTags(subService.tags || [], []).connectOrCreate },
       service: { connect: { id: serviceId } },
     },
   });
@@ -111,7 +111,7 @@ export async function createSubservicesObject(
       serviceUsageScore: subService.serviceUsageScore,
       skillLevel: subService.skillLevel,
       image: subImage ? { create: subImage } : {},
-      tags: { connectOrCreate: connectTags(subService.tags || []) },
+      tags: { connectOrCreate: connectTags(subService.tags || [], []).connectOrCreate },
     });
   }
 
@@ -179,18 +179,18 @@ export async function updateSubServiceObject(
         },
         data: {
           title: subService.title,
-            complexity: subService.complexity,
-            department: subService.department,
-            description: subService.description,
-            estimated_hours_times_fifty_percent: subService.estimated_hours_times_fifty_percent,
-            estimated_hours_times_one_hundred_percent: subService.estimated_hours_times_one_hundred_percent,
-            overheadCost: subService.overheadCost,
-            pricingModel: subService.pricingModel,
-            serviceDeliverables: subService.serviceDeliverables,
-            serviceUsageScore: subService.serviceUsageScore,
-            skillLevel: subService.skillLevel,
+          complexity: subService.complexity,
+          department: subService.department,
+          description: subService.description,
+          estimated_hours_times_fifty_percent: subService.estimated_hours_times_fifty_percent,
+          estimated_hours_times_one_hundred_percent: subService.estimated_hours_times_one_hundred_percent,
+          overheadCost: subService.overheadCost,
+          pricingModel: subService.pricingModel,
+          serviceDeliverables: subService.serviceDeliverables,
+          serviceUsageScore: subService.serviceUsageScore,
+          skillLevel: subService.skillLevel,
           tags: subService.tags
-            ? { connectOrCreate: connectOrCreateObject(subService.tags) }
+            ? connectOrCreateObject(subService.tags, old.tags || [])
             : undefined,
           image:
             image && image.id
@@ -231,7 +231,7 @@ export async function updateSubServiceObject(
           serviceUsageScore: subService.serviceUsageScore,
           skillLevel: subService.skillLevel,
           tags: subService.tags
-            ? { connectOrCreate: connectOrCreateObject(subService.tags) }
+            ? { connectOrCreate: connectOrCreateObject(subService.tags, []).connectOrCreate }
             : undefined,
           image: subService.image ? { create: image } : {}
 

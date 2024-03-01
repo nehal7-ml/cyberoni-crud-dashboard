@@ -3,6 +3,7 @@ import { PrismaClient } from "@prisma/client";
 import { connectOrCreateObject as connectTags } from "./tags";
 import { connectOrCreateObject as connectImages } from "./images";
 import { CreateBlogDTO } from "./DTOs";
+import { HttpError } from "@/lib/utils";
 
 async function create(blog: CreateBlogDTO, prismaClient: PrismaClient) {
   const blogs = prismaClient.blog;
@@ -10,9 +11,19 @@ async function create(blog: CreateBlogDTO, prismaClient: PrismaClient) {
     data: {
       ...blog,
       images: await connectImages(blog.images, []),
-      tags: { connectOrCreate: connectTags(blog.tags) },
+      tags:  {connectOrCreate: connectTags(blog.tags, []).connectOrCreate} ,
       author: { connect: { email: blog.author.email } },
     },
+    include: {
+      images:true, tags: true,
+      author: {
+        select: {
+          firstName:true,
+          lastName:true,
+          email:true,
+        }
+      }
+    }
   });
   return createdblog;
 }
@@ -27,14 +38,25 @@ async function update(
     where: { id: blogId },
     include: { images: true, tags: true },
   });
+
+  if (!oldBlog) throw HttpError(404, 'blog not found');
   const updatedBlog = await blogs.update({
     where: { id: blogId },
     data: {
       ...blog,
       images: await connectImages(blog.images, oldBlog!.images),
-      tags: { connectOrCreate: connectTags(blog.tags) },
+      tags: connectTags(blog.tags, oldBlog?.tags),
       author: { connect: { email: blog.author.email } },
-    },
+    },include: {
+      images:true, tags: true,
+      author: {
+        select: {
+          firstName:true,
+          lastName:true,
+          email:true,
+        }
+      }
+    }
   });
   return updatedBlog;
 }

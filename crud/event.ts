@@ -3,6 +3,7 @@ import { Event, EventStatus, PrismaClient, User } from "@prisma/client";
 import { CreateImageDTO } from "./DTOs";
 import { connectOrCreateObject as connectTag } from "./tags";
 import { CreateTagDTO } from "./DTOs";
+import { HttpError } from "@/lib/utils";
 
 export type createEventDTO = {
   name: string;
@@ -23,7 +24,7 @@ async function create(event: createEventDTO, prismaClient: PrismaClient) {
       ...event,
       date: new Date(event.date),
       image: event.image ? { connect: { id: event.image.id! } } : {},
-      tags: { connectOrCreate: connectTag(event.tags) },
+      tags: { connectOrCreate: connectTag(event.tags, []).connectOrCreate },
     },
   });
   return createdevent;
@@ -35,13 +36,16 @@ async function update(
   prismaClient: PrismaClient,
 ) {
   const events = prismaClient.event;
+  const oldEvent = await events.findUnique({where: {id: eventId}, include: {image: true, tags:true}})
+
+  if(!oldEvent) throw HttpError(404 , 'Event Not found')
   const updatedEvent = await events.update({
     where: { id: eventId },
     data: {
       ...event,
       date: new Date(event.date),
       image: event.image ? { connect: { id: event.image.id! } } : {},
-      tags: { connectOrCreate: connectTag(event.tags) },
+      tags: connectTag(event.tags,oldEvent.tags ),
     },
   });
   return updatedEvent;
