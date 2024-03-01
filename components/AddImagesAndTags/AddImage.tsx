@@ -1,23 +1,31 @@
-'use client'
+"use client";
 import { CreateImageDTO } from "@/crud/DTOs";
 import { bufferToB64, generateUUID } from "@/lib/utils";
-import React, { useEffect, useState } from 'react'
+import React, { useEffect, useState } from "react";
 import { FileUploader } from "react-drag-drop-files";
 import Loading from "../Loading";
 import { Edit, PlusCircle, X, XCircle } from "lucide-react";
-import Notification, { useNotify } from "../Notification";
+import Notification, { toast } from "../Notification";
 
-function AddImage({ defaultImages, onImagesChange, maxImages, submit }: { defaultImages?: CreateImageDTO[], onImagesChange: (images: CreateImageDTO[]) => void, maxImages?: number, submit?: boolean }) {
-
+function AddImage({
+    defaultImages,
+    onImagesChange,
+    maxImages,
+    submit,
+}: {
+    defaultImages?: CreateImageDTO[];
+    onImagesChange: (images: CreateImageDTO[]) => void;
+    maxImages?: number;
+    submit?: boolean;
+}) {
     const [images, setImages] = useState<CreateImageDTO[]>(defaultImages || []);
 
     const [imageModal, setImageModal] = useState(false);
     const [image, setImage] = useState<CreateImageDTO>({
-        name: '',
-        src: ''
+        name: "",
+        src: "",
     });
 
-    const [notifyState, setNotifyState] = useNotify()
     const fileTypes = ["JPG", "PNG", "GIF"];
 
     const [loading, setLoading] = useState(false);
@@ -30,22 +38,18 @@ function AddImage({ defaultImages, onImagesChange, maxImages, submit }: { defaul
             const newFileSrc = bufferToB64(await newFile.arrayBuffer(), newFile.type);
 
             if (images.length < (maxImages || 10)) {
-
                 const image = {
                     src: newFileSrc,
                     name: newFile.name,
-                }
+                };
                 setImage(image);
                 //setImages(newfiles)
             } else {
                 // alert(`Only ${maxImages || 10} images allowed`)
-                setNotifyState({
-                    message: `Only ${maxImages || 10} images allowed`,
-                    type: 'fail',
-                    visible: true,
-
-                })
-                console.log("notification sent");
+                toast(`Only ${maxImages || 10} images allowed`, {
+                    autoClose: 5000,
+                    type: "error",
+                });
             }
         }
 
@@ -54,39 +58,32 @@ function AddImage({ defaultImages, onImagesChange, maxImages, submit }: { defaul
     };
 
     const handleRemoveImage = async (imageToRemove: CreateImageDTO) => {
-        const newFiles = images.filter(image => image.src !== imageToRemove.src);
+        const newFiles = images.filter((image) => image.src !== imageToRemove.src);
         setImages(newFiles);
         onImagesChange(newFiles);
-
     };
 
     function handleSave() {
 
         const currentImage = image;
-        let toUpdate = images.filter(image => image.src === currentImage.src)[0];
+        let toUpdate = images.filter((image) => image.src === currentImage.src)[0];
 
         if (toUpdate) {
-            let newFiles = images.map(image => {
+            let newFiles = images.map((image) => {
                 if (image.src === currentImage.src) {
                     return {
                         ...image,
                         src: currentImage.src,
                         name: currentImage.name,
-                    }
-
+                    };
                 } else return image;
-
-            })
+            });
             onImagesChange(newFiles);
-
-        }
-        else if (currentImage.name && currentImage.src) {
+        } else if (currentImage.name && currentImage.src) {
             let newFiles = images;
             if (images.length >= (maxImages || 10)) {
-                setNotifyState({
-                    message: `Only ${maxImages || 10} images allowed`,
-                    type: 'fail',
-                    visible: true,
+                toast(`Only ${maxImages || 10} images allowed`,{
+                    type: 'error'
 
                 })
                 setImage({
@@ -101,45 +98,49 @@ function AddImage({ defaultImages, onImagesChange, maxImages, submit }: { defaul
         }
 
         setImage({
-            name: '',
-            src: ''
-        })
-
+            name: "",
+            src: "",
+        });
     }
-
-
 
     useEffect(() => {
         if (defaultImages && defaultImages.length > 0) {
-            setImages(defaultImages)
+            setImages(defaultImages);
         }
-
     }, [defaultImages]);
 
     useEffect(() => {
         if (submit) {
-
         }
     }, [submit]);
 
     function updateImage(image: CreateImageDTO) {
         setImage(image);
-        setImageModal(true)
+        setImageModal(true);
     }
     return (
         <>
-            <h2 className="text-lg font-semibold mb-2">Add Images</h2>
+            <h2 className="mb-2 text-lg font-semibold">Add Images</h2>
             <div className="mb-4">
-                <div className="flex flex-wrap gap-2 mb-4">
-                    {images.map(image => (
+                <div className="mb-4 flex flex-wrap gap-2">
+                    {images.map((image) => (
                         <div
                             key={image.src}
-                            className="relative bg-gray-200 p-2 rounded flex flex-col"
+                            className="relative flex flex-col rounded bg-gray-200 p-2"
                         >
                             {/* eslint-disable-next-line @next/next/no-img-element */}
-                            <img src={image.src} alt={image.name as string} className="w-20 h-20 object-cover cursor-pointer" onClick={() => { updateImage(image) }} />
-                            <div className="w-20 hover:w-auto p-1 line-clamp-1 text-ellipsis hover:overflow-visible hover:shadow-md hover:line-clamp-none hover:whitespace-nowrap">{image.name}</div>
-                            <div className="absolute right-2 top-1  flex justify-center items-center">
+                            <img
+                                src={image.src}
+                                alt={image.name as string}
+                                className="h-20 w-20 cursor-pointer object-cover"
+                                onClick={() => {
+                                    updateImage(image);
+                                }}
+                            />
+                            <div className="line-clamp-1 w-20 text-ellipsis p-1 hover:line-clamp-none hover:w-auto hover:overflow-visible hover:whitespace-nowrap hover:shadow-md">
+                                {image.name}
+                            </div>
+                            <div className="absolute right-2 top-1  flex items-center justify-center">
                                 <button
                                     type="button"
                                     className="ml-2 text-red-600 hover:text-red-800 focus:outline-none focus:ring focus:ring-red-300"
@@ -149,10 +150,10 @@ function AddImage({ defaultImages, onImagesChange, maxImages, submit }: { defaul
                                 </button>
                             </div>
 
-                            <div className="  flex justify-center items-center">
+                            <div className="  flex items-center justify-center">
                                 <button
                                     type="button"
-                                    className="ml-2 text-blue-600 hover:shadow-md rounded-md p-1 hover:text-blue-800 focus:outline-none focus:ring focus:ring-red-300"
+                                    className="ml-2 rounded-md p-1 text-blue-600 hover:text-blue-800 hover:shadow-md focus:outline-none focus:ring focus:ring-red-300"
                                     onClick={() => updateImage(image)}
                                 >
                                     <Edit />
@@ -163,53 +164,85 @@ function AddImage({ defaultImages, onImagesChange, maxImages, submit }: { defaul
                 </div>
 
                 <div>
-                    <button type="button" onClick={() => setImageModal(true)} className="p-2 hover:shadow-lg hover:bg-blue-600 bg-blue-500 rounded-full" >
+                    <button
+                        type="button"
+                        onClick={() => setImageModal(true)}
+                        className="rounded-full bg-blue-500 p-2 hover:bg-blue-600 hover:shadow-lg"
+                    >
                         <PlusCircle className=" text-white" />
                     </button>
-                    <div className={`fixed flex flex-col w-screen top-0 left-0 justify-center backdrop-blur-md h-screen z-[100] ${imageModal ? '' : ' hidden'}`}>
-
-                        <div className="relative container mx-auto my-auto flex flex-col justify-center bg-gray-100 rounded-xl p-5">
-                            <div className="flex justify-end z-30">
-                                <button type="button" className="self-end mx-10 my-3" onClick={() => setImageModal(false)} ><X color="red" className="cursor-pointer" /></button>
+                    <div
+                        className={`fixed left-0 top-0 z-[100] flex h-screen w-screen flex-col justify-center backdrop-blur-md ${imageModal ? "" : " hidden"}`}
+                    >
+                        <div className="container relative mx-auto my-auto flex flex-col justify-center rounded-xl bg-gray-100 p-5">
+                            <div className="z-30 flex justify-end">
+                                <button
+                                    type="button"
+                                    className="mx-10 my-3 self-end"
+                                    onClick={() => setImageModal(false)}
+                                >
+                                    <X color="red" className="cursor-pointer" />
+                                </button>
                             </div>
-                            <div className="my-4 flex gap-4 justify-center items-center">
+                            <div className="my-4 flex items-center justify-center gap-4">
                                 <label htmlFor="src">Src:</label>
-                                <input className="p-2  border rounded " type="url" id="src" value={image.src} onChange={(e) => setImage(prev => ({ ...prev, src: e.target.value }))} />
+                                <input
+                                    className="rounded  border p-2 "
+                                    type="url"
+                                    id="src"
+                                    value={image.src}
+                                    onChange={(e) =>
+                                        setImage((prev) => ({ ...prev, src: e.target.value }))
+                                    }
+                                />
                             </div>
-                            <div className="my-4 flex gap-4 justify-center items-center">
+                            <div className="my-4 flex items-center justify-center gap-4">
                                 <label htmlFor="name">Name:</label>
-                                <input className="p-2 border rounded " type="text" id="name" value={image.name || ""} onChange={(e) => setImage(prev => ({ ...prev, name: e.target.value }))} />
+                                <input
+                                    className="rounded border p-2 "
+                                    type="text"
+                                    id="name"
+                                    value={image.name || ""}
+                                    onChange={(e) =>
+                                        setImage((prev) => ({ ...prev, name: e.target.value }))
+                                    }
+                                />
                             </div>
-                            <div className="my-4 flex gap-4 justify-center items-center">
+                            <div className="my-4 flex items-center justify-center gap-4">
                                 <FileUploader
                                     multiple={true}
                                     handleChange={handleAddImage}
                                     name="file"
                                     types={fileTypes}
                                     text="file"
-
                                 />
                             </div>
-                            <div className="my-4 flex gap-4 justify-center items-center">
-                                <button onClick={handleSave} type="button" className="w-full bg-blue-500 text-white p-2 rounded hover:bg-blue-600 focus:outline-none focus:ring focus:ring-blue-300">
-                                    {image.id ? 'Update' : 'Save'}
+                            <div className="my-4 flex items-center justify-center gap-4">
+                                <button
+                                    onClick={handleSave}
+                                    type="button"
+                                    className="w-full rounded bg-blue-500 p-2 text-white hover:bg-blue-600 focus:outline-none focus:ring focus:ring-blue-300"
+                                >
+                                    {image.id ? "Update" : "Save"}
                                 </button>
                             </div>
                         </div>
                         <div>
-                            <Notification {...notifyState} />
+                            <Notification />
                         </div>
                     </div>
-
-
                 </div>
-                {loading &&
-                    <div role="status" className="fixed top-0 left-0 w-screen h-screen z-[100]  backdrop-blur-md">
+                {loading && (
+                    <div
+                        role="status"
+                        className="fixed left-0 top-0 z-[100] h-screen w-screen  backdrop-blur-md"
+                    >
                         <Loading />
-                    </div>}
+                    </div>
+                )}
             </div>
         </>
-    )
+    );
 }
 
-export default AddImage
+export default AddImage;

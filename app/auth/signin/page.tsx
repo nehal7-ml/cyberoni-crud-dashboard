@@ -1,36 +1,35 @@
+import {
+  getProviders,
+  signIn,
+  getCsrfToken,
+  useSession,
+} from "next-auth/react";
+import NextAuth, { getServerSession } from "next-auth/next";
+import { authOptions } from "@/lib/nextAuthAdapter";
+import ClientInput from "@/components/ClientInput";
+import { ArrowRight, ArrowRightCircle } from "lucide-react";
+import Image from "next/image";
+import { ReadonlyURLSearchParams, redirect } from "next/navigation";
+import { cookies } from "next/headers";
+import { NextRequest } from "next/server";
+import Link from "next/link";
+import LoginForm from "@/components/LoginForm";
+import { DisplayUserDTO } from "@/crud/user";
 
-import { getProviders, signIn, getCsrfToken, useSession } from "next-auth/react"
-import NextAuth, { getServerSession } from "next-auth/next"
-import { authOptions } from "@/lib/nextAuthAdapter"
-import ClientInput from "@/components/ClientInput"
-import { ArrowRight, ArrowRightCircle } from "lucide-react"
-import Image from "next/image"
-import { ReadonlyURLSearchParams, redirect } from "next/navigation"
-import { cookies } from 'next/headers'
-import { NextRequest } from "next/server"
-import Link from "next/link"
-import LoginForm from "@/components/LoginForm"
-import { DisplayUserDTO } from "@/crud/user"
-
-export const dynamic = 'force-dynamic'
+export const dynamic = "force-dynamic";
 
 export default async function SignIn() {
+  const session = await getServerSession(authOptions);
 
-    const session = await getServerSession(authOptions)
+  // console.log(search);
+  // If the user is already logged in, redirect.
+  // Note: Make sure not to redirect to the same page
+  // To avoid an infinite loop!
 
-    // console.log(search);
-    // If the user is already logged in, redirect.
-    // Note: Make sure not to redirect to the same page
-    // To avoid an infinite loop!
+  if (session) {
+    const user = session.user as DisplayUserDTO;
+    if (user.role == "ADMIN" || user.role == "SUPERUSER") redirect("/");
+  }
 
-
-    if (session) {
-        const user = session.user as DisplayUserDTO;
-        if (user.role == 'ADMIN' || user.role == 'SUPERUSER') redirect('/')
-    }
-
-    return (
-        <LoginForm />
-    )
-
+  return <LoginForm />;
 }

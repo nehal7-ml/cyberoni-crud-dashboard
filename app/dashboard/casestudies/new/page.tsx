@@ -4,11 +4,14 @@ import { prisma } from "@/lib/prisma";
 import { Service } from "@prisma/client";
 
 async function CreateBlogForm() {
-    const service = await getAll(0, 0, prisma);
-    return (
-        <CaseStudyForm types={service.records} method="POST" action={`/api/casestudies/add`} />
-    )
-
-};
+  const service = await getAll(0, 0, prisma);
+  return (
+    <CaseStudyForm
+      types={service.records}
+      method="POST"
+      action={`/api/casestudies/add`}
+    />
+  );
+}
 
 export default CreateBlogForm;

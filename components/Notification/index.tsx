@@ -1,49 +1,90 @@
-'use client'
-import { Check, X } from "lucide-react";
-import React, { useState, useEffect, Dispatch } from 'react';
+"use client";
+import { Check, Info, X } from "lucide-react";
+import React, { useState, useEffect, Dispatch, useContext, createContext } from "react";
 
-export type NotificationType = 'success' | 'fail'
-export type NotificationProps = { message: string, type: NotificationType, visible: boolean, setVisible?: Dispatch<boolean> }
-const Notification = ({ message, type, visible, setVisible }: NotificationProps) => {
+export type NotificationType = "success" | "error" | "info";
 
-  const [show, setShow] = useState(visible);
+export type NotificationOptions = {
+  type?: NotificationType;
+  autoClose?: number | 5000;
+}
+export type NotificationProps = {
+  message: string;
+  options?: NotificationOptions
+};
+
+let updateState: (newValue: NotificationProps & { show: boolean })=>void;
+
+
+const NotificationContext = createContext<NotificationProps & { show: boolean }>({
+  show: false,
+  message: ""
+});
+
+const useMyState = () => useContext(NotificationContext);
+
+const NotificationComponent = () => {
+
+  const state = useMyState()
+
   useEffect(() => {
-    setShow(visible);
-    if (visible) {
-      setTimeout(() => { setShow(false) }, 3000)
-    }
-
-  }, [setVisible, visible]);
-  const notificationClass = `fixed flex gap-5 w-fit bottom-4 right-4 p-4 rounded ${type === 'success' ? 'bg-green-500' : 'bg-red-500'} ${visible ? 'block opacity-100' : 'hidden opacity-0'} transition-opacity duration-300 z-[99999] text-white font-semibold`;
-
-
+    console.log(state);
+  }, [state]);
   return (
-    <>
-      {show ? <div className={notificationClass}>
-        {type === 'success' ? (
-          <Check className="mr-2" />
-        ) : (
-          <X className="mr-2" />
-        )}
-        {message}
-      </div> :
+    <div className={`fixed flex bottom-10 right-10 p-4 rounded ${state.options?.type === 'success' ? 'bg-green-500 text-white' : state.options?.type === 'error' ? 'bg-red-500 text-white' : 'bg-red-700 text-zinc-900'} ${state.show ? 'opacity-100 z-[10000]' : 'hidden opacity-0'} transition-opacity duration-300  font-semibold `}>
+      {state.options?.type === 'success' ? (
+        <Check className="mr-2" />
+      ) :
+        state.options?.type === 'error' ?
+          (
+            <X className="mr-2" />
+          ) :
+          <Info className="mr-2" />
 
-        <><div className="hidden"></div></>
       }
-    </>
-
+      {state.message}
+    </div>
   )
 };
 
+function toast(message: string, options: NotificationOptions) {
 
-export const useNotify = (): [NotificationProps, Dispatch<NotificationProps>] => {
-  const [notifyState, setNotifyState] = useState<NotificationProps>({
-    message: "",
-    visible: false,
-    type: 'success'
+  updateState({
+    message,
+    show:true,
+    options
+  })
+
+  setTimeout(() => {
+    updateState({
+      message: "",
+      show:false
+    })
+    
+  }, options?.autoClose ?? 5000)
+}
+
+
+
+
+// Define a provider component to manage the shared state
+const Notification = () => {
+  const [value, setValue] = useState<NotificationProps & { show: boolean }>({
+    show: false,
+    message: ""
   });
 
-  return [notifyState, setNotifyState as Dispatch<NotificationProps>]
+  // Function to update the shared state
+  const updateValue = (newValue: NotificationProps & { show: boolean }) => {
+    setValue(newValue);
+  };
+  updateState = updateValue
 
-}
+  return (
+    <NotificationContext.Provider value={value} >
+      <NotificationComponent></NotificationComponent>
+    </NotificationContext.Provider>
+  );
+};
+export { toast };
 export default Notification;

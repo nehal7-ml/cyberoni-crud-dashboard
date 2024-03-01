@@ -12,7 +12,5 @@ export default function User({ session }: { session: Session }) {
 
   if (!email) return null;
 
-  return (
- <></>
-  );
+  return <></>;
 }

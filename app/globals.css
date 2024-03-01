@@ -2,5 +2,6 @@
 @tailwind components;
 @tailwind utilities;
 
-
-
+.text-input {
+    @apply mt-1 w-full rounded border p-2 invalid:text-red-400 invalid:border-red-400 invalid:outline-red-400
+}

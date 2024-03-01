@@ -6,10 +6,8 @@ export interface HttpError extends Error {
 export function HttpError(status: number, message: string) {
   const error = Error(message) as HttpError;
   error.status = status;
-  return error
+  return error;
 }
-
-
 
 export async function fetcher<JSON = any>(
   input: RequestInfo,
@@ -66,41 +64,46 @@ export const truncate = (str: string, length: number) => {
   return `${str.slice(0, length)}...`;
 };
 
-
 export function bufferToB64(buffer: any, mimetype: string) {
   const b64 = Buffer.from(buffer).toString("base64");
   let dataURI = "data:" + mimetype + ";base64," + b64;
-  return dataURI
+  return dataURI;
 }
-
-
-
-
 
 export function generateUUID() {
   // Create a random UUID using the crypto API if available
-  if (typeof window.crypto !== 'undefined' && typeof window.crypto.getRandomValues === 'function') {
+  if (
+    typeof window.crypto !== "undefined" &&
+    typeof window.crypto.getRandomValues === "function"
+  ) {
     const buffer = new Uint16Array(8);
     window.crypto.getRandomValues(buffer);
 
     const uuid = [];
     uuid.push(buffer[0], buffer[1], buffer[2], buffer[3]);
-    uuid.push(buffer[4] & 0x0fff | 0x4000);
+    uuid.push((buffer[4] & 0x0fff) | 0x4000);
     uuid.push((buffer[5] & 0x3fff) | 0x8000);
     uuid.push(buffer[6], buffer[7]);
 
-    return uuid.map((part) => part.toString(16).padStart(4, '0')).join('-');
+    return uuid.map((part) => part.toString(16).padStart(4, "0")).join("-");
   } else {
     // Fallback to a less secure method if crypto API is not available
-    return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, function (c) {
-      const r = Math.random() * 16 | 0;
-      const v = c === 'x' ? r : (r & 0x3 | 0x8);
-      return v.toString(16);
-    });
+    return "xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx".replace(
+      /[xy]/g,
+      function (c) {
+        const r = (Math.random() * 16) | 0;
+        const v = c === "x" ? r : (r & 0x3) | 0x8;
+        return v.toString(16);
+      },
+    );
   }
 }
 
-export function wrappedSlice(arr: Array<any>, startIndex: number, endIndex: number) {
+export function wrappedSlice(
+  arr: Array<any>,
+  startIndex: number,
+  endIndex: number,
+) {
   if (arr.length === 0) {
     return [];
   }
@@ -126,24 +129,26 @@ export function wrappedSlice(arr: Array<any>, startIndex: number, endIndex: numb
 }
 
 export function generatePassword() {
-  const characters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789#@&!';
-  let newPassword = '';
+  const characters =
+    "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789#@&!";
+  let newPassword = "";
   for (let i = 0; i < 10; i++) {
-    newPassword += characters.charAt(Math.floor(Math.random() * characters.length));
+    newPassword += characters.charAt(
+      Math.floor(Math.random() * characters.length),
+    );
   }
   return newPassword;
 }
 
 export function stripSlashes(str: string) {
   // Remove leading slashes
-  str = str.replace(/^\/+/g, '');
+  str = str.replace(/^\/+/g, "");
 
   // Remove trailing slashes
-  str = str.replace(/\/+$/g, '');
+  str = str.replace(/\/+$/g, "");
 
   return str;
 }
-
 
 export function objectToSearchParams(obj: any): string {
   const searchParams = new URLSearchParams();
@@ -152,7 +157,9 @@ export function objectToSearchParams(obj: any): string {
     if (obj[key] !== undefined && obj[key] !== null) {
       if (Array.isArray(obj[key])) {
         // If it's an array, add each element separately
-        obj[key].forEach((element: string | number) => searchParams.append(key, element.toString()));
+        obj[key].forEach((element: string | number) =>
+          searchParams.append(key, element.toString()),
+        );
       } else {
         searchParams.set(key, obj[key].toString());
       }
@@ -162,16 +169,15 @@ export function objectToSearchParams(obj: any): string {
   return searchParams.toString();
 }
 
-
 // Function to add f_auto parameter to the Cloudinary image URL
 export function addAutoFormatParameter(url: string): string {
   // Check if the URL already contains "f_auto"
-  if (url.includes('f_auto')) {
+  if (url.includes("f_auto")) {
     return url; // Return URL unchanged if "f_auto" parameter is already present
   }
 
   // Insert "f_auto" parameter before "/v" in the URL
-  const indexOfVersion = url.indexOf('/v');
+  const indexOfVersion = url.indexOf("/v");
   const urlWithAutoFormat = `${url.slice(0, indexOfVersion)}/f_auto${url.slice(indexOfVersion)}`;
 
   return urlWithAutoFormat;
