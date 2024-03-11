@@ -11,6 +11,10 @@ const imageLocations = [
   "via.placeholder.com",
   "picsum.photos",
   "m.media-amazon.com",
+  "images.pexels.com",
+  "cdn.dribbble.com"
+
+
 ];
 const nextConfig = {
   reactStrictMode: true,

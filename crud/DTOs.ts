@@ -225,5 +225,5 @@ export type CreateDiscountDTO = {
   id?: string;
   name: string;
   value: number;
-  expires?: Date;
+  expires?: Date | null;
 };

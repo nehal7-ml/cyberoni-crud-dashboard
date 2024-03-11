@@ -25,7 +25,7 @@ async function Events({ params }: { params: { page: string } }) {
 
           return (
             <TableItem
-              type="referrals"
+              type="discounts"
               key={value.id}
               index={value.id}
               row={row}

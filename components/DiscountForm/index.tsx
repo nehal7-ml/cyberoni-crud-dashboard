@@ -22,7 +22,7 @@ function DiscountsForm({ initial, method, action
     const [discountData, setDiscountData] = useState<CreateDiscountDTO>(initial as CreateDiscountDTO || {
         name: '',
         value: 0,
-        expires: undefined
+        expires: null
 
 
     });
@@ -99,8 +99,9 @@ function DiscountsForm({ initial, method, action
                                             ...prev,
                                             expires: new Date(),
                                         }));
-                                    else setDiscountData((prev) => ({ ...prev, expires: undefined }));
+                                    else setDiscountData((prev) => ({ ...prev, expires: null }));
                                 }}
+                                checked={discountData.expires ? true : false}
                                 id="expiry"
                                 type="checkbox"
                             ></input>
