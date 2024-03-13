@@ -7,7 +7,7 @@ import { HttpError } from "@/lib/utils";
 
 async function create(blog: CreateBlogDTO, prismaClient: PrismaClient) {
   const blogs = prismaClient.blog;
-  let createdblog = await blogs.create({
+  let createdBlog = await blogs.create({
     data: {
       ...blog,
       images: await connectImages(blog.images, []),
@@ -25,7 +25,7 @@ async function create(blog: CreateBlogDTO, prismaClient: PrismaClient) {
       }
     }
   });
-  return createdblog;
+  return createdBlog;
 }
 
 async function update(
@@ -63,14 +63,14 @@ async function update(
 
 async function remove(blogId: string, prismaClient: PrismaClient) {
   const blogs = prismaClient.blog;
-  const existingblog = await blogs.findUnique({ where: { id: blogId } });
-  if (existingblog) {
+  const existingBlog = await blogs.findUnique({ where: { id: blogId } });
+  if (existingBlog) {
     await blogs.delete({ where: { id: blogId } });
   }
 }
 async function read(blogId: string, prismaClient: PrismaClient) {
   const blogs = prismaClient.blog;
-  const existingblog = await blogs.findUnique({
+  const existingBlog = await blogs.findUnique({
     where: { id: blogId },
     select: {
       userId: false,
@@ -92,7 +92,7 @@ async function read(blogId: string, prismaClient: PrismaClient) {
       images: true,
     },
   });
-  if (existingblog) return existingblog;
+  if (existingBlog) return existingBlog;
 }
 
 async function getAll(
