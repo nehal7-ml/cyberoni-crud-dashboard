@@ -1,4 +1,5 @@
 import { google } from 'googleapis';
+import { HttpError } from "./utils";
 
 let serviceEmail = process.env.GOOGLE_SERVICE_EMAIL;
 let key = process.env.GOOGLE_SERVICE_KEY;
@@ -21,26 +22,9 @@ export type IndexingRequest = {
 export async function requestIndexing(request: IndexingRequest[]) {
     try {
         const tokens = await jwtClient.authorize();
-        let options = {
-            url: "https://indexing.googleapis.com/v3/urlNotifications:publish",
-        };
 
         for (let item of request) {
-            try {
-                const res = await fetch(options.url, {
-                    method: 'POST',
-                    headers: {
-                        "Content-Type": "application/json",
-                        "Authorization": `Bearer ${tokens?.access_token}`,
-                    },
-                    body: JSON.stringify(item)
-                })
-                const resJson = await res.json()
-                console.log(resJson);
-            } catch (error) {
-                console.log(error);
-
-            }
+            await indexPage(item, tokens.access_token!)
         }
 
         return true
@@ -54,3 +38,34 @@ export async function requestIndexing(request: IndexingRequest[]) {
 
 }
 
+
+export async function indexPage(request: IndexingRequest, accessToken?: string) {
+    let options = {
+        url: "https://indexing.googleapis.com/v3/urlNotifications:publish",
+    };
+
+    let token = ""
+
+    if (!accessToken) token = (await jwtClient.authorize()).access_token as string;
+
+    else token = accessToken
+
+    if (!token) throw HttpError(401, "Token invalid");
+    try {
+        const res = await fetch(options.url, {
+            method: 'POST',
+            headers: {
+                "Content-Type": "application/json",
+                "Authorization": `Bearer ${token}`,
+            },
+            body: JSON.stringify(request)
+        })
+        const resJson = await res.json()
+        return resJson
+    } catch (error) {
+        console.log(error);
+
+    }
+
+
+}

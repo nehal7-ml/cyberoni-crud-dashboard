@@ -1,3 +1,5 @@
+import slugify from "slugify";
+
 export interface HttpError extends Error {
   status: number;
   message: string;
@@ -181,4 +183,11 @@ export function addAutoFormatParameter(url: string): string {
   const urlWithAutoFormat = `${url.slice(0, indexOfVersion)}/f_auto${url.slice(indexOfVersion)}`;
 
   return urlWithAutoFormat;
+}
+export function seoUrl(title: string, id: string) {
+  return encodeURIComponent(slugify(`${title} ${id}`, {
+    replacement: '-'
+  }))
+
+
 }
