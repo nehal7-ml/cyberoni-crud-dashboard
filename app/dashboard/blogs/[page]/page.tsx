@@ -1,8 +1,9 @@
+import FeaturedCheckbox from "@/components/BlogForm/FeaturedCheckBox";
 import Pagination from "@/components/Pagination";
 import Table from "@/components/Table";
 import { TableItem } from "@/components/TableItem";
 import { getAll } from "@/crud/blog";
-import { DisplayBlogDTO } from "@/crud/DTOs";
+import { CreateBlogDTO, DisplayBlogDTO } from "@/crud/DTOs";
 import { prisma } from "@/lib/prisma";
 import { Check } from "lucide-react";
 import React from "react";
@@ -20,7 +21,7 @@ async function Blogs({ params }: { params: { page: string } }) {
           const row: any = [];
           row.push(value.title);
           row.push(
-            value.featured ? <Check className="text-green-500" /> : <></>,
+            <FeaturedCheckbox initial={value as CreateBlogDTO} action={`/api/blogs/${value.id}`} />,
           );
           row.push(value.date.toLocaleDateString());
           row.push(
