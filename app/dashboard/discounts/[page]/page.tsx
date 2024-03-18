@@ -14,7 +14,7 @@ async function Events({ params }: { params: { page: string } }) {
 
   return (
     <main className="flex flex-col items-center py-5">
-      <Table view={false}  headers={[ "Discount Code", "Value", "expires"]}>
+      <Table view={false} headers={["Discount Code", "Value", "expires"]}>
         {(data?.records as Discount[]).map((value, index) => {
           const row: any = [];
           row.push(<CopyButton text={value.name} />);

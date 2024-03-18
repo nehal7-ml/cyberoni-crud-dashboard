@@ -36,7 +36,11 @@ const AddImagesAndTags: React.FC<AddImagesAndTagsProps> = ({
         onImagesChange={onImageChange}
         maxImages={maxImages}
       ></AddImage>
-      <AddTags maxTags={maxTags} defaultTags={tags} onTagsChange={onTagsChange}></AddTags>
+      <AddTags
+        maxTags={maxTags}
+        defaultTags={tags}
+        onTagsChange={onTagsChange}
+      ></AddTags>
     </div>
   );
 };

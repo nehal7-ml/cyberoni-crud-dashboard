@@ -7,7 +7,7 @@ function Table({
   children,
 }: {
   headers: string[];
-    view: boolean;
+  view: boolean;
   children: JSX.Element[] | undefined;
 }) {
   return (

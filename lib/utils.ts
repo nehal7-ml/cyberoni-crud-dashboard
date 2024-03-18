@@ -1,4 +1,4 @@
-import slugify from "slugify"
+import slugify from "slugify";
 export interface HttpError extends Error {
   status: number;
   message: string;
@@ -191,9 +191,9 @@ export function getBaseUrl() {
 }
 
 export function seoUrl(title: string, id: string) {
-  return encodeURIComponent(slugify(`${title} ${id}`, {
-    replacement: '-'
-  }))
-
-
+  return encodeURIComponent(
+    slugify(`${title} ${id}`, {
+      replacement: "-",
+    }),
+  );
 }

@@ -2,24 +2,25 @@
 import { CreateTagDTO } from "@/crud/DTOs";
 import React, { useEffect, useState } from "react";
 import Notification, { toast } from "../Notification";
-import * as z from 'zod';
+import * as z from "zod";
 
 // Define a Zod schema for tag names
-const TagNameSchema = z.string().regex(/^[a-zA-Z0-9-_;:]+$/).max(50);
-
+const TagNameSchema = z
+  .string()
+  .regex(/^[a-zA-Z0-9-_;:]+$/)
+  .max(50);
 
 function AddTags({
   defaultTags,
   onTagsChange,
-  maxTags
+  maxTags,
 }: {
   defaultTags?: CreateTagDTO[];
-    maxTags?: number;
+  maxTags?: number;
   onTagsChange: (tags: CreateTagDTO[]) => void;
 }) {
   const [tags, setTags] = useState<CreateTagDTO[]>(defaultTags || []);
   const [newTagName, setNewTagName] = useState("");
-
 
   const handleRemoveTag = (tagToRemove: CreateTagDTO) => {
     let newTags = tags.filter((tag) => tag.name !== tagToRemove.name);
@@ -36,7 +37,7 @@ function AddTags({
         .filter((tag) => {
           let valid = tag.trim() !== "";
           if (!valid) {
-            toast("Invalid tag name", { type: 'error', autoClose: 3000 });
+            toast("Invalid tag name", { type: "error", autoClose: 3000 });
             return false;
           }
           try {
@@ -44,7 +45,7 @@ function AddTags({
             TagNameSchema.parse(tag.trim());
             return true;
           } catch (error) {
-            toast("Invalid tag name", { type: 'error', autoClose: 3000 });
+            toast("Invalid tag name", { type: "error", autoClose: 3000 });
             return false;
           }
         })
@@ -54,9 +55,12 @@ function AddTags({
       if (newTags.length > (maxTags || 10)) {
         setNewTagName("");
 
-        toast(`Max ${maxTags || 10} allowed`, { type: 'error', autoClose: 3000 })
+        toast(`Max ${maxTags || 10} allowed`, {
+          type: "error",
+          autoClose: 3000,
+        });
 
-        return
+        return;
       }
       setTags(newTags);
       setNewTagName("");

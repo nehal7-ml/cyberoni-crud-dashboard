@@ -4,10 +4,12 @@ import { CreateImageDTO } from "@/crud/DTOs";
 import { CreateGptPromptDTO } from "@/crud/DTOs";
 import { CreateTagDTO } from "@/crud/DTOs";
 import React, { useState } from "react";
-import Notification, { NotificationType, toast } from "@/components/Notification";
+import Notification, {
+  NotificationType,
+  toast,
+} from "@/components/Notification";
 import ListInput from "../ListInput";
 import { redirect, useRouter } from "next/navigation";
-
 
 const GptPromptForm = ({
   method,
@@ -83,8 +85,8 @@ const GptPromptForm = ({
 
   function message(type: NotificationType, message: string) {
     toast(message, {
-      type
-    })
+      type,
+    });
   }
   function handleChangedImage(images: CreateImageDTO[], tags: CreateTagDTO[]) {
     setGptPromptData((prevData) => ({

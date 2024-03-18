@@ -4,14 +4,16 @@ import { CreateImageDTO } from "@/crud/DTOs";
 import { CreateProductDTO } from "@/crud/product";
 import { CreateTagDTO } from "@/crud/DTOs";
 import React, { ChangeEvent, useEffect, useState } from "react";
-import Notification, { NotificationType, toast } from "@/components/Notification";
+import Notification, {
+  NotificationType,
+  toast,
+} from "@/components/Notification";
 import CreateSupplier from "./CreateSupplier";
 import { CreateSupplierDTO } from "@/crud/supplier";
 import { X } from "lucide-react";
 import { FormProps } from "@/crud/commonDTO";
 import { ProductStatus, Supplier } from "@prisma/client";
 import { redirect, useRouter } from "next/navigation";
-
 
 const ProductForm = ({ method, action, initial }: FormProps) => {
   const [notify, setNotify] = useState(false);
@@ -81,7 +83,7 @@ const ProductForm = ({ method, action, initial }: FormProps) => {
   };
 
   function message(type: NotificationType, message: string) {
-    toast(message, { type })
+    toast(message, { type });
   }
 
   const handleNumberInputChange = (
@@ -129,7 +131,7 @@ const ProductForm = ({ method, action, initial }: FormProps) => {
   }
 
   useEffect(() => {
-    async function fetchSuppliers() { }
+    async function fetchSuppliers() {}
 
     fetchSuppliers();
   }, []);

@@ -33,8 +33,8 @@ function ServiceForm({
 }: {
   method: "POST" | "PUT";
   action: string;
-    initial?: CreateServiceDTO;
-  }) {
+  initial?: CreateServiceDTO;
+}) {
   const [showDialog, setShowDialog] = useState(false);
   const [serviceData, setServiceData] = useState<CreateServiceDTO>(
     initial || {

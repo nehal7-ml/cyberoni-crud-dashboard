@@ -1,6 +1,6 @@
 import React from "react";
 
-function TableHead({ headers }: { headers: string[], view: boolean }) {
+function TableHead({ headers }: { headers: string[]; view: boolean }) {
   return (
     <>
       <thead className="bg-blue-100">

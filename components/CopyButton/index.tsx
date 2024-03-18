@@ -2,11 +2,16 @@
 import { Copy, CopyCheckIcon } from "lucide-react";
 import React, { useState } from "react";
 
-const CopyButton = ({ text, showText }: { text: string, showText?: boolean }) => {
+const CopyButton = ({
+  text,
+  showText,
+}: {
+  text: string;
+  showText?: boolean;
+}) => {
   const [copied, setCopied] = useState(false);
 
   const copyToClipboard = (e: React.MouseEvent<HTMLButtonElement>) => {
-
     e.stopPropagation();
 
     navigator.clipboard
@@ -23,7 +28,9 @@ const CopyButton = ({ text, showText }: { text: string, showText?: boolean }) =>
 
   return (
     <div className="flex gap-3">
-      {showText ? <div className="w-40 overflow-clip text-ellipsis">{text}</div> : null}
+      {showText ? (
+        <div className="w-40 overflow-clip text-ellipsis">{text}</div>
+      ) : null}
       <button onClick={copyToClipboard} className="p-3">
         {copied ? <CopyCheckIcon className="text-green-400" /> : <Copy />}
       </button>

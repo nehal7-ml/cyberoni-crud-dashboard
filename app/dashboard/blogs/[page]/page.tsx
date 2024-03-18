@@ -24,7 +24,10 @@ async function Blogs({ params }: { params: { page: string } }) {
           const row: any = [];
           row.push(value.title);
           row.push(
-            <FeaturedCheckbox initial={value as CreateBlogDTO} action={`/api/blogs/${value.id}`} />,
+            <FeaturedCheckbox
+              initial={value as CreateBlogDTO}
+              action={`/api/blogs/${value.id}`}
+            />,
           );
           row.push(value.date.toLocaleDateString());
           row.push(

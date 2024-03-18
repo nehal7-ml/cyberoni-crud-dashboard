@@ -5,7 +5,10 @@ import { CreateImageDTO } from "@/crud/DTOs";
 import { CreateUserDTO } from "@/crud/user";
 import { Role } from "@prisma/client";
 import React, { useState } from "react";
-import Notification, { NotificationType, toast } from "@/components/Notification";
+import Notification, {
+  NotificationType,
+  toast,
+} from "@/components/Notification";
 import { FormProps } from "@/crud/commonDTO";
 import PasswordGenerator from "../PasswordInput";
 import { redirect, useRouter } from "next/navigation";
@@ -88,11 +91,9 @@ const UserForm = ({ method, action, initial }: FormProps) => {
   };
 
   function message(type: NotificationType, message: string) {
-    toast( 
-      message, {
-        type: type
-      }
-    )
+    toast(message, {
+      type: type,
+    });
   }
 
   return (

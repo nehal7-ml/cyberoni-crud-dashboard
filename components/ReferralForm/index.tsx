@@ -2,11 +2,13 @@
 import { CreateReferralDTO } from "@/crud/DTOs";
 import { EventStatus, ReferralPriority, ReferralType } from "@prisma/client";
 import React, { FormEvent, useEffect, useRef, useState } from "react";
-import Notification, { NotificationType, toast } from "@/components/Notification";
+import Notification, {
+  NotificationType,
+  toast,
+} from "@/components/Notification";
 import { redirect, useRouter } from "next/navigation";
 import { stripSlashes } from "@/lib/utils";
 import DateInput from "../DateInput";
-
 
 const ReferralForm = ({
   method,
@@ -161,8 +163,8 @@ const ReferralForm = ({
 
   function message(type: NotificationType, message: string) {
     toast(message, {
-      type
-    })
+      type,
+    });
   }
 
   function handleLinkChange(e: React.ChangeEvent<HTMLInputElement>) {

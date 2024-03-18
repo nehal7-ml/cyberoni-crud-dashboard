@@ -16,12 +16,7 @@ async function Services({ params }: { params: { page: string } }) {
     <main className="flex flex-col items-center py-5">
       <Table
         view={true}
-        headers={[
-          "Service Name",
-          "Rate",
-          "value Bought",
-          "skills used",
-        ]}
+        headers={["Service Name", "Rate", "value Bought", "skills used"]}
       >
         {((data?.records as Service[]) || []).map((value, index) => {
           const row: any = [];
