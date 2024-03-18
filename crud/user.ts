@@ -73,6 +73,7 @@ async function update(
     throw { status: 400, message: `User ${user.email} doesn't exists` };
   else {
     let image = await createObject(user.image);
+    const match = await bcrypt.compare(user.password, existingUser.password);
 
     let hashedPassword =
       user.password.length >= 8
@@ -109,7 +110,8 @@ async function update(
         role: user.role,
       },
     });
-    await sendPasswordEmail({ email: user.email, password: user.password });
+
+    if (!match) await sendPasswordEmail({ email: user.email, password: user.password });
 
     return updatedUser;
   }

@@ -30,7 +30,7 @@ export type CreateBlogDTO = {
   tags: CreateTagDTO[];
 };
 
-export type DisplayBlogDTO = Blog & { author: User };
+export type DisplayBlogDTO = Blog & { author: User, tags: Tag[], images: Image[] };
 export type CreateImageDTO = {
   id?: string | undefined;
   name?: string | undefined | null;

@@ -1,9 +1,11 @@
+import FeaturedCheckbox from "@/components/BlogForm/FeaturedCheckBox";
 import Pagination from "@/components/Pagination";
 import Table from "@/components/Table";
 import { TableItem } from "@/components/TableItem";
 import { getAll } from "@/crud/blog";
-import { DisplayBlogDTO } from "@/crud/DTOs";
+import { CreateBlogDTO, DisplayBlogDTO } from "@/crud/DTOs";
 import { prisma } from "@/lib/prisma";
+import { seoUrl } from "@/lib/utils";
 import { Check } from "lucide-react";
 import React from "react";
 
@@ -11,16 +13,18 @@ export const dynamic = "force-dynamic";
 async function Blogs({ params }: { params: { page: string } }) {
   const page = parseInt(params.page);
   const data = (await getData(page)) || { records: [], totalPages: 0 };
+
   return (
     <main className="flex flex-col items-center py-5">
       <Table
-        headers={["View", "Title", "Featured", "Date", "Author", "Template"]}
+        view={true}
+        headers={["Title", "Featured", "Date", "Author", "Template"]}
       >
         {(data?.records as DisplayBlogDTO[]).map((value, index) => {
           const row: any = [];
           row.push(value.title);
           row.push(
-            value.featured ? <Check className="text-green-500" /> : <></>,
+            <FeaturedCheckbox initial={value as CreateBlogDTO} action={`/api/blogs/${value.id}`} />,
           );
           row.push(value.date.toLocaleDateString());
           row.push(
@@ -36,6 +40,7 @@ async function Blogs({ params }: { params: { page: string } }) {
               key={value.id}
               index={value.id}
               row={row}
+              viewLink={`${process.env.NEXT_PUBLIC_APP_URL}/blogs/post/${seoUrl(value.title, value.id)}`}
             ></TableItem>
           );
         })}

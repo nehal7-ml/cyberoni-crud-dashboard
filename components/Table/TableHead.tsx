@@ -1,12 +1,15 @@
 import React from "react";
 
-function TableHead({ headers }: { headers: string[] }) {
+function TableHead({ headers }: { headers: string[], view: boolean }) {
   return (
     <>
       <thead className="bg-blue-100">
         <tr>
           <th className="px-6 py-4 text-center text-sm font-medium text-gray-900">
             Delete Row
+          </th>
+          <th className="px-6 py-4 text-center text-sm font-medium text-gray-900">
+            View
           </th>
           {headers.map((item: string, index: number) => {
             return (
