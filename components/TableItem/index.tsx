@@ -1,8 +1,9 @@
-import { Delete } from "lucide-react";
+"use client";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import React, { DetailedHTMLProps, ReactNode } from "react";
 import DeleteButton from "./DeleteButton";
+import CopyButton from "../CopyButton";
 
 interface TableItemProps
   extends DetailedHTMLProps<
@@ -10,26 +11,42 @@ interface TableItemProps
     HTMLTableRowElement
   > {
   row: (string | ReactNode)[];
+  viewLink: string;
   index: string;
   key: string | number;
   type: string;
 }
 export function TableItem(props: TableItemProps) {
+  const router = useRouter();
+
+  function onClick() {
+    router.push(`/dashboard/${props.type}/view/${props.index}`);
+  }
   return (
     <tr
-      onClick={props.onClick}
+      onClick={onClick}
       className="border-b-2 hover:cursor-pointer hover:border-x-blue-800 hover:shadow-lg"
     >
       <td>
         <DeleteButton url={`/api/${props.type}/${props.index}`}></DeleteButton>
       </td>
 
-      <td className="whitespace-nowrap px-6 py-4 text-center text-sm font-light text-blue-600 underline">
-        <Link href={`/dashboard/${props.type}/view/${props.index}`}>
-          {" "}
-          {`${props.type}/view/${props.index}`}
-        </Link>
-      </td>
+      {props.viewLink !== "/" ? (
+        <td className="whitespace-nowrap px-6 py-4 text-center text-sm font-light text-blue-600 underline">
+          <div
+            onClick={(e) => e.stopPropagation()}
+            className="flex items-center justify-center"
+          >
+            <Link
+              className="w-40 overflow-clip text-ellipsis"
+              href={props.viewLink}
+            >
+              {props.viewLink}
+            </Link>
+            <CopyButton showText={false} text={`${props.viewLink}`} />
+          </div>
+        </td>
+      ) : null}
       {props.row.map((item, index: number) => {
         return (
           <td

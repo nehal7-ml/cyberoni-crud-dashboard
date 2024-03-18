@@ -13,8 +13,8 @@ async function Users({ params }: { params: { page: string } }) {
   return (
     <main className="flex flex-col items-center  py-5">
       <Table
+      view={false}
         headers={[
-          "View",
           "First Name",
           "Last Name",
           "Email",
@@ -32,6 +32,7 @@ async function Users({ params }: { params: { page: string } }) {
 
           return (
             <TableItem
+            viewLink="/"
               type="users"
               key={value.id}
               index={value.id}

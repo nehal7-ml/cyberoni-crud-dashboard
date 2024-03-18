@@ -13,6 +13,7 @@ async function Products({ params }: { params: { page: string } }) {
   return (
     <main className="flex flex-col items-center  py-5">
       <Table
+        view={false}
         headers={[
           "no.",
           "SKU",
@@ -38,6 +39,7 @@ async function Products({ params }: { params: { page: string } }) {
               key={value.id}
               index={value.id}
               row={row}
+              viewLink="/"
             ></TableItem>
           );
         })}

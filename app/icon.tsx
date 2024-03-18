@@ -37,7 +37,8 @@ export default function Icon() {
             left: "2px",
             bottom: "0px",
             color: "black",
-            zIndex: 10,
+            zIndex: "10"
+
           }}
         >
           <svg
@@ -59,7 +60,6 @@ export default function Icon() {
         </div>
         <img
           style={{
-            zIndex: 0,
             height: "100%",
             width: "100%",
             objectFit: "cover",
