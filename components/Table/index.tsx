@@ -3,9 +3,11 @@ import TableHead from "./TableHead";
 
 function Table({
   headers,
+  view,
   children,
 }: {
   headers: string[];
+    view: boolean;
   children: JSX.Element[] | undefined;
 }) {
   return (
@@ -15,7 +17,7 @@ function Table({
           <div className="inline-block min-w-full">
             <div className="overflow-hidden">
               <table className="min-w-full">
-                <TableHead headers={headers}></TableHead>
+                <TableHead view={view} headers={headers}></TableHead>
                 <tbody>{children}</tbody>
               </table>
             </div>

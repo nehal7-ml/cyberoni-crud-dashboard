@@ -62,9 +62,9 @@ function FeaturedCheckbox({ initial, action }: { initial: CreateBlogDTO, action:
     }
 
 
-    return (<div>
+    return (<div className="p-3" onClick={e => e.stopPropagation()}>
         <input
-            className="outline-green-400 text-green-500"
+            className="outline-green-400 text-green-500 cursor-pointer ring-green-500"
             type="checkbox"
             checked={blogData.featured}
             onChange={updateFeatured}

@@ -7,13 +7,14 @@ import { getAllRecordsDTO } from "@/crud/commonDTO";
 import React from "react";
 import { prisma } from "@/lib/prisma";
 import { CaseStudy } from "@prisma/client";
+import { seoUrl } from "@/lib/utils";
 export const dynamic = "force-dynamic";
 async function Blogs({ params }: { params: { page: string } }) {
   const page = parseInt(params.page);
   const data = (await getData(page)) || { records: [], totalPages: 0 };
   return (
     <main className="flex flex-col items-center py-5">
-      <Table headers={["View", "Title", "goals", "preview"]}>
+      <Table view={false} headers={["Title", "goals", "preview"]}>
         {(data?.records as CaseStudy[]).map((value, index) => {
           const row: any = [];
           row.push(value.title);
@@ -25,6 +26,7 @@ async function Blogs({ params }: { params: { page: string } }) {
               key={value.id}
               index={value.id}
               row={row}
+              viewLink={`${process.env.NEXT_PUBLIC_APP_URL}/caseStudies/${seoUrl(value.title, value.id)}`}
             ></TableItem>
           );
         })}
