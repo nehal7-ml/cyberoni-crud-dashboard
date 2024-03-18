@@ -7,7 +7,7 @@ import { getAllRecordsDTO } from "@/crud/commonDTO";
 import React from "react";
 import { prisma } from "@/lib/prisma";
 import { CaseStudy } from "@prisma/client";
-import { seoUrl } from "@/lib/utils";
+import { seoUrl, stripSlashes } from "@/lib/utils";
 export const dynamic = "force-dynamic";
 async function Blogs({ params }: { params: { page: string } }) {
   const page = parseInt(params.page);
@@ -26,7 +26,7 @@ async function Blogs({ params }: { params: { page: string } }) {
               key={value.id}
               index={value.id}
               row={row}
-              viewLink={`${process.env.NEXT_PUBLIC_APP_URL}/caseStudies/${seoUrl(value.title, value.id)}`}
+              viewLink={`${stripSlashes(process.env.NEXT_PUBLIC_APP_URL!)}/caseStudies/${seoUrl(value.title, value.id)}`}
             ></TableItem>
           );
         })}

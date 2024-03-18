@@ -5,7 +5,7 @@ import { TableItem } from "@/components/TableItem";
 import { getAll } from "@/crud/blog";
 import { CreateBlogDTO, DisplayBlogDTO } from "@/crud/DTOs";
 import { prisma } from "@/lib/prisma";
-import { seoUrl } from "@/lib/utils";
+import { seoUrl, stripSlashes } from "@/lib/utils";
 import { Check } from "lucide-react";
 import React from "react";
 
@@ -40,7 +40,7 @@ async function Blogs({ params }: { params: { page: string } }) {
               key={value.id}
               index={value.id}
               row={row}
-              viewLink={`${process.env.NEXT_PUBLIC_APP_URL}/blogs/post/${seoUrl(value.title, value.id)}`}
+              viewLink={`${stripSlashes(process.env.NEXT_PUBLIC_APP_URL!)}/blogs/post/${seoUrl(value.title, value.id)}`}
             ></TableItem>
           );
         })}
