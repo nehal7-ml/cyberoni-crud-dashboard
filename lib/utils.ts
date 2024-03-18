@@ -184,11 +184,8 @@ export function addAutoFormatParameter(url: string): string {
   return urlWithAutoFormat;
 }
 
-
-export function seoUrl(title: string, id: string) {
-  return encodeURIComponent(slugify(`${title} ${id}`, {
-    replacement: '-'
-  }))
-
-
+export function getBaseUrl() {
+  if (typeof window !== "undefined") return window.location.origin;
+  if (process.env.VERCEL_URL) return `https://${process.env.VERCEL_URL}`;
+  return `http://localhost:${process.env.PORT ?? 3000}`;
 }
