@@ -17,7 +17,6 @@ interface TableItemProps
   type: string;
 }
 export function TableItem(props: TableItemProps) {
-
   const router = useRouter();
 
   function onClick() {
@@ -32,14 +31,22 @@ export function TableItem(props: TableItemProps) {
         <DeleteButton url={`/api/${props.type}/${props.index}`}></DeleteButton>
       </td>
 
-      {props.viewLink !== '/' ? <td className="whitespace-nowrap px-6 py-4 text-center text-sm font-light text-blue-600 underline">
-        <div onClick={e => e.stopPropagation()} className="flex justify-center items-center">
-          <Link className="w-40 overflow-clip text-ellipsis" href={props.viewLink}>
-            {props.viewLink}
-          </Link>
-          <CopyButton showText={false} text={`${props.viewLink}`} />
-        </div>
-      </td> : null}
+      {props.viewLink !== "/" ? (
+        <td className="whitespace-nowrap px-6 py-4 text-center text-sm font-light text-blue-600 underline">
+          <div
+            onClick={(e) => e.stopPropagation()}
+            className="flex items-center justify-center"
+          >
+            <Link
+              className="w-40 overflow-clip text-ellipsis"
+              href={props.viewLink}
+            >
+              {props.viewLink}
+            </Link>
+            <CopyButton showText={false} text={`${props.viewLink}`} />
+          </div>
+        </td>
+      ) : null}
       {props.row.map((item, index: number) => {
         return (
           <td
