@@ -26,11 +26,7 @@ export async function requestIndexing(request: IndexingRequest[]) {
         for (let item of request) {
             const res = await indexPage(item, tokens.access_token!)
         }
-
-
         return true
-
-
     } catch (error) {
         console.log(error);
         return false

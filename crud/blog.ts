@@ -146,12 +146,16 @@ async function getAll(
 
 export async function updateIndex(blogId: string, BlogTitle: string, type: "URL_UPDATED" | "URL_DELETED") {
   if (process.env.NODE_ENV !== 'production') return;
-  const baseUrl = process.env.HOST
-  const req = await indexPage({
-    url: `${baseUrl}/blogs/post/${seoUrl(BlogTitle, blogId)}`,
-    type: type
-  })
+  try {
+    const baseUrl = process.env.HOST
+    const req = await indexPage({
+      url: `${baseUrl}/blogs/post/${seoUrl(BlogTitle, blogId)}`,
+      type: type
+    })
 
+  } catch (error) {
+    console.log(error);
+  }
 }
 
 export { create, update, remove, read, getAll };
