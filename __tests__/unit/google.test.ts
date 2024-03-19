@@ -11,11 +11,11 @@ describe("Google indexing service tests", () => {
     it("tests that authorized requests can be made from service accounts", async () => {
 
         const requests: IndexingRequest[] = [{
-            url: "https://data-driven-cyber-oni-chi.vercel.app/blogs",
+            url: "https://www.cybershoptech.com/blogs",
             type: "URL_UPDATED"
         },
         {
-            url: "https://data-driven-cyber-oni-chi.vercel.app/services",
+            url: "https://www.cybershoptech.com/services",
             type: "URL_UPDATED"
         },
     
