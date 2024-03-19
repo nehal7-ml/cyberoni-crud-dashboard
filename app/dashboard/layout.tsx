@@ -22,7 +22,7 @@ export default function DashboardLayout({
           <CreateRecordButton className="col-span-2 flex justify-end"></CreateRecordButton>
         </div>
 
-        <div className="col-span-4 row-span-5 pr-5">{children}</div>
+        <div className="relative h-full pr-5">{children}</div>
       </div>
     </section>
   );

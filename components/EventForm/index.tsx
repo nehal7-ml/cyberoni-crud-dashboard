@@ -5,9 +5,11 @@ import { CreateImageDTO } from "@/crud/DTOs";
 import { CreateTagDTO } from "@/crud/DTOs";
 import { EventStatus } from "@prisma/client";
 import React, { useEffect, useState } from "react";
-import Notification, { NotificationType, toast } from "@/components/Notification";
+import Notification, {
+  NotificationType,
+  toast,
+} from "@/components/Notification";
 import { redirect, useRouter } from "next/navigation";
-
 
 const EventForm = ({
   method,

@@ -1,6 +1,8 @@
+import { getBaseUrl } from "@/lib/utils";
 import { LockKeyhole } from "lucide-react";
 import { ImageResponse } from "next/og";
-
+// Route segment config
+export const runtime = "edge";
 // Image metadata
 export const size = {
   width: 32,
@@ -35,7 +37,7 @@ export default function Icon() {
             left: "2px",
             bottom: "0px",
             color: "black",
-            zIndex: 10,
+            zIndex: "10",
           }}
         >
           <svg
@@ -57,12 +59,12 @@ export default function Icon() {
         </div>
         <img
           style={{
-            zIndex: 0,
             height: "100%",
             width: "100%",
             objectFit: "cover",
           }}
-          src={`${process.env.NEXTAUTH_URL}/images/logo.png`}
+          alt="favicon"
+          src={`${getBaseUrl()}/images/logo.png`}
         ></img>
       </div>
     ),

@@ -13,14 +13,8 @@ async function Users({ params }: { params: { page: string } }) {
   return (
     <main className="flex flex-col items-center  py-5">
       <Table
-        headers={[
-          "View",
-          "First Name",
-          "Last Name",
-          "Email",
-          "Email Verified",
-          "Role",
-        ]}
+        view={false}
+        headers={["First Name", "Last Name", "Email", "Email Verified", "Role"]}
       >
         {(data?.records as DisplayUserDTO[]).map((value, index) => {
           const row: any = [];
@@ -32,6 +26,7 @@ async function Users({ params }: { params: { page: string } }) {
 
           return (
             <TableItem
+              viewLink="/"
               type="users"
               key={value.id}
               index={value.id}

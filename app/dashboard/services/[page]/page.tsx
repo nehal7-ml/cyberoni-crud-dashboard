@@ -4,6 +4,7 @@ import { TableItem } from "@/components/TableItem";
 import { getAllRecordsDTO } from "@/crud/commonDTO";
 import { getAll } from "@/crud/service";
 import { prisma } from "@/lib/prisma";
+import { seoUrl, stripSlashes } from "@/lib/utils";
 import { Service } from "@prisma/client";
 import React from "react";
 export const dynamic = "force-dynamic";
@@ -14,13 +15,8 @@ async function Services({ params }: { params: { page: string } }) {
   return (
     <main className="flex flex-col items-center py-5">
       <Table
-        headers={[
-          "view",
-          "Service Name",
-          "Rate",
-          "value Bought",
-          "skills used",
-        ]}
+        view={true}
+        headers={["Service Name", "Rate", "value Bought", "skills used"]}
       >
         {((data?.records as Service[]) || []).map((value, index) => {
           const row: any = [];
@@ -35,6 +31,7 @@ async function Services({ params }: { params: { page: string } }) {
               key={value.id}
               index={value.id}
               row={row}
+              viewLink={`${stripSlashes(process.env.NEXT_PUBLIC_APP_URL!)}/services/${seoUrl(value.title, value.id)}`}
             ></TableItem>
           );
         })}

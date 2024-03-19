@@ -13,7 +13,10 @@ async function Events({ params }: { params: { page: string } }) {
 
   return (
     <main className="flex flex-col items-center py-5">
-      <Table headers={["no.", "Name", "Date", "Location", "Link", "Status"]}>
+      <Table
+        view={true}
+        headers={["no.", "Name", "Date", "Location", "Link", "Status"]}
+      >
         {(data?.records as Event[]).map((value, index) => {
           const row: any = [];
           row.push(value.name);
@@ -28,6 +31,7 @@ async function Events({ params }: { params: { page: string } }) {
               key={value.id}
               index={value.id}
               row={row}
+              viewLink={value.eventLink}
             ></TableItem>
           );
         })}

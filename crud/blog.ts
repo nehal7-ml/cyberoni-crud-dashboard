@@ -113,10 +113,24 @@ async function getAll(
     skip: (page - 1) * pageSize,
     take: pageSize,
     where: {},
-    include: {
-      // reviews: true,
+    select: {
+      userId: false,
+      content: true,
+      date: true,
+      description: true,
+      featured: true,
+      id: true,
+      title: true,
+      subTitle: true,
+      publishDate: true,
+      author: {
+        select: {
+          id: true,
+          email: true,
+        },
+      },
       tags: true,
-      author: true,
+      images: true,
     },
     orderBy: {
       date: "desc",
