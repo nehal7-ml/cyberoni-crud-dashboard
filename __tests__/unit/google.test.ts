@@ -22,7 +22,6 @@ describe("Google indexing service tests", () => {
     
     ]
         const res = await requestIndexing(requests);
-
         expect(res).toBe(true);
 
 

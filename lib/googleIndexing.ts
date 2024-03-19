@@ -24,8 +24,9 @@ export async function requestIndexing(request: IndexingRequest[]) {
         const tokens = await jwtClient.authorize();
 
         for (let item of request) {
-            await indexPage(item, tokens.access_token!)
+            const res = await indexPage(item, tokens.access_token!)
         }
+
 
         return true
 
@@ -51,21 +52,16 @@ export async function indexPage(request: IndexingRequest, accessToken?: string) 
     else token = accessToken
 
     if (!token) throw HttpError(401, "Token invalid");
-    try {
-        const res = await fetch(options.url, {
-            method: 'POST',
-            headers: {
-                "Content-Type": "application/json",
-                "Authorization": `Bearer ${token}`,
-            },
-            body: JSON.stringify(request)
-        })
-        const resJson = await res.json()
-        return resJson
-    } catch (error) {
-        console.log(error);
-
-    }
-
+    const res = await fetch(options.url, {
+        method: 'POST',
+        headers: {
+            "Content-Type": "application/json",
+            "Authorization": `Bearer ${token}`,
+        },
+        body: JSON.stringify(request)
+    })
+    const resJson = await res.json()
+    if (res.status !== 200) throw HttpError(res.status, resJson.error.message)
+    return resJson
 
 }
