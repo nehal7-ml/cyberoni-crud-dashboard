@@ -110,8 +110,8 @@ async function getAll(
     throw new Error("page size must be 10, 30 or 50");
 
   let allBlogs = await blogs.findMany({
-    skip: (page - 1) * pageSize,
-    take: pageSize,
+    skip: page === 0 ? 0 : (page - 1) * pageSize,
+    take: page === 0 ? 9999 : pageSize,
     where: {},
     select: {
       userId: false,
