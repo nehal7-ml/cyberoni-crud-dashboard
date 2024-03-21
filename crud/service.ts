@@ -22,7 +22,8 @@ import {
 } from "./subService";
 
 import { CreateServiceDTO } from "./DTOs";
-import { HttpError } from "@/lib/utils";
+import { HttpError, seoUrl } from "@/lib/utils";
+import { indexPage } from "@/lib/googleIndexing";
 
 async function create(service: CreateServiceDTO, prismaClient: PrismaClient) {
   const services = prismaClient.service;
@@ -63,6 +64,7 @@ async function create(service: CreateServiceDTO, prismaClient: PrismaClient) {
       },
     },
   });
+  await updateIndex(createdService.id, createdService.title, "URL_UPDATED")
 
   return createdService;
 }
@@ -132,24 +134,26 @@ async function update(
       ServiceDescription: true,
     },
   });
+  await updateIndex(updatedService.id, updatedService.title, "URL_UPDATED")
 
   return updatedService;
 }
 async function remove(serviceId: string, prismaClient: PrismaClient) {
   const services = prismaClient.service;
-  const existingservice = await services.findUnique({
+  const existingService = await services.findUnique({
     where: { id: serviceId },
   });
-  if (existingservice) {
+  if (existingService) {
     await services.delete({
       where: { id: serviceId },
       include: { SubServices: true, ServiceDescription: true, image: true },
     });
+    await updateIndex(existingService.id, existingService.title, "URL_DELETED")
   }
 }
 async function read(serviceId: string, prismaClient: PrismaClient) {
   const services = prismaClient.service;
-  const existingservice = await services.findUnique({
+  const existingService = await services.findUnique({
     where: { id: serviceId },
     include: {
       SubServices: {
@@ -167,7 +171,7 @@ async function read(serviceId: string, prismaClient: PrismaClient) {
       tags: true,
     },
   });
-  if (existingservice) return existingservice;
+  if (existingService) return existingService;
 }
 
 async function getServicesByName(
@@ -307,4 +311,20 @@ async function updateServiceDescriptionObject(
 
   return createOrUpdateOrDelete;
 }
+
+
+export async function updateIndex(serviceId: string, serviceTitle: string, type: "URL_UPDATED" | "URL_DELETED") {
+  if (process.env.NODE_ENV !== 'production') return;
+  try {
+    const baseUrl = process.env.HOST
+    const req = await indexPage({
+      url: `${baseUrl}/services/${seoUrl(serviceTitle, serviceId)}`,
+      type: type
+    })
+
+  } catch (error) {
+    console.log(error);
+  }
+}
+
 export { create, update, remove, read, getAll };
