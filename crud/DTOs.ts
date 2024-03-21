@@ -122,7 +122,26 @@ export type CreateGptPromptDTO = {
   tags: CreateTagDTO[];
   image?: CreateImageDTO | null;
   botUrl?: string;
+  conversationStarters: {},
+  seed: number,
+  startPhrase: string
+  SysCommands: GptSysCommands
+  steps: {}
+  stream: boolean
+  toolChoice: string,
+  timestamp_granularities: [],
+  tools: {}
+  variables: {}
+
 };
+
+export type GptSysCommands ={
+  [x:string]: {
+    priority: 'HIGH' | 'MEDIUM' | 'LOW',
+    context: string,
+    example: string
+  }
+}
 export type DisplayPrompt = GptPrompt & {
   stop: string[];
   reviews?: Review[];
