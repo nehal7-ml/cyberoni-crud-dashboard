@@ -186,3 +186,100 @@ export const ServiceSchema = {
         },
     },
 };
+
+
+export const sysCommandsSchema = {
+    "type": "object",
+    "patternProperties": {
+        ".*": {
+            "type": "object",
+            "properties": {
+                "priority": {
+                    "type": "string",
+                    "enum": ["HIGH", "MEDIUM", "LOW"]
+                },
+                "context": {
+                    "type": "string"
+                },
+                "example": {
+                    "type": "string"
+                }
+            },
+            "required": ["priority", "context", "example"],
+            "additionalProperties": false
+        }
+    },
+    "additionalProperties": false
+}
+
+export const GptStepsSchema = {
+    "type": "array",
+    "items": {
+      "type": "object",
+      "properties": {
+        "index": {
+          "type": "number"
+        },
+        "command": {
+          "type": "string"
+        },
+        "callTo": {
+          "oneOf": [
+            {
+              "type": "string",
+              "enum": ["@LLM"]
+            },
+            {
+              "type": "number"
+            }
+          ]
+        },
+        "priority": {
+          "type": "string",
+          "enum": ["HIGH", "MEDIUM", "LOW"]
+        },
+        "context": {
+          "type": "string"
+        },
+        "goal": {
+          "type": "string"
+        }
+      },
+      "required": ["index", "command", "callTo", "priority", "context", "goal"],
+      "additionalProperties": false
+    }
+}
+
+export const GptVariablesSchema = {
+    "type": "array",
+    "items": {
+        "type": "object",
+        "properties": {
+            "title": {
+                "type": "string"
+            },
+            "description": {
+                "type": "string"
+            }
+        },
+        "required": ["title", "description"],
+        "additionalProperties": false
+    }
+}
+
+export const GptConversationStartersSchema = {
+    "type": "array",
+    "items": {
+        "type": "object",
+        "properties": {
+            "title": {
+                "type": "string"
+            },
+            "description": {
+                "type": "string"
+            }
+        },
+        "required": ["title", "description"],
+        "additionalProperties": false
+    }
+}

@@ -10,6 +10,11 @@ import Notification, {
 } from "@/components/Notification";
 import ListInput from "../ListInput";
 import { redirect, useRouter } from "next/navigation";
+import { JSONSchemaType, SomeJSONSchema } from "ajv/dist/types/json-schema";
+import { GptConversationStartersSchema, GptStepsSchema, GptVariablesSchema, sysCommandsSchema } from "@/crud/jsonSchemas";
+import Tooltip from "../shared/ToolTip";
+import { InfoIcon } from "lucide-react";
+import Ajv from "ajv";
 
 const GptPromptForm = ({
   method,
@@ -41,11 +46,28 @@ const GptPromptForm = ({
       timesIntegrated: 0,
       costPerToken: 0,
       profitMargin: 0,
+      seed: 0,
+      conversationStarters: [],
+      startPhrase: "",
+      steps: [],
+      stream: true,
+      sysCommands: {},
+      toolChoice: "",
+      tools: [],
+      variables: [],
       tags: [],
       image: undefined,
-      botUrl: undefined,
+      botUrl: "",
     },
   );
+
+  const [jsonValues, setJsonValues] = useState({
+    conversationStarters: "",
+    steps: "",
+    sysCommands: "",
+    variables: "",
+
+  });
 
   const handleInputChange = (
     e: React.ChangeEvent<
@@ -111,9 +133,44 @@ const GptPromptForm = ({
     }));
   }
 
+  function handleJsonInputs(name: string, value: string, schema: any) {
+    const ajv = new Ajv()
+    const validate = ajv.compile(schema);
+    try {
+      const newData = JSON.parse(value);
+
+      const valid = validate(newData);
+
+      if (!valid) {
+        toast(`${validate.errors
+          ?.map(
+            (err) =>
+              `${err.instancePath} ${err.message} (${err.schemaPath}) `,
+          )
+          .join("\n")}`, {
+          type: "error",
+        })
+
+      } else {
+        setGptPromptData((prevData) => ({
+          ...prevData,
+          [name]: newData
+        }))
+
+        toast('Parsed Sucessfully', { type: 'success' })
+      }
+    } catch (error) {
+
+
+      toast("Invalid JSON: " + error, {
+        type: "error",
+      })
+    }
+  }
+
   return (
     <div className="light:bg-gray-100 light:text-black flex max-h-screen items-center justify-center p-2 dark:bg-gray-700 dark:text-gray-800">
-      <div className="m-1 max-h-screen w-full max-w-md overflow-scroll rounded bg-white p-8 shadow-md">
+      <div className="m-1 max-h-screen h-full w-full  overflow-scroll rounded bg-white p-8 shadow-md">
         <h2 className="mb-4 text-2xl font-semibold">
           {method === "POST" ? "Create" : "Update"} GPT Prompt
         </h2>
@@ -181,6 +238,114 @@ const GptPromptForm = ({
               value={gptPromptData.botUrl}
               onChange={handleInputChange}
             />
+          </div>
+
+          <div className="mb-4">
+            <div className="flex">
+              <label htmlFor="sysCommands">System commands</label>
+
+            </div>
+            <div className="flex flex-col justify-center items-center gap-2">
+              < textarea
+                rows={7}
+                className="mt-1 w-full rounded border p-2"
+                placeholder={`Json input for  Sys commands eg:
+                {
+                  "!": {
+                  "Priority": "High",
+                  "Context": "This command emphasizes the importance of the text on that line, indicating it should take precedence over other text in the prompt.",
+                  "Example": "!Act as a ..!"
+                },
+              
+              }`}
+                name="sysCommands"
+                value={jsonValues.sysCommands}
+                onChange={(e) => setJsonValues(prev => ({ ...prev, [e.target.name]: e.target.value }))}
+              />
+              <button className="text-white bg-blue-500 rounded-md p-2" type="button" onClick={() => handleJsonInputs('sysCommands', jsonValues.sysCommands, sysCommandsSchema)}>Parse Json</button>
+            </div>
+          </div>
+          <div className="mb-4">
+            <div className="flex">
+              <label htmlFor="sysCommands">Steps: </label>
+
+            </div>
+            <div className="flex flex-col justify-center items-center gap-2">
+              < textarea
+                rows={7}
+                className="mt-1 w-full rounded border p-2"
+                placeholder={`Json input for  Steps eg:
+                [
+                  {
+                    "index" : 1,
+                    "step": "Add the ! to the beginning of the line",
+                    "command": "➔",
+                    "callTo" : "@LLM or #step#"
+                    "priority": "Medium",
+                    "context": "Curly braces denote a placeholder for a variable within a step. This indicates that specific information or content is needed for the step to be completed."
+                    "goal" : "Intended goal of the step ",
+                  }
+
+                ]
+              
+              `}
+                name="steps"
+                value={jsonValues.steps}
+                onChange={(e) => setJsonValues(prev => ({ ...prev, [e.target.name]: e.target.value }))}
+              />
+              <button className="text-white bg-blue-500 rounded-md p-2" type="button" onClick={() => handleJsonInputs('steps', jsonValues.steps, GptStepsSchema)}>Parse Json</button>
+            </div>
+          </div>
+          <div className="mb-4">
+            <div className="flex">
+              <label htmlFor="sysCommands">Variables Needed</label>
+            </div>
+            <div className="flex flex-col justify-center items-center gap-2">
+              < textarea
+                rows={7}
+                className="mt-1 w-full rounded border p-2"
+                placeholder={`Json input for  Steps eg:
+                [
+                  {
+                    "title": "snake_case_variable",
+                    "description": "Short description of the variable"
+                  }
+                ]
+              
+              `}
+                name="variables"
+                value={jsonValues.variables}
+                onChange={(e) => setJsonValues(prev => ({ ...prev, [e.target.name]: e.target.value }))}
+              />
+              <button className="text-white bg-blue-500 rounded-md p-2" type="button" onClick={() => handleJsonInputs('variables', jsonValues.variables, GptVariablesSchema)}>Parse Json</button>
+            </div>
+          </div>
+
+          <div className="mb-4">
+            <div className="flex">
+              <label htmlFor="sysCommands">Conversation Starters</label>
+
+            </div>
+            <div className="flex flex-col justify-center items-center gap-2">
+              < textarea
+                rows={7}
+                className="mt-1 w-full rounded border p-2"
+                placeholder={`Json input for  Conversation starters eg:
+                [
+                  {
+                    "title": "Let's  create a blog about sensationalized blog titles for Cyberoni.",
+                    "description": "This step involves generating clickbait-style blog titles to attract readers, aligning with transactional intent topics for Cyberoni's technology audience."
+                  }
+
+                ]
+              
+              `}
+                name="conversationStarters"
+                value={jsonValues.conversationStarters}
+                onChange={(e) => setJsonValues(prev => ({ ...prev, [e.target.name]: e.target.value }))}
+              />
+              <button className="text-white bg-blue-500 rounded-md p-2" type="button" onClick={() => handleJsonInputs('conversationStarters', jsonValues.conversationStarters, GptConversationStartersSchema)}>Parse Json</button>
+            </div>
           </div>
           <div className="mb-4">
             <ListInput
@@ -266,6 +431,7 @@ const GptPromptForm = ({
           <AddImagesAndTags
             maxImages={1}
             onImagesAndTagsChange={handleChangedImage}
+            maxTags={10}
           ></AddImagesAndTags>
 
           <button

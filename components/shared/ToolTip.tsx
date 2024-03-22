@@ -45,7 +45,7 @@ const Tooltip: React.FC<TooltipProps> = ({ text, children }) => {
         <div className="relative inline-block">
             <div className="relative group" ref={tooltipContainerRef}  >
                 {children}
-                <div ref={tooltipRef} className={`absolute z-[99999] ${position === 'above' ? 'mb-8 bottom-0 left-0' : 'mt-2 top-full right-0'} text-center px-2 py-1 bg-gray-800 text-white text-xs rounded-md opacity-0 group-hover:opacity-100 transition-opacity duration-300 ease-in-out`}>
+                <div ref={tooltipRef} className={`absolute w-64 z-[99999] ${position === 'above' ? 'mb-8 bottom-0 left-0' : 'mt-2 top-full right-0'} text-center px-2 py-1 bg-gray-800 text-white text-xs rounded-md opacity-0 group-hover:opacity-100 transition-opacity duration-300 ease-in-out`}>
                     {text}
                     <svg className={`absolute text-gray-800 h-2 w-full ${position === 'above' ? 'left-0 top-full' : 'left-0 bottom-full rotate-180'}`} x="0px" y="0px" viewBox="0 0 255 255">
                         <polygon className="fill-current" points="0,0 127.5,127.5 255,0" />

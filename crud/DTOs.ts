@@ -40,7 +40,7 @@ export type CreateServiceDTO = {
   title: string;
   previewContent: string;
   featured: boolean;
-  ServiceDescription: CreateServiceDescription[] 
+  ServiceDescription: CreateServiceDescription[]
   hourlyRate: number;
   valueBrought: string[];
   skillsUsed: string[];
@@ -122,21 +122,37 @@ export type CreateGptPromptDTO = {
   tags: CreateTagDTO[];
   image?: CreateImageDTO | null;
   botUrl?: string;
-  conversationStarters: {},
+  conversationStarters: GptConvoStarters[],
   seed: number,
   startPhrase: string
-  SysCommands: GptSysCommands
-  steps: {}
+  sysCommands: GptSysCommands
+  steps: GptSteps[]
   stream: boolean
   toolChoice: string,
-  timestamp_granularities: [],
   tools: {}
-  variables: {}
+  variables: {
+    title: string,
+    description: string
+  }[]
 
 };
 
-export type GptSysCommands ={
-  [x:string]: {
+export type GptSteps = {
+  index: number,
+  command: string,
+  callTo: "@LLM" | number
+  priority: 'HIGH' | 'MEDIUM' | 'LOW',
+  context: string
+  goal: string,
+}
+
+export type GptConvoStarters = {
+  title: string;
+  description: string
+}
+
+export type GptSysCommands = {
+  [x: string]: {
     priority: 'HIGH' | 'MEDIUM' | 'LOW',
     context: string,
     example: string
@@ -205,18 +221,18 @@ export type CreateReferralDTO = {
   redirect: string;
   click: number;
   utmProps:
-    | {
-        utm_medium: string;
-        utm_campaign: string;
-        utm_source: string;
-        utm_segment: string;
-        utm_product_category: string;
-        utm_communication_theme: string;
-        utm_ad_type: string;
-        utm_funnel_location: string;
-        utm_earned_or_paid: "earned" | "paid";
-      }
-    | {};
+  | {
+    utm_medium: string;
+    utm_campaign: string;
+    utm_source: string;
+    utm_segment: string;
+    utm_product_category: string;
+    utm_communication_theme: string;
+    utm_ad_type: string;
+    utm_funnel_location: string;
+    utm_earned_or_paid: "earned" | "paid";
+  }
+  | {};
 };
 export type CreateCaseStudy = {
   id?: string;
