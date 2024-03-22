@@ -62,10 +62,10 @@ const GptPromptForm = ({
   );
 
   const [jsonValues, setJsonValues] = useState({
-    conversationStarters: "",
-    steps: "",
-    sysCommands: "",
-    variables: "",
+    conversationStarters: initial && initial.conversationStarters?  JSON.stringify(initial.conversationStarters, null, 2): "",
+    steps:initial && initial.steps?  JSON.stringify(initial.steps, null, 2): "",
+    sysCommands: initial && initial.sysCommands?  JSON.stringify(initial.sysCommands, null, 2): "",
+    variables: initial && initial.variables?  JSON.stringify(initial.variables, null, 2): "",
 
   });
 
