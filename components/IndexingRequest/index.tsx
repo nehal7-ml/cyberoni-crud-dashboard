@@ -41,7 +41,7 @@ function IndexingRequest() {
                             <SearchCheck />
                             Request Indexing
                         </button>
-                        <button onClick={() => setInfoModal((prev) => !prev)}><InfoIcon /></button>
+                        <button type="button" onClick={() => setInfoModal((prev) => !prev)}><InfoIcon /></button>
                     </div>
                 </Tooltip>
             </form>
