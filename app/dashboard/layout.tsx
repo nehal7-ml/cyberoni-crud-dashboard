@@ -18,8 +18,10 @@ export default function DashboardLayout({
     <section className="grid h-full w-full grid-cols-12 gap-2">
       <SidePanel className="col-span-2 h-screen  max-h-screen"></SidePanel>
       <div className="col-span-10 h-screen">
-        <div className="flex justify-between items-center py-3">
-          <div className="col-span-2"><IndexingRequest /></div>
+        <div className="flex items-center justify-between py-3">
+          <div className="col-span-2">
+            <IndexingRequest />
+          </div>
           <CreateRecordButton className="col-span-2 flex justify-end"></CreateRecordButton>
         </div>
 
