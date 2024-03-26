@@ -57,6 +57,7 @@ export default function Icon() {
             <path d="m15.5 7.5 3 3L22 7l-3-3" />
           </svg>
         </div>
+        {/* eslint-disable-next-line @next/next/no-img-element */}
         <img
           style={{
             height: "100%",

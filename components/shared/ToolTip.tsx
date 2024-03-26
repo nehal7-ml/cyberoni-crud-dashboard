@@ -45,7 +45,7 @@ const Tooltip: React.FC<TooltipProps> = ({ text, children }) => {
         {children}
         <div
           ref={tooltipRef}
-          className={`absolute z-[99999] w-64 ${position === "above" ? "bottom-0 left-0 mb-8" : "right-0 top-full mt-2"} rounded-md bg-gray-800 px-2 py-1 text-center text-xs text-white opacity-0 transition-opacity duration-300 ease-in-out group-hover:opacity-100`}
+          className={`absolute z-[99999] ${position === "above" ? "bottom-0 left-0 mb-8" : "right-0 top-full mt-2"} rounded-md bg-gray-800 px-2 py-1 text-center text-xs text-white opacity-0 transition-opacity duration-300 ease-in-out group-hover:opacity-100`}
         >
           {text}
           <svg
