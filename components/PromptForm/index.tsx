@@ -10,6 +10,21 @@ import Notification, {
 } from "@/components/Notification";
 import ListInput from "../ListInput";
 import { redirect, useRouter } from "next/navigation";
+import { JSONSchemaType, SomeJSONSchema } from "ajv/dist/types/json-schema";
+import {
+  GptConversationStartersSchema,
+  GptStepsSchema,
+  GptVariablesSchema,
+  sysCommandsSchema,
+} from "@/crud/jsonSchemas";
+import Tooltip from "../shared/ToolTip";
+import { InfoIcon } from "lucide-react";
+import Ajv from "ajv";
+import DynamicInput, { FormSchema } from "../DynamicInput";
+import { conversationStartersProperties, stepProperties, sysCommandProperties, variablesNeededProperties } from "./formSchema";
+
+
+
 
 const GptPromptForm = ({
   method,
@@ -41,11 +56,37 @@ const GptPromptForm = ({
       timesIntegrated: 0,
       costPerToken: 0,
       profitMargin: 0,
+      seed: 0,
+      conversationStarters: [],
+      startPhrase: "",
+      steps: [],
+      stream: true,
+      sysCommands: {},
+      toolChoice: "",
+      tools: [],
+      variables: [],
       tags: [],
       image: undefined,
-      botUrl: undefined,
+      botUrl: "",
     },
   );
+
+  const [jsonValues, setJsonValues] = useState({
+    conversationStarters:
+      initial && initial.conversationStarters
+        ? JSON.stringify(initial.conversationStarters, null, 2)
+        : "",
+    steps:
+      initial && initial.steps ? JSON.stringify(initial.steps, null, 2) : "",
+    sysCommands:
+      initial && initial.sysCommands
+        ? JSON.stringify(initial.sysCommands, null, 2)
+        : "",
+    variables:
+      initial && initial.variables
+        ? JSON.stringify(initial.variables, null, 2)
+        : "",
+  });
 
   const handleInputChange = (
     e: React.ChangeEvent<
@@ -68,6 +109,7 @@ const GptPromptForm = ({
     };
     // Send the userData to your backend for creating the user
 
+    console.log(gptPromptData);
     const res = await fetch(`${action}`, {
       method,
       body: JSON.stringify(gptPromptData),
@@ -111,9 +153,44 @@ const GptPromptForm = ({
     }));
   }
 
+  function handleJsonInputs(name: string, value: string, schema: any) {
+    const ajv = new Ajv();
+    const validate = ajv.compile(schema);
+    try {
+      const newData = JSON.parse(value);
+
+      const valid = validate(newData);
+
+      if (!valid) {
+        toast(
+          `${validate.errors
+            ?.map(
+              (err) =>
+                `${err.instancePath} ${err.message} (${err.schemaPath}) `,
+            )
+            .join("\n")}`,
+          {
+            type: "error",
+          },
+        );
+      } else {
+        setGptPromptData((prevData) => ({
+          ...prevData,
+          [name]: newData,
+        }));
+
+        toast("Parsed Sucessfully", { type: "success" });
+      }
+    } catch (error) {
+      toast("Invalid JSON: " + error, {
+        type: "error",
+      });
+    }
+  }
+
   return (
     <div className="light:bg-gray-100 light:text-black flex max-h-screen items-center justify-center p-2 dark:bg-gray-700 dark:text-gray-800">
-      <div className="m-1 max-h-screen w-full max-w-md overflow-scroll rounded bg-white p-8 shadow-md">
+      <div className="m-1 h-full max-h-screen w-full  overflow-scroll rounded bg-white p-8 shadow-md">
         <h2 className="mb-4 text-2xl font-semibold">
           {method === "POST" ? "Create" : "Update"} GPT Prompt
         </h2>
@@ -182,6 +259,22 @@ const GptPromptForm = ({
               onChange={handleInputChange}
             />
           </div>
+
+          <div className="mb-4">
+            <DynamicInput schema={sysCommandProperties} onChange={(data) => (setGptPromptData((prev) => ({ ...prev, sysCommands: data })))} defaultValue={gptPromptData.sysCommands} />
+          </div>
+          <div>
+            <DynamicInput schema={stepProperties} defaultValue={gptPromptData.steps} onChange={(data) => (setGptPromptData((prev) => ({ ...prev, steps: data })))} />
+          </div>
+          <div>
+            <DynamicInput schema={variablesNeededProperties} defaultValue={gptPromptData.variables} onChange={(data) => (setGptPromptData((prev) => ({ ...prev, variables: data })))} />
+          </div>
+          <div>
+            <DynamicInput schema={conversationStartersProperties} defaultValue={gptPromptData.conversationStarters} onChange={(data) => (setGptPromptData((prev) => ({ ...prev, conversationStarters: data })))} />
+          </div>
+
+
+
           <div className="mb-4">
             <ListInput
               initial={gptPromptData.stop}
@@ -266,6 +359,7 @@ const GptPromptForm = ({
           <AddImagesAndTags
             maxImages={1}
             onImagesAndTagsChange={handleChangedImage}
+            maxTags={10}
           ></AddImagesAndTags>
 
           <button

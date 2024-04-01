@@ -10,7 +10,31 @@ async function create(prompt: CreateGptPromptDTO, prismaClient: PrismaClient) {
   const prompts = prismaClient.gptPrompt;
   let createdprompt = await prompts.create({
     data: {
-      ...prompt,
+      description: prompt.description,
+      best_of: prompt.best_of,
+      botUrl: prompt.botUrl,
+      conversationStarters: prompt.conversationStarters,
+      costPerToken: prompt.costPerToken,
+      frequency_penalty: prompt.frequency_penalty,
+      model: prompt.model,
+      presence_penalty: prompt.presence_penalty,
+      max_tokens: prompt.max_tokens,
+      prompt: prompt.prompt,
+      profitMargin: prompt.profitMargin,
+      seed: prompt.seed,
+      startPhrase: prompt.startPhrase,
+      sysCommands: prompt.sysCommands,
+      steps: prompt.steps,
+      stop : prompt.stop,
+      stream  : prompt.stream,
+      toolChoice: prompt.toolChoice,
+      temperature: prompt.temperature,
+      timesIntegrated: 0,
+      timesUsed: 0,
+      title: prompt.title,
+      top_p: prompt.top_p,
+      tools: {},
+      variables: prompt.variables,
       tags: { connectOrCreate: connectTag(prompt.tags, []).connectOrCreate },
       image: prompt.image ? { connect: { id: prompt.image.id! } } : {},
     },
@@ -45,15 +69,16 @@ async function remove(promptId: string, prismaClient: PrismaClient) {
 }
 async function read(promptId: string, prismaClient: PrismaClient) {
   const prompts = prismaClient.gptPrompt;
-  const existingprompt = await prompts.findUnique({
+  const existingPrompt = await prompts.findUnique({
     where: { id: promptId },
     include: {
       reviews: true,
       image: true,
       tags: true,
+      tools: true
     },
   });
-  if (existingprompt) return existingprompt as DisplayPrompt;
+  if (existingPrompt) return existingPrompt 
 }
 async function getAll(
   page: number,
