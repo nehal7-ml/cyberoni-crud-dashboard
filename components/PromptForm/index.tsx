@@ -20,6 +20,11 @@ import {
 import Tooltip from "../shared/ToolTip";
 import { InfoIcon } from "lucide-react";
 import Ajv from "ajv";
+import DynamicInput, { FormSchema } from "../DynamicInput";
+import { conversationStartersProperties, stepProperties, sysCommandProperties, variablesNeededProperties } from "./formSchema";
+
+
+
 
 const GptPromptForm = ({
   method,
@@ -104,6 +109,7 @@ const GptPromptForm = ({
     };
     // Send the userData to your backend for creating the user
 
+    console.log(gptPromptData);
     const res = await fetch(`${action}`, {
       method,
       body: JSON.stringify(gptPromptData),
@@ -255,173 +261,20 @@ const GptPromptForm = ({
           </div>
 
           <div className="mb-4">
-            <div className="flex">
-              <label htmlFor="sysCommands">System commands</label>
-            </div>
-            <div className="flex flex-col items-center justify-center gap-2">
-              <textarea
-                rows={7}
-                className="mt-1 w-full rounded border p-2"
-                placeholder={`Json input for  Sys commands eg:
-                {
-                  "!": {
-                  "Priority": "High",
-                  "Context": "This command emphasizes the importance of the text on that line, indicating it should take precedence over other text in the prompt.",
-                  "Example": "!Act as a ..!"
-                },
-              
-              }`}
-                name="sysCommands"
-                value={jsonValues.sysCommands}
-                onChange={(e) =>
-                  setJsonValues((prev) => ({
-                    ...prev,
-                    [e.target.name]: e.target.value,
-                  }))
-                }
-              />
-              <button
-                className="rounded-md bg-blue-500 p-2 text-white"
-                type="button"
-                onClick={() =>
-                  handleJsonInputs(
-                    "sysCommands",
-                    jsonValues.sysCommands,
-                    sysCommandsSchema,
-                  )
-                }
-              >
-                Parse Json
-              </button>
-            </div>
+            <DynamicInput schema={sysCommandProperties} onChange={(data) => (setGptPromptData((prev) => ({ ...prev, sysCommands: data })))} defaultValue={gptPromptData.sysCommands} />
           </div>
-          <div className="mb-4">
-            <div className="flex">
-              <label htmlFor="sysCommands">Steps: </label>
-            </div>
-            <div className="flex flex-col items-center justify-center gap-2">
-              <textarea
-                rows={7}
-                className="mt-1 w-full rounded border p-2"
-                placeholder={`Json input for  Steps eg:
-                [
-                  {
-                    "index" : 1,
-                    "step": "Add the ! to the beginning of the line",
-                    "command": "➔",
-                    "callTo" : "@LLM or #step#"
-                    "priority": "Medium",
-                    "context": "Curly braces denote a placeholder for a variable within a step. This indicates that specific information or content is needed for the step to be completed."
-                    "goal" : "Intended goal of the step ",
-                  }
-
-                ]
-              
-              `}
-                name="steps"
-                value={jsonValues.steps}
-                onChange={(e) =>
-                  setJsonValues((prev) => ({
-                    ...prev,
-                    [e.target.name]: e.target.value,
-                  }))
-                }
-              />
-              <button
-                className="rounded-md bg-blue-500 p-2 text-white"
-                type="button"
-                onClick={() =>
-                  handleJsonInputs("steps", jsonValues.steps, GptStepsSchema)
-                }
-              >
-                Parse Json
-              </button>
-            </div>
+          <div>
+            <DynamicInput schema={stepProperties} defaultValue={gptPromptData.steps} onChange={(data) => (setGptPromptData((prev) => ({ ...prev, steps: data })))} />
           </div>
-          <div className="mb-4">
-            <div className="flex">
-              <label htmlFor="sysCommands">Variables Needed</label>
-            </div>
-            <div className="flex flex-col items-center justify-center gap-2">
-              <textarea
-                rows={7}
-                className="mt-1 w-full rounded border p-2"
-                placeholder={`Json input for  Steps eg:
-                [
-                  {
-                    "title": "snake_case_variable",
-                    "description": "Short description of the variable"
-                  }
-                ]
-              
-              `}
-                name="variables"
-                value={jsonValues.variables}
-                onChange={(e) =>
-                  setJsonValues((prev) => ({
-                    ...prev,
-                    [e.target.name]: e.target.value,
-                  }))
-                }
-              />
-              <button
-                className="rounded-md bg-blue-500 p-2 text-white"
-                type="button"
-                onClick={() =>
-                  handleJsonInputs(
-                    "variables",
-                    jsonValues.variables,
-                    GptVariablesSchema,
-                  )
-                }
-              >
-                Parse Json
-              </button>
-            </div>
+          <div>
+            <DynamicInput schema={variablesNeededProperties} defaultValue={gptPromptData.variables} onChange={(data) => (setGptPromptData((prev) => ({ ...prev, variables: data })))} />
+          </div>
+          <div>
+            <DynamicInput schema={conversationStartersProperties} defaultValue={gptPromptData.conversationStarters} onChange={(data) => (setGptPromptData((prev) => ({ ...prev, conversationStarters: data })))} />
           </div>
 
-          <div className="mb-4">
-            <div className="flex">
-              <label htmlFor="sysCommands">Conversation Starters</label>
-            </div>
-            <div className="flex flex-col items-center justify-center gap-2">
-              <textarea
-                rows={7}
-                className="mt-1 w-full rounded border p-2"
-                placeholder={`Json input for  Conversation starters eg:
-                [
-                  {
-                    "title": "Let's  create a blog about sensationalized blog titles for Cyberoni.",
-                    "description": "This step involves generating clickbait-style blog titles to attract readers, aligning with transactional intent topics for Cyberoni's technology audience."
-                  }
 
-                ]
-              
-              `}
-                name="conversationStarters"
-                value={jsonValues.conversationStarters}
-                onChange={(e) =>
-                  setJsonValues((prev) => ({
-                    ...prev,
-                    [e.target.name]: e.target.value,
-                  }))
-                }
-              />
-              <button
-                className="rounded-md bg-blue-500 p-2 text-white"
-                type="button"
-                onClick={() =>
-                  handleJsonInputs(
-                    "conversationStarters",
-                    jsonValues.conversationStarters,
-                    GptConversationStartersSchema,
-                  )
-                }
-              >
-                Parse Json
-              </button>
-            </div>
-          </div>
+
           <div className="mb-4">
             <ListInput
               initial={gptPromptData.stop}

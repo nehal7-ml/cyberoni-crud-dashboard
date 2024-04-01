@@ -33,7 +33,7 @@ async function create(prompt: CreateGptPromptDTO, prismaClient: PrismaClient) {
       timesUsed: 0,
       title: prompt.title,
       top_p: prompt.top_p,
-      tools: prompt.tools,
+      tools: {},
       variables: prompt.variables,
       tags: { connectOrCreate: connectTag(prompt.tags, []).connectOrCreate },
       image: prompt.image ? { connect: { id: prompt.image.id! } } : {},
