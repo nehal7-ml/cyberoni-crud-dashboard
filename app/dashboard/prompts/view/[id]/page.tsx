@@ -9,13 +9,13 @@ const UpdateGptPromptForm = async ({ params }: { params: { id: string } }) => {
   const res = await read(params.id, prisma);
   if (!res) redirect("/404");
 
-  const { reviews, imageId, ...prompt } = res;
+  const {reviews, ...prompt} = res;
 
   //console.log(prompt);
   return (
     <GptPromptForm
       method="PUT"
-      initial={prompt as CreateGptPromptDTO}
+      initial={prompt as unknown as CreateGptPromptDTO}
       action={`/api/prompts/${params.id}`}
     />
   );

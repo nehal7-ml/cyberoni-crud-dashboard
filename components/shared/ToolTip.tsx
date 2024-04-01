@@ -31,7 +31,7 @@ const Tooltip: React.FC<TooltipProps> = ({ text, children }) => {
     }
 
     return () => {
-      if (tooltipContainerRef.current?.addEventListener) {
+      if (tooltipContainerRef.current) {
         tooltipContainerRef.current?.removeEventListener(
           "mouseenter",
           handleFocus,

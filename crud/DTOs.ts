@@ -122,11 +122,11 @@ export type CreateGptPromptDTO = {
   tags: CreateTagDTO[];
   image?: CreateImageDTO | null;
   botUrl?: string;
-  conversationStarters: GptConvoStarters[],
+  conversationStarters: GptConvoStarters[] | [],
   seed: number,
   startPhrase: string
-  sysCommands: GptSysCommands
-  steps: GptSteps[]
+  sysCommands: GptSysCommands| {}
+  steps: GptSteps[] | [],
   stream: boolean
   toolChoice: string,
   tools: {}
@@ -163,6 +163,7 @@ export type DisplayPrompt = GptPrompt & {
   reviews?: Review[];
   image?: Image;
   tags: Tag[];
+  tools: {}
 };
 
 export type CreateOrderDTO = {

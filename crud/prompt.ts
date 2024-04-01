@@ -69,15 +69,16 @@ async function remove(promptId: string, prismaClient: PrismaClient) {
 }
 async function read(promptId: string, prismaClient: PrismaClient) {
   const prompts = prismaClient.gptPrompt;
-  const existingprompt = await prompts.findUnique({
+  const existingPrompt = await prompts.findUnique({
     where: { id: promptId },
     include: {
       reviews: true,
       image: true,
       tags: true,
+      tools: true
     },
   });
-  if (existingprompt) return existingprompt as DisplayPrompt;
+  if (existingPrompt) return existingPrompt 
 }
 async function getAll(
   page: number,
