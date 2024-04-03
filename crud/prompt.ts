@@ -2,7 +2,7 @@ import "server-only";
 import { PrismaClient } from "@prisma/client";
 import { connectOrCreateObject as connectTag } from "./tags";
 import { connectOrCreateObject as connectImage } from "./images";
-import { CreateGptPromptDTO } from "./DTOs";
+import { CreateCategory, CreateGptPromptDTO, CreateTagDTO } from "./DTOs";
 import { DisplayPrompt } from "./DTOs";
 import { HttpError } from "@/lib/utils";
 
@@ -35,6 +35,21 @@ async function create(prompt: CreateGptPromptDTO, prismaClient: PrismaClient) {
       top_p: prompt.top_p,
       tools: {},
       variables: prompt.variables,
+      category: prompt.category? {
+        connectOrCreate: {
+          where: { name: prompt.category.name! },
+          create: {
+            name: prompt.category.name!,
+            parent: prompt.category.parent
+              ? {
+                  connect: {
+                    id: prompt.category.parent.id,
+                  },
+                }
+              : undefined,
+          },
+        },
+      }: undefined,
       tags: { connectOrCreate: connectTag(prompt.tags, []).connectOrCreate },
       image: prompt.image ? { connect: { id: prompt.image.id! } } : {},
     },
@@ -54,6 +69,23 @@ async function update(
     where: { id: promptId },
     data: {
       ...prompt,
+      category: prompt.category
+        ? {
+            connectOrCreate: {
+              where: { name: prompt.category.name! },
+              create: {
+                name: prompt.category.name!,
+                parent: prompt.category.parent
+                  ? {
+                      connect: {
+                        id: prompt.category.parent.id,
+                      },
+                    }
+                  : undefined,
+              },
+            },
+          }
+        : undefined,
       tags: connectTag(prompt.tags, oldPrompt.tags),
       image: prompt.image ? { connect: { id: prompt.image.id! } } : {},
     },
@@ -103,6 +135,35 @@ async function getAll(
   const totalPages = Math.ceil(totalCount / pageSize);
 
   return { records: allPrompts, currentPage: page, totalPages, pageSize };
+}
+export async function addCategories(newCategory: CreateCategory, prismaClient: PrismaClient,) {
+  const categories = prismaClient.gptCategory;
+  const record = await categories.create({
+    data: {
+      name: newCategory.name,
+      children: {
+        create: newCategory.children
+      },
+    }
+  })
+
+  return record
+}
+export async function getCategories(prismaClient: PrismaClient,) {
+  const categories = prismaClient.gptCategory;
+  const records = await categories.findMany({
+    where: {
+      parent: {
+        is: null
+      },
+    },
+    include: {
+      children: true,
+    }
+  })
+
+  return records
+
 }
 
 export { create, update, remove, read, getAll };
