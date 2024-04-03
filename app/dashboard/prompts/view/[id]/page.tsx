@@ -12,6 +12,7 @@ const UpdateGptPromptForm = async ({ params }: { params: { id: string } }) => {
 
   const {reviews, ...prompt} = res;
 
+  console.log(categories[0].children);
   //console.log(prompt);
   return (
     <GptPromptForm

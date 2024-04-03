@@ -128,7 +128,11 @@ function BlogForm({
 
   useEffect(() => {
     if (initial) setBlogData(initial);
-  }, [initial]);
+    if(initial && initial.category && initial.category.parent) {
+      let cat = categories.findIndex((c) => c.id === initial.category?.parent?.id);
+      setCurrentCategory(cat);
+    }
+  }, [categories, initial]);
 
   function handleChangedImageAndTag(
     images: CreateImageDTO[],
@@ -314,7 +318,7 @@ function BlogForm({
                     {currentCategory > -1
                       ? categories[currentCategory].children?.map(
                         (category) => (
-                          <option key={category.id} value={category.id}>
+                          <option key={category.id} value={category.name}>
                             {category.name}
                           </option>
                         ),

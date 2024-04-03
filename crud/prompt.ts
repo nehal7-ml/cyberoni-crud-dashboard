@@ -68,7 +68,31 @@ async function update(
   let UpdatedPrompt = await prompts.update({
     where: { id: promptId },
     data: {
-      ...prompt,
+      description: prompt.description,
+      best_of: prompt.best_of,
+      botUrl: prompt.botUrl,
+      conversationStarters: prompt.conversationStarters,
+      costPerToken: prompt.costPerToken,
+      frequency_penalty: prompt.frequency_penalty,
+      model: prompt.model,
+      presence_penalty: prompt.presence_penalty,
+      max_tokens: prompt.max_tokens,
+      prompt: prompt.prompt,
+      profitMargin: prompt.profitMargin,
+      seed: prompt.seed,
+      startPhrase: prompt.startPhrase,
+      sysCommands: prompt.sysCommands,
+      steps: prompt.steps,
+      stop : prompt.stop,
+      stream  : prompt.stream,
+      toolChoice: prompt.toolChoice,
+      temperature: prompt.temperature,
+      timesIntegrated: 0,
+      timesUsed: 0,
+      title: prompt.title,
+      top_p: prompt.top_p,
+      tools: {},
+      variables: prompt.variables,
       category: prompt.category
         ? {
             connectOrCreate: {
@@ -107,7 +131,12 @@ async function read(promptId: string, prismaClient: PrismaClient) {
       reviews: true,
       image: true,
       tags: true,
-      tools: true
+      tools: true,
+      category:{
+        include: {
+          parent: true
+        }
+      },
     },
   });
   if (existingPrompt) return existingPrompt 

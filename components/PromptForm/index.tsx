@@ -3,7 +3,7 @@ import AddImagesAndTags from "@/components/AddImagesAndTags";
 import { CreateImageDTO, GptCategory } from "@/crud/DTOs";
 import { CreateGptPromptDTO } from "@/crud/DTOs";
 import { CreateTagDTO } from "@/crud/DTOs";
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import Notification, {
   NotificationType,
   toast,
@@ -79,6 +79,13 @@ const GptPromptForm = ({
       botUrl: "",
     },
   );
+
+  useEffect(() => {
+      if(initial && initial.category && initial.category.parent) {
+        let cat = categories.findIndex((c) => c.id === initial.category?.parent?.id);
+        setCurrentCategory(cat);
+      }
+  }, [initial]);
 
   const [jsonValues, setJsonValues] = useState({
     conversationStarters:
@@ -404,7 +411,7 @@ const GptPromptForm = ({
                     {currentCategory > -1
                       ? categories[currentCategory].children?.map(
                         (category) => (
-                          <option key={category.id} value={category.id}>
+                          <option key={category.id} value={category.name}>
                             {category.name}
                           </option>
                         ),
