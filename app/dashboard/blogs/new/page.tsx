@@ -1,10 +1,13 @@
 import BlogForm from "@/components/BlogForm";
-import { read } from "@/crud/blog";
+import { getCategories, read } from "@/crud/blog";
 import { CreateBlogDTO } from "@/crud/DTOs";
 import { prisma } from "@/lib/prisma";
 
 async function CreateBlogForm() {
-  return <BlogForm method="POST" action={`/api/blogs/add`} />;
+  const categories = await getCategories(prisma);
+  console.log(categories);
+
+  return <BlogForm method="POST" action={`/api/blogs/add`} categories={categories} />;
 }
 
 export default CreateBlogForm;

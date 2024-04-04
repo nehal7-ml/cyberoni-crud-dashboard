@@ -23,9 +23,11 @@ function ListInput({
 
   const handleAddTag = () => {
     if (newTagName) {
-      let addedTags = newTagName.trim().split(",");
-      let newTags = [...list, ...addedTags];
-
+      // Split the input by commas, then trim each tag to remove leading/trailing whitespace
+      let addedTags = newTagName.trim().split(",").map(tag => tag.trim());
+      // Filter out any empty strings that might result from the trimming in case of multiple commas
+      let newTags = [...list, ...addedTags.filter(tag => tag !== '')];
+  
       setList(newTags);
       setNewTagName("");
       onChange(newTags);

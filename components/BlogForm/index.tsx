@@ -11,17 +11,24 @@ import Editor from "../RichTextEditor";
 import Ajv from "ajv";
 import addFormats from "ajv-formats";
 import DateInput from "../DateInput";
+import CategoryForm from "./CategoryForm";
 
 const ajv = new Ajv();
 addFormats(ajv);
 const validate = ajv.compile(BlogSchema);
 
 function BlogForm({
+  categories,
   method,
   action,
   initial,
 }: {
   method: "POST" | "PUT";
+    categories: {
+      name: string;
+      id: string;
+      children: { name: string; id: string }[];
+    }[];
   action: string;
   initial?: CreateBlogDTO;
 }) {
@@ -30,6 +37,7 @@ function BlogForm({
   const [notifyType, setNotifyType] = useState<"success" | "fail">("fail");
   const [initialContent, setInitialContent] = useState(initial?.content || "");
 
+  const [currentCategory, setCurrentCategory] = useState(-1);
   const [blogData, setBlogData] = useState<CreateBlogDTO>(
     initial || {
       title: "",
@@ -38,6 +46,7 @@ function BlogForm({
       featured: false,
       date: new Date(),
       publishDate: new Date(),
+      category: undefined,
       content: "",
       author: { email: "" },
       tags: [],
@@ -119,7 +128,11 @@ function BlogForm({
 
   useEffect(() => {
     if (initial) setBlogData(initial);
-  }, [initial]);
+    if(initial && initial.category && initial.category.parent) {
+      let cat = categories.findIndex((c) => c.id === initial.category?.parent?.id);
+      setCurrentCategory(cat);
+    }
+  }, [categories, initial]);
 
   function handleChangedImageAndTag(
     images: CreateImageDTO[],
@@ -266,6 +279,60 @@ function BlogForm({
               />
             </label>
           </div>
+          {categories && categories.length > 0 ? (
+            <>
+              <div className="mb-4">
+                <label className="block text-sm font-medium text-gray-700">
+                  Category:
+                  <select
+                    value={currentCategory}
+                    name="category"
+                    id=""
+                    onChange={(e) => setCurrentCategory(Number(e.target.value))}
+                  >
+                    <option value={-1}>Select Category</option>
+                    {categories?.map((category, index) => (
+                      <option key={category.id} value={index}>
+                        {category.name}
+                      </option>
+                    ))}
+                  </select>
+                </label>
+              </div>
+              <div className="mb-4">
+                <label className="block text-sm font-medium text-gray-700">
+                  Sub-Category:
+                  <select
+                    name="category"
+                    id=""
+                    value={blogData.category?.name ?? -1}
+                    onChange={(e) =>
+                      setBlogData((prev) => ({
+                        ...prev,
+                        category: {
+                          name: e.target.value,
+                          parent: { id: categories[currentCategory].id },
+                        },
+                      }))
+                    }
+                  >
+                    {currentCategory > -1
+                      ? categories[currentCategory].children?.map(
+                        (category) => (
+                          <option key={category.id} value={category.name}>
+                            {category.name}
+                          </option>
+                        ),
+                      )
+                      : null}
+                  </select>
+                </label>
+              </div>
+            </>
+          ) : null}
+          <CategoryForm
+            onAddCategory={(newCat) => (categories = [...categories, newCat])}
+          />
           <div className="mb-4 h-fit">
             <label className="block text-sm font-medium text-gray-700">
               Content:

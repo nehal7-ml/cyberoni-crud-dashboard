@@ -2,7 +2,7 @@ import "server-only";
 import { PrismaClient } from "@prisma/client";
 import { connectOrCreateObject as connectTags } from "./tags";
 import { connectOrCreateObject as connectImages } from "./images";
-import { CreateBlogDTO } from "./DTOs";
+import {  CreateBlogDTO, CreateCategory } from "./DTOs";
 import { HttpError, seoUrl } from "@/lib/utils";
 import { indexPage } from "@/lib/googleIndexing";
 
@@ -11,6 +11,19 @@ async function create(blog: CreateBlogDTO, prismaClient: PrismaClient) {
   let createdBlog = await blogs.create({
     data: {
       ...blog,
+      category: blog.category ? {
+        connectOrCreate: {
+          where: { name: blog.category.name! },
+          create: {
+            name: blog.category.name!,
+            parent: blog.category.parent ? {
+              connect: {
+                id: blog.category.parent.id,
+              }
+            } : undefined,
+          },
+        }
+      } : undefined,
       images: await connectImages(blog.images, []),
       tags: { connectOrCreate: connectTags(blog.tags, []).connectOrCreate },
       author: { connect: { email: blog.author.email } },
@@ -47,6 +60,19 @@ async function update(
     where: { id: blogId },
     data: {
       ...blog,
+      category: blog.category ? {
+        connectOrCreate: {
+          where: { name: blog.category.name },
+          create: {
+            name: blog.category.name,
+            parent: blog.category.parent ? {
+              connect: {
+                id: blog.category.parent.id,
+              }
+            } : undefined,
+          },
+        }
+      } : undefined,
       images: await connectImages(blog.images, oldBlog!.images),
       tags: connectTags(blog.tags, oldBlog?.tags),
       author: { connect: { email: blog.author.email } },
@@ -87,6 +113,11 @@ async function read(blogId: string, prismaClient: PrismaClient) {
       title: true,
       subTitle: true,
       publishDate: true,
+      category: {
+        include: {
+          parent: true,
+        }
+      },
       author: {
         select: {
           id: true,
@@ -142,6 +173,38 @@ async function getAll(
 
   return { records: allBlogs, currentPage: page, totalPages, pageSize };
 }
+
+
+export async function addCategories(newCategory: CreateCategory, prismaClient: PrismaClient,) {
+  const categories = prismaClient.blogCategory;
+  const record = await categories.create({
+    data: {
+      name: newCategory.name,
+      children: {
+        create: newCategory.children
+      }
+    }
+  })
+
+  return record
+}
+export async function getCategories(prismaClient: PrismaClient,) {
+  const categories = prismaClient.blogCategory;
+  const records = await categories.findMany({
+    where: {
+      parent: {
+        is: null
+      },
+    },
+    include: {
+      children: true
+    }
+  })
+
+  return records
+
+}
+
 
 
 export async function updateIndex(blogId: string, BlogTitle: string, type: "URL_UPDATED" | "URL_DELETED") {

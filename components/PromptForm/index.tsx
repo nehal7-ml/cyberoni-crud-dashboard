@@ -1,9 +1,9 @@
 "use client";
 import AddImagesAndTags from "@/components/AddImagesAndTags";
-import { CreateImageDTO } from "@/crud/DTOs";
+import { CreateImageDTO, GptCategory } from "@/crud/DTOs";
 import { CreateGptPromptDTO } from "@/crud/DTOs";
 import { CreateTagDTO } from "@/crud/DTOs";
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import Notification, {
   NotificationType,
   toast,
@@ -22,15 +22,22 @@ import { InfoIcon } from "lucide-react";
 import Ajv from "ajv";
 import DynamicInput, { FormSchema } from "../DynamicInput";
 import { conversationStartersProperties, stepProperties, sysCommandProperties, variablesNeededProperties } from "./formSchema";
+import GptCategoryForm from "./CategoryForm";
 
 
 
 
 const GptPromptForm = ({
   method,
+  categories,
   action,
   initial,
 }: {
+  categories: {
+    name: string;
+    id: string;
+    children: { name: string; id: string }[];
+  }[];
   method: "POST" | "PUT";
   action: string;
   initial?: CreateGptPromptDTO;
@@ -38,10 +45,12 @@ const GptPromptForm = ({
   const [notify, setNotify] = useState(false);
   const [notifyMessage, setNotifyMessage] = useState("");
   const [notifyType, setNotifyType] = useState<"success" | "fail">("fail");
+  const [currentCategory, setCurrentCategory] = useState(-1);
 
   const [gptPromptData, setGptPromptData] = useState<CreateGptPromptDTO>(
     initial || {
       description: "",
+      category: undefined,
       title: "",
       prompt: "",
       model: "",
@@ -70,6 +79,13 @@ const GptPromptForm = ({
       botUrl: "",
     },
   );
+
+  useEffect(() => {
+      if(initial && initial.category && initial.category.parent) {
+        let cat = categories.findIndex((c) => c.id === initial.category?.parent?.id);
+        setCurrentCategory(cat);
+      }
+  }, [categories, initial]);
 
   const [jsonValues, setJsonValues] = useState({
     conversationStarters:
@@ -356,6 +372,60 @@ const GptPromptForm = ({
               />
             </div>
           </div>
+          {categories && categories.length > 0 ? (
+            <>
+              <div className="mb-4">
+                <label className="block text-sm font-medium text-gray-700">
+                  Category:
+                  <select
+                    value={currentCategory}
+                    name="category"
+                    id=""
+                    onChange={(e) => setCurrentCategory(Number(e.target.value))}
+                  >
+                    <option value={-1}>Select Category</option>
+                    {categories?.map((category, index) => (
+                      <option key={category.id} value={index}>
+                        {category.name}
+                      </option>
+                    ))}
+                  </select>
+                </label>
+              </div>
+              <div className="mb-4">
+                <label className="block text-sm font-medium text-gray-700">
+                  Sub-Category:
+                  <select
+                    name="category"
+                    id=""
+                    value={gptPromptData.category?.name ?? -1}
+                    onChange={(e) =>
+                      setGptPromptData((prev) => ({
+                        ...prev,
+                        category: {
+                          name: e.target.value,
+                          parent: { id: categories[currentCategory].id },
+                        },
+                      }))
+                    }
+                  >
+                    {currentCategory > -1
+                      ? categories[currentCategory].children?.map(
+                        (category) => (
+                          <option key={category.id} value={category.name}>
+                            {category.name}
+                          </option>
+                        ),
+                      )
+                      : null}
+                  </select>
+                </label>
+              </div>
+            </>
+          ) : null}
+          <GptCategoryForm
+            onAddCategory={(newCat) => (categories = [...categories, newCat])}
+          />
           <AddImagesAndTags
             maxImages={1}
             onImagesAndTagsChange={handleChangedImage}

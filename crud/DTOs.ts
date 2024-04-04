@@ -28,8 +28,21 @@ export type CreateBlogDTO = {
   author: { id?: string; email: string };
   images: CreateImageDTO[];
   tags: CreateTagDTO[];
+  category?: BlogCategory
+
 };
 
+export type BlogCategory = {
+  id?: string
+  name: string;
+  parent: {
+    id: string;
+  } | null;
+}
+export type CreateCategory = {
+  name: string;  
+  children: {name:string} []
+}
 export type DisplayBlogDTO = Blog & { author: User, tags: Tag[], images: Image[] };
 export type CreateImageDTO = {
   id?: string | undefined;
@@ -108,6 +121,7 @@ export type CreateGptPromptDTO = {
   title: string;
   prompt: string | null;
   model: string | null;
+  category?: GptCategory;
   temperature: number;
   max_tokens: number;
   top_p: number;
@@ -125,7 +139,7 @@ export type CreateGptPromptDTO = {
   conversationStarters: GptConvoStarters[] | [],
   seed: number,
   startPhrase: string
-  sysCommands: GptSysCommands| {}
+  sysCommands: GptSysCommands | {}
   steps: GptSteps[] | [],
   stream: boolean
   toolChoice: string,
@@ -136,7 +150,13 @@ export type CreateGptPromptDTO = {
   }[]
 
 };
-
+export type GptCategory = {
+  id?: string
+  name: string;
+  parent: {
+    id: string;
+  } | null;
+}
 export type GptSteps = {
   index: number,
   command: string,
