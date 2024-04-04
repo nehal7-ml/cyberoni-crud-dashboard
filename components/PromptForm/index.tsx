@@ -85,7 +85,7 @@ const GptPromptForm = ({
         let cat = categories.findIndex((c) => c.id === initial.category?.parent?.id);
         setCurrentCategory(cat);
       }
-  }, [initial]);
+  }, [categories, initial]);
 
   const [jsonValues, setJsonValues] = useState({
     conversationStarters:
@@ -398,6 +398,7 @@ const GptPromptForm = ({
                   <select
                     name="category"
                     id=""
+                    value={gptPromptData.category?.name ?? -1}
                     onChange={(e) =>
                       setGptPromptData((prev) => ({
                         ...prev,

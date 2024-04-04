@@ -305,6 +305,7 @@ function BlogForm({
                   <select
                     name="category"
                     id=""
+                    value={blogData.category?.name ?? -1}
                     onChange={(e) =>
                       setBlogData((prev) => ({
                         ...prev,
