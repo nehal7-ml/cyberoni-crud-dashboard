@@ -10,6 +10,7 @@ import Notification, {
   toast,
 } from "@/components/Notification";
 import { redirect, useRouter } from "next/navigation";
+import LoadingDots from "../shared/loading-dots";
 
 const EventForm = ({
   method,
@@ -20,9 +21,7 @@ const EventForm = ({
   action: string;
   initial?: createEventDTO;
 }) => {
-  const [notify, setNotify] = useState(false);
-  const [notifyMessage, setNotifyMessage] = useState("");
-  const [notifyType, setNotifyType] = useState<"success" | "fail">("fail");
+  const [loading, setLoading] = useState(false);
 
   const [eventData, setEventData] = useState<createEventDTO>(
     initial || {
@@ -70,6 +69,8 @@ const EventForm = ({
   const router = useRouter();
 
   const handleSubmit = async (e: React.FormEvent) => {
+    setLoading(true);
+
     e.preventDefault();
     const apiUrl = process.env.NEXT_PUBLIC_API_URL;
     const headers = {
@@ -90,6 +91,8 @@ const EventForm = ({
     } else {
       message("error", resJson.message);
     }
+    setLoading(false);
+
   };
 
   function message(type: NotificationType, message: string) {
@@ -220,9 +223,11 @@ const EventForm = ({
             onImagesAndTagsChange={handleChangedImage}
           ></AddImagesAndTags>
           <button
+            disabled={loading}
             type="submit"
-            className="w-full rounded bg-blue-500 p-2 text-white hover:bg-blue-600 focus:outline-none focus:ring focus:ring-blue-300"
+            className="w-full flex justify-center items-center rounded bg-blue-500 p-2 text-white hover:bg-blue-600 focus:outline-none focus:ring focus:ring-blue-300"
           >
+            {loading ? <LoadingDots /> : null}
             {method === "POST" ? "Create" : "Update"} Event
           </button>
         </form>

@@ -23,6 +23,7 @@ import Ajv from "ajv";
 import DynamicInput, { FormSchema } from "../DynamicInput";
 import { conversationStartersProperties, stepProperties, sysCommandProperties, variablesNeededProperties } from "./formSchema";
 import GptCategoryForm from "./CategoryForm";
+import LoadingDots from "../shared/loading-dots";
 
 
 
@@ -42,9 +43,8 @@ const GptPromptForm = ({
   action: string;
   initial?: CreateGptPromptDTO;
 }) => {
-  const [notify, setNotify] = useState(false);
-  const [notifyMessage, setNotifyMessage] = useState("");
-  const [notifyType, setNotifyType] = useState<"success" | "fail">("fail");
+  const [loading, setLoading] = useState(true);
+
   const [currentCategory, setCurrentCategory] = useState(-1);
 
   const [gptPromptData, setGptPromptData] = useState<CreateGptPromptDTO>(
@@ -81,10 +81,10 @@ const GptPromptForm = ({
   );
 
   useEffect(() => {
-      if(initial && initial.category && initial.category.parent) {
-        let cat = categories.findIndex((c) => c.id === initial.category?.parent?.id);
-        setCurrentCategory(cat);
-      }
+    if (initial && initial.category && initial.category.parent) {
+      let cat = categories.findIndex((c) => c.id === initial.category?.parent?.id);
+      setCurrentCategory(cat);
+    }
   }, [categories, initial]);
 
   const [jsonValues, setJsonValues] = useState({
@@ -118,6 +118,8 @@ const GptPromptForm = ({
   const router = useRouter();
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    setLoading(true);
+
     const apiUrl = process.env.NEXT_PUBLIC_API_URL;
     const headers = {
       "Content-Type": "application/json",
@@ -139,6 +141,8 @@ const GptPromptForm = ({
     } else {
       message("error", resJson.message);
     }
+    setLoading(false);
+
   };
 
   function message(type: NotificationType, message: string) {
@@ -433,9 +437,11 @@ const GptPromptForm = ({
           ></AddImagesAndTags>
 
           <button
+            disabled={loading}
             type="submit"
-            className="w-full rounded bg-blue-500 p-2 text-white hover:bg-blue-600 focus:outline-none focus:ring focus:ring-blue-300"
+            className="w-full flex justify-center items-center rounded bg-blue-500 p-2 text-white hover:bg-blue-600 focus:outline-none focus:ring focus:ring-blue-300"
           >
+            {loading ? <LoadingDots /> : null}
             {method === "POST" ? "Create" : "Update"} GPT Prompt
           </button>
         </form>

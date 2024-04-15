@@ -12,6 +12,8 @@ import Ajv from "ajv";
 import addFormats from "ajv-formats";
 import DateInput from "../DateInput";
 import CategoryForm from "./CategoryForm";
+import LoadingSpinner from "../shared/loading-spinner";
+import LoadingDots from "../shared/loading-dots";
 
 const ajv = new Ajv();
 addFormats(ajv);
@@ -24,17 +26,16 @@ function BlogForm({
   initial,
 }: {
   method: "POST" | "PUT";
-    categories: {
-      name: string;
-      id: string;
-      children: { name: string; id: string }[];
-    }[];
+  categories: {
+    name: string;
+    id: string;
+    children: { name: string; id: string }[];
+  }[];
   action: string;
   initial?: CreateBlogDTO;
 }) {
-  const [notify, setNotify] = useState(false);
-  const [notifyMessage, setNotifyMessage] = useState("");
-  const [notifyType, setNotifyType] = useState<"success" | "fail">("fail");
+  const [loading, setLoading] = useState(false);
+
   const [initialContent, setInitialContent] = useState(initial?.content || "");
 
   const [currentCategory, setCurrentCategory] = useState(-1);
@@ -90,6 +91,7 @@ function BlogForm({
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    setLoading(true);
     const apiUrl = process.env.NEXT_PUBLIC_API_URL;
     const headers = {
       "Content-Type": "application/json",
@@ -117,6 +119,8 @@ function BlogForm({
         type: "error",
       });
     }
+
+    setLoading(false);
   };
 
   function setQuillData(value: string) {
@@ -128,8 +132,10 @@ function BlogForm({
 
   useEffect(() => {
     if (initial) setBlogData(initial);
-    if(initial && initial.category && initial.category.parent) {
-      let cat = categories.findIndex((c) => c.id === initial.category?.parent?.id);
+    if (initial && initial.category && initial.category.parent) {
+      let cat = categories.findIndex(
+        (c) => c.id === initial.category?.parent?.id,
+      );
       setCurrentCategory(cat);
     }
   }, [categories, initial]);
@@ -318,12 +324,12 @@ function BlogForm({
                   >
                     {currentCategory > -1
                       ? categories[currentCategory].children?.map(
-                        (category) => (
-                          <option key={category.id} value={category.name}>
-                            {category.name}
-                          </option>
-                        ),
-                      )
+                          (category) => (
+                            <option key={category.id} value={category.name}>
+                              {category.name}
+                            </option>
+                          ),
+                        )
                       : null}
                   </select>
                 </label>
@@ -363,9 +369,11 @@ function BlogForm({
             ></AddImagesAndTags>
           </div>
           <button
+            disabled={loading}
             type="submit"
-            className="w-full rounded bg-blue-500 p-2 text-white hover:bg-blue-600 focus:outline-none focus:ring focus:ring-blue-300"
+            className="flex w-full items-center justify-center gap-2 rounded bg-blue-500 p-2 text-white hover:bg-blue-600 focus:outline-none focus:ring focus:ring-blue-300 disabled:bg-gray-400"
           >
+            {loading ? <LoadingDots /> : null}
             {method === "POST" ? "Create Blog" : "Update Blog"}
           </button>
         </form>

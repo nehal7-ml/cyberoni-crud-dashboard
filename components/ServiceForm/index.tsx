@@ -21,6 +21,7 @@ import DescriptionForm from "./DescriptionSection";
 import ListInput from "../ListInput";
 import { useRouter } from "next/navigation";
 import Ajv from "ajv";
+import LoadingDots from "../shared/loading-dots";
 
 const ajv = new Ajv();
 //addFormats(ajv)
@@ -35,7 +36,10 @@ function ServiceForm({
   action: string;
   initial?: CreateServiceDTO;
 }) {
+  const [loading, setLoading] = useState(false);
+  
   const [showDialog, setShowDialog] = useState(false);
+
   const [serviceData, setServiceData] = useState<CreateServiceDTO>(
     initial || {
       hourlyRate: 0,
@@ -88,6 +92,7 @@ function ServiceForm({
   const router = useRouter();
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    setLoading(true);
     const apiUrl = process.env.NEXT_PUBLIC_API_URL;
     const headers = {
       "Content-Type": "application/json",
@@ -107,6 +112,8 @@ function ServiceForm({
     } else {
       message("error", resJson.message);
     }
+    setLoading(false);
+
   };
 
   function message(type: NotificationType, message: string) {
@@ -395,9 +402,12 @@ function ServiceForm({
             tags={serviceData?.tags}
           ></AddImagesAndTags>
           <button
+            disabled={loading}
             type="submit"
-            className="w-full rounded bg-blue-500 p-2 text-white hover:bg-blue-600 focus:outline-none focus:ring focus:ring-blue-300"
+            className="w-full flex justify-center items-center rounded bg-blue-500 p-2 text-white hover:bg-blue-600 focus:outline-none focus:ring focus:ring-blue-300"
           >
+            {loading ? <LoadingDots /> : null}
+
             {method === "PUT" ? "Update Service" : "Create Service"}
           </button>
         </form>

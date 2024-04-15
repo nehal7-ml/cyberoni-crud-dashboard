@@ -7,6 +7,7 @@ import Notification, { toast } from "@/components/Notification";
 import { FormProps } from "@/crud/commonDTO";
 import DateInput from "../DateInput";
 import { useRouter } from "next/navigation";
+import LoadingDots from "../shared/loading-dots";
 const valueSchema = z.number().min(1).max(25);
 const nameSchema = z.string().refine((name) => /^[a-z0-9]+$/i.test(name), {
   message: "Discount Name must be alphanumeric",
@@ -17,6 +18,8 @@ const discountSchema = z.object({
 });
 
 function DiscountsForm({ initial, method, action }: FormProps) {
+  const [loading, setLoading] = useState(true);
+
   const [discountData, setDiscountData] = useState<CreateDiscountDTO>(
     (initial as CreateDiscountDTO) || {
       name: "",
@@ -29,6 +32,8 @@ function DiscountsForm({ initial, method, action }: FormProps) {
 
   async function handleSubmit(e: FormEvent) {
     e.preventDefault();
+    setLoading(true);
+
     let discount = discountSchema.safeParse(discountData);
 
     if (!discount.success) {
@@ -39,8 +44,11 @@ function DiscountsForm({ initial, method, action }: FormProps) {
           type: "error",
         },
       );
+      setLoading(false);
+
       return;
     }
+    setLoading(true);
 
     const res = await fetch(`${action}`, {
       method,
@@ -52,6 +60,9 @@ function DiscountsForm({ initial, method, action }: FormProps) {
       toast(resJson.message, { type: "success" });
       router.push(`/dashboard/discounts/view/${resJson.data.id}`);
     } else toast(resJson.message, { type: "error" });
+
+    setLoading(false);
+
   }
 
   return (
@@ -129,9 +140,11 @@ function DiscountsForm({ initial, method, action }: FormProps) {
             </div>
           )}
           <button
-            className="w-full rounded bg-blue-500 p-2 text-white hover:bg-blue-600 focus:outline-none focus:ring focus:ring-blue-300"
+            disabled={loading}
             type="submit"
+            className="w-full flex justify-center items-center rounded bg-blue-500 p-2 text-white hover:bg-blue-600 focus:outline-none focus:ring focus:ring-blue-300"
           >
+            {loading ? <LoadingDots /> : null}
             {method === "POST" ? "Create" : "Update"} Discount Code
           </button>
           <Notification />

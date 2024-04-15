@@ -10,6 +10,7 @@ import { CreateImageDTO } from "@/crud/DTOs";
 import ListInput from "../ListInput";
 import Notification, { toast } from "../Notification";
 import { Service } from "@prisma/client";
+import LoadingDots from "../shared/loading-dots";
 
 type SubService = {
   id: string;
@@ -28,9 +29,8 @@ function CaseStudyForm({
   })[];
   initial?: CreateCaseStudy;
 }) {
-  const [notify, setNotify] = useState(false);
-  const [notifyMessage, setNotifyMessage] = useState("");
-  const [notifyType, setNotifyType] = useState<"success" | "fail">("fail");
+  const [loading, setLoading] = useState(true);
+
   const [userPersonaForm, setUserPersonaForm] = useState(false);
   const [caseData, setCaseData] = useState<CreateCaseStudy>(
     initial
@@ -61,6 +61,8 @@ function CaseStudyForm({
   );
   // console.log(types);
   const handleSubmit = async (e: React.FormEvent) => {
+    setLoading(true);
+
     e.preventDefault();
     const apiUrl = process.env.NEXT_PUBLIC_API_URL;
     const headers = {
@@ -87,6 +89,8 @@ function CaseStudyForm({
         type: "error",
       });
     }
+    setLoading(false);
+
   };
 
   const handleAddSubService = (e: React.ChangeEvent<HTMLSelectElement>) => {
@@ -455,9 +459,11 @@ function CaseStudyForm({
             </div>
 
             <button
-              type="submit"
-              className="w-full rounded bg-blue-500 p-2 text-white hover:bg-blue-600 focus:outline-none focus:ring focus:ring-blue-300"
-            >
+            disabled={loading}
+            type="submit"
+            className="w-full flex justify-center items-center rounded bg-blue-500 p-2 text-white hover:bg-blue-600 focus:outline-none focus:ring focus:ring-blue-300"
+          >
+            {loading ? <LoadingDots /> : null}
               {method === "POST" ? "Create Case study" : "Update Case study"}
             </button>
           </form>

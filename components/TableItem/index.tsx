@@ -1,7 +1,7 @@
 "use client";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import React, { DetailedHTMLProps, ReactNode } from "react";
+import React, { DetailedHTMLProps, MouseEvent, ReactNode } from "react";
 import DeleteButton from "./DeleteButton";
 import CopyButton from "../CopyButton";
 
@@ -19,7 +19,8 @@ interface TableItemProps
 export function TableItem(props: TableItemProps) {
   const router = useRouter();
 
-  function onClick() {
+  function onClick(e: MouseEvent<HTMLTableRowElement>) {
+    e.preventDefault()
     router.push(`/dashboard/${props.type}/view/${props.index}`);
   }
   return (
@@ -27,7 +28,7 @@ export function TableItem(props: TableItemProps) {
       onClick={onClick}
       className="border-b-2 hover:cursor-pointer hover:border-x-blue-800 hover:shadow-lg"
     >
-      <td>
+      <td onClick={e=>e.stopPropagation()}>
         <DeleteButton url={`/api/${props.type}/${props.index}`}></DeleteButton>
       </td>
 
