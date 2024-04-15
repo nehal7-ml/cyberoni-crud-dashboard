@@ -1,11 +1,13 @@
 "use client";
 import { Delete, Trash } from "lucide-react";
-import React, { useState } from "react";
+import React, { MouseEvent, useState } from "react";
 import DeleteModal from "../DeleteModal";
 
 function DeleteButton({ url }: { url: string }) {
   const [openModal, setOpenModal] = useState(false);
-  async function handleDelete() {
+  async function handleDelete(e: MouseEvent<HTMLButtonElement>) {
+    e.stopPropagation();
+    e.preventDefault();
     setOpenModal(true);
   }
   return (

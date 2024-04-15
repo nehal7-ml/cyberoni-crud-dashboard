@@ -35,7 +35,10 @@ function ServiceForm({
   action: string;
   initial?: CreateServiceDTO;
 }) {
+  const [loading, setLoading] = useState(false);
+  
   const [showDialog, setShowDialog] = useState(false);
+
   const [serviceData, setServiceData] = useState<CreateServiceDTO>(
     initial || {
       hourlyRate: 0,
@@ -395,6 +398,7 @@ function ServiceForm({
             tags={serviceData?.tags}
           ></AddImagesAndTags>
           <button
+            disabled={loading}
             type="submit"
             className="w-full rounded bg-blue-500 p-2 text-white hover:bg-blue-600 focus:outline-none focus:ring focus:ring-blue-300"
           >

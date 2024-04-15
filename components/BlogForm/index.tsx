@@ -12,6 +12,7 @@ import Ajv from "ajv";
 import addFormats from "ajv-formats";
 import DateInput from "../DateInput";
 import CategoryForm from "./CategoryForm";
+import LoadingSpinner from "../shared/loading-spinner";
 
 const ajv = new Ajv();
 addFormats(ajv);
@@ -32,9 +33,8 @@ function BlogForm({
   action: string;
   initial?: CreateBlogDTO;
 }) {
-  const [notify, setNotify] = useState(false);
-  const [notifyMessage, setNotifyMessage] = useState("");
-  const [notifyType, setNotifyType] = useState<"success" | "fail">("fail");
+  const [loading, setLoading] = useState(false);
+
   const [initialContent, setInitialContent] = useState(initial?.content || "");
 
   const [currentCategory, setCurrentCategory] = useState(-1);
@@ -363,10 +363,11 @@ function BlogForm({
             ></AddImagesAndTags>
           </div>
           <button
+            disabled={loading}
             type="submit"
-            className="w-full rounded bg-blue-500 p-2 text-white hover:bg-blue-600 focus:outline-none focus:ring focus:ring-blue-300"
+            className="w-full flex justify-center gap-2 rounded bg-blue-500 p-2 text-white hover:bg-blue-600 focus:outline-none focus:ring focus:ring-blue-300"
           >
-            {method === "POST" ? "Create Blog" : "Update Blog"}
+           {loading? <LoadingSpinner />: null} {method === "POST" ? "Create Blog" : "Update Blog"}
           </button>
         </form>
       </div>
