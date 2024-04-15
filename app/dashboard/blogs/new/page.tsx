@@ -5,7 +5,6 @@ import { prisma } from "@/lib/prisma";
 
 async function CreateBlogForm() {
   const categories = await getCategories(prisma);
-  console.log(categories);
 
   return <BlogForm method="POST" action={`/api/blogs/add`} categories={categories} />;
 }

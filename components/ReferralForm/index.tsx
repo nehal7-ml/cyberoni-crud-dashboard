@@ -9,6 +9,7 @@ import Notification, {
 import { redirect, useRouter } from "next/navigation";
 import { stripSlashes } from "@/lib/utils";
 import DateInput from "../DateInput";
+import LoadingDots from "../shared/loading-dots";
 
 const ReferralForm = ({
   method,
@@ -21,9 +22,8 @@ const ReferralForm = ({
 }) => {
   const appUrl = process.env.NEXT_PUBLIC_APP_URL as string;
 
-  const [notify, setNotify] = useState(false);
-  const [notifyMessage, setNotifyMessage] = useState("");
-  const [notifyType, setNotifyType] = useState<"success" | "fail">("fail");
+  const [loading, setLoading] = useState(true);
+
   const [invalidLink, setInvalidLink] = useState(false);
   const [expiry, setExpiry] = useState(initial?.expires ? true : false);
   const [linkType, setLinkType] = useState<"External" | "Internal">(
@@ -119,6 +119,7 @@ const ReferralForm = ({
 
   const handleSubmit = async (e: FormEvent) => {
     e.preventDefault();
+    setLoading(true);
 
     const headers = {
       "Content-Type": "application/json",
@@ -159,6 +160,9 @@ const ReferralForm = ({
         setInvalidLink(true);
       }
     }
+
+    setLoading(false);
+
   };
 
   function message(type: NotificationType, message: string) {
@@ -504,9 +508,11 @@ const ReferralForm = ({
             </div>
           </div>
           <button
+            disabled={loading}
             type="submit"
-            className="w-full rounded bg-blue-500 p-2 text-white hover:bg-blue-600 focus:outline-none focus:ring focus:ring-blue-300"
+            className="w-full flex justify-center items-center rounded bg-blue-500 p-2 text-white hover:bg-blue-600 focus:outline-none focus:ring focus:ring-blue-300"
           >
+            {loading ? <LoadingDots /> : null}
             {method === "POST" ? "Create" : "Update"} Referral
           </button>
         </form>

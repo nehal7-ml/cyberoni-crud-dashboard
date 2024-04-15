@@ -14,11 +14,11 @@ import { X } from "lucide-react";
 import { FormProps } from "@/crud/commonDTO";
 import { ProductStatus, Supplier } from "@prisma/client";
 import { redirect, useRouter } from "next/navigation";
+import LoadingDots from "../shared/loading-dots";
 
 const ProductForm = ({ method, action, initial }: FormProps) => {
-  const [notify, setNotify] = useState(false);
-  const [notifyMessage, setNotifyMessage] = useState("");
-  const [notifyType, setNotifyType] = useState<"success" | "fail">("fail");
+  const [loading, setLoading] = useState(true);
+
   const [supplier, setSupplier] = useState<CreateSupplierDTO | undefined>(
     undefined,
   );
@@ -61,6 +61,8 @@ const ProductForm = ({ method, action, initial }: FormProps) => {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    setLoading(true);
+
     const apiUrl = process.env.NEXT_PUBLIC_API_URL;
     const headers = {
       "Content-Type": "application/json",
@@ -80,6 +82,8 @@ const ProductForm = ({ method, action, initial }: FormProps) => {
     } else {
       message("error", resJson.message);
     }
+    setLoading(false);
+
   };
 
   function message(type: NotificationType, message: string) {
@@ -320,9 +324,11 @@ const ProductForm = ({ method, action, initial }: FormProps) => {
             onImagesAndTagsChange={handleChangedImage}
           ></AddImagesAndTags>
           <button
+            disabled={loading}
             type="submit"
-            className="w-full rounded bg-blue-500 p-2 text-white hover:bg-blue-600 focus:outline-none focus:ring focus:ring-blue-300"
+            className="flex w-full items-center justify-center rounded bg-blue-500 p-2 text-white hover:bg-blue-600 focus:outline-none focus:ring focus:ring-blue-300"
           >
+            {loading ? <LoadingDots /> : null}
             {method === "POST" ? "Create" : "Update"} Product
           </button>
         </form>
