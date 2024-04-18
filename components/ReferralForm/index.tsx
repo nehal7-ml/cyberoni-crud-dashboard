@@ -22,7 +22,7 @@ const ReferralForm = ({
 }) => {
   const appUrl = process.env.NEXT_PUBLIC_APP_URL as string;
 
-  const [loading, setLoading] = useState(true);
+  const [loading, setLoading] = useState(false);
 
   const [invalidLink, setInvalidLink] = useState(false);
   const [expiry, setExpiry] = useState(initial?.expires ? true : false);
