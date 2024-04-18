@@ -43,7 +43,7 @@ const GptPromptForm = ({
   action: string;
   initial?: CreateGptPromptDTO;
 }) => {
-  const [loading, setLoading] = useState(true);
+  const [loading, setLoading] = useState(false);
 
   const [currentCategory, setCurrentCategory] = useState(-1);
 

@@ -18,7 +18,7 @@ const discountSchema = z.object({
 });
 
 function DiscountsForm({ initial, method, action }: FormProps) {
-  const [loading, setLoading] = useState(true);
+  const [loading, setLoading] = useState(false);
 
   const [discountData, setDiscountData] = useState<CreateDiscountDTO>(
     (initial as CreateDiscountDTO) || {

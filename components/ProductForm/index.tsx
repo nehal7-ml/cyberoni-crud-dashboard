@@ -17,7 +17,7 @@ import { redirect, useRouter } from "next/navigation";
 import LoadingDots from "../shared/loading-dots";
 
 const ProductForm = ({ method, action, initial }: FormProps) => {
-  const [loading, setLoading] = useState(true);
+  const [loading, setLoading] = useState(false);
 
   const [supplier, setSupplier] = useState<CreateSupplierDTO | undefined>(
     undefined,
