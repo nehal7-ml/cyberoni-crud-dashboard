@@ -29,7 +29,7 @@ function CaseStudyForm({
   })[];
   initial?: CreateCaseStudy;
 }) {
-  const [loading, setLoading] = useState(true);
+  const [loading, setLoading] = useState(false);
 
   const [userPersonaForm, setUserPersonaForm] = useState(false);
   const [caseData, setCaseData] = useState<CreateCaseStudy>(
