@@ -145,6 +145,10 @@ async function getAll(
   page: number,
   pageSize: number,
   prismaClient: PrismaClient,
+  options?: {
+    order: 'asc' | 'desc';
+    orderby: 'updatedAt' | 'title';
+  }
 ) {
   const prompts = prismaClient.gptPrompt;
 
@@ -158,6 +162,11 @@ async function getAll(
     include: {
       // reviews: true,
     },
+    orderBy: options? {
+      [options.orderby]: options.order,
+    }: {
+      updatedAt: 'desc'
+    }
   });
 
   const totalCount = await prompts.count();

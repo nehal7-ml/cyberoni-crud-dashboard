@@ -56,6 +56,10 @@ export async function getAll(
   page: number,
   pageSize: number,
   prismaClient: PrismaClient,
+  options?: {
+    order: 'asc' | 'desc';
+    orderby: 'updatedAt' | 'prefix' | 'expires' | 'click';
+  }
 ) {
   const refferals = prismaClient.referral;
 
@@ -66,6 +70,11 @@ export async function getAll(
     skip: (page - 1) * pageSize,
     take: pageSize,
     where: {},
+    orderBy: options ? {
+      [options.orderby]: options.order,
+    } : {
+      updatedAt: "desc",
+    }
   });
 
   const totalCount = await refferals.count();

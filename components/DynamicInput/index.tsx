@@ -45,7 +45,7 @@ export type FormSchema =
   };
 
 interface DynamicInputProps {
-  defaultValue?: any;
+  defaultValue: any;
   schema: FormSchema;
   onChange: (data: any) => void;
 }
@@ -112,12 +112,10 @@ const DynamicInput: React.FC<DynamicInputProps> = ({ schema, onChange, defaultVa
 
   useEffect(() => {
 
-    console.log(defaultValue);
     if (defaultValue === undefined) {
       setCurrentData(current)
     }
 
-    console.log(defaultValue, currentData, schema.title);
     if (!deepEqual(currentData, defaultValue) && currentData !== undefined) {
       console.log("calling change");
       onChange(currentData)

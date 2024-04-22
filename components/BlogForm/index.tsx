@@ -190,7 +190,7 @@ function BlogForm({
   return (
     <div className="light:bg-gray-100 light:text-black flex min-h-screen  items-center justify-center bg-gray-100 dark:bg-gray-700 dark:text-gray-800 ">
       <div className="w-full max-w-3xl rounded bg-white p-8 shadow-md">
-        <h2 className="mb-4 text-2xl font-semibold">Create Blog</h2>
+        <h2 className="mb-4 text-2xl font-semibold">{method==='POST'?  'Create': 'Update'} Blog</h2>
         <form onSubmit={handleSubmit} className="h-fit">
           <div className="mb-4">
             <label className="block" htmlFor="json">

@@ -3,6 +3,7 @@ import {
   GptPrompt,
   Image,
   PricingModel,
+  ProductStatus,
   ReferralPriority,
   ReferralType,
   Review,
@@ -11,6 +12,7 @@ import {
   ServiceCartItem,
   ServiceDescription,
   SubService,
+  Supplier,
   Tag,
   User,
 } from "@prisma/client";
@@ -282,4 +284,64 @@ export type CreateDiscountDTO = {
   name: string;
   value: number;
   expires?: Date | null;
+};
+
+
+export type CreateProductDTO = {
+  sku: string;
+  name: string;
+  status: ProductStatus;
+  ratings?: number | null;
+  inventory: number;
+  productBreakdown?: string | null;
+  shippingReturnPolicy: string;
+  description: string;
+  price: number;
+  profitMargin: number;
+  displayPrice: number;
+  category: string;
+  subcategory?: string;
+  tags: CreateTagDTO[];
+  images: CreateImageDTO[];
+  suppliers?: CreateSupplierDTO[] | Supplier[];
+  amazonProductId?: string;
+  cjDropShippingId?: string;
+};
+
+export type DisplayProductDTO = {
+  id: string;
+  sku: string;
+  name: string;
+  status: string;
+  ratings: number | null;
+  inventory: number;
+  productBreakdown: string | null;
+  shippingReturnPolicy: string;
+  description: string;
+  price: number;
+  profitMargin: number;
+  displayPrice: number;
+  category: string;
+  subcategory: string | null;
+  amazonProductId?: string;
+  cjDropShippingId?: string;
+};
+
+
+export type CreateSupplierDTO = {
+  baseShippingPrice: number;
+  height: number;
+  width: number;
+  length: number;
+  weight: number;
+  supplierName: string;
+  supplierStatus?: string;
+  shippingWeight?: number;
+  listPrice?: number;
+  salePrice?: number;
+  availability?: string;
+  supplierWrittenComments?: string;
+  supplierUrl: string;
+  supplierEmail?: string;
+  supplierWhatsApp?: string;
 };

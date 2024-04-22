@@ -79,27 +79,27 @@ export async function update(
   const oldCase = await cases.findUnique({ where: { id: caseStudyId } });
   let images = await connectOrCreateObject(
     caseStudy.images,
-    oldCase?.images as Image[],
+    oldCase?.images as unknown as Image[],
   );
   let competetiveAnalysis = await connectOrCreateObject(
     caseStudy.competetiveAnalysis,
-    oldCase?.images as Image[],
+    oldCase?.images as unknown as Image[],
   );
   let wireFrames = await connectOrCreateObject(
     caseStudy.wireFrames!,
-    oldCase?.wireFrames as Image[],
+    oldCase?.wireFrames as unknown as Image[],
   );
   let hifiDesign = await connectOrCreateObject(
     caseStudy.hifiDesign!,
-    oldCase?.hifiDesign as Image[],
+    oldCase?.hifiDesign as unknown as Image[],
   );
   let userFlow = await connectOrCreateObject(
     caseStudy.userFlow!,
-    oldCase?.userFlow as Image[],
+    oldCase?.userFlow as unknown as Image[],
   );
   let architecture = await connectOrCreateObject(
     caseStudy.architecture!,
-    oldCase?.architecture as Image[],
+    oldCase?.architecture as unknown as Image[],
   );
 
   const updatedCaseStudy = await cases.update({
@@ -138,6 +138,10 @@ export async function getAll(
   page: number,
   pageSize: number,
   prismaClient: PrismaClient,
+  options?: {
+    order: 'asc' | 'desc';
+    orderby: 'updatedAt' | 'title';
+  }
 ) {
   const caseStudys = prismaClient.caseStudy;
   if (pageSize !== 10 && pageSize != 30 && pageSize !== 50)
@@ -151,6 +155,7 @@ export async function getAll(
       subServices: true,
       type: true,
     },
+    orderBy: options ? { [options.orderby]: options.order } : { updatedAt: "desc" },
   });
 
   const totalCount = await caseStudys.count();

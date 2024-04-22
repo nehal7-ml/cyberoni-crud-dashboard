@@ -79,6 +79,7 @@ function ArrayForm({
     setCurrentItem(initial);
     setMode("EDIT");
     setCurrentIndex(items.length + 1);
+    setOpenForm(false)
   }
   function updateItem(index: number) {
     setItems((prev) => {
@@ -92,7 +93,6 @@ function ArrayForm({
   }
 
   useEffect(() => {
-    console.log(items, defaultValue, "Arrayingput");
     if (!arraysAreEqual(items, defaultValue)) {
       onChange(items);
     }
@@ -136,12 +136,12 @@ function ArrayForm({
           <div className=" flex items-center justify-center">
             <button
               onClick={
-                mode === "ADD" ? addItem : () => updateItem(currentIndex)
+                mode === "ADD" ? addItem : () => (updateItem(currentIndex), setOpenForm(false))
               }
               type="button"
               className="flex w-fit items-end justify-center gap-3 rounded bg-blue-500 p-2 text-white"
             >
-              {mode === "EDIT" ? "Update" : "Add"}
+              {mode === "EDIT" ? "Update Item" : "Add Item"}
             </button>
           </div>
         </div>
@@ -154,7 +154,7 @@ function ArrayForm({
         className="flex w-fit items-end justify-center gap-3 rounded bg-blue-500 p-2 text-white"
       >
         <PlusCircle />
-        Add
+        Add {schema.title}
       </button>
     </div>
   );

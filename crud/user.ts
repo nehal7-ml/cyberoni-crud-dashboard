@@ -166,6 +166,10 @@ async function getAll(
   page: number,
   pageSize: number,
   prismaClient: PrismaClient,
+  options?: {
+    order: 'asc' | 'desc';
+    orderby: 'updatedAt' | 'email';
+  }
 ) {
   const users = prismaClient.user;
 
@@ -176,6 +180,11 @@ async function getAll(
     skip: (page - 1) * pageSize,
     take: pageSize,
     where: {},
+    orderBy: options? {
+      [options.orderby]: options.order
+    }: {
+      createdAt: 'desc' 
+    }
   });
 
   const totalCount = await users.count();

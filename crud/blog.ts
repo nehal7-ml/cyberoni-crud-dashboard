@@ -2,7 +2,7 @@ import "server-only";
 import { PrismaClient } from "@prisma/client";
 import { connectOrCreateObject as connectTags } from "./tags";
 import { connectOrCreateObject as connectImages } from "./images";
-import {  CreateBlogDTO, CreateCategory } from "./DTOs";
+import { CreateBlogDTO, CreateCategory } from "./DTOs";
 import { HttpError, seoUrl } from "@/lib/utils";
 import { indexPage } from "@/lib/googleIndexing";
 
@@ -135,6 +135,10 @@ async function getAll(
   page: number,
   pageSize: number,
   prismaClient: PrismaClient,
+  options?: {
+    order: 'asc' | 'desc';
+    orderby: 'updatedAt' | 'title';
+  }
 ) {
   const blogs = prismaClient.blog;
   if (pageSize !== 10 && pageSize != 30 && pageSize !== 50)
@@ -163,8 +167,10 @@ async function getAll(
       tags: true,
       images: true,
     },
-    orderBy: {
-      date: "desc",
+    orderBy: options ? {
+      [options.orderby]: options.order
+    } : {
+      updatedAt: "desc",
     },
   });
 

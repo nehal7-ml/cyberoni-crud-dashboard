@@ -1,7 +1,6 @@
 "use client";
 import AddImagesAndTags from "@/components/AddImagesAndTags";
-import { CreateImageDTO } from "@/crud/DTOs";
-import { CreateProductDTO } from "@/crud/product";
+import { CreateImageDTO, CreateProductDTO, CreateSupplierDTO } from "@/crud/DTOs";
 import { CreateTagDTO } from "@/crud/DTOs";
 import React, { ChangeEvent, useEffect, useState } from "react";
 import Notification, {
@@ -9,12 +8,12 @@ import Notification, {
   toast,
 } from "@/components/Notification";
 import CreateSupplier from "./CreateSupplier";
-import { CreateSupplierDTO } from "@/crud/supplier";
 import { X } from "lucide-react";
 import { FormProps } from "@/crud/commonDTO";
 import { ProductStatus, Supplier } from "@prisma/client";
 import { redirect, useRouter } from "next/navigation";
 import LoadingDots from "../shared/loading-dots";
+import ProductCategoryForm from "./ProductCategory";
 
 const ProductForm = ({ method, action, initial }: FormProps) => {
   const [loading, setLoading] = useState(false);
@@ -246,16 +245,7 @@ const ProductForm = ({ method, action, initial }: FormProps) => {
             />
           </div>
           <div className="mb-4">
-            <label className="block text-sm font-medium text-gray-700">
-              Category:
-            </label>
-            <input
-              type="text"
-              name="category"
-              className="mt-1 w-full rounded border p-2"
-              value={productData.category}
-              onChange={handleInputChange}
-            />
+            <ProductCategoryForm />
           </div>
           <div className="mb-4">
             <label className="block text-sm font-medium text-gray-700">

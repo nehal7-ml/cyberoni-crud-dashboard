@@ -70,6 +70,10 @@ async function getAll(
   page: number,
   pageSize: number,
   prismaClient: PrismaClient,
+  options?: {
+    order: 'asc' | 'desc';
+    orderby: 'updatedAt' | 'name';
+  }
 ) {
   const events = prismaClient.event;
 
@@ -83,6 +87,13 @@ async function getAll(
     include: {
       // reviews: true,
     },
+    orderBy: options? {
+      [options.orderby]: options.order
+    }: {
+      updatedAt: 'desc',
+      
+    },
+
   });
 
   const totalCount = await events.count();
