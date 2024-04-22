@@ -17,7 +17,7 @@ function DiscountTableItems({ records, page }: { records: Discount[], page: numb
         ]}
         rows={records.map((value, index) => {
           const row: any = [];
-          row.push(<CopyButton text={value.name} />);
+          row.push(<CopyButton showText={true} text={value.name} />);
           row.push(value.value + "%");
           row.push(
             value.expires ? new Date(value.expires).toLocaleDateString() : "NA",

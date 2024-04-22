@@ -12,10 +12,10 @@ function DeleteButton({ url }: { url: string }) {
   }
   return (
     <>
-      <div>
+      <div className="flex w-ful justify-center items-center">
         <button
           onClick={handleDelete}
-          className="rounded-lg p-3 text-gray-500 shadow-sm hover:bg-red-600 hover:text-white hover:shadow-2xl"
+          className=" rounded-lg p-3 text-gray-500 shadow-sm hover:bg-red-600 hover:text-white hover:shadow-2xl"
         >
           <Trash className=""></Trash>
         </button>

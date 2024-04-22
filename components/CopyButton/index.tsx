@@ -27,7 +27,7 @@ const CopyButton = ({
   };
 
   return (
-    <div className="flex gap-3">
+    <div className="flex gap-3 w-full items-center justify-center">
       {showText ? (
         <div className="w-40 overflow-clip text-ellipsis">{text}</div>
       ) : null}

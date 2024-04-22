@@ -23,7 +23,7 @@ export function TableItem(props: TableItemProps) {
       onClick={onClick}
       className="border-b-2 hover:cursor-pointer hover:border-x-blue-800 hover:shadow-lg"
     >
-      <td onClick={e => e.stopPropagation()}>
+      <td onClick={e => e.stopPropagation()} className="w-fit">
         <DeleteButton url={`/api/${props.type}/${props.index}`}></DeleteButton>
       </td>
 

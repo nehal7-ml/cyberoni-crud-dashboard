@@ -202,7 +202,7 @@ export function markdownPlugin(editor: Editor) {
   editor.ui.registry.addButton("markdown", {
     text: "M↓",
     tooltip: "Markdown",
-    icon: "#",
+    icon: "<svg>?</svg>",
     onAction: function () {
       const dialog = document.getElementById(
         "markdown-modal",
