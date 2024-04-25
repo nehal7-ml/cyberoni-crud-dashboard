@@ -208,7 +208,7 @@ async function getAll(
         },
       },
     },
-    orderBy: options? {
+    orderBy: options?.orderby? {
       [options.orderby]: options.order
     }:{
       updatedAt: 'asc'

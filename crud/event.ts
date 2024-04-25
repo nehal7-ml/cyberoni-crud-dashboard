@@ -87,7 +87,7 @@ async function getAll(
     include: {
       // reviews: true,
     },
-    orderBy: options? {
+    orderBy: options?.orderby? {
       [options.orderby]: options.order
     }: {
       updatedAt: 'desc',

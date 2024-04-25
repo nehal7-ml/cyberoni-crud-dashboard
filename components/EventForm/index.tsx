@@ -11,6 +11,7 @@ import Notification, {
 } from "@/components/Notification";
 import { redirect, useRouter } from "next/navigation";
 import LoadingDots from "../shared/loading-dots";
+import { revalidatePath } from "next/cache";
 
 const EventForm = ({
   method,
@@ -87,7 +88,10 @@ const EventForm = ({
 
     if (res.status == 200) {
       message("success", resJson.message);
+      revalidatePath("/dashboard/events/1");
+
       router.replace(`/dashboard/events/view/${resJson.data.id}`);
+
     } else {
       message("error", resJson.message);
     }

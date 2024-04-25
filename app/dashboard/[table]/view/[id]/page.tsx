@@ -7,13 +7,13 @@ import GptPromptForm from "@/components/PromptForm";
 import ReferralForm from "@/components/ReferralForm";
 import ServiceForm from "@/components/ServiceForm";
 import UserForm from "@/components/UserForm";
-import { getCategories, read as readBlog } from "@/crud/blog";
+import { getCategories as getBlogCategroies, read as readBlog } from "@/crud/blog";
 import { read as readCaseStudy } from "@/crud/casestudy";
 import { read as readDiscount } from "@/crud/discount";
 import { CreateBlogDTO, CreateCaseStudy, CreateDiscountDTO, CreateGptPromptDTO, CreateProductDTO, CreateReferralDTO, CreateServiceDTO } from "@/crud/DTOs";
 import { read as readEvent } from "@/crud/event";
-import { read as readProduct } from "@/crud/product";
-import { read as readPrompt } from "@/crud/prompt";
+import { read as readProduct, getCategories as getProductCategories } from "@/crud/product";
+import { read as readPrompt, getCategories as getPromptCategories } from "@/crud/prompt";
 import { read as readReferral } from "@/crud/referral";
 import { getAll as getAllServices, read as readService } from "@/crud/service";
 import { CreateUserDTO, read as readUser } from "@/crud/user";
@@ -24,7 +24,7 @@ import { redirect } from "next/navigation";
 async function UpdateForm({ params }: { params: { id: string, table: TableType } }) {
   if (params.table === 'blogs') {
     const blog = (await readBlog(params.id, prisma)) as CreateBlogDTO;
-    const categories = await getCategories(prisma);
+    const categories = await getBlogCategroies(prisma);
 
     return (
       <BlogForm initial={blog} method="PUT" action={`/api/blogs/${params.id}`} categories={categories} />
@@ -81,9 +81,13 @@ async function UpdateForm({ params }: { params: { id: string, table: TableType }
     const res = await readProduct(params.id, prisma);
     if (!res) redirect("/404");
     const { reviews, ...product } = res;
+
+    const categories = await getProductCategories(prisma);
+
     // console.log(event);
     return (
       <ProductForm
+        categories={categories}
         method="PUT"
         initial={product as CreateProductDTO}
         action={`/api/products/${params.id}`}
@@ -94,7 +98,7 @@ async function UpdateForm({ params }: { params: { id: string, table: TableType }
   else if (params.table === 'prompts') {
     const res = await readPrompt(params.id, prisma);
     if (!res) redirect("/404");
-    const categories = await getCategories(prisma);
+    const categories = await getPromptCategories(prisma);
 
     const { reviews, ...prompt } = res;
 

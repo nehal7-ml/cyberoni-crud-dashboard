@@ -180,7 +180,7 @@ async function getAll(
     skip: (page - 1) * pageSize,
     take: pageSize,
     where: {},
-    orderBy: options? {
+    orderBy: options?.orderby? {
       [options.orderby]: options.order
     }: {
       createdAt: 'desc' 

@@ -6,6 +6,7 @@ import Chip from "./Chip";
 import { PlusCircle, X } from "lucide-react";
 import DateInput from "../DateInput";
 import Modal from "../shared/Modal";
+import ListInput from "../ListInput";
 
 function ArrayForm({
   schema,
@@ -127,14 +128,20 @@ function ArrayForm({
             <X></X>
           </button>
           <div className="max-h-[80vh] p-4">
-            <DynamicInput
-              onChange={(data) => setCurrentItem(data)}
-              defaultValue={currentItem}
-              schema={schema.items}
-            />
+            {schema.items.type === 'string' ? <>
+
+              <ListInput onChange={(data) => setItems(data)} initial={items as string[]} label={schema.title} />
+            </> :
+
+
+              <DynamicInput
+                onChange={(data) => setCurrentItem(data)}
+                defaultValue={currentItem}
+                schema={schema.items}
+              />}
           </div>
           <div className=" flex items-center justify-center">
-            <button
+            {schema.items.type === 'string' ? null: <button
               onClick={
                 mode === "ADD" ? addItem : () => (updateItem(currentIndex), setOpenForm(false))
               }
@@ -142,11 +149,11 @@ function ArrayForm({
               className="flex w-fit items-end justify-center gap-3 rounded bg-blue-500 p-2 text-white"
             >
               {mode === "EDIT" ? "Update Item" : "Add Item"}
-            </button>
+            </button>}
           </div>
         </div>
       </Modal>
-      <button
+     <button
         onClick={() => (
           setCurrentItem(initial), setOpenForm(true), setMode("ADD")
         )}
@@ -154,7 +161,7 @@ function ArrayForm({
         className="flex w-fit items-end justify-center gap-3 rounded bg-blue-500 p-2 text-white"
       >
         <PlusCircle />
-        Add {schema.title}
+        Add New {schema.title}
       </button>
     </div>
   );

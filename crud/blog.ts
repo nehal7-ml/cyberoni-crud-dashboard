@@ -167,7 +167,7 @@ async function getAll(
       tags: true,
       images: true,
     },
-    orderBy: options ? {
+    orderBy: options?.orderby ? {
       [options.orderby]: options.order
     } : {
       updatedAt: "desc",

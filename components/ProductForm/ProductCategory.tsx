@@ -14,7 +14,7 @@ function ProductCategoryForm() {
             <div className="relative flex p-5 w-fit bg-gray-100"   >
                 <button type="button" onClick={() => setShowModal(false)} className="absolute right-2 top-2"><X /></button>
                 <div>
-                    <CategoryForm action="" method="POST" />
+                    <CategoryForm  action="/api/products/categories/add" method="POST" />
                 </div>
             </div>
         </Modal>

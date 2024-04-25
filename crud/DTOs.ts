@@ -299,7 +299,7 @@ export type CreateProductDTO = {
   price: number;
   profitMargin: number;
   displayPrice: number;
-  category: string;
+  category?: ProductCategory;
   subcategory?: string;
   tags: CreateTagDTO[];
   images: CreateImageDTO[];
@@ -321,13 +321,19 @@ export type DisplayProductDTO = {
   price: number;
   profitMargin: number;
   displayPrice: number;
-  category: string;
+  category?: ProductCategory;
   subcategory: string | null;
   amazonProductId?: string;
   cjDropShippingId?: string;
 };
 
+export type ProductCategory = {
+  id: string;
+  name: string;
+  children?: ProductCategory[];
+  parentId?: string | null;
 
+}
 export type CreateSupplierDTO = {
   baseShippingPrice: number;
   height: number;

@@ -7,8 +7,10 @@ import GptPromptForm from "@/components/PromptForm";
 import ReferralForm from "@/components/ReferralForm";
 import ServiceForm from "@/components/ServiceForm";
 import UserForm from "@/components/UserForm";
-import { getCategories } from "@/crud/blog";
+import { getCategories as  getBlogCategories } from "@/crud/blog";
 import { CreateReferralDTO } from "@/crud/DTOs";
+import { getCategories as getProductCategories } from "@/crud/product";
+import { getCategories as getPromptCategories } from "@/crud/prompt";
 import { read as readReferral } from "@/crud/referral";
 import { getAll as getAllServices } from "@/crud/service";
 import { prisma } from "@/lib/prisma";
@@ -21,12 +23,12 @@ async function CreateForm({
   params: { id: string; table: TableType };
 }) {
   if (params.table === "blogs") {
-    const categories = await getCategories(prisma);
+    const categories = await getBlogCategories(prisma);
 
     return (
       <BlogForm
         method="POST"
-        action={`/api/blogs/new`}
+        action={`/api/blogs/add`}
         categories={categories}
       />
     );
@@ -37,27 +39,28 @@ async function CreateForm({
       <CaseStudyForm
         types={service.records}
         method="POST"
-        action={`/api/casestudies/new`}
+        action={`/api/casestudies/add`}
       />
     );
   } else if (params.table === "discounts") {
     // console.log(event);
-    return <DiscountsForm method="POST" action={`/api/discounts/new`} />;
+    return <DiscountsForm method="POST" action={`/api/discounts/add`} />;
   } else if (params.table === "events") {
     // console.log(event);
-    return <EventForm method="POST" action={`/api/events/new`} />;
+    return <EventForm method="POST" action={`/api/events/add`} />;
   } else if (params.table === "products") {
+    const categories = await getProductCategories(prisma);
     // console.log(event);
-    return <ProductForm method="POST" action={`/api/products/new`} />;
+    return <ProductForm categories={categories} method="POST" action={`/api/products/add`} />;
   } else if (params.table === "prompts") {
-    const categories = await getCategories(prisma);
+    const categories = await getPromptCategories(prisma);
 
     //console.log(prompt);
     return (
       <GptPromptForm
         categories={categories}
         method="POST"
-        action={`/api/prompts/new`}
+        action={`/api/prompts/add`}
       />
     );
   } else if (params.table === "referrals") {
@@ -69,7 +72,7 @@ async function CreateForm({
       <ReferralForm
         method="POST"
         initial={referral as CreateReferralDTO}
-        action={`/api/referrals/new`}
+        action={`/api/referrals/add`}
       />
     );
   } else if (params.table === "services") {
@@ -77,12 +80,12 @@ async function CreateForm({
     return (
       <>
         <div className="light:bg-gray-100 light:text-black flex min-h-screen items-center justify-center dark:bg-gray-700 dark:text-gray-800">
-          <ServiceForm method="POST" action={`/api/services/new`} />
+          <ServiceForm method="POST" action={`/api/services/add`} />
         </div>
       </>
     );
   } else if (params.table === "users") {
-    return <UserForm method="POST" action={`/api/users/new`} />;
+    return <UserForm method="POST" action={`/api/users/add`} />;
   }
 
   return null;

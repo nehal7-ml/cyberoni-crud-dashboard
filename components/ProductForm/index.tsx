@@ -1,6 +1,6 @@
 "use client";
 import AddImagesAndTags from "@/components/AddImagesAndTags";
-import { CreateImageDTO, CreateProductDTO, CreateSupplierDTO } from "@/crud/DTOs";
+import { CreateImageDTO, CreateProductDTO, CreateSupplierDTO, ProductCategory } from "@/crud/DTOs";
 import { CreateTagDTO } from "@/crud/DTOs";
 import React, { ChangeEvent, useEffect, useState } from "react";
 import Notification, {
@@ -10,17 +10,19 @@ import Notification, {
 import CreateSupplier from "./CreateSupplier";
 import { X } from "lucide-react";
 import { FormProps } from "@/crud/commonDTO";
-import { ProductStatus, Supplier } from "@prisma/client";
+import {  ProductStatus, Supplier } from "@prisma/client";
 import { redirect, useRouter } from "next/navigation";
 import LoadingDots from "../shared/loading-dots";
 import ProductCategoryForm from "./ProductCategory";
 
-const ProductForm = ({ method, action, initial }: FormProps) => {
+const ProductForm = ({ method, action,  initial, categories }: FormProps & {categories: ProductCategory[]}) => {
   const [loading, setLoading] = useState(false);
 
   const [supplier, setSupplier] = useState<CreateSupplierDTO | undefined>(
     undefined,
   );
+
+  const [currentCategory, setCurrentCategory] = useState(-1);
   const [showDialog, setShowDialog] = useState(false);
 
   const [productData, setProductData] = useState<CreateProductDTO>(
@@ -36,7 +38,7 @@ const ProductForm = ({ method, action, initial }: FormProps) => {
       price: 0,
       profitMargin: 0,
       displayPrice: 0,
-      category: "",
+      category: undefined,
       subcategory: undefined,
       suppliers: [],
       tags: [],
@@ -244,6 +246,58 @@ const ProductForm = ({ method, action, initial }: FormProps) => {
               onChange={handleInputChange}
             />
           </div>
+          {categories && categories.length > 0 ? (
+            <>
+              <div className="mb-4">
+                <label className="block text-sm font-medium text-gray-700">
+                  Category:
+                  <select
+                    value={currentCategory}
+                    name="category"
+                    id=""
+                    onChange={(e) => setCurrentCategory(Number(e.target.value))}
+                  >
+                    <option value={-1}>Select Category</option>
+                    {categories?.map((category, index) => (
+                      <option key={category.id} value={index}>
+                        {category.name}
+                      </option>
+                    ))}
+                  </select>
+                </label>
+              </div>
+              <div className="mb-4">
+                <label className="block text-sm font-medium text-gray-700">
+                  Sub-Category:
+                  <select
+                    name="category"
+                    id=""
+                    value={productData.category?.id ?? -1}
+                    onChange={(e) =>
+                      setProductData((prev) => ({
+                        ...prev,
+                        category: {
+                          id: e.target.value,
+                          name: e.target.value,
+                          parentID: categories[currentCategory].id ,
+                        },
+                      }))
+                    }
+                  >
+                    {currentCategory > -1
+                      ? categories[currentCategory].children?.map(
+                          (category) => (
+                            <option key={category.id} value={category.name}>
+                              {category.name}
+                            </option>
+                          ),
+                        )
+                      : null}
+                  </select>
+                </label>
+              </div>
+            </>
+          ) : null}
           <div className="mb-4">
             <ProductCategoryForm />
           </div>

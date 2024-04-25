@@ -1,7 +1,7 @@
 import "server-only";
 import { Product, PrismaClient, Supplier, ProductStatus } from "@prisma/client";
 import { connectOrCreateObject as connectTag } from "./tags";
-import { CreateProductDTO, CreateSupplierDTO, CreateTagDTO } from "./DTOs";
+import { CreateCategory, CreateProductDTO, CreateSupplierDTO, CreateTagDTO } from "./DTOs";
 import { connectOrCreateObject as connectImage } from "./images";
 import { CreateImageDTO } from "./DTOs";
 import { HttpError } from "@/lib/utils";
@@ -12,6 +12,11 @@ async function create(product: CreateProductDTO, prismaClient: PrismaClient) {
   let createdproduct = await products.create({
     data: {
       ...product,
+      category: product.category ? {
+        connect: {
+          id: product.category.id,
+        }
+      } : undefined,
       tags: { connectOrCreate: connectTag(product.tags, []).connectOrCreate },
       images: await connectImage(product.images, []),
       suppliers: {
@@ -32,7 +37,7 @@ async function update(
     where: { id: productId },
     include: { images: true, tags: true },
   });
-  if(!oldProduct) throw HttpError(404, 'Product not found')
+  if (!oldProduct) throw HttpError(404, 'Product not found')
 
   const suplierUpdate = {
     create: [],
@@ -59,7 +64,10 @@ async function update(
     where: { id: productId },
     data: {
       ...product,
-      tags:connectTag(product.tags,oldProduct?.tags ),
+      category: product.category? {
+        connect: {id: product.category.id}
+      }:undefined,
+      tags: connectTag(product.tags, oldProduct?.tags),
       images: await connectImage(product.images, oldProduct!.images),
       suppliers: suplierUpdate,
     },
@@ -110,9 +118,9 @@ async function getAll(
     include: {
       // reviews: true,
     },
-    orderBy: options ? {
+    orderBy: options?.orderby ? {
       [options.orderby]: options.order,
-      
+
     } : {
       updatedAt: 'desc'
     }
@@ -123,5 +131,49 @@ async function getAll(
 
   return { records: allProducts, currentPage: page, totalPages, pageSize };
 }
+
+
+
+export async function addCategories(newCategory: CreateCategory, prismaClient: PrismaClient,) {
+  const categories = prismaClient.productCategory;
+  const category = await categories.findFirst({
+    where: {
+      name: newCategory.name,
+      children: {
+        
+      },
+      parentId: null
+    }
+    
+  })
+  if(category) throw HttpError(400, 'Category already exists')
+  const record = await categories.create({
+    data: {
+      name: newCategory.name,
+      children: {
+        create: newCategory.children
+      }
+    }
+  })
+
+  return record
+}
+export async function getCategories(prismaClient: PrismaClient,) {
+  const categories = prismaClient.productCategory;
+  const records = await categories.findMany({
+    where: {
+      parent: {
+        is: null
+      },
+    },
+    include: {
+      children: true
+    }
+  })
+
+  return records
+
+}
+
 
 export { create, update, remove, read, getAll };

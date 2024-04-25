@@ -24,3 +24,6 @@ export type OrderTableBy =
   | "publishDate"
   | "inventory";
 export type OrderTable = "desc" | "asc";
+
+
+export type CategoryType = "product" | "prompt" | "blog" | "service"

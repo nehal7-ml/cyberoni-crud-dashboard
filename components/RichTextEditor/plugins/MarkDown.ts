@@ -198,6 +198,8 @@ function markdown(src: string) {
 }
 
 export function markdownPlugin(editor: Editor) {
+  console.log("registerygin matkdown");
+
   // Add a button that opens a window
   editor.ui.registry.addButton("markdown", {
     text: "M↓",
