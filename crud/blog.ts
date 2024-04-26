@@ -181,35 +181,6 @@ async function getAll(
 }
 
 
-export async function addCategories(newCategory: CreateCategory, prismaClient: PrismaClient,) {
-  const categories = prismaClient.blogCategory;
-  const record = await categories.create({
-    data: {
-      name: newCategory.name,
-      children: {
-        create: newCategory.children
-      }
-    }
-  })
-
-  return record
-}
-export async function getCategories(prismaClient: PrismaClient,) {
-  const categories = prismaClient.blogCategory;
-  const records = await categories.findMany({
-    where: {
-      parent: {
-        is: null
-      },
-    },
-    include: {
-      children: true
-    }
-  })
-
-  return records
-
-}
 
 
 

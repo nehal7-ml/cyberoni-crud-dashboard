@@ -174,34 +174,5 @@ async function getAll(
 
   return { records: allPrompts, currentPage: page, totalPages, pageSize };
 }
-export async function addCategories(newCategory: CreateCategory, prismaClient: PrismaClient,) {
-  const categories = prismaClient.gptCategory;
-  const record = await categories.create({
-    data: {
-      name: newCategory.name,
-      children: {
-        create: newCategory.children
-      },
-    }
-  })
-
-  return record
-}
-export async function getCategories(prismaClient: PrismaClient,) {
-  const categories = prismaClient.gptCategory;
-  const records = await categories.findMany({
-    where: {
-      parent: {
-        is: null
-      },
-    },
-    include: {
-      children: true,
-    }
-  })
-
-  return records
-
-}
 
 export { create, update, remove, read, getAll };

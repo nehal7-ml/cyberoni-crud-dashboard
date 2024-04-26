@@ -26,7 +26,7 @@ function ProductTableItems({ records, page }: { records: DisplayProductDTO[], pa
           row.push(value.inventory);
           row.push(value.price);
           row.push(value.profitMargin);
-          row.push(value.category);
+          row.push(`${value.category?.parent?.name} > ${value.category?.name}` || "uncategorized");
 
           return (
             {

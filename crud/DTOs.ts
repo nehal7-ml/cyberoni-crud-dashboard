@@ -16,7 +16,6 @@ import {
   Tag,
   User,
 } from "@prisma/client";
-import { UserPersona } from "./casestudy";
 
 export type CreateBlogDTO = {
   title: string;
@@ -42,8 +41,9 @@ export type BlogCategory = {
   } | null;
 }
 export type CreateCategory = {
+  id?: string;
   name: string;  
-  children: {name:string} []
+  children: {name:string, id?:string} []
 }
 export type DisplayBlogDTO = Blog & { author: User, tags: Tag[], images: Image[] };
 export type CreateImageDTO = {
@@ -279,6 +279,15 @@ export type CreateCaseStudy = {
   architecture?: CreateImageDTO[];
 };
 
+export type UserPersona = {
+  bio: string;
+  name: string;
+  gender: string;
+  age: number;
+  goals: string[];
+  painPoints: string[];
+  image?: CreateImageDTO;
+};
 export type CreateDiscountDTO = {
   id?: string;
   name: string;
@@ -305,7 +314,7 @@ export type CreateProductDTO = {
   images: CreateImageDTO[];
   suppliers?: CreateSupplierDTO[] | Supplier[];
   amazonProductId?: string;
-  cjDropShippingId?: string;
+  aliExpressId?: string;
 };
 
 export type DisplayProductDTO = {
@@ -331,6 +340,7 @@ export type ProductCategory = {
   id: string;
   name: string;
   children?: ProductCategory[];
+  parent? : ProductCategory | null;
   parentId?: string | null;
 
 }

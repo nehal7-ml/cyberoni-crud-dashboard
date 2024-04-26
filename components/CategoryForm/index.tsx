@@ -1,77 +1,169 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import DynamicInput from "../DynamicInput";
+import Modal from "../shared/Modal";
+import { CategoryType } from "@/types/global";
+import Notification, { toast } from "../Notification";
+import { X } from "lucide-react";
+import LoadingDots from "../shared/loading-dots";
+import DeleteModal from "../DeleteModal";
 
 function CategoryForm({
-    action,
-    method,
-    defaultValue,
+  action,
+  method,
+  onChange,
+  defaultValue,
 }: {
-    method: "POST" | "PUT";
-    action: string;
-    defaultValue?: {
-        id?: string;
-        name: string;
-        children: { id?: string, name: string }[];
-    }
+  method: "POST" | "PUT" ;
+  action: CategoryType;
+  onChange: (data: any, type: "add" | "update" | "delete") => void;
+  defaultValue?: {
+    id?: string;
+    name: string;
+    children?: { id?: string; name: string }[];
+  };
 }) {
-    const [category, setCategory] = useState(defaultValue || {
-        name: "",
-        children: [],
+  const [showDialog, setShowDialog] = useState(false);
+  const [deleteModal, setDeleteModal] = useState(false);
+  const [loading, setLoading] = useState(false);
+  const [category, setCategory] = useState(
+    defaultValue || {
+      name: "",
+      children: [],
+    },
+  );
+
+  async function handleSubmit() {
+    setLoading(true);
+    const res = await fetch(
+      `/api/categories/${action}/${method == "POST" ? `add` : `${defaultValue?.id}`}`,
+      {
+        method: method,
+        body: JSON.stringify(category),
+        headers: {
+          "Content-Type": "application/json",
+        },
+      },
+    );
+
+    if (res.status == 200) {
+      toast(`Category ${method == "POST" ? "added" : "updated"} successfully`, {
+        type: "success",
+      });
+      setShowDialog(false);
+      const data = await res.json();
+      onChange(data.category, method == "POST" ? "add" : "update");
+    } else {
+      toast("Something went wrong", {
+        type: "error",
+      });
+    }
+
+    setLoading(false);
+  }
+
+  async function handleChange(data: {
+    name: string;
+    children: { name: string; id?: string }[];
+  }) {
+    setCategory({
+      name: data.name,
+      children: data.children,
     });
+    console.log("categroires Change:", data);
+  }
 
-    async function handleSubmit() {
-        const res = await fetch(action, {
-            method: method,
-            body: JSON.stringify(category),
-            headers: {
-                "Content-Type": "application/json",
-            },
-        });
-    }
-
-    async function handleChange(data: { name: string, children: string[] }) {
-
-        setCategory({
-            name: data.name,
-            children: data.children.map((item) => ({ name: item })),
-        })
-
-    }
-
-    return (
-        <div className="flex flex-col justify-end items-center gap-3 ">
-            <DynamicInput
-                defaultValue={category}
-                onChange={handleChange}
-                schema={{
+  useEffect(() => {
+    if (defaultValue) setCategory(defaultValue);
+  }, [category, defaultValue]);
+  return (
+    <>
+      <div className="flex items-center justify-normal gap-4">
+        <button
+          type="button"
+          onClick={() => setShowDialog(true)}
+          className="text-sm text-slate-500"
+        >
+          {method === "POST" ? "Add" : "Edit"} category
+        </button>
+        {method === "PUT" && (
+          <button
+            type="button"
+            onClick={() => setDeleteModal(true)}
+            className="text-sm text-red-700"
+          >
+            delete category
+          </button>
+        )}
+      </div>
+      <Modal show={showDialog} setShow={setShowDialog}>
+        <div className="relative mx-auto flex w-fit flex-col items-center justify-end gap-3  bg-gray-50 p-5">
+          <button
+            onClick={() => setShowDialog(false)}
+            className="absolute right-0 top-0 text-red-500"
+          >
+            <X />
+          </button>
+          <DynamicInput
+            defaultValue={{ name: category.name, children: category.children }}
+            onChange={handleChange}
+            schema={{
+              type: "object",
+              properties: {
+                name: { type: "string", required: true, title: "Category" },
+                children: {
+                  type: "array",
+                  description: "Subcategories of this category",
+                  items: {
+                    title: "Subcategory",
                     type: "object",
+                    description: "Subcategories of this category",
                     properties: {
-                        name: { type: "string", required: true, title: "Category" },
-                        children: {
-                            type: "array",
-                            description: "Subcategories of this category",
-                            items: { title: "Subcategory", type: "string", required: true },
-                            required: true,
-                            title: "Subcategory",
-                            toString: (object: string) => {
-                                return object;
-                            },
-                        },
+                      id: {
+                        type: "string",
+                        title: "SubcategoryID",
+                        required: false,
+                        disabled: true,
+                      },
+                      name: {
+                        type: "string",
+                        title: "Subcategory",
+                        required: true,
+                      },
                     },
                     required: true,
-                    description: "Subcategories of this category",
-                    title: "Subcategories",
-                }}
-            />
-            <button
-                type="button"
-                onClick={handleSubmit}
-                className="flex w-fit items-end justify-center gap-3 rounded bg-blue-500 p-2 text-white"
-            >
-                Update Categories
-            </button>
+                  },
+                  required: true,
+                  title: "Subcategory",
+                  toString: (object: { name: string }) => {
+                    return object.name;
+                  },
+                },
+              },
+              required: true,
+              description: "Subcategories of this category",
+              title: "Subcategories",
+            }}
+          />
+          <button
+            type="button"
+            onClick={handleSubmit}
+            className="flex w-fit  items-center justify-center gap-3 rounded bg-blue-500 p-2 text-white"
+          >
+            {loading && <LoadingDots />} {method === "POST" ? "Add" : "Update"}{" "}
+            Categories
+          </button>
         </div>
-    );
+        <Notification />
+      </Modal>
+
+      <DeleteModal
+        isOpen={deleteModal}
+        onClose={() => setDeleteModal(false)}
+        url={`/api/categories/${action}/${defaultValue?.id}`}
+        onDelete={() => (setShowDialog(false),onChange({id:defaultValue?.id}, 'delete'))}
+      ></DeleteModal>
+    </>
+  );
 }
 
 export default CategoryForm;

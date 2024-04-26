@@ -7,10 +7,8 @@ import GptPromptForm from "@/components/PromptForm";
 import ReferralForm from "@/components/ReferralForm";
 import ServiceForm from "@/components/ServiceForm";
 import UserForm from "@/components/UserForm";
-import { getCategories as  getBlogCategories } from "@/crud/blog";
 import { CreateReferralDTO } from "@/crud/DTOs";
-import { getCategories as getProductCategories } from "@/crud/product";
-import { getCategories as getPromptCategories } from "@/crud/prompt";
+import { getCategories } from "@/crud/categories";
 import { read as readReferral } from "@/crud/referral";
 import { getAll as getAllServices } from "@/crud/service";
 import { prisma } from "@/lib/prisma";
@@ -23,7 +21,7 @@ async function CreateForm({
   params: { id: string; table: TableType };
 }) {
   if (params.table === "blogs") {
-    const categories = await getBlogCategories(prisma);
+    const categories = await getCategories('blog',prisma);
 
     return (
       <BlogForm
@@ -49,11 +47,11 @@ async function CreateForm({
     // console.log(event);
     return <EventForm method="POST" action={`/api/events/add`} />;
   } else if (params.table === "products") {
-    const categories = await getProductCategories(prisma);
+    const categories = await getCategories('product',prisma);
     // console.log(event);
     return <ProductForm categories={categories} method="POST" action={`/api/products/add`} />;
   } else if (params.table === "prompts") {
-    const categories = await getPromptCategories(prisma);
+    const categories = await getCategories('prompt',prisma);
 
     //console.log(prompt);
     return (

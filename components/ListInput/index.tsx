@@ -27,10 +27,10 @@ function ListInput({
       let addedTags = newTagName.trim().split(",").map(tag => tag.trim());
       // Filter out any empty strings that might result from the trimming in case of multiple commas
       let newTags = [...list, ...addedTags.filter(tag => tag !== '')];
-  
-      setList(newTags);
+      const uniqueTags = Array.from(new Set(newTags));
+      setList(uniqueTags);
       setNewTagName("");
-      onChange(newTags);
+      onChange(uniqueTags);
     }
   };
 

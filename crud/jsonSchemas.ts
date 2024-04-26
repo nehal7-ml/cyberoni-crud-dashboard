@@ -425,3 +425,92 @@ export const GptPromptSchema = {
     GptVariables: GptVariablesSchema
   },
 };
+
+export const UserPersonaSchema = {
+  "type": "object",
+  "properties": {
+    "bio": { "type": "string" },
+    "name": { "type": "string" },
+    "gender": { "type": "string" },
+    "age": { "type": "number" },
+    "goals": {
+      "type": "array",
+      "items": { "type": "string" }
+    },
+    "painPoints": {
+      "type": "array",
+      "items": { "type": "string" }
+    },
+    "image": { "$ref": "#/definitions/CreateImageDTO" }
+  },
+  "required": ["bio", "name", "gender", "age", "goals", "painPoints"],
+  "definitions": {
+    "CreateImageDTO": ImageSchema,
+
+  }
+}
+export const CaseStudySchema = {
+  "type": "object",
+  "properties": {
+    "id": { "type": "string" },
+    "title": { "type": "string", "minLength": 1 },
+    "serviceId": { "type": "string" },
+    "subServices": {
+      "type": "array",
+      "items": { "type": "object", "properties": { "id": { "type": "string" } }, "required": ["id"] }
+    },
+    "preview": { "type": "string", "minLength": 1 },
+    "problemStatement": { "type": "string", "minLength": 1 },
+    "userProblems": {
+      "type": "array",
+      "items": { "type": "string", "minLength": 1 }
+    },
+    "possibleSolutions": {
+      "type": "array",
+      "items": { "type": "string", "minLength": 1 }
+    },
+    "goals": {
+      "type": "array",
+      "items": { "type": "string", "minLength": 1 }
+    },
+    "images": {
+      "type": "array",
+      "items": { "$ref": "#/definitions/CreateImageDTO" }
+    },
+    "uniqueFeatures": { "type": "string", "minLength": 1 },
+    "userResearch": { "type": "string", "minLength": 1 },
+    "keyLearning": { "type": "string", "minLength": 1 },
+    "userPersonas": {
+      "type": "array",
+      "items": { "$ref": "#/definitions/UserPersona" }
+    },
+    "competetiveAnalysis": {
+      "type": "array",
+      "items": { "$ref": "#/definitions/CreateImageDTO" }
+    },
+    "wireFrames": {
+      "type": "array",
+      "items": { "$ref": "#/definitions/CreateImageDTO" }
+    },
+    "hifiDesign": {
+      "type": "array",
+      "items": { "$ref": "#/definitions/CreateImageDTO" }
+    },
+    "userFlow": {
+      "type": "array",
+      "items": { "$ref": "#/definitions/CreateImageDTO" }
+    },
+    "architecture": {
+      "type": "array",
+      "items": { "$ref": "#/definitions/CreateImageDTO" }
+    }
+  },
+  "required": ["title", "preview", "problemStatement", "userProblems", "possibleSolutions", "goals", "uniqueFeatures", "userResearch", "keyLearning"],
+  "definitions": {
+    "CreateImageDTO": ImageSchema,
+    "CreateTagDTO":TagSchema,
+    "UserPersona": UserPersonaSchema,
+  }
+}
+
+

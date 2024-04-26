@@ -22,8 +22,8 @@ import { InfoIcon } from "lucide-react";
 import Ajv from "ajv";
 import DynamicInput, { FormSchema } from "../DynamicInput";
 import { conversationStartersProperties, stepProperties, sysCommandProperties, variablesNeededProperties } from "./formSchema";
-import GptCategoryForm from "./CategoryForm";
 import LoadingDots from "../shared/loading-dots";
+import CategoryForm from "../CategoryForm";
 
 
 
@@ -427,9 +427,11 @@ const GptPromptForm = ({
               </div>
             </>
           ) : null}
-          <GptCategoryForm
-            onAddCategory={(newCat) => (categories = [...categories, newCat])}
-          />
+          <div className="mb-4">
+            <CategoryForm
+              onChange={(category, type) => { }}
+              action={'prompt'} method={currentCategory > -1 ? "PUT" : "POST"} defaultValue={currentCategory > -1 ? categories[currentCategory] : undefined} />
+          </div>
           <AddImagesAndTags
             maxImages={1}
             onImagesAndTagsChange={handleChangedImage}

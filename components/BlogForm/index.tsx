@@ -11,9 +11,9 @@ import Editor from "../RichTextEditor";
 import Ajv from "ajv";
 import addFormats from "ajv-formats";
 import DateInput from "../DateInput";
-import CategoryForm from "./CategoryForm";
 import LoadingSpinner from "../shared/loading-spinner";
 import LoadingDots from "../shared/loading-dots";
+import CategoryForm from "../CategoryForm";
 
 const ajv = new Ajv();
 addFormats(ajv);
@@ -55,7 +55,6 @@ function BlogForm({
     },
   );
   const [rawJson, setRawJson] = useState(JSON.stringify(blogData, null, 2));
-  const [json, setJson] = useState<{ [key: string]: any }>({});
 
   const handleInputChange = (
     e:
@@ -168,7 +167,6 @@ function BlogForm({
             .join("\n"),
         );
       else {
-        setJson(newData);
         if (Object.keys(newData).length > 0) {
           console.log(newData);
           for (let key of Object.keys(blogData)) {
@@ -336,9 +334,11 @@ function BlogForm({
               </div>
             </>
           ) : null}
-          <CategoryForm
-            onAddCategory={(newCat) => (categories = [...categories, newCat])}
-          />
+          <div className="mb-4">
+            <CategoryForm
+              onChange={(category, type)=> {}}
+            action={'blog'} method={currentCategory > -1 ? "PUT" : "POST"} defaultValue={currentCategory > -1 ? categories[currentCategory] : undefined} />
+          </div>
           <div className="mb-4 h-fit">
             <label className="block text-sm font-medium text-gray-700">
               Content:

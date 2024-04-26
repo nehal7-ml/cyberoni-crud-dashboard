@@ -4,15 +4,7 @@ import { CreateImageDTO } from "./DTOs";
 import { connectOrCreateObject, createImageJson } from "./images";
 import { CreateCaseStudy } from "./DTOs";
 export type CaseStudyType = "ECOMMERCE" | "LANDING" | "SOFTWARE" | "GRAPHICS";
-export type UserPersona = {
-  bio: string;
-  name: string;
-  gender: string;
-  age: number;
-  goals: string[];
-  painPoints: string[];
-  image?: CreateImageDTO;
-};
+
 export async function create(caseStudy: CreateCaseStudy, prisma: PrismaClient) {
   const cases = prisma.caseStudy;
   let images = await connectOrCreateObject(caseStudy.images, []);

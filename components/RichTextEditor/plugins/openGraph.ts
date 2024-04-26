@@ -1,34 +1,40 @@
-import { AstNode, Editor, TinyMCE} from "tinymce";
-//@ts-ignore
+import { AstNode, Editor, TinyMCE } from "tinymce";
 
 
 
-async function fetchOpenGraphData(url: string, editor: Editor, target?: AstNode) {
+async function fetchOpenGraphData(data: { url: string, title: string, image: string, description: string }, editor: Editor, target?: HTMLElement) {
   try {
-    const response = await fetch(`/api/fetchOG?url=${encodeURIComponent(url)}`);
-    const { data } = await response.json();
+
+    const response = await fetch(`/api/fetchOG?url=${encodeURIComponent(data.url)}`);
+    const { og, metadata } = await response.json();
     // console.log("og data",data);
-    if (data["og:title"] && data["og:description"] && data["og:image"]) {
+    if (og["og:title"]) {
+      let image: string = og["og:image"] ??  data.image;
+
+      console.log(image);
+      let description = og["og:description"] ?? data.description;
       const content = `
-                <div contenteditable="false" data-url="${url}" data-title="${data["og:title"]}" data-element="og" class="og-link" style="border: 1px solid #ccc; max-width: 500px; margin: 10px; overflow: hidden; border-radius: 8px; box-shadow: 0 4px 8px rgba(0,0,0,0.1);">
+                <div contenteditable="false" data-image="${image}" data-description="${description}" data-url="${data.url}" data-title="${og["og:title"]}" data-element="og" class="og-link" style="border: 1px solid #ccc; max-width: 500px; margin: 10px; overflow: hidden; border-radius: 8px; box-shadow: 0 4px 8px rgba(0,0,0,0.1);">
                     <div style="position: relative;">
-                        <a href="${url}" target="_blank" style="text-decoration: none; color: inherit;">
-                            <img src="${data["og:image"]}" alt="Preview" style="display: block; width: 100%; height: auto;">
+                        <a href="${data.url}" target="_blank" style="text-decoration: none; color: inherit;">
+                            <img src="${image}" alt="Preview" style="display: block; width: 100%; height: auto;">
                         </a>
                     </div>
                     <div style="padding: 15px;">
-                        <a href="${url}" target="_blank" style="text-decoration: none; color: inherit;">
-                            <h4 style="margin: 0;  font-size: 18px; font-weight: bold;">${data["og:title"]}</h4>
-                            <p style="margin: 5px 0 10px; color: #333; font-size: 14px;">${data["og:description"]}</p>
+                        <a href="${data.url}" target="_blank" style="text-decoration: none; color: inherit;">
+                            <h4 style="margin: 0;  font-size: 18px; font-weight: bold;">${og["og:title"]}</h4>
+                            <p style="margin: 5px 0 10px; color: #333; font-size: 14px;">${description}</p>
                         </a>
                     </div>
                 </div>
             `;
-        if(target){ 
-            
-
-    }
-      else editor.insertContent(content);
+      if (target) {
+        editor.selection.getNode().outerHTML = content;
+      } 
+      else {
+        
+        
+        editor.insertContent(content);}
     } else {
       alert("No Open Graph data found.");
     }
@@ -51,34 +57,53 @@ export function openGraphPlugin(editor: Editor) {
     `,
   );
   editor.editorCommands.addCommand("openGraph", (active) => {
-    openGraphModal(editor, );
-  
+    openGraphModal(editor,);
+
+  });
+  editor.editorCommands.addCommand("openGraphActive", (active) => {
+
   });
   editor.ui.registry.addButton("opengraph", {
     text: "OG",
     tooltip: "Open Graph",
     icon: "opengraphIcon",
-    enabled: true,    
+    enabled: true,
     onSetup: function (api) {
 
-        editor.on("ObjectSelected", (event) => {
-               const target = event.target as  AstNode;
+      editor.on("ObjectSelected", (event) => {
+        const target = event.target as HTMLElement;
+        console.log(target.getAttribute("data-element"), event);
 
-                console.log(target);
-        })
+        if(!target || !target.getAttribute) return
+        console.log(target.getAttribute("data-element"));
+        if(target.getAttribute("data-element") === 'og')  openGraphModal(editor,target);
+      })
 
-      return (api) => {};
+      return (api) => { };
     },
     onAction: () => openGraphModal(editor),
   });
 }
 
-function openGraphModal(editor: Editor, target?: AstNode) {
+function openGraphModal(editor: Editor, target?: HTMLElement) {
+  let url = "", title = "", description = "", image = "";
+  if (target) {
+    url = target.getAttribute("data-url") || "";
+    title = target.getAttribute("data-title") || "";
+    description = target.getAttribute("data-description") || "";
+    image = target.getAttribute("data-image") || "";
+  }
   const dialog = document.getElementById(
-    "opengraph-modal",
+    "openGraph-modal",
   ) as HTMLDialogElement;
   if (dialog) {
     dialog.show();
+    (document.getElementById("og_url") as HTMLInputElement).value = url;
+    (document.getElementById("og_title") as HTMLInputElement).value = title;
+    (document.getElementById("og_description") as HTMLInputElement).value = description;
+    (document.getElementById("og_image") as HTMLInputElement).value = image;
+
+
     return;
   }
   const newModal = document.createElement("dialog");
@@ -95,11 +120,7 @@ function openGraphModal(editor: Editor, target?: AstNode) {
     "backdrop-blur-lg",
     "bg-opacity-50",
   );
-  let url ="", title= ""
-  if(target) {
-        url = target.attr("data-url") || "";
-        title = target.attr("data-title") || "";
-  }
+ 
   newModal.insertAdjacentHTML(
     "afterbegin",
     `
@@ -116,7 +137,22 @@ function openGraphModal(editor: Editor, target?: AstNode) {
                             <label class="text-base rounded focus:outline-blue-200">Title</label>
                             <input defaultValue="${title}" id="og_title" rows="30" class="w-full h-fit border"></input>
                         </div>
-                        <button id="add-link" class="w-full bg-blue-500 text-white p-2 rounded hover:bg-blue-600 focus:outline-none focus:ring focus:ring-blue-300">Add</button>
+                        <div class="my-4 m-0 text-gray-700">
+                            <label class="text-base rounded focus:outline-blue-200">Description</label>
+                            <textarea defaultValue="${description}" id="og_description" rows="5" class="w-full h-fit border"></textarea>
+                        </div>
+                        <div class="my-4 m-0 text-gray-700">
+                            <label class="text-base rounded focus:outline-blue-200">image</label>
+                            <input defaultValue="${image}" id="og_image" rows="30" class="w-full h-fit border"></input>
+                        </div>
+                        <button id="add-link" class="flex justify-center items-center gap-3 w-full bg-blue-500 text-white p-2 rounded hover:bg-blue-600 focus:outline-none focus:ring focus:ring-blue-300">
+                          <svg id="og-loading" aria-hidden="true" class="inline aria-hidden:hidden" width="15" height="15" viewBox="0 0 60 20" xmlns="http://www.w3.org/2000/svg">
+                            <circle class="dot animate-pulse delay-75" cx="10" cy="10" r="5"></circle>
+                            <circle class="dot animate-pulse delay-150 " cx="30" cy="10" r="5"></circle>
+                            <circle class="dot  animate-pulse delay-200 " cx="50" cy="10" r="5"></circle>
+                          </svg>
+                        Add
+                        </button>
                     </div>
                 
                 </div> 
@@ -129,9 +165,15 @@ function openGraphModal(editor: Editor, target?: AstNode) {
 
   document.getElementById("add-link")?.addEventListener("click", async () => {
     const url = (document.getElementById("og_url") as HTMLInputElement).value;
-    const title = document.getElementById("og_title") as HTMLInputElement;
+    const title = (document.getElementById("og_title") as HTMLInputElement).value;
+    const description = (document.getElementById("og_description") as HTMLInputElement).value;
+    const image = (document.getElementById("og_image") as HTMLInputElement).value;
 
-    if(url.trim()) await fetchOpenGraphData(url, editor, target);
+    const loading = document.getElementById("og-loading") as HTMLElement;
+    loading.ariaHidden ="false";
+    if (url.trim()) await fetchOpenGraphData({ url, title, image, description }, editor, target);
+    loading.ariaHidden ="true";
+
     newModal.close();
   });
   document.getElementById("opengraph-close")?.addEventListener("click", () => {

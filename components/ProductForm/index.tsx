@@ -10,12 +10,12 @@ import Notification, {
 import CreateSupplier from "./CreateSupplier";
 import { X } from "lucide-react";
 import { FormProps } from "@/crud/commonDTO";
-import {  ProductStatus, Supplier } from "@prisma/client";
+import { ProductStatus, Supplier } from "@prisma/client";
 import { redirect, useRouter } from "next/navigation";
 import LoadingDots from "../shared/loading-dots";
-import ProductCategoryForm from "./ProductCategory";
+import CategoryForm from "../CategoryForm";
 
-const ProductForm = ({ method, action,  initial, categories }: FormProps & {categories: ProductCategory[]}) => {
+const ProductForm = ({ method, action, initial, categories }: FormProps & { categories: ProductCategory[] }) => {
   const [loading, setLoading] = useState(false);
 
   const [supplier, setSupplier] = useState<CreateSupplierDTO | undefined>(
@@ -31,6 +31,8 @@ const ProductForm = ({ method, action,  initial, categories }: FormProps & {cate
       name: "",
       status: "SOLDOUT",
       ratings: undefined,
+      amazonProductId: undefined,
+      cjDropShippingId: undefined,
       inventory: 0,
       productBreakdown: undefined,
       shippingReturnPolicy: "",
@@ -69,6 +71,7 @@ const ProductForm = ({ method, action,  initial, categories }: FormProps & {cate
       "Content-Type": "application/json",
       Authorization: "Bearer your-access-token",
     };
+    console.log(productData);
     // Send the userData to your backend for creating the user
     const res = await fetch(`${action}`, {
       method,
@@ -98,7 +101,9 @@ const ProductForm = ({ method, action,  initial, categories }: FormProps & {cate
 
     setProductData({
       ...productData,
-      [name]: value == "" ? "" : Number(value),
+      [name]: isNaN(Number(e.target.value))
+        ? 0
+        : Number(e.target.value),
     });
   };
 
@@ -136,7 +141,7 @@ const ProductForm = ({ method, action,  initial, categories }: FormProps & {cate
   }
 
   useEffect(() => {
-    async function fetchSuppliers() {}
+    async function fetchSuppliers() { }
 
     fetchSuppliers();
   }, []);
@@ -203,10 +208,10 @@ const ProductForm = ({ method, action,  initial, categories }: FormProps & {cate
               Inventory:
             </label>
             <input
-              type="number"
+              type="text"
               name="inventory"
               className="mt-1 w-full rounded border p-2"
-              value={productData.inventory}
+              value={productData.inventory.toString()}
               onChange={handleNumberInputChange}
             />
           </div>
@@ -218,7 +223,7 @@ const ProductForm = ({ method, action,  initial, categories }: FormProps & {cate
               type="number"
               name="price"
               className="mt-1 w-full rounded border p-2"
-              value={productData.price}
+              value={productData.price.toString()}
               onChange={handleNumberInputChange}
             />
           </div>
@@ -279,19 +284,19 @@ const ProductForm = ({ method, action,  initial, categories }: FormProps & {cate
                         category: {
                           id: e.target.value,
                           name: e.target.value,
-                          parentID: categories[currentCategory].id ,
+                          parentID: categories[currentCategory].id,
                         },
                       }))
                     }
                   >
                     {currentCategory > -1
                       ? categories[currentCategory].children?.map(
-                          (category) => (
-                            <option key={category.id} value={category.name}>
-                              {category.name}
-                            </option>
-                          ),
-                        )
+                        (category) => (
+                          <option key={category.id} value={category.id}>
+                            {category.name}
+                          </option>
+                        ),
+                      )
                       : null}
                   </select>
                 </label>
@@ -299,7 +304,9 @@ const ProductForm = ({ method, action,  initial, categories }: FormProps & {cate
             </>
           ) : null}
           <div className="mb-4">
-            <ProductCategoryForm />
+            <CategoryForm
+              onChange={(category, type)=> {}}
+            action={'product'} method={currentCategory > -1 ? "PUT" : "POST"} defaultValue={currentCategory > -1 ? categories[currentCategory] : undefined} />
           </div>
           <div className="mb-4">
             <label className="block text-sm font-medium text-gray-700">
@@ -308,7 +315,8 @@ const ProductForm = ({ method, action,  initial, categories }: FormProps & {cate
             <input
               type="text"
               name="amazonProductId"
-              className="mt-1 w-full rounded border p-2"
+              className="mt-1 w-full rounded border p-2 text-input"
+              pattern="^(B[\dA-Z]{9}|\d{9}(X|\d))$"
               value={productData.amazonProductId}
               onChange={handleInputChange}
             />
@@ -316,13 +324,13 @@ const ProductForm = ({ method, action,  initial, categories }: FormProps & {cate
 
           <div className="mb-4">
             <label className="block text-sm font-medium text-gray-700">
-              CJdropshipping id:
+              Ali Express product id:
             </label>
             <input
               type="text"
-              name="cjDropShippingId"
+              name="aliExpressId"
               className="mt-1 w-full rounded border p-2"
-              value={productData.cjDropShippingId}
+              value={productData.aliExpressId}
               onChange={handleInputChange}
             />
           </div>

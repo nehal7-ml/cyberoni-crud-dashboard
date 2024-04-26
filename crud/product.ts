@@ -117,6 +117,12 @@ async function getAll(
     where: {},
     include: {
       // reviews: true,
+      category: {
+        include: {
+          parent: true
+        }
+      },
+
     },
     orderBy: options?.orderby ? {
       [options.orderby]: options.order,
@@ -134,46 +140,6 @@ async function getAll(
 
 
 
-export async function addCategories(newCategory: CreateCategory, prismaClient: PrismaClient,) {
-  const categories = prismaClient.productCategory;
-  const category = await categories.findFirst({
-    where: {
-      name: newCategory.name,
-      children: {
-        
-      },
-      parentId: null
-    }
-    
-  })
-  if(category) throw HttpError(400, 'Category already exists')
-  const record = await categories.create({
-    data: {
-      name: newCategory.name,
-      children: {
-        create: newCategory.children
-      }
-    }
-  })
-
-  return record
-}
-export async function getCategories(prismaClient: PrismaClient,) {
-  const categories = prismaClient.productCategory;
-  const records = await categories.findMany({
-    where: {
-      parent: {
-        is: null
-      },
-    },
-    include: {
-      children: true
-    }
-  })
-
-  return records
-
-}
 
 
 export { create, update, remove, read, getAll };
