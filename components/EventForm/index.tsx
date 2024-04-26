@@ -214,12 +214,15 @@ const EventForm = ({
               Location :
             </label>
             <input
-              name="location"
-              className="mt-1 w-full rounded border p-2"
-              value={eventData.location}
-              onChange={handleInputChange}
-              required
-            />
+            type="text"
+            name="location"
+            placeholder="Google Maps URL"
+            title="Enter a valid Google Maps URL"
+            className="mt-1 w-full rounded border p-2 invalid:border-red-400 invalid:text-red-400 invalid:outline-red-500 invalid:ring-red-500"
+            value={eventData.location as string}
+            onChange={handleInputChange}
+            pattern="^https?:\/\/(www\.)?google\.com\/maps\/(embed\?|search\?).*$"
+          />
           </div>
           <AddImagesAndTags
             images={eventData.image ? [eventData.image] : []}
