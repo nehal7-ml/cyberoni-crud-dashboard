@@ -197,7 +197,7 @@ async function removeCategory(
                 where: { productCategoryId: id },
                 data: { productCategoryId: null },
             });
-            return await prisma.productCategory.delete({ where: { id } });
+            return await prisma.productCategory.delete({ where: { id },  });
         case "prompt":
             await prisma.gptPrompt.updateMany({
                 where: { gptCategoryId: id },

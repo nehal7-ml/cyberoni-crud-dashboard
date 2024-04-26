@@ -17,11 +17,13 @@ import { redirect } from "next/navigation";
 
 async function CreateForm({
   params,
+  searchParams,
 }: {
   params: { id: string; table: TableType };
+  searchParams: { id?: string; duplicate?: "true" | "false" };
 }) {
   if (params.table === "blogs") {
-    const categories = await getCategories('blog',prisma);
+    const categories = await getCategories("blog", prisma);
 
     return (
       <BlogForm
@@ -47,11 +49,17 @@ async function CreateForm({
     // console.log(event);
     return <EventForm method="POST" action={`/api/events/add`} />;
   } else if (params.table === "products") {
-    const categories = await getCategories('product',prisma);
+    const categories = await getCategories("product", prisma);
     // console.log(event);
-    return <ProductForm categories={categories} method="POST" action={`/api/products/add`} />;
+    return (
+      <ProductForm
+        categories={categories}
+        method="POST"
+        action={`/api/products/add`}
+      />
+    );
   } else if (params.table === "prompts") {
-    const categories = await getCategories('prompt',prisma);
+    const categories = await getCategories("prompt", prisma);
 
     //console.log(prompt);
     return (
@@ -62,14 +70,17 @@ async function CreateForm({
       />
     );
   } else if (params.table === "referrals") {
-    const res = await readReferral(params.id, prisma);
-    if (!res) redirect("/404");
-    const { ...referral } = res;
+    let res: any | null;
+    if (searchParams.id && searchParams.duplicate === "true") {
+      res = await readReferral(searchParams.id, prisma);
+      if (!res) redirect("/404");
+    }
+
     // console.log(event);
     return (
       <ReferralForm
         method="POST"
-        initial={referral as CreateReferralDTO}
+        initial={res as CreateReferralDTO}
         action={`/api/referrals/add`}
       />
     );

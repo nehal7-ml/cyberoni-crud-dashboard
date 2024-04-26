@@ -11,7 +11,7 @@ function DuplicateItem({ type, itemId }: { type: 'referrals', itemId: string }) 
         e.stopPropagation()
         e.preventDefault()
 
-        router.push(`/dashboard/${type}/new?duplicate="true"&id=${itemId}`);
+        router.push(`/dashboard/${type}/new?duplicate=true&id=${itemId}`);
     }
     return (
         <button type="button" onClick={handleDuplicate} className="flex items-center hover:text-green-500 hover:shadow-inner rounded-md p-3">

@@ -305,8 +305,15 @@ const ProductForm = ({ method, action, initial, categories }: FormProps & { cate
           ) : null}
           <div className="mb-4">
             <CategoryForm
-              onChange={(category, type)=> {}}
-            action={'product'} method={currentCategory > -1 ? "PUT" : "POST"} defaultValue={currentCategory > -1 ? categories[currentCategory] : undefined} />
+              onChange={(category, type) => { 
+                if(type=='add') {
+
+                  
+                }
+
+
+              }}
+              action={'product'} method={currentCategory > -1 ? "PUT" : "POST"} defaultValue={currentCategory > -1 ? categories[currentCategory] : undefined} />
           </div>
           <div className="mb-4">
             <label className="block text-sm font-medium text-gray-700">
