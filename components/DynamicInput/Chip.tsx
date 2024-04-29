@@ -18,7 +18,7 @@ function Chip({
             <button type="button" onClick={onEdit} className="flex ">
                 <Edit />
             </button>
-            <button type="button" onClick={onDelete} className="flex hover:text-red">
+            <button type="button" onClick={onDelete} className="flex hover:text-red-500">
                 <X />
             </button>
         </div>

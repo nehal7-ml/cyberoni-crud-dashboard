@@ -113,6 +113,7 @@ function ArrayForm({
               setOpenForm(true);
             }}
             onDelete={() => {
+              console.log("delete item " , items.filter((item: any, i: number) => i == index));
               setItems(items.filter((item: any, i: number) => i !== index));
             }}
           />
