@@ -21,21 +21,8 @@ async function put(req: NextRequest, { params }: { params: { id: string } }) {
   const productId = params.id as string;
 
   const product = (await req.json()) as CreateProductDTO;
-  if (product.amazonProductId) {
-    const verified = await verifyAsin(product.amazonProductId)
-    if (!verified) {
-      return NextResponse.json({ message: "Invalid Amazon Product Id" })
-    }
-  }
-
-  if (product.aliExpressId) {
-    const verified = await verifyAliExpressId(product.aliExpressId)
-    if (!verified) {
-      return NextResponse.json({ message: "Invalid AliExpress Id" })
-    }
-  }
-  const updatedUser = await update(productId, product, prisma);
-  return NextResponse.json({ message: "update success", data: updatedUser });
+  const updatedProduct = await update(productId, product, prisma);
+  return NextResponse.json({ message: "update success", data: updatedProduct });
 }
 async function remove(
   req: NextRequest,

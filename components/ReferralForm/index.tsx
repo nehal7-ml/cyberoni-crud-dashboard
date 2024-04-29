@@ -108,7 +108,15 @@ const ReferralForm = ({
         ...prevData,
         expires: new Date(value),
       }));
+    }
+    if (name === "prefix") {
+      setReferralData((prevData) => ({
+        ...prevData,
+        prefix: value,
+        redirect: `${stripSlashes(appUrl)}${referralData.type === "REDIRECT" ? "/referrals" : "/affiliate"}/${value}?${utmPraram.current.toString()}`,
+      }));
     } else {
+      console.log(name, value);
       setReferralData((prevData) => ({
         ...prevData,
         [name]: value,
@@ -121,28 +129,21 @@ const ReferralForm = ({
     e.preventDefault();
     setLoading(true);
 
-    const headers = {
-      "Content-Type": "application/json",
-      Authorization: "Bearer your-access-token",
-    };
-    // Send the userData to your backend for creating the user
     const payload = { ...referralData };
 
     try {
       if (linkType === "Internal") {
         Object.assign(payload, {
-          link: `${appUrl}${referralData.link}`,
+          link: `${stripSlashes(appUrl)}${referralData.link}`,
         });
       }
     } catch (error) {
       return;
     }
     console.log(payload);
-
     const res = await fetch(`${action}`, {
       method,
       body: JSON.stringify(payload),
-      headers,
     });
     let resJson = await res.json();
 
@@ -162,7 +163,6 @@ const ReferralForm = ({
     }
 
     setLoading(false);
-
   };
 
   function message(type: NotificationType, message: string) {
@@ -295,7 +295,7 @@ const ReferralForm = ({
               type="text"
               name="redirect"
               className="mt-1 w-full rounded border p-2 invalid:text-rose-500 invalid:outline-red-500 invalid:ring-2 invalid:ring-rose-600"
-              value={`${stripSlashes(appUrl)}${referralData.type === "REDIRECT" ? "/referrals" : "/affiliate"}/${referralData.prefix}?${utmPraram.current.toString()}`}
+              value={referralData.redirect}
               onChange={handleInputChange}
               required
             />
@@ -510,7 +510,7 @@ const ReferralForm = ({
           <button
             disabled={loading}
             type="submit"
-            className="w-full flex justify-center items-center rounded bg-blue-500 p-2 text-white hover:bg-blue-600 focus:outline-none focus:ring focus:ring-blue-300"
+            className="flex w-full items-center justify-center rounded bg-blue-500 p-2 text-white hover:bg-blue-600 focus:outline-none focus:ring focus:ring-blue-300"
           >
             {loading ? <LoadingDots /> : null}
             {method === "POST" ? "Create" : "Update"} Referral
