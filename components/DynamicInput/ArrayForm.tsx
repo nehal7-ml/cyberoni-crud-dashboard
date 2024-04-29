@@ -75,7 +75,7 @@ function ArrayForm({
   const [currentItem, setCurrentItem] = useState<any>(initial);
 
   function addItem() {
-    console.log(currentItem);
+    // console.log(currentItem);
     setItems([...items, currentItem]);
     setCurrentItem(initial);
     setMode("EDIT");

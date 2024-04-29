@@ -9,11 +9,9 @@ import DeleteModal from "../DeleteModal";
 
 function CategoryForm({
   action,
-  method,
   onChange,
   defaultValue,
 }: {
-  method: "POST" | "PUT" ;
   action: CategoryType;
   onChange: (data: any, type: "add" | "update" | "delete") => void;
   defaultValue?: {
@@ -25,6 +23,7 @@ function CategoryForm({
   const [showDialog, setShowDialog] = useState(false);
   const [deleteModal, setDeleteModal] = useState(false);
   const [loading, setLoading] = useState(false);
+  const [method, setMethod] = useState<"POST" | "PUT" | "DELETE">("POST");
   const [category, setCategory] = useState(
     defaultValue || {
       name: "",
@@ -34,6 +33,7 @@ function CategoryForm({
 
   async function handleSubmit() {
     setLoading(true);
+    console.log(category);
     const res = await fetch(
       `/api/categories/${action}/${method == "POST" ? `add` : `${defaultValue?.id}`}`,
       {
@@ -49,9 +49,11 @@ function CategoryForm({
       toast(`Category ${method == "POST" ? "added" : "updated"} successfully`, {
         type: "success",
       });
+      const { data } = await res.json();
+      console.log("recieved data" ,data);
+      onChange(data, method === "POST" ? "add" : "update");
       setShowDialog(false);
-      const data = await res.json();
-      onChange(data.category, method == "POST" ? "add" : "update");
+
     } else {
       toast("Something went wrong", {
         type: "error",
@@ -69,31 +71,63 @@ function CategoryForm({
       name: data.name,
       children: data.children,
     });
-    console.log("categroires Change:", data);
   }
 
-  useEffect(() => {
-    if (defaultValue) setCategory(defaultValue);
-  }, [category, defaultValue]);
+    useEffect(() => {
+      if (defaultValue) {
+        setCategory(defaultValue);
+      } else {
+        setCategory({name: "", children: []});
+      }
+    }, [defaultValue]);
+ 
   return (
     <>
       <div className="flex items-center justify-normal gap-4">
         <button
           type="button"
-          onClick={() => setShowDialog(true)}
+          onClick={() => {
+            setMethod("POST");
+
+            setCategory({ name: "", children: [] });
+            setShowDialog(true)
+          }}
           className="text-sm text-slate-500"
         >
-          {method === "POST" ? "Add" : "Edit"} category
+          Add category
         </button>
-        {method === "PUT" && (
-          <button
-            type="button"
-            onClick={() => setDeleteModal(true)}
-            className="text-sm text-red-700"
-          >
-            delete category
-          </button>
-        )}
+        {defaultValue && <> <button
+          type="button"
+          onClick={() => {
+            setMethod("PUT");
+            setShowDialog(true)
+          }}
+          className="text-sm text-slate-500"
+        >
+          Edit category
+        </button>
+
+        <button
+          type="button"
+          onClick={() => {
+
+            if (!category.id) {
+              toast("Please select a category to delete", {
+                type: "error",
+              })
+
+              return
+            }
+            setDeleteModal(true);
+            setMethod("DELETE");
+          }}
+          className="text-sm text-red-700"
+        >
+          delete category
+        </button>
+        </>
+        }
+
       </div>
       <Modal show={showDialog} setShow={setShowDialog}>
         <div className="relative mx-auto flex w-fit flex-col items-center justify-end gap-3  bg-gray-50 p-5">
@@ -160,7 +194,11 @@ function CategoryForm({
         isOpen={deleteModal}
         onClose={() => setDeleteModal(false)}
         url={`/api/categories/${action}/${defaultValue?.id}`}
-        onDelete={() => (setShowDialog(false),onChange({id:defaultValue?.id}, 'delete'))}
+        onDelete={() => (
+          setShowDialog(false),
+          setCategory({ name: "", children: [] }),
+          onChange({ id: defaultValue?.id }, "delete")
+        )}
       ></DeleteModal>
     </>
   );

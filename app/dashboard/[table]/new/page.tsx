@@ -7,7 +7,7 @@ import GptPromptForm from "@/components/PromptForm";
 import ReferralForm from "@/components/ReferralForm";
 import ServiceForm from "@/components/ServiceForm";
 import UserForm from "@/components/UserForm";
-import { CreateReferralDTO } from "@/crud/DTOs";
+import { BlogCategory, CreateReferralDTO } from "@/crud/DTOs";
 import { getCategories } from "@/crud/categories";
 import { read as readReferral } from "@/crud/referral";
 import { getAll as getAllServices } from "@/crud/service";
@@ -23,7 +23,7 @@ async function CreateForm({
   searchParams: { id?: string; duplicate?: "true" | "false" };
 }) {
   if (params.table === "blogs") {
-    const categories = await getCategories("blog", prisma);
+    const categories = await getCategories("blog", prisma) as BlogCategory[];
 
     return (
       <BlogForm

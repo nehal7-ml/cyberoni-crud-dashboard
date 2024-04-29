@@ -24,6 +24,11 @@ function DeleteButton({ url }: { url: string }) {
         isOpen={openModal}
         url={url}
         onClose={() => setOpenModal(false)}
+        onDelete={()=> {
+          setTimeout(() => {
+            window.location.reload();
+          }, 1000);
+        }}
       ></DeleteModal>
     </>
   );

@@ -113,7 +113,7 @@ const DynamicInput: React.FC<DynamicInputProps> = ({ schema, onChange, defaultVa
 
   useEffect(() => {
 
-    console.log(current, currentData);
+    // console.log(current, currentData);
     if (defaultValue === undefined) {
       setCurrentData(current)
     }

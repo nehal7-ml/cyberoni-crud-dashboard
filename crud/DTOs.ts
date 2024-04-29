@@ -36,7 +36,9 @@ export type CreateBlogDTO = {
 export type BlogCategory = {
   id?: string
   name: string;
-  parent: {
+  children?: BlogCategory[],
+  parentId?: string
+  parent?: {
     id: string;
   } | null;
 }
@@ -155,9 +157,11 @@ export type CreateGptPromptDTO = {
 export type GptCategory = {
   id?: string
   name: string;
-  parent: {
+  children?: GptCategory[],
+  parent?: {
     id: string;
   } | null;
+  parentId?: string
 }
 export type GptSteps = {
   index: number,

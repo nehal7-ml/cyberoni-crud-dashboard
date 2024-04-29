@@ -1,6 +1,11 @@
 "use client";
 import AddImagesAndTags from "@/components/AddImagesAndTags";
-import { CreateImageDTO, CreateProductDTO, CreateSupplierDTO, ProductCategory } from "@/crud/DTOs";
+import {
+  CreateImageDTO,
+  CreateProductDTO,
+  CreateSupplierDTO,
+  ProductCategory,
+} from "@/crud/DTOs";
 import { CreateTagDTO } from "@/crud/DTOs";
 import React, { ChangeEvent, useEffect, useState } from "react";
 import Notification, {
@@ -15,7 +20,12 @@ import { redirect, useRouter } from "next/navigation";
 import LoadingDots from "../shared/loading-dots";
 import CategoryForm from "../CategoryForm";
 
-const ProductForm = ({ method, action, initial, categories }: FormProps & { categories: ProductCategory[] }) => {
+const ProductForm = ({
+  method,
+  action,
+  initial,
+  categories,
+}: FormProps & { categories: ProductCategory[] }) => {
   const [loading, setLoading] = useState(false);
 
   const [supplier, setSupplier] = useState<CreateSupplierDTO | undefined>(
@@ -23,6 +33,8 @@ const ProductForm = ({ method, action, initial, categories }: FormProps & { cate
   );
 
   const [currentCategory, setCurrentCategory] = useState(-1);
+  const [categoryList, setCategoryList] =
+    useState<ProductCategory[]>(categories);
   const [showDialog, setShowDialog] = useState(false);
 
   const [productData, setProductData] = useState<CreateProductDTO>(
@@ -87,7 +99,6 @@ const ProductForm = ({ method, action, initial, categories }: FormProps & { cate
       message("error", resJson.message);
     }
     setLoading(false);
-
   };
 
   function message(type: NotificationType, message: string) {
@@ -101,9 +112,7 @@ const ProductForm = ({ method, action, initial, categories }: FormProps & { cate
 
     setProductData({
       ...productData,
-      [name]: isNaN(Number(e.target.value))
-        ? 0
-        : Number(e.target.value),
+      [name]: isNaN(Number(e.target.value)) ? 0 : Number(e.target.value),
     });
   };
 
@@ -140,8 +149,33 @@ const ProductForm = ({ method, action, initial, categories }: FormProps & { cate
     }));
   }
 
+  function handleCategoryChange(
+    category: ProductCategory,
+    index: number,
+    action: "add" | "update" | "delete",
+  ) {
+    if (action === "add") {
+      // Add the category only if it doesn't already exist in the list
+      setCategoryList((prev) =>
+        prev.find((c) => c.id === category.id) ? prev : [...prev, category],
+      );
+    } else if (action === "update") {
+      // Update the category based on id
+      const newCatList = categoryList;
+      newCatList[index] = category;
+      setCategoryList(newCatList);
+    } else if (action === "delete") {
+      // Delete the category based on id (more secure)
+      setCurrentCategory(-1);
+      setCategoryList((prev) => prev.splice(index, 1));
+    } else {
+      // Optionally handle unexpected actions
+      console.error("Unhandled action:", action);
+    }
+  }
+
   useEffect(() => {
-    async function fetchSuppliers() { }
+    async function fetchSuppliers() {}
 
     fetchSuppliers();
   }, []);
@@ -251,7 +285,7 @@ const ProductForm = ({ method, action, initial, categories }: FormProps & { cate
               onChange={handleInputChange}
             />
           </div>
-          {categories && categories.length > 0 ? (
+          {categoryList && categoryList.length > 0 ? (
             <>
               <div className="mb-4">
                 <label className="block text-sm font-medium text-gray-700">
@@ -263,7 +297,7 @@ const ProductForm = ({ method, action, initial, categories }: FormProps & { cate
                     onChange={(e) => setCurrentCategory(Number(e.target.value))}
                   >
                     <option value={-1}>Select Category</option>
-                    {categories?.map((category, index) => (
+                    {categoryList.map((category, index) => (
                       <option key={category.id} value={index}>
                         {category.name}
                       </option>
@@ -284,19 +318,19 @@ const ProductForm = ({ method, action, initial, categories }: FormProps & { cate
                         category: {
                           id: e.target.value,
                           name: e.target.value,
-                          parentID: categories[currentCategory].id,
+                          parentID: categoryList[currentCategory].id,
                         },
                       }))
                     }
                   >
                     {currentCategory > -1
-                      ? categories[currentCategory].children?.map(
-                        (category) => (
-                          <option key={category.id} value={category.id}>
-                            {category.name}
-                          </option>
-                        ),
-                      )
+                      ? categoryList[currentCategory].children?.map(
+                          (category) => (
+                            <option key={category.id} value={category.id}>
+                              {category.name}
+                            </option>
+                          ),
+                        )
                       : null}
                   </select>
                 </label>
@@ -305,15 +339,14 @@ const ProductForm = ({ method, action, initial, categories }: FormProps & { cate
           ) : null}
           <div className="mb-4">
             <CategoryForm
-              onChange={(category, type) => { 
-                if(type=='add') {
-
-                  
-                }
-
-
+              onChange={(category, type) => {
+                handleCategoryChange(category, currentCategory, type);
               }}
-              action={'product'} method={currentCategory > -1 ? "PUT" : "POST"} defaultValue={currentCategory > -1 ? categories[currentCategory] : undefined} />
+              action={"product"}
+              defaultValue={
+                currentCategory > -1 ? categoryList[currentCategory] : undefined
+              }
+            />
           </div>
           <div className="mb-4">
             <label className="block text-sm font-medium text-gray-700">
@@ -322,7 +355,7 @@ const ProductForm = ({ method, action, initial, categories }: FormProps & { cate
             <input
               type="text"
               name="amazonProductId"
-              className="mt-1 w-full rounded border p-2 text-input"
+              className="text-input mt-1 w-full rounded border p-2"
               pattern="^(B[\dA-Z]{9}|\d{9}(X|\d))$"
               value={productData.amazonProductId}
               onChange={handleInputChange}

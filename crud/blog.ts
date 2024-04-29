@@ -12,18 +12,10 @@ async function create(blog: CreateBlogDTO, prismaClient: PrismaClient) {
     data: {
       ...blog,
       category: blog.category ? {
-        connectOrCreate: {
-          where: { name: blog.category.name! },
-          create: {
-            name: blog.category.name!,
-            parent: blog.category.parent ? {
-              connect: {
-                id: blog.category.parent.id,
-              }
-            } : undefined,
-          },
+        connect: {
+          id: blog.category.id,
         }
-      } : undefined,
+     } : undefined,
       images: await connectImages(blog.images, []),
       tags: { connectOrCreate: connectTags(blog.tags, []).connectOrCreate },
       author: { connect: { email: blog.author.email } },
@@ -61,16 +53,8 @@ async function update(
     data: {
       ...blog,
       category: blog.category ? {
-        connectOrCreate: {
-          where: { name: blog.category.name },
-          create: {
-            name: blog.category.name,
-            parent: blog.category.parent ? {
-              connect: {
-                id: blog.category.parent.id,
-              }
-            } : undefined,
-          },
+        connect: {
+          id: blog.category.id,
         }
       } : undefined,
       images: await connectImages(blog.images, oldBlog!.images),

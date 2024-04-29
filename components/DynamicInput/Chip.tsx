@@ -11,7 +11,7 @@ function Chip({
 
 }) {
 
-    console.log("object-chip", label);
+    // console.log("object-chip", label);
     return (
         <div className="flex items-center justify-center gap-2 bg-gradient-to-br from-blue-600 to-blue-300 text-white p-3 rounded-xl">
             <div className="max-w-xs text-ellipsis overflow-clip line-clamp-2">{label}</div>

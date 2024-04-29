@@ -25,8 +25,8 @@ async function create(prompt: CreateGptPromptDTO, prismaClient: PrismaClient) {
       startPhrase: prompt.startPhrase,
       sysCommands: prompt.sysCommands,
       steps: prompt.steps,
-      stop : prompt.stop,
-      stream  : prompt.stream,
+      stop: prompt.stop,
+      stream: prompt.stream,
       toolChoice: prompt.toolChoice,
       temperature: prompt.temperature,
       timesIntegrated: 0,
@@ -35,21 +35,13 @@ async function create(prompt: CreateGptPromptDTO, prismaClient: PrismaClient) {
       top_p: prompt.top_p,
       tools: {},
       variables: prompt.variables,
-      category: prompt.category? {
-        connectOrCreate: {
-          where: { name: prompt.category.name! },
-          create: {
-            name: prompt.category.name!,
-            parent: prompt.category.parent
-              ? {
-                  connect: {
-                    id: prompt.category.parent.id,
-                  },
-                }
-              : undefined,
-          },
-        },
-      }: undefined,
+      category: prompt.category
+        ? {
+            connect: {
+              id: prompt.category.id,
+            },
+          }
+        : undefined,
       tags: { connectOrCreate: connectTag(prompt.tags, []).connectOrCreate },
       image: prompt.image ? { connect: { id: prompt.image.id! } } : {},
     },
@@ -63,7 +55,10 @@ async function update(
   prismaClient: PrismaClient,
 ) {
   const prompts = prismaClient.gptPrompt;
-  let oldPrompt = await prompts.findUnique({ where: { id: promptId }, include: { image: true, tags: true } });
+  let oldPrompt = await prompts.findUnique({
+    where: { id: promptId },
+    include: { image: true, tags: true },
+  });
   if (!oldPrompt) throw HttpError(404, "Prompt not found");
   let UpdatedPrompt = await prompts.update({
     where: { id: promptId },
@@ -83,8 +78,8 @@ async function update(
       startPhrase: prompt.startPhrase,
       sysCommands: prompt.sysCommands,
       steps: prompt.steps,
-      stop : prompt.stop,
-      stream  : prompt.stream,
+      stop: prompt.stop,
+      stream: prompt.stream,
       toolChoice: prompt.toolChoice,
       temperature: prompt.temperature,
       timesIntegrated: 0,
@@ -95,18 +90,8 @@ async function update(
       variables: prompt.variables,
       category: prompt.category
         ? {
-            connectOrCreate: {
-              where: { name: prompt.category.name! },
-              create: {
-                name: prompt.category.name!,
-                parent: prompt.category.parent
-                  ? {
-                      connect: {
-                        id: prompt.category.parent.id,
-                      },
-                    }
-                  : undefined,
-              },
+            connect: {
+              id: prompt.category.id,
             },
           }
         : undefined,
@@ -132,23 +117,23 @@ async function read(promptId: string, prismaClient: PrismaClient) {
       image: true,
       tags: true,
       tools: true,
-      category:{
+      category: {
         include: {
-          parent: true
-        }
+          parent: true,
+        },
       },
     },
   });
-  if (existingPrompt) return existingPrompt 
+  if (existingPrompt) return existingPrompt;
 }
 async function getAll(
   page: number,
   pageSize: number,
   prismaClient: PrismaClient,
   options?: {
-    order: 'asc' | 'desc';
-    orderby: 'updatedAt' | 'title';
-  }
+    order: "asc" | "desc";
+    orderby: "updatedAt" | "title";
+  },
 ) {
   const prompts = prismaClient.gptPrompt;
 
@@ -162,11 +147,13 @@ async function getAll(
     include: {
       // reviews: true,
     },
-    orderBy: options?.orderby? {
-      [options.orderby]: options.order,
-    }: {
-      updatedAt: 'desc'
-    }
+    orderBy: options?.orderby
+      ? {
+          [options.orderby]: options.order,
+        }
+      : {
+          updatedAt: "desc",
+        },
   });
 
   const totalCount = await prompts.count();

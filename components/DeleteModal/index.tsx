@@ -19,9 +19,7 @@ const DeleteModal = ({ isOpen, onClose, onDelete, url }: DeleteModalProps) => {
       const res = await fetch(url, { method: "DELETE" });
       if (res.status === 200) {
         setIsDeleted(true);
-        setTimeout(() => {
-          window.location.reload();
-        }, 1000);
+        if(onDelete ) onDelete()
       }
     } catch (error) {
       console.error("Delete failed:", error);

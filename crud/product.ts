@@ -1,22 +1,28 @@
 import "server-only";
 import { Product, PrismaClient, Supplier, ProductStatus } from "@prisma/client";
 import { connectOrCreateObject as connectTag } from "./tags";
-import { CreateCategory, CreateProductDTO, CreateSupplierDTO, CreateTagDTO } from "./DTOs";
+import {
+  CreateCategory,
+  CreateProductDTO,
+  CreateSupplierDTO,
+  CreateTagDTO,
+} from "./DTOs";
 import { connectOrCreateObject as connectImage } from "./images";
 import { CreateImageDTO } from "./DTOs";
 import { HttpError } from "@/lib/utils";
-
 
 async function create(product: CreateProductDTO, prismaClient: PrismaClient) {
   const products = prismaClient.product;
   let createdproduct = await products.create({
     data: {
       ...product,
-      category: product.category ? {
-        connect: {
-          id: product.category.id,
-        }
-      } : undefined,
+      category: product.category
+        ? {
+            connect: {
+              id: product.category.id,
+            },
+          }
+        : undefined,
       tags: { connectOrCreate: connectTag(product.tags, []).connectOrCreate },
       images: await connectImage(product.images, []),
       suppliers: {
@@ -37,7 +43,7 @@ async function update(
     where: { id: productId },
     include: { images: true, tags: true },
   });
-  if (!oldProduct) throw HttpError(404, 'Product not found')
+  if (!oldProduct) throw HttpError(404, "Product not found");
 
   const suplierUpdate = {
     create: [],
@@ -64,9 +70,11 @@ async function update(
     where: { id: productId },
     data: {
       ...product,
-      category: product.category? {
-        connect: {id: product.category.id}
-      }:undefined,
+      category: product.category
+        ? {
+            connect: { id: product.category.id },
+          }
+        : undefined,
       tags: connectTag(product.tags, oldProduct?.tags),
       images: await connectImage(product.images, oldProduct!.images),
       suppliers: suplierUpdate,
@@ -102,9 +110,9 @@ async function getAll(
   pageSize: number,
   prismaClient: PrismaClient,
   options?: {
-    order: 'asc' | 'desc';
-    orderby: 'updatedAt' | 'title';
-  }
+    order: "asc" | "desc";
+    orderby: "updatedAt" | "title";
+  },
 ) {
   const products = prismaClient.product;
 
@@ -119,17 +127,17 @@ async function getAll(
       // reviews: true,
       category: {
         include: {
-          parent: true
-        }
+          parent: true,
+        },
       },
-
     },
-    orderBy: options?.orderby ? {
-      [options.orderby]: options.order,
-
-    } : {
-      updatedAt: 'desc'
-    }
+    orderBy: options?.orderby
+      ? {
+          [options.orderby]: options.order,
+        }
+      : {
+          updatedAt: "desc",
+        },
   });
 
   const totalCount = await products.count();
@@ -137,9 +145,5 @@ async function getAll(
 
   return { records: allProducts, currentPage: page, totalPages, pageSize };
 }
-
-
-
-
 
 export { create, update, remove, read, getAll };
