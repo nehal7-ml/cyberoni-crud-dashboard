@@ -100,7 +100,7 @@ export const BlogSchema = {
     "subTitle",
     "description",
     "featured",
-    "date",
+    "publishDate",
     "content",
     "author",
     "images",

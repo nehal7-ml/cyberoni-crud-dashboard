@@ -11,6 +11,7 @@ async function create(blog: CreateBlogDTO, prismaClient: PrismaClient) {
   let createdBlog = await blogs.create({
     data: {
       ...blog,
+      date: new Date(),
       category: blog.category ? {
         connect: {
           id: blog.category.id,

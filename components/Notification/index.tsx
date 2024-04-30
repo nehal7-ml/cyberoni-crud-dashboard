@@ -40,13 +40,15 @@ const NotificationComponent = () => {
     <div
       className={`fixed bottom-10 right-10 flex rounded p-4 ${state.options?.type === "success" ? "bg-green-500 text-white" : state.options?.type === "error" ? "bg-red-500 text-white" : "bg-red-700 text-zinc-900"} ${state.show ? "z-[10000] opacity-100" : "hidden opacity-0"} font-semibold transition-opacity  duration-300 `}
     >
-      {state.options?.type === "success" ? (
-        <Check className="mr-2" />
-      ) : state.options?.type === "error" ? (
-        <X className="mr-2" />
-      ) : (
-        <Info className="mr-2" />
-      )}
+      <button onClick={() => updateState({message: "", show: false })} className="cursor-pointer">
+        {state.options?.type === "success" ? (
+          <Check className="mr-2" />
+        ) : state.options?.type === "error" ? (
+          <X className="mr-2" />
+        ) : (
+          <Info className="mr-2" />
+        )}
+      </button>
       {state.message}
     </div>
   );
