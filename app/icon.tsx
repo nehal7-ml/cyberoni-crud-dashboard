@@ -1,5 +1,4 @@
 import { getBaseUrl } from "@/lib/utils";
-import { Lock } from 'lucide-react';
 import { ImageResponse } from "next/og";
 // Route segment config
 export const runtime = "edge";
@@ -8,7 +7,6 @@ export const size = {
   width: 32,
   height: 32,
 };
-export const contentType = "image/png";
 
 // Image generation
 export default function Icon() {
