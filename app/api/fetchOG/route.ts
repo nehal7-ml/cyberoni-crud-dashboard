@@ -6,6 +6,8 @@ export const { POST, DELETE, GET, PATCH, PUT } = apiHandler({
   GET: get,
 });
 
+export const dynamic ="force-dynamic"
+
 async function get(req: NextRequest) {
   const { searchParams } = new URL(req.url);
   const url = searchParams.get("url") as string;
@@ -17,5 +19,5 @@ async function get(req: NextRequest) {
   const result = await ogs.fetch(url, {
     userAgent: 'Mozilla/5.0 (compatible; Googlebot/2.1; +http://www.google.com/bot.html)'
   });
-  return NextResponse.json({  og: result, metadata }, { status: 200 });
+  return NextResponse.json({ og: result, metadata }, { status: 200 });
 }
