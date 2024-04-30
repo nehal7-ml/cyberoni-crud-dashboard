@@ -1,4 +1,5 @@
-import { create, CreateEventDTO } from "@/crud/event";
+import { CreateEventDTO } from "@/crud/DTOs";
+import { create } from "@/crud/event";
 import { prisma } from "@/lib/prisma";
 import { NextApiRequest, NextApiResponse } from "next";
 import { revalidatePath } from "next/cache";

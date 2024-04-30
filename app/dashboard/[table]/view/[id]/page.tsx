@@ -80,7 +80,7 @@ async function UpdateForm({
   } else if (params.table === "events") {
     const res = await readEvent(params.id, prisma);
     if (!res) redirect("/404");
-    const { imageId, ...event } = res;
+    const {  ...event } = res;
     // console.log(event);
     return (
       <EventForm

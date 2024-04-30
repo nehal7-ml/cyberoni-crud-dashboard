@@ -1,13 +1,13 @@
 import { NextApiRequest, NextApiResponse } from "next";
 import { prisma } from "@/lib/prisma";
 import {
-  CreateEventDTO,
   read,
   remove as removeEvent,
   update,
 } from "@/crud/event";
 import { NextRequest, NextResponse } from "next/server";
 import apiHandler from "@/errorHandler";
+import { CreateEventDTO } from "@/crud/DTOs";
 
 export const { POST, DELETE, GET, PATCH, PUT } = apiHandler({
   GET: get,

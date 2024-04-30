@@ -1,7 +1,6 @@
 import { CaseStudy, Event, GptPrompt, Service } from "@prisma/client";
-import { CreateBlogDTO, CreateDiscountDTO, CreateProductDTO, DisplayBlogDTO, DisplayProductDTO } from "./DTOs";
+import { CreateBlogDTO, CreateDiscountDTO, CreateEventDTO, CreateProductDTO, DisplayBlogDTO, DisplayProductDTO } from "./DTOs";
 import { CreateUserDTO, DisplayUserDTO } from "./user";
-import { CreateEventDTO } from "./event";
 import { CreateGptPromptDTO } from "./DTOs";
 
 export type getAllRecordsDTO = {
