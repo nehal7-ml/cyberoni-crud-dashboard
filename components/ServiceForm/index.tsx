@@ -58,7 +58,7 @@ function ServiceForm({
   const [editSubservice, setEditSubservice] = useState<number>(-1);
 
   const [descriptionForm, setDescriptionForm] = useState(false);
-  const [rawJson, setRawJson] = useState(JSON.stringify(initial, null, 2));
+  const [rawJson, setRawJson] = useState(JSON.stringify(serviceData, null, 2));
   const [json, setJson] = useState<{ [key: string]: any }>({});
 
   const handleNumberInputChange = (
