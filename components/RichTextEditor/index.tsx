@@ -1,8 +1,9 @@
-import { useState, useEffect, ChangeEvent, useRef } from "react";
-import { Editor as RichTextEditor, IAllProps } from "@tinymce/tinymce-react";
+import { useState, useEffect,  useRef } from "react";
+import { Editor as RichTextEditor } from "@tinymce/tinymce-react";
 import { addAutoFormatParameter, bufferToB64 } from "@/lib/utils";
-import { markdownPlugin } from "./plugins/MarkDown";
+import { markdownPlugin } from "./plugins/markDown";
 import LoadingDots from "../shared/loading-dots";
+import { openGraphPlugin } from "./plugins/openGraph";
 interface BlobInfo {
   id: () => string;
   name: () => string;
@@ -145,14 +146,13 @@ const Editor = ({
                 "table",
                 "directionality",
                 "emoticons",
-                "template",
                 "image",
                 "code",
                 "media",
               ],
               toolbar1:
                 "insertfile undo redo | styleselect | bold italic | alignleft aligncenter alignright alignjustify | bullist numlist outdent indent  | fullscreen",
-              toolbar2: "link image code media  markdown",
+              toolbar2: "link image code media markdown opengraph",
               file_picker_types: "image",
               images_file_types: "jpg,svg,webp",
               file_picker_callback: async (cb, value, record) =>
@@ -167,14 +167,9 @@ const Editor = ({
                 /<style>[\s\S]*?<\/style>/g,
               ],
               setup: (editor) => {
+                console.log("running setup");
                 markdownPlugin(editor);
-                editor.on("keydown", async function (e) {
-                  if (
-                    (e.key === "delete" || e.key == "backspace") &&
-                    editor.selection
-                  ) {
-                  }
-                });
+                openGraphPlugin(editor);
               },
             }}
             initialValue={initialValue}

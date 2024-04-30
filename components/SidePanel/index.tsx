@@ -41,6 +41,7 @@ async function SidePanel(props: React.BaseHTMLAttributes<HTMLDivElement>) {
           <Link
             className={`flex items-center justify-start  rounded-lg  p-2 text-gray-800  hover:cursor-pointer hover:bg-blue-600 hover:text-white`}
             href={"/dashboard/services/1"}
+            prefetch={false}
           >
             <Cpu />
 
@@ -56,6 +57,8 @@ async function SidePanel(props: React.BaseHTMLAttributes<HTMLDivElement>) {
           <Link
             className={`flex items-center justify-start  rounded-lg  p-2 text-gray-800  hover:cursor-pointer hover:bg-blue-600 hover:text-white`}
             href={"/dashboard/events/1"}
+            prefetch={false}
+
           >
             <CalendarCheck2 />
             <div className="pl-3 text-left">Events</div>

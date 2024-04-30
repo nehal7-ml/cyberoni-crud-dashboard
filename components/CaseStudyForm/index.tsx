@@ -1,6 +1,5 @@
 "use client";
-import { CaseStudyType, UserPersona } from "@/crud/casestudy";
-import { CreateCaseStudy } from "@/crud/DTOs";
+import { CreateCaseStudy, UserPersona } from "@/crud/DTOs";
 import { useEffect, useState } from "react";
 import AddImage from "../AddImagesAndTags/AddImage";
 import Image from "next/image";
@@ -11,11 +10,19 @@ import ListInput from "../ListInput";
 import Notification, { toast } from "../Notification";
 import { Service } from "@prisma/client";
 import LoadingDots from "../shared/loading-dots";
+import Ajv from "ajv";
+import addFormats from "ajv-formats";
+import { CaseStudySchema } from "@/crud/jsonSchemas";
 
 type SubService = {
   id: string;
   title: string;
 };
+
+const ajv = new Ajv();
+addFormats(ajv);
+const validate = ajv.compile(CaseStudySchema);
+
 function CaseStudyForm({
   method,
   action,
@@ -32,6 +39,7 @@ function CaseStudyForm({
   const [loading, setLoading] = useState(false);
 
   const [userPersonaForm, setUserPersonaForm] = useState(false);
+
   const [caseData, setCaseData] = useState<CreateCaseStudy>(
     initial
       ? {
@@ -59,6 +67,8 @@ function CaseStudyForm({
           hifiDesign: [],
         },
   );
+  const [rawJson, setRawJson] = useState(JSON.stringify(caseData, null, 2));
+
   // console.log(types);
   const handleSubmit = async (e: React.FormEvent) => {
     setLoading(true);
@@ -90,7 +100,6 @@ function CaseStudyForm({
       });
     }
     setLoading(false);
-
   };
 
   const handleAddSubService = (e: React.ChangeEvent<HTMLSelectElement>) => {
@@ -152,15 +161,64 @@ function CaseStudyForm({
     setUserPersonaForm(false);
   }
 
+  function parseJson(json: string) {
+    try {
+      const newData = JSON.parse(json);
+
+      const valid = validate(newData);
+      if (!valid)
+        alert(
+          validate.errors
+            ?.map(
+              (err) =>
+                `${err.instancePath} ${err.message} (${err.schemaPath}) `,
+            )
+            .join("\n"),
+        );
+      else {
+        if (Object.keys(newData).length > 0) {
+          console.log(newData);
+          for (let key of Object.keys(caseData)) {
+            console.log(key, newData[key]);
+            setCaseData((prev) => ({ ...prev, [key]: newData[key] }));
+          }
+        }
+      }
+    } catch (error) {
+      console.log("invalid JSON", error);
+      alert("Error parsing JSON" + error);
+    }
+  }
+
   return (
     <>
-      <div className="light:bg-gray-100 light:text-black flex h-[95vh]  max-h-screen items-center justify-center bg-gray-100 dark:bg-gray-700 dark:text-gray-800 ">
-        <div className="h-full max-h-full w-full max-w-xl rounded bg-white p-8 shadow-md">
+      <div className="light:bg-gray-100 light:text-black flex h-[94vh]  max-h-screen items-center justify-center bg-gray-100 dark:bg-gray-700 dark:text-gray-800 ">
+        <div className="h-full max-h-full w-full  rounded bg-white p-8 mx-4 shadow-md">
           <h2 className="mb-4 text-2xl font-semibold">
             {method === "POST" ? "Create" : "Update"} Case study
           </h2>
           <form onSubmit={handleSubmit} className=" h-[90%]">
             <div className="h-full overflow-y-auto px-2 py-4">
+              <div className="mb-4">
+                <label className="block" htmlFor="json">
+                  Json input auto fill:{" "}
+                </label>
+                <textarea
+                  className={"w-full p-3 ring-2 invalid:ring-red-500"}
+                  name="json"
+                  id=""
+                  rows={7}
+                  value={rawJson}
+                  onChange={(event) => setRawJson(event.target.value)}
+                ></textarea>
+                <button
+                  className="w-full rounded bg-blue-500 p-2 text-white hover:bg-blue-600 focus:outline-none focus:ring focus:ring-blue-300"
+                  type="button"
+                  onClick={() => parseJson(rawJson)}
+                >
+                  Parse Json
+                </button>
+              </div>
               <div className="mb-4">
                 <label className="block text-sm font-medium text-gray-700">
                   Title:
@@ -459,11 +517,11 @@ function CaseStudyForm({
             </div>
 
             <button
-            disabled={loading}
-            type="submit"
-            className="w-full flex justify-center items-center rounded bg-blue-500 p-2 text-white hover:bg-blue-600 focus:outline-none focus:ring focus:ring-blue-300"
-          >
-            {loading ? <LoadingDots /> : null}
+              disabled={loading}
+              type="submit"
+              className="flex w-full items-center justify-center rounded bg-blue-500 p-2 text-white hover:bg-blue-600 focus:outline-none focus:ring focus:ring-blue-300"
+            >
+              {loading ? <LoadingDots /> : null}
               {method === "POST" ? "Create Case study" : "Update Case study"}
             </button>
           </form>

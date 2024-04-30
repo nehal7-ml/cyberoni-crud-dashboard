@@ -1,8 +1,10 @@
 import {
   Blog,
+  EventStatus,
   GptPrompt,
   Image,
   PricingModel,
+  ProductStatus,
   ReferralPriority,
   ReferralType,
   Review,
@@ -11,10 +13,10 @@ import {
   ServiceCartItem,
   ServiceDescription,
   SubService,
+  Supplier,
   Tag,
   User,
 } from "@prisma/client";
-import { UserPersona } from "./casestudy";
 
 export type CreateBlogDTO = {
   title: string;
@@ -35,13 +37,16 @@ export type CreateBlogDTO = {
 export type BlogCategory = {
   id?: string
   name: string;
-  parent: {
+  children?: BlogCategory[],
+  parentId?: string
+  parent?: {
     id: string;
   } | null;
 }
 export type CreateCategory = {
+  id?: string;
   name: string;  
-  children: {name:string} []
+  children: {name:string, id?:string} []
 }
 export type DisplayBlogDTO = Blog & { author: User, tags: Tag[], images: Image[] };
 export type CreateImageDTO = {
@@ -134,7 +139,7 @@ export type CreateGptPromptDTO = {
   costPerToken: number;
   profitMargin: number;
   tags: CreateTagDTO[];
-  image?: CreateImageDTO | null;
+  image: CreateImageDTO [];
   botUrl?: string;
   conversationStarters: GptConvoStarters[] | [],
   seed: number,
@@ -153,9 +158,11 @@ export type CreateGptPromptDTO = {
 export type GptCategory = {
   id?: string
   name: string;
-  parent: {
+  children?: GptCategory[],
+  parent?: {
     id: string;
   } | null;
+  parentId?: string
 }
 export type GptSteps = {
   index: number,
@@ -277,9 +284,97 @@ export type CreateCaseStudy = {
   architecture?: CreateImageDTO[];
 };
 
+export type UserPersona = {
+  bio: string;
+  name: string;
+  gender: string;
+  age: number;
+  goals: string[];
+  painPoints: string[];
+  image?: CreateImageDTO;
+};
 export type CreateDiscountDTO = {
   id?: string;
   name: string;
   value: number;
   expires?: Date | null;
+};
+
+
+export type CreateProductDTO = {
+  sku: string;
+  name: string;
+  status: ProductStatus;
+  ratings?: number | null;
+  inventory: number;
+  productBreakdown?: string | null;
+  shippingReturnPolicy: string;
+  description: string;
+  price: number;
+  profitMargin: number;
+  displayPrice: number;
+  category?: ProductCategory;
+  subcategory?: string;
+  tags: CreateTagDTO[];
+  images: CreateImageDTO[];
+  suppliers?: CreateSupplierDTO[] | Supplier[];
+  amazonProductId?: string;
+  aliExpressId?: string;
+};
+
+export type DisplayProductDTO = {
+  id: string;
+  sku: string;
+  name: string;
+  status: string;
+  ratings: number | null;
+  inventory: number;
+  productBreakdown: string | null;
+  shippingReturnPolicy: string;
+  description: string;
+  price: number;
+  profitMargin: number;
+  displayPrice: number;
+  category?: ProductCategory;
+  subcategory: string | null;
+  amazonProductId?: string;
+  cjDropShippingId?: string;
+};
+
+export type ProductCategory = {
+  id: string;
+  name: string;
+  children?: ProductCategory[];
+  parent? : ProductCategory | null;
+  parentId?: string | null;
+
+}
+export type CreateSupplierDTO = {
+  baseShippingPrice: number;
+  height: number;
+  width: number;
+  length: number;
+  weight: number;
+  supplierName: string;
+  supplierStatus?: string;
+  shippingWeight?: number;
+  listPrice?: number;
+  salePrice?: number;
+  availability?: string;
+  supplierWrittenComments?: string;
+  supplierUrl: string;
+  supplierEmail?: string;
+  supplierWhatsApp?: string;
+};
+
+export type CreateEventDTO = {
+  name: string;
+  date: Date;
+  location: string;
+  description: string;
+  image: CreateImageDTO[];
+  tags: CreateTagDTO[];
+  eventLink: string;
+  status: EventStatus;
+  isVirtual: boolean;
 };

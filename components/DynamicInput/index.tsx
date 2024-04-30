@@ -10,6 +10,7 @@ export type FormSchema =
     type: "string" | "number" | "date";
     title: string;
     required: boolean;
+    disabled?: boolean;
   }
   | {
     type: "select" | "multi-select";
@@ -45,7 +46,7 @@ export type FormSchema =
   };
 
 interface DynamicInputProps {
-  defaultValue?: any;
+  defaultValue: any;
   schema: FormSchema;
   onChange: (data: any) => void;
 }
@@ -112,12 +113,11 @@ const DynamicInput: React.FC<DynamicInputProps> = ({ schema, onChange, defaultVa
 
   useEffect(() => {
 
-    console.log(defaultValue);
+    // console.log(current, currentData);
     if (defaultValue === undefined) {
       setCurrentData(current)
     }
 
-    console.log(defaultValue, currentData, schema.title);
     if (!deepEqual(currentData, defaultValue) && currentData !== undefined) {
       console.log("calling change");
       onChange(currentData)
@@ -136,6 +136,7 @@ const DynamicInput: React.FC<DynamicInputProps> = ({ schema, onChange, defaultVa
             name={schema.title}
             value={currentData as string}
             onChange={handleTextChange}
+            disabled={schema.disabled ?? false}
 
           />
         ) : schema.type === "number" ? (
@@ -148,12 +149,15 @@ const DynamicInput: React.FC<DynamicInputProps> = ({ schema, onChange, defaultVa
             value={currentData as string}
             onChange={handleNumberChange}
             pattern="[0-9]*"
+            disabled={schema.disabled ?? false}
+
           />
         ) : schema.type === "date" ? (
           <DateInput
             name={schema.title}
             onDateChange={handleDateChange}
             value={currentData as Date}
+
           />
         ) : schema.type === "select" ? (
           <div>

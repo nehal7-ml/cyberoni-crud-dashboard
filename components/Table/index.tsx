@@ -1,14 +1,24 @@
-import React from "react";
-import TableHead from "./TableHead";
+import React, { ReactNode } from "react";
+import TableHead, { TableHeader } from "./TableHead";
+import { TableType } from "@/types/global";
+import { TableItem } from "./TableItem";
 
 function Table({
   headers,
   view,
-  children,
+  type,
+  rows,
+  page
 }: {
-  headers: string[];
+  headers: TableHeader[];
   view: boolean;
-  children: JSX.Element[] | undefined;
+  type: TableType;
+  page:number
+  rows: {
+    row: (string | ReactNode)[];
+    viewLink: string;
+    index: string;
+  }[]
 }) {
   return (
     <>
@@ -17,8 +27,18 @@ function Table({
           <div className="inline-block min-w-full">
             <div className="overflow-hidden">
               <table className="min-w-full">
-                <TableHead view={view} headers={headers}></TableHead>
-                <tbody>{children}</tbody>
+                <TableHead
+                page={page}
+                  type={type}
+                  view={view}
+                  headers={headers}
+                ></TableHead>
+                <tbody>
+                  {rows.map((row, index) => {
+                    return <TableItem {...row} key={index} type={type}></TableItem>;
+                  })}
+
+                </tbody>
               </table>
             </div>
           </div>

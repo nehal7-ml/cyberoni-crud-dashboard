@@ -13,6 +13,7 @@ import { redirect, useRouter } from "next/navigation";
 import { JSONSchemaType, SomeJSONSchema } from "ajv/dist/types/json-schema";
 import {
   GptConversationStartersSchema,
+  GptPromptSchema,
   GptStepsSchema,
   GptVariablesSchema,
   sysCommandsSchema,
@@ -20,13 +21,16 @@ import {
 import Tooltip from "../shared/ToolTip";
 import { InfoIcon } from "lucide-react";
 import Ajv from "ajv";
+import addFormats from "ajv-formats"
 import DynamicInput, { FormSchema } from "../DynamicInput";
 import { conversationStartersProperties, stepProperties, sysCommandProperties, variablesNeededProperties } from "./formSchema";
-import GptCategoryForm from "./CategoryForm";
 import LoadingDots from "../shared/loading-dots";
+import CategoryForm from "../CategoryForm";
 
 
-
+const ajv = new Ajv();
+addFormats(ajv);
+const validate = ajv.compile(GptPromptSchema);
 
 const GptPromptForm = ({
   method,
@@ -46,7 +50,7 @@ const GptPromptForm = ({
   const [loading, setLoading] = useState(false);
 
   const [currentCategory, setCurrentCategory] = useState(-1);
-
+  const [categoryList, setCategoryList] = useState<GptCategory[]>(categories);
   const [gptPromptData, setGptPromptData] = useState<CreateGptPromptDTO>(
     initial || {
       description: "",
@@ -75,34 +79,50 @@ const GptPromptForm = ({
       tools: [],
       variables: [],
       tags: [],
-      image: undefined,
+      image: [],
       botUrl: "",
     },
   );
 
+  const [rawJson, setRawJson] = useState(JSON.stringify(gptPromptData, null, 2));
   useEffect(() => {
     if (initial && initial.category && initial.category.parent) {
-      let cat = categories.findIndex((c) => c.id === initial.category?.parent?.id);
+      let cat = categoryList.findIndex((c) => c.id === initial.category?.parent?.id);
       setCurrentCategory(cat);
     }
-  }, [categories, initial]);
+  }, [categories, categoryList, initial]);
 
-  const [jsonValues, setJsonValues] = useState({
-    conversationStarters:
-      initial && initial.conversationStarters
-        ? JSON.stringify(initial.conversationStarters, null, 2)
-        : "",
-    steps:
-      initial && initial.steps ? JSON.stringify(initial.steps, null, 2) : "",
-    sysCommands:
-      initial && initial.sysCommands
-        ? JSON.stringify(initial.sysCommands, null, 2)
-        : "",
-    variables:
-      initial && initial.variables
-        ? JSON.stringify(initial.variables, null, 2)
-        : "",
-  });
+  function parseJson(json: string) {
+    try {
+      const newData = JSON.parse(json);
+
+      const valid = validate(newData);
+      if (!valid)
+        alert(
+          validate.errors
+            ?.map(
+              (err) =>
+                `${err.instancePath} ${err.message} (${err.schemaPath}) `,
+            )
+            .join("\n"),
+        );
+      else {
+        if (Object.keys(newData).length > 0) {
+          console.log(newData);
+          for (let key of Object.keys(gptPromptData)) {
+            console.log(key, newData[key]);
+            setGptPromptData((prev) => ({ ...prev, [key]: newData[key] }));
+          }
+        }
+
+
+      }
+    } catch (error) {
+      console.log("invalid JSON", error);
+      alert("Error parsing JSON" + error);
+    }
+  }
+
 
   const handleInputChange = (
     e: React.ChangeEvent<
@@ -153,7 +173,7 @@ const GptPromptForm = ({
   function handleChangedImage(images: CreateImageDTO[], tags: CreateTagDTO[]) {
     setGptPromptData((prevData) => ({
       ...prevData,
-      image: images[0],
+      image: images,
       tags,
     }));
   }
@@ -162,7 +182,7 @@ const GptPromptForm = ({
     const { name, value } = e.target;
     setGptPromptData((prevData) => ({
       ...prevData,
-      [name]: value === "" ? "" : Number(value),
+      [name]: isNaN(Number(value)) ? 0 : Number(value),
     }));
   }
 
@@ -173,40 +193,35 @@ const GptPromptForm = ({
     }));
   }
 
-  function handleJsonInputs(name: string, value: string, schema: any) {
-    const ajv = new Ajv();
-    const validate = ajv.compile(schema);
-    try {
-      const newData = JSON.parse(value);
-
-      const valid = validate(newData);
-
-      if (!valid) {
-        toast(
-          `${validate.errors
-            ?.map(
-              (err) =>
-                `${err.instancePath} ${err.message} (${err.schemaPath}) `,
-            )
-            .join("\n")}`,
-          {
-            type: "error",
-          },
-        );
-      } else {
-        setGptPromptData((prevData) => ({
-          ...prevData,
-          [name]: newData,
-        }));
-
-        toast("Parsed Sucessfully", { type: "success" });
-      }
-    } catch (error) {
-      toast("Invalid JSON: " + error, {
-        type: "error",
-      });
+  function handleCategoryChange(
+    category: GptCategory,
+    index: number,
+    action: "add" | "update" | "delete",
+  ) {
+    if (action === "add") {
+      // Add the category only if it doesn't already exist in the list
+      setCategoryList((prev) =>
+        prev.find((c) => c.id === category.id) ? prev : [...prev, category],
+      );
+      setCurrentCategory(-1)
+    } else if (action === "update") {
+      // Update the category based on id
+      const newCatList = categoryList;
+      newCatList[index] = category;
+      setCurrentCategory(-1);
+      setCategoryList(newCatList);
+    } else if (action === "delete") {
+      // Delete the category based on id (more secure)
+      setCurrentCategory(-1);
+      const newCatList = categoryList;
+      newCatList.splice(index, 1);
+      setCategoryList(newCatList);
+    } else {
+      // Optionally handle unexpected actions
+      console.error("Unhandled action:", action);
     }
   }
+
 
   return (
     <div className="light:bg-gray-100 light:text-black flex max-h-screen items-center justify-center p-2 dark:bg-gray-700 dark:text-gray-800">
@@ -215,6 +230,27 @@ const GptPromptForm = ({
           {method === "POST" ? "Create" : "Update"} GPT Prompt
         </h2>
         <form onSubmit={handleSubmit}>
+
+          <div className="mb-4">
+            <label className="block" htmlFor="json">
+              Json input auto fill:{" "}
+            </label>
+            <textarea
+              className={"w-full p-3 ring-2 invalid:ring-red-500"}
+              name="json"
+              id=""
+              rows={7}
+              value={rawJson}
+              onChange={(event) => setRawJson(event.target.value)}
+            ></textarea>
+            <button
+              className="w-full rounded bg-blue-500 p-2 text-white hover:bg-blue-600 focus:outline-none focus:ring focus:ring-blue-300"
+              type="button"
+              onClick={() => parseJson(rawJson)}
+            >
+              Parse Json
+            </button>
+          </div>
           <div className="mb-4">
             <label className="block text-sm font-medium text-gray-700">
               Title:
@@ -247,7 +283,7 @@ const GptPromptForm = ({
               name="prompt"
               rows={3}
               className="mt-1 w-full rounded border p-2"
-              value={gptPromptData.prompt as string}
+              value={gptPromptData.prompt  ?? ""}
               onChange={handleInputChange}
             />
           </div>
@@ -259,7 +295,7 @@ const GptPromptForm = ({
             <select
               name="status"
               className="mt-1 w-full rounded border p-2"
-              value={gptPromptData.model as string}
+              value={gptPromptData.model?? ""}
               onChange={handleInputChange}
             >
               <option value={"gpt-3.5-turbo"}>gpt-3.5-turbo</option>
@@ -275,7 +311,7 @@ const GptPromptForm = ({
               type="url"
               name="botUrl"
               className="mt-1 w-full rounded border p-2"
-              value={gptPromptData.botUrl}
+              value={gptPromptData.botUrl ?? ""}
               onChange={handleInputChange}
             />
           </div>
@@ -311,7 +347,7 @@ const GptPromptForm = ({
                 type="number"
                 name="frequency_penalty"
                 className="mt-1 w-full rounded border p-2"
-                value={gptPromptData.frequency_penalty}
+                value={gptPromptData.frequency_penalty.toString() ?? ""}
                 onChange={handleNumberInput}
               />
             </div>
@@ -323,7 +359,7 @@ const GptPromptForm = ({
                 type="number"
                 name="best_of"
                 className="mt-1 w-full rounded border p-2"
-                value={gptPromptData.best_of}
+                value={gptPromptData.best_of.toString() ?? ""}
                 onChange={handleNumberInput}
               />
             </div>
@@ -335,7 +371,7 @@ const GptPromptForm = ({
                 type="number"
                 name="presence_penalty"
                 className="mt-1 w-full rounded border p-2"
-                value={gptPromptData.presence_penalty}
+                value={gptPromptData.presence_penalty.toString() ?? ""}
                 onChange={handleNumberInput}
               />
             </div>
@@ -347,7 +383,7 @@ const GptPromptForm = ({
                 type="number"
                 name="temperature"
                 className="mt-1 w-full rounded border p-2"
-                value={gptPromptData.temperature}
+                value={gptPromptData.temperature.toString() ?? ""}
                 onChange={handleNumberInput}
               />
             </div>
@@ -359,7 +395,7 @@ const GptPromptForm = ({
                 type="number"
                 name="costPerToken"
                 className="mt-1 w-full rounded border p-2"
-                value={gptPromptData.costPerToken}
+                value={gptPromptData.costPerToken.toString()  ?? ""}
                 onChange={handleNumberInput}
               />
             </div>
@@ -371,12 +407,12 @@ const GptPromptForm = ({
                 type="number"
                 name="max_tokens"
                 className="mt-1 w-full rounded border p-2"
-                value={gptPromptData.max_tokens}
+                value={gptPromptData.max_tokens.toString()}
                 onChange={handleNumberInput}
               />
             </div>
           </div>
-          {categories && categories.length > 0 ? (
+          {categoryList && categoryList.length > 0 ? (
             <>
               <div className="mb-4">
                 <label className="block text-sm font-medium text-gray-700">
@@ -388,7 +424,7 @@ const GptPromptForm = ({
                     onChange={(e) => setCurrentCategory(Number(e.target.value))}
                   >
                     <option value={-1}>Select Category</option>
-                    {categories?.map((category, index) => (
+                    {categoryList?.map((category, index) => (
                       <option key={category.id} value={index}>
                         {category.name}
                       </option>
@@ -408,15 +444,15 @@ const GptPromptForm = ({
                         ...prev,
                         category: {
                           name: e.target.value,
-                          parent: { id: categories[currentCategory].id },
+                          id: e.target.value,
                         },
                       }))
                     }
                   >
                     {currentCategory > -1
-                      ? categories[currentCategory].children?.map(
+                      ? categoryList[currentCategory].children?.map(
                         (category) => (
-                          <option key={category.id} value={category.name}>
+                          <option key={category.id} value={category.id}>
                             {category.name}
                           </option>
                         ),
@@ -427,9 +463,12 @@ const GptPromptForm = ({
               </div>
             </>
           ) : null}
-          <GptCategoryForm
-            onAddCategory={(newCat) => (categories = [...categories, newCat])}
-          />
+          <div className="mb-4">
+            <CategoryForm
+              onChange={(category, type) => {
+                handleCategoryChange(category, currentCategory, type);
+              }} action={'prompt'}  defaultValue={currentCategory > -1 ? categoryList[currentCategory] : undefined} />
+          </div>
           <AddImagesAndTags
             maxImages={1}
             onImagesAndTagsChange={handleChangedImage}

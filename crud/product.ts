@@ -1,56 +1,28 @@
 import "server-only";
 import { Product, PrismaClient, Supplier, ProductStatus } from "@prisma/client";
 import { connectOrCreateObject as connectTag } from "./tags";
-import { CreateTagDTO } from "./DTOs";
+import {
+  CreateCategory,
+  CreateProductDTO,
+  CreateSupplierDTO,
+  CreateTagDTO,
+} from "./DTOs";
 import { connectOrCreateObject as connectImage } from "./images";
 import { CreateImageDTO } from "./DTOs";
-import { CreateSupplierDTO } from "./supplier";
 import { HttpError } from "@/lib/utils";
 
-export type CreateProductDTO = {
-  sku: string;
-  name: string;
-  status: ProductStatus;
-  ratings?: number | null;
-  inventory: number;
-  productBreakdown?: string | null;
-  shippingReturnPolicy: string;
-  description: string;
-  price: number;
-  profitMargin: number;
-  displayPrice: number;
-  category: string;
-  subcategory?: string;
-  tags: CreateTagDTO[];
-  images: CreateImageDTO[];
-  suppliers?: CreateSupplierDTO[] | Supplier[];
-  amazonProductId?: string;
-  cjDropShippingId?: string;
-};
-
-export type displayProductDTO = {
-  id: string;
-  sku: string;
-  name: string;
-  status: string;
-  ratings: number | null;
-  inventory: number;
-  productBreakdown: string | null;
-  shippingReturnPolicy: string;
-  description: string;
-  price: number;
-  profitMargin: number;
-  displayPrice: number;
-  category: string;
-  subcategory: string | null;
-  amazonProductId?: string;
-  cjDropShippingId?: string;
-};
 async function create(product: CreateProductDTO, prismaClient: PrismaClient) {
   const products = prismaClient.product;
   let createdproduct = await products.create({
     data: {
       ...product,
+      category: product.category
+        ? {
+            connect: {
+              id: product.category.id,
+            },
+          }
+        : undefined,
       tags: { connectOrCreate: connectTag(product.tags, []).connectOrCreate },
       images: await connectImage(product.images, []),
       suppliers: {
@@ -71,7 +43,7 @@ async function update(
     where: { id: productId },
     include: { images: true, tags: true },
   });
-  if(!oldProduct) throw HttpError(404, 'Product not found')
+  if (!oldProduct) throw HttpError(404, "Product not found");
 
   const suplierUpdate = {
     create: [],
@@ -98,7 +70,12 @@ async function update(
     where: { id: productId },
     data: {
       ...product,
-      tags:connectTag(product.tags,oldProduct?.tags ),
+      category: product.category
+        ? {
+            connect: { id: product.category.id },
+          }
+        : undefined,
+      tags: connectTag(product.tags, oldProduct?.tags),
       images: await connectImage(product.images, oldProduct!.images),
       suppliers: suplierUpdate,
     },
@@ -132,6 +109,10 @@ async function getAll(
   page: number,
   pageSize: number,
   prismaClient: PrismaClient,
+  options?: {
+    order: "asc" | "desc";
+    orderby: "updatedAt" | "title";
+  },
 ) {
   const products = prismaClient.product;
 
@@ -144,7 +125,19 @@ async function getAll(
     where: {},
     include: {
       // reviews: true,
+      category: {
+        include: {
+          parent: true,
+        },
+      },
     },
+    orderBy: options?.orderby
+      ? {
+          [options.orderby]: options.order,
+        }
+      : {
+          updatedAt: "desc",
+        },
   });
 
   const totalCount = await products.count();

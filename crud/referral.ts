@@ -8,7 +8,20 @@ export async function create(
 ) {
   const referrals = prisma.referral;
   const newReferral = await referrals.create({
-    data: referral,
+    data: {
+      campaignId: referral.campaignId,
+      link: referral.link,
+      description: referral.description,
+      prefix: referral.prefix,
+      fallback: referral.fallback,
+      expires: referral.expires,
+      redirect: referral.redirect,
+      priority: referral.priority,
+      type: referral.type,
+      utmProps: referral.utmProps,
+      click: 0
+
+    },
   });
 
   return newReferral;
@@ -46,7 +59,19 @@ export async function update(
     where: {
       id,
     },
-    data: referral,
+    data: {
+      campaignId: referral.campaignId,
+      link: referral.link,
+      description: referral.description,
+      prefix: referral.prefix,
+      fallback: referral.fallback,
+      expires: referral.expires,
+      redirect: referral.redirect,
+      priority: referral.priority,
+      type: referral.type,
+      utmProps: referral.utmProps,
+      click: referral.click
+    },
   });
 
   return newReferral;
@@ -56,6 +81,10 @@ export async function getAll(
   page: number,
   pageSize: number,
   prismaClient: PrismaClient,
+  options?: {
+    order: 'asc' | 'desc';
+    orderby: 'updatedAt' | 'prefix' | 'expires' | 'click';
+  }
 ) {
   const refferals = prismaClient.referral;
 
@@ -66,6 +95,11 @@ export async function getAll(
     skip: (page - 1) * pageSize,
     take: pageSize,
     where: {},
+    orderBy: options?.orderby ? {
+      [options.orderby]: options.order,
+    } : {
+      updatedAt: "desc",
+    }
   });
 
   const totalCount = await refferals.count();

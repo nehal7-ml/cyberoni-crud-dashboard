@@ -185,6 +185,10 @@ async function getAll(
   page: number,
   pageSize: number,
   prismaClient: PrismaClient,
+  options?: {
+    order: 'asc' | 'desc';
+    orderby: 'updatedAt' | 'title';
+  }
 ) {
   const services = prismaClient.service;
 
@@ -204,6 +208,11 @@ async function getAll(
         },
       },
     },
+    orderBy: options?.orderby? {
+      [options.orderby]: options.order
+    }:{
+      updatedAt: 'asc'
+    }
   });
 
   const totalCount = await services.count();

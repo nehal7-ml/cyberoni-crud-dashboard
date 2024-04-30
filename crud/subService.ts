@@ -11,7 +11,6 @@ import {
   connectOrCreateObject,
 } from "./tags";
 import { CreateImageDTO, CreateSubServiceDTO, CreateTagDTO } from "./DTOs";
-import { CreateSupplierDTO } from "./supplier";
 export async function create(
   newSubService: CreateSubServiceDTO,
   serviceId: string,

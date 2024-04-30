@@ -6,6 +6,7 @@ import Chip from "./Chip";
 import { PlusCircle, X } from "lucide-react";
 import DateInput from "../DateInput";
 import Modal from "../shared/Modal";
+import ListInput from "../ListInput";
 
 function ArrayForm({
   schema,
@@ -74,11 +75,12 @@ function ArrayForm({
   const [currentItem, setCurrentItem] = useState<any>(initial);
 
   function addItem() {
-    console.log(currentItem);
+    // console.log(currentItem);
     setItems([...items, currentItem]);
     setCurrentItem(initial);
     setMode("EDIT");
     setCurrentIndex(items.length + 1);
+    setOpenForm(false)
   }
   function updateItem(index: number) {
     setItems((prev) => {
@@ -92,7 +94,6 @@ function ArrayForm({
   }
 
   useEffect(() => {
-    console.log(items, defaultValue, "Arrayingput");
     if (!arraysAreEqual(items, defaultValue)) {
       onChange(items);
     }
@@ -112,6 +113,7 @@ function ArrayForm({
               setOpenForm(true);
             }}
             onDelete={() => {
+              console.log("delete item " , items.filter((item: any, i: number) => i == index));
               setItems(items.filter((item: any, i: number) => i !== index));
             }}
           />
@@ -127,26 +129,32 @@ function ArrayForm({
             <X></X>
           </button>
           <div className="max-h-[80vh] p-4">
-            <DynamicInput
-              onChange={(data) => setCurrentItem(data)}
-              defaultValue={currentItem}
-              schema={schema.items}
-            />
+            {schema.items.type === 'string' ? <>
+
+              <ListInput onChange={(data) => setItems(data)} initial={items as string[]} label={schema.title} />
+            </> :
+
+
+              <DynamicInput
+                onChange={(data) => setCurrentItem(data)}
+                defaultValue={currentItem}
+                schema={schema.items}
+              />}
           </div>
           <div className=" flex items-center justify-center">
-            <button
+            {schema.items.type === 'string' ? null: <button
               onClick={
-                mode === "ADD" ? addItem : () => updateItem(currentIndex)
+                mode === "ADD" ? addItem : () => (updateItem(currentIndex), setOpenForm(false))
               }
               type="button"
               className="flex w-fit items-end justify-center gap-3 rounded bg-blue-500 p-2 text-white"
             >
-              {mode === "EDIT" ? "Update" : "Add"}
-            </button>
+              {mode === "EDIT" ? "Update Item" : "Add Item"}
+            </button>}
           </div>
         </div>
       </Modal>
-      <button
+     <button
         onClick={() => (
           setCurrentItem(initial), setOpenForm(true), setMode("ADD")
         )}
@@ -154,7 +162,7 @@ function ArrayForm({
         className="flex w-fit items-end justify-center gap-3 rounded bg-blue-500 p-2 text-white"
       >
         <PlusCircle />
-        Add
+        Add New {schema.title}
       </button>
     </div>
   );

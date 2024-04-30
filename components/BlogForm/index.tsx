@@ -4,16 +4,20 @@ import { useEffect, useState } from "react";
 import AddImagesAndTags from "../AddImagesAndTags";
 import Notification, { toast } from "../Notification";
 import { BlogSchema } from "@/crud/jsonSchemas";
-import { CreateBlogDTO, CreateTagDTO, DisplayBlogDTO } from "@/crud/DTOs";
+import {
+  BlogCategory,
+  CreateBlogDTO,
+  CreateTagDTO,
+  DisplayBlogDTO,
+} from "@/crud/DTOs";
 import { redirect, useParams, useRouter } from "next/navigation";
 import { CreateImageDTO } from "@/crud/DTOs";
 import Editor from "../RichTextEditor";
 import Ajv from "ajv";
 import addFormats from "ajv-formats";
 import DateInput from "../DateInput";
-import CategoryForm from "./CategoryForm";
-import LoadingSpinner from "../shared/loading-spinner";
 import LoadingDots from "../shared/loading-dots";
+import CategoryForm from "../CategoryForm";
 
 const ajv = new Ajv();
 addFormats(ajv);
@@ -26,11 +30,7 @@ function BlogForm({
   initial,
 }: {
   method: "POST" | "PUT";
-  categories: {
-    name: string;
-    id: string;
-    children: { name: string; id: string }[];
-  }[];
+  categories: BlogCategory[];
   action: string;
   initial?: CreateBlogDTO;
 }) {
@@ -39,6 +39,7 @@ function BlogForm({
   const [initialContent, setInitialContent] = useState(initial?.content || "");
 
   const [currentCategory, setCurrentCategory] = useState(-1);
+  const [categoryList, setCategoryList] = useState<BlogCategory[]>(categories);
   const [blogData, setBlogData] = useState<CreateBlogDTO>(
     initial || {
       title: "",
@@ -55,7 +56,6 @@ function BlogForm({
     },
   );
   const [rawJson, setRawJson] = useState(JSON.stringify(blogData, null, 2));
-  const [json, setJson] = useState<{ [key: string]: any }>({});
 
   const handleInputChange = (
     e:
@@ -130,15 +130,34 @@ function BlogForm({
     }));
   }
 
+  function handleCategoryChange(
+    category: BlogCategory,
+    index: number,
+    action: "add" | "update" | "delete",
+  ) {
+    if (action === "add") {
+      // Add the category only if it doesn't already exist in the list
+      setCategoryList((prev) =>
+        prev.find((c) => c.id === category.id) ? prev : [...prev, category],
+      );
+    } else if (action === "update") {
+      // Update the category based on id
+      const newCatList = categoryList;
+      newCatList[index] = category;
+      setCategoryList(newCatList);
+    } else if (action === "delete") {
+      // Delete the category based on id (more secure)
+      setCurrentCategory(-1);
+      setCategoryList((prev) => prev.splice(index, 1));
+    } else {
+      // Optionally handle unexpected actions
+      console.error("Unhandled action:", action);
+    }
+  }
+
   useEffect(() => {
     if (initial) setBlogData(initial);
-    if (initial && initial.category && initial.category.parent) {
-      let cat = categories.findIndex(
-        (c) => c.id === initial.category?.parent?.id,
-      );
-      setCurrentCategory(cat);
-    }
-  }, [categories, initial]);
+  }, [initial]);
 
   function handleChangedImageAndTag(
     images: CreateImageDTO[],
@@ -168,7 +187,6 @@ function BlogForm({
             .join("\n"),
         );
       else {
-        setJson(newData);
         if (Object.keys(newData).length > 0) {
           console.log(newData);
           for (let key of Object.keys(blogData)) {
@@ -187,10 +205,20 @@ function BlogForm({
     }
   }
 
+  useEffect(() => {
+    if (initial && initial.category && initial.category.parent) {
+      let cat = categories.findIndex(
+        (c) => c.id === initial.category?.parent?.id,
+      );
+      setCurrentCategory(cat);
+    }
+  }, [categories, initial]);
   return (
     <div className="light:bg-gray-100 light:text-black flex min-h-screen  items-center justify-center bg-gray-100 dark:bg-gray-700 dark:text-gray-800 ">
       <div className="w-full max-w-3xl rounded bg-white p-8 shadow-md">
-        <h2 className="mb-4 text-2xl font-semibold">Create Blog</h2>
+        <h2 className="mb-4 text-2xl font-semibold">
+          {method === "POST" ? "Create" : "Update"} Blog
+        </h2>
         <form onSubmit={handleSubmit} className="h-fit">
           <div className="mb-4">
             <label className="block" htmlFor="json">
@@ -285,7 +313,7 @@ function BlogForm({
               />
             </label>
           </div>
-          {categories && categories.length > 0 ? (
+          {categoryList && categoryList.length > 0 ? (
             <>
               <div className="mb-4">
                 <label className="block text-sm font-medium text-gray-700">
@@ -297,7 +325,7 @@ function BlogForm({
                     onChange={(e) => setCurrentCategory(Number(e.target.value))}
                   >
                     <option value={-1}>Select Category</option>
-                    {categories?.map((category, index) => (
+                    {categoryList?.map((category, index) => (
                       <option key={category.id} value={index}>
                         {category.name}
                       </option>
@@ -311,21 +339,21 @@ function BlogForm({
                   <select
                     name="category"
                     id=""
-                    value={blogData.category?.name ?? -1}
+                    value={blogData.category?.id ?? -1}
                     onChange={(e) =>
                       setBlogData((prev) => ({
                         ...prev,
                         category: {
+                          id: e.target.value,
                           name: e.target.value,
-                          parent: { id: categories[currentCategory].id },
                         },
                       }))
                     }
                   >
                     {currentCategory > -1
-                      ? categories[currentCategory].children?.map(
+                      ? categoryList[currentCategory].children?.map(
                           (category) => (
-                            <option key={category.id} value={category.name}>
+                            <option key={category.id} value={category.id}>
                               {category.name}
                             </option>
                           ),
@@ -336,9 +364,17 @@ function BlogForm({
               </div>
             </>
           ) : null}
-          <CategoryForm
-            onAddCategory={(newCat) => (categories = [...categories, newCat])}
-          />
+          <div className="mb-4">
+            <CategoryForm
+              onChange={(category, type) => {
+                handleCategoryChange(category, currentCategory, type);
+              }}
+              action={"blog"}
+              defaultValue={
+                currentCategory > -1 ? categories[currentCategory] : undefined
+              }
+            />
+          </div>
           <div className="mb-4 h-fit">
             <label className="block text-sm font-medium text-gray-700">
               Content:

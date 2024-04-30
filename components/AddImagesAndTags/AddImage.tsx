@@ -98,6 +98,8 @@ function AddImage({
       name: "",
       src: "",
     });
+
+    setImageModal(false);
   }
 
   useEffect(() => {

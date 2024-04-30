@@ -1,5 +1,8 @@
-import { create, CreateProductDTO } from "@/crud/product";
+import { CreateProductDTO } from "@/crud/DTOs";
+import { create } from "@/crud/product";
 import apiHandler from "@/errorHandler";
+import { verifyAliExpressId } from "@/lib/aliExpress";
+import { verifyAsin } from "@/lib/amazon";
 import { prisma } from "@/lib/prisma";
 import { NextApiRequest, NextApiResponse } from "next";
 import { NextResponse } from "next/server";

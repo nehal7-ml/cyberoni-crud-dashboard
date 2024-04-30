@@ -1,5 +1,5 @@
 import { getBaseUrl } from "@/lib/utils";
-import { LockKeyhole } from "lucide-react";
+import { Lock } from 'lucide-react';
 import { ImageResponse } from "next/og";
 // Route segment config
 export const runtime = "edge";
@@ -28,35 +28,6 @@ export default function Icon() {
           position: "relative",
         }}
       >
-        <div
-          style={{
-            display: "flex",
-            position: "absolute",
-            width: "22px",
-            height: "22px",
-            left: "2px",
-            bottom: "0px",
-            color: "black",
-            zIndex: "10",
-          }}
-        >
-          <svg
-            xmlns="http://www.w3.org/2000/svg"
-            width="22"
-            height="22"
-            viewBox="0 0 24 24"
-            fill="none"
-            stroke="#ffffff"
-            stroke-width="2"
-            stroke-linecap="round"
-            stroke-linejoin="round"
-            className="lucide lucide-key"
-          >
-            <circle cx="7.5" cy="15.5" r="5.5" />
-            <path d="m21 2-9.6 9.6" />
-            <path d="m15.5 7.5 3 3L22 7l-3-3" />
-          </svg>
-        </div>
         {/* eslint-disable-next-line @next/next/no-img-element */}
         <img
           style={{
@@ -67,6 +38,22 @@ export default function Icon() {
           alt="favicon"
           src={`${getBaseUrl()}/images/logo.png`}
         ></img>
+        <div
+          style={{
+            display: "flex",
+            position: "absolute",
+            width: "100%",
+            height: "22px",
+            left: "0px",
+            bottom: "0px",
+            color: "black",
+            alignItems: 'flex-start',
+            alignContent: 'flex-start',
+            justifyContent: 'flex-end'
+          }}
+        >
+          {`🔒`}
+        </div>
       </div>
     ),
     // ImageResponse options
@@ -74,6 +61,8 @@ export default function Icon() {
       // For convenience, we can re-use the exported icons size metadata
       // config to also set the ImageResponse's width and height.
       ...size,
+      debug: false,
+      emoji: 'openmoji'
     },
   );
 }

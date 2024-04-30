@@ -6,6 +6,7 @@ interface DateInputProps {
   id?: string;
   value?: Date;
   required?: boolean;
+  disabled?: boolean;
 }
 
 const DateInput: React.FC<DateInputProps> = ({
@@ -14,6 +15,7 @@ const DateInput: React.FC<DateInputProps> = ({
   id,
   value,
   required,
+  disabled
 }) => {
   //console.log("dateInput: ", value);
   const [selectedDate, setSelectedDate] = useState<string>(
@@ -41,6 +43,7 @@ const DateInput: React.FC<DateInputProps> = ({
         onChange={handleDateChange}
         className="mt-1 rounded-md border p-2 focus:border-blue-300 focus:outline-none focus:ring"
         required={required ?? false}
+        disabled={disabled}
       />
     </div>
   );

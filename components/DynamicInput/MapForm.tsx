@@ -125,6 +125,7 @@ function MapForm({
                         }}
                         onDelete={() => {
                             delete items[key];
+                            setItems({ ...items });
                         }}
                     />
                 ))}

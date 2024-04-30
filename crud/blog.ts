@@ -2,7 +2,7 @@ import "server-only";
 import { PrismaClient } from "@prisma/client";
 import { connectOrCreateObject as connectTags } from "./tags";
 import { connectOrCreateObject as connectImages } from "./images";
-import {  CreateBlogDTO, CreateCategory } from "./DTOs";
+import { CreateBlogDTO, CreateCategory } from "./DTOs";
 import { HttpError, seoUrl } from "@/lib/utils";
 import { indexPage } from "@/lib/googleIndexing";
 
@@ -12,18 +12,10 @@ async function create(blog: CreateBlogDTO, prismaClient: PrismaClient) {
     data: {
       ...blog,
       category: blog.category ? {
-        connectOrCreate: {
-          where: { name: blog.category.name! },
-          create: {
-            name: blog.category.name!,
-            parent: blog.category.parent ? {
-              connect: {
-                id: blog.category.parent.id,
-              }
-            } : undefined,
-          },
+        connect: {
+          id: blog.category.id,
         }
-      } : undefined,
+     } : undefined,
       images: await connectImages(blog.images, []),
       tags: { connectOrCreate: connectTags(blog.tags, []).connectOrCreate },
       author: { connect: { email: blog.author.email } },
@@ -61,16 +53,8 @@ async function update(
     data: {
       ...blog,
       category: blog.category ? {
-        connectOrCreate: {
-          where: { name: blog.category.name },
-          create: {
-            name: blog.category.name,
-            parent: blog.category.parent ? {
-              connect: {
-                id: blog.category.parent.id,
-              }
-            } : undefined,
-          },
+        connect: {
+          id: blog.category.id,
         }
       } : undefined,
       images: await connectImages(blog.images, oldBlog!.images),
@@ -135,6 +119,10 @@ async function getAll(
   page: number,
   pageSize: number,
   prismaClient: PrismaClient,
+  options?: {
+    order: 'asc' | 'desc';
+    orderby: 'updatedAt' | 'title';
+  }
 ) {
   const blogs = prismaClient.blog;
   if (pageSize !== 10 && pageSize != 30 && pageSize !== 50)
@@ -163,8 +151,10 @@ async function getAll(
       tags: true,
       images: true,
     },
-    orderBy: {
-      date: "desc",
+    orderBy: options?.orderby ? {
+      [options.orderby]: options.order
+    } : {
+      updatedAt: "desc",
     },
   });
 
@@ -175,35 +165,6 @@ async function getAll(
 }
 
 
-export async function addCategories(newCategory: CreateCategory, prismaClient: PrismaClient,) {
-  const categories = prismaClient.blogCategory;
-  const record = await categories.create({
-    data: {
-      name: newCategory.name,
-      children: {
-        create: newCategory.children
-      }
-    }
-  })
-
-  return record
-}
-export async function getCategories(prismaClient: PrismaClient,) {
-  const categories = prismaClient.blogCategory;
-  const records = await categories.findMany({
-    where: {
-      parent: {
-        is: null
-      },
-    },
-    include: {
-      children: true
-    }
-  })
-
-  return records
-
-}
 
 
 

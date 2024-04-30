@@ -1,7 +1,7 @@
-import { UserPersona } from "@/crud/casestudy";
 import { FormEvent, useRef, useState } from "react";
 import AddImage from "../AddImagesAndTags/AddImage";
 import ListInput from "../ListInput";
+import { UserPersona } from "@/crud/DTOs";
 
 function UserPersonaForm({
   initial,

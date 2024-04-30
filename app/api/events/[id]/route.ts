@@ -1,13 +1,13 @@
 import { NextApiRequest, NextApiResponse } from "next";
 import { prisma } from "@/lib/prisma";
 import {
-  createEventDTO,
   read,
   remove as removeEvent,
   update,
 } from "@/crud/event";
 import { NextRequest, NextResponse } from "next/server";
 import apiHandler from "@/errorHandler";
+import { CreateEventDTO } from "@/crud/DTOs";
 
 export const { POST, DELETE, GET, PATCH, PUT } = apiHandler({
   GET: get,
@@ -17,7 +17,7 @@ export const { POST, DELETE, GET, PATCH, PUT } = apiHandler({
 
 async function put(req: NextRequest, { params }: { params: { id: string } }) {
   const eventId = params.id as string;
-  const event = (await req.json()) as createEventDTO;
+  const event = (await req.json()) as CreateEventDTO;
   const updatedUser = await update(eventId, event, prisma);
   return NextResponse.json({ message: "update success", data: updatedUser });
 }
