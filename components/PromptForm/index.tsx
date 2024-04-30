@@ -79,7 +79,7 @@ const GptPromptForm = ({
       tools: [],
       variables: [],
       tags: [],
-      image: undefined,
+      image: [],
       botUrl: "",
     },
   );
@@ -173,7 +173,7 @@ const GptPromptForm = ({
   function handleChangedImage(images: CreateImageDTO[], tags: CreateTagDTO[]) {
     setGptPromptData((prevData) => ({
       ...prevData,
-      image: images[0],
+      image: images,
       tags,
     }));
   }

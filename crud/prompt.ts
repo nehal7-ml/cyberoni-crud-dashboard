@@ -3,7 +3,6 @@ import { PrismaClient } from "@prisma/client";
 import { connectOrCreateObject as connectTag } from "./tags";
 import { connectOrCreateObject as connectImage } from "./images";
 import { CreateCategory, CreateGptPromptDTO, CreateTagDTO } from "./DTOs";
-import { DisplayPrompt } from "./DTOs";
 import { HttpError } from "@/lib/utils";
 
 async function create(prompt: CreateGptPromptDTO, prismaClient: PrismaClient) {
@@ -43,7 +42,7 @@ async function create(prompt: CreateGptPromptDTO, prismaClient: PrismaClient) {
           }
         : undefined,
       tags: { connectOrCreate: connectTag(prompt.tags, []).connectOrCreate },
-      image: prompt.image ? { connect: { id: prompt.image.id! } } : {},
+      image: await connectImage(prompt.image, []),
     },
   });
   return createdprompt;
@@ -96,7 +95,7 @@ async function update(
           }
         : undefined,
       tags: connectTag(prompt.tags, oldPrompt.tags),
-      image: prompt.image ? { connect: { id: prompt.image.id! } } : {},
+      image: await connectImage(prompt.image, oldPrompt.image),
     },
   });
   return UpdatedPrompt;

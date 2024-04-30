@@ -1,5 +1,6 @@
 import {
   Blog,
+  EventStatus,
   GptPrompt,
   Image,
   PricingModel,
@@ -138,7 +139,7 @@ export type CreateGptPromptDTO = {
   costPerToken: number;
   profitMargin: number;
   tags: CreateTagDTO[];
-  image?: CreateImageDTO | null;
+  image: CreateImageDTO [];
   botUrl?: string;
   conversationStarters: GptConvoStarters[] | [],
   seed: number,
@@ -364,4 +365,16 @@ export type CreateSupplierDTO = {
   supplierUrl: string;
   supplierEmail?: string;
   supplierWhatsApp?: string;
+};
+
+export type CreateEventDTO = {
+  name: string;
+  date: Date;
+  location: string;
+  description: string;
+  image: CreateImageDTO[];
+  tags: CreateTagDTO[];
+  eventLink: string;
+  status: EventStatus;
+  isVirtual: boolean;
 };

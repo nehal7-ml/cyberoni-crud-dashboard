@@ -1,7 +1,7 @@
 import { NextApiRequest, NextApiResponse } from "next";
 import { prisma } from "@/lib/prisma";
 import {
-  createEventDTO,
+  CreateEventDTO,
   read,
   remove as removeEvent,
   update,

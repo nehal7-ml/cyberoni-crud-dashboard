@@ -1,7 +1,6 @@
 "use client";
 import AddImagesAndTags from "@/components/AddImagesAndTags";
-import { createEventDTO } from "@/crud/event";
-import { CreateImageDTO } from "@/crud/DTOs";
+import { CreateEventDTO, CreateImageDTO } from "@/crud/DTOs";
 import { CreateTagDTO } from "@/crud/DTOs";
 import { EventStatus } from "@prisma/client";
 import React, { useEffect, useState } from "react";
@@ -20,11 +19,11 @@ const EventForm = ({
 }: {
   method: "POST" | "PUT";
   action: string;
-  initial?: createEventDTO;
+    initial?: CreateEventDTO;
 }) => {
   const [loading, setLoading] = useState(false);
 
-  const [eventData, setEventData] = useState<createEventDTO>(
+  const [eventData, setEventData] = useState<CreateEventDTO>(
     initial || {
       name: "",
       date: new Date(),
@@ -33,7 +32,7 @@ const EventForm = ({
       isVirtual: false,
       location: "",
       status: "UPCOMING",
-      image: undefined,
+      image: [],
       tags: [],
     },
   );
@@ -73,22 +72,15 @@ const EventForm = ({
     setLoading(true);
 
     e.preventDefault();
-    const apiUrl = process.env.NEXT_PUBLIC_API_URL;
-    const headers = {
-      "Content-Type": "application/json",
-      Authorization: "Bearer your-access-token",
-    };
-    // Send the userData to your backend for creating the user
+    console.log(eventData);
     const res = await fetch(`${action}`, {
       method,
       body: JSON.stringify(eventData),
-      headers,
     });
     let resJson = await res.json();
-
+    
     if (res.status == 200) {
       message("success", resJson.message);
-      revalidatePath("/dashboard/events/1");
 
       router.replace(`/dashboard/events/view/${resJson.data.id}`);
 
@@ -109,7 +101,7 @@ const EventForm = ({
   function handleChangedImage(images: CreateImageDTO[], tags: CreateTagDTO[]) {
     setEventData((prevData) => ({
       ...prevData,
-      image: images[0],
+      image: images,
       tags,
     }));
   }
@@ -221,11 +213,11 @@ const EventForm = ({
             className="mt-1 w-full rounded border p-2 invalid:border-red-400 invalid:text-red-400 invalid:outline-red-500 invalid:ring-red-500"
             value={eventData.location as string}
             onChange={handleInputChange}
-            pattern="^https?:\/\/(www\.)?google\.com\/maps\/(embed\?|search\?).*$"
+              pattern="^https?:\/\/((www\.)?google\.com\/maps\/(embed\?|search\?)|maps\.app\.goo\.gl\/).+$"
           />
           </div>
           <AddImagesAndTags
-            images={eventData.image ? [eventData.image] : []}
+            images={eventData.image}
             maxImages={1}
             onImagesAndTagsChange={handleChangedImage}
           ></AddImagesAndTags>

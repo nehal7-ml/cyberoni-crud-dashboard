@@ -1,29 +1,25 @@
 import "server-only";
 import { Event, EventStatus, PrismaClient, User } from "@prisma/client";
-import { CreateImageDTO } from "./DTOs";
+import { CreateEventDTO, CreateImageDTO } from "./DTOs";
 import { connectOrCreateObject as connectTag } from "./tags";
 import { CreateTagDTO } from "./DTOs";
 import { HttpError } from "@/lib/utils";
+import { connectOrCreateObject as connectImages } from "./images";
 
-export type createEventDTO = {
-  name: string;
-  date: Date;
-  location: string;
-  description: string;
-  image?: CreateImageDTO | null;
-  tags: CreateTagDTO[];
-  eventLink: string;
-  status: EventStatus;
-  isVirtual: boolean;
-};
 
-async function create(event: createEventDTO, prismaClient: PrismaClient) {
+
+async function create(event: CreateEventDTO, prismaClient: PrismaClient) {
   const events = prismaClient.event;
   let createdevent = await events.create({
     data: {
-      ...event,
+      name: event.name,
+      description: event.description,
+      isVirtual: event.isVirtual,
+      location: event.location,
+      status: event.status,      
+      eventLink: event.eventLink,
       date: new Date(event.date),
-      image: event.image ? { connect: { id: event.image.id! } } : {},
+      image: await connectImages(event.image, []),
       tags: { connectOrCreate: connectTag(event.tags, []).connectOrCreate },
     },
   });
@@ -32,7 +28,7 @@ async function create(event: createEventDTO, prismaClient: PrismaClient) {
 
 async function update(
   eventId: string,
-  event: createEventDTO,
+  event: CreateEventDTO,
   prismaClient: PrismaClient,
 ) {
   const events = prismaClient.event;
@@ -42,9 +38,14 @@ async function update(
   const updatedEvent = await events.update({
     where: { id: eventId },
     data: {
-      ...event,
+      name: event.name,
+      description: event.description,
+      isVirtual: event.isVirtual,
+      location: event.location,
+      status: event.status,      
+      eventLink: event.eventLink,
       date: new Date(event.date),
-      image: event.image ? { connect: { id: event.image.id! } } : {},
+      image: await connectImages(event.image, oldEvent.image),
       tags: connectTag(event.tags,oldEvent.tags ),
     },
   });
