@@ -1,3 +1,4 @@
+import { MAIN_LOGO } from "@/components/assets";
 import { getBaseUrl } from "@/lib/utils";
 import { ImageResponse } from "next/og";
 
@@ -36,7 +37,7 @@ export default function Icon() {
           height={size.height}
           width={size.width}
           alt="favicon"
-          src={`${getBaseUrl()}/images/logo.png`}
+          src={`${MAIN_LOGO}`}
         ></img>
         <div
           style={{
