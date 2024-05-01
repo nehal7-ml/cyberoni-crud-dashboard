@@ -33,6 +33,8 @@ export default function Icon() {
             width: "100%",
             objectFit: "cover",
           }}
+          height={size.height}
+          width={size.width}
           alt="favicon"
           src={`${getBaseUrl()}/images/logo.png`}
         ></img>
