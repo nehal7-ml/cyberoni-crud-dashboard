@@ -188,10 +188,14 @@ function BlogForm({
         );
       else {
         if (Object.keys(newData).length > 0) {
-          console.log(newData);
           for (let key of Object.keys(blogData)) {
-            console.log(key, newData[key]);
-            setBlogData((prev) => ({ ...prev, [key]: newData[key] }));
+            if (key === "date" || key === "publishDate" && newData[key]) {
+              console.log(newData[key] as string);
+              setBlogData((prev) => ({
+                ...prev,
+                [key]: new Date(newData[key] as string),
+              }));
+            } else setBlogData((prev) => ({ ...prev, [key]: newData[key] }));
           }
         }
 

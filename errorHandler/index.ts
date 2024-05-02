@@ -1,6 +1,9 @@
 import { NextRequest, NextResponse } from "next/server";
 import errorHandler from "./errorHandler";
-
+import { isDynamicServerError } from "next/dist/client/components/hooks-server-context";
+import { isStaticGenBailoutError } from "next/dist/client/components/static-generation-bailout";
+import { isNotFoundError } from "next/dist/client/components/not-found";
+import { isRedirectError } from "next/dist/client/components/redirect";
 type HttpMethod = "GET" | "POST" | "PUT" | "DELETE" | "PATCH";
 
 export default function apiHandler(handler: any) {
@@ -30,6 +33,9 @@ export default function apiHandler(handler: any) {
       } catch (err: any) {
         // global error handler
         console.log(err);
+        if (isDynamicServerError(err) || isStaticGenBailoutError(err) || isNotFoundError(err) || isRedirectError(err)) {
+          throw err;
+        }
         return errorHandler(err);
       }
     };

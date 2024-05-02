@@ -1,8 +1,7 @@
+import { MAIN_LOGO } from "@/components/assets";
 import { getBaseUrl } from "@/lib/utils";
-import { Lock } from 'lucide-react';
 import { ImageResponse } from "next/og";
-// Route segment config
-export const runtime = "edge";
+
 // Image metadata
 export const size = {
   width: 32,
@@ -35,8 +34,10 @@ export default function Icon() {
             width: "100%",
             objectFit: "cover",
           }}
+          height={size.height}
+          width={size.width}
           alt="favicon"
-          src={`${getBaseUrl()}/images/logo.png`}
+          src={`${MAIN_LOGO}`}
         ></img>
         <div
           style={{
