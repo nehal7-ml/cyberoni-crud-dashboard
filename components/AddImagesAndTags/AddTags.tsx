@@ -21,7 +21,7 @@ function AddTags({
 }) {
   const [tags, setTags] = useState<CreateTagDTO[]>(defaultTags || []);
   const [newTagName, setNewTagName] = useState("");
-  const toast = useNotify();
+  const {toast} = useNotify();
 
   const handleRemoveTag = (tagToRemove: CreateTagDTO) => {
     let newTags = tags.filter((tag) => tag.name !== tagToRemove.name);
@@ -119,7 +119,6 @@ function AddTags({
             Delete All Tags
           </button>
         </div>
-        <Notification />
       </div>
     </>
   );

@@ -27,7 +27,7 @@ const ProductForm = ({
   categories,
 }: FormProps & { categories: ProductCategory[] }) => {
   const [loading, setLoading] = useState(false);
-  const toast = useNotify();
+  const {toast} = useNotify();
   const [supplier, setSupplier] = useState<CreateSupplierDTO | undefined>(
     undefined,
   );

@@ -37,7 +37,7 @@ function CaseStudyForm({
   initial?: CreateCaseStudy;
 }) {
   const [loading, setLoading] = useState(false);
-  const toast = useNotify();
+  const {toast} = useNotify();
 
   const [userPersonaForm, setUserPersonaForm] = useState(false);
 
@@ -541,7 +541,6 @@ function CaseStudyForm({
             <UserPersonaForm onSubmit={addPersona} />
           </div>
         </div>
-        <Notification />
       </div>
     </>
   );

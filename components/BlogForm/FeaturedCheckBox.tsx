@@ -28,7 +28,7 @@ function FeaturedCheckbox({
   );
 
   const [loading, setLoading] = useState(false);
-  const toast = useNotify();
+  const {toast} = useNotify();
 
   async function updateFeatured(e: React.ChangeEvent<HTMLInputElement>) {
     const { name, value, checked } = e.target;
@@ -68,7 +68,6 @@ function FeaturedCheckbox({
         onChange={updateFeatured}
       />
       {loading ? <Loading /> : null}
-      <Notification />
     </div>
   );
 }

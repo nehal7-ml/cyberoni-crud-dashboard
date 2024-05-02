@@ -48,7 +48,7 @@ const GptPromptForm = ({
   initial?: CreateGptPromptDTO;
 }) => {
   const [loading, setLoading] = useState(false);
-  const toast = useNotify();
+  const {toast} = useNotify();
   const [currentCategory, setCurrentCategory] = useState(-1);
   const [categoryList, setCategoryList] = useState<GptCategory[]>(categories);
   const [gptPromptData, setGptPromptData] = useState<CreateGptPromptDTO>(

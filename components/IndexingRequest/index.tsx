@@ -13,7 +13,7 @@ function IndexingRequest() {
   const [loading, setLoading] = useState(false);
   const [infoModal, setInfoModal] = useState(false);
   const [progress, setProgress] = useState(0);
-  const toast = useNotify();
+  const {toast} = useNotify();
   async function requestIndexing(event: FormEvent) {
     event.preventDefault();
     setLoading((prev) => !prev);
@@ -94,7 +94,6 @@ function IndexingRequest() {
           <Loading />
         </div>
       )}
-      <Notification />
     </div>
   );
 }

@@ -39,7 +39,7 @@ function ServiceForm({
   const [loading, setLoading] = useState(false);
   
   const [showDialog, setShowDialog] = useState(false);
-  const toast = useNotify();
+  const {toast} = useNotify();
   const [serviceData, setServiceData] = useState<CreateServiceDTO>(
     initial || {
       hourlyRate: 0,

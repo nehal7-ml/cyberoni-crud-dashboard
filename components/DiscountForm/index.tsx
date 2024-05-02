@@ -19,7 +19,7 @@ const discountSchema = z.object({
 
 function DiscountsForm({ initial, method, action }: FormProps) {
   const [loading, setLoading] = useState(false);
-  const toast = useNotify();
+  const {toast} = useNotify();
 
   const [discountData, setDiscountData] = useState<CreateDiscountDTO>(
     (initial as CreateDiscountDTO) || {
@@ -148,7 +148,6 @@ function DiscountsForm({ initial, method, action }: FormProps) {
             {loading ? <LoadingDots /> : null}
             {method === "POST" ? "Create" : "Update"} Discount Code
           </button>
-          <Notification />
         </form>
       </div>
     </div>

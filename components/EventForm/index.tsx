@@ -22,7 +22,7 @@ const EventForm = ({
     initial?: CreateEventDTO;
 }) => {
   const [loading, setLoading] = useState(false);
-  const toast = useNotify();
+  const {toast} = useNotify();
   const [eventData, setEventData] = useState<CreateEventDTO>(
     initial || {
       name: "",
@@ -232,7 +232,6 @@ const EventForm = ({
           </button>
         </form>
       </div>
-      <Notification />
     </div>
   );
 };

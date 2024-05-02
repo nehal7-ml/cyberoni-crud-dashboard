@@ -56,7 +56,7 @@ function BlogForm({
     },
   );
   const [rawJson, setRawJson] = useState(JSON.stringify(blogData, null, 2));
-  const toast = useNotify();
+  const {toast} = useNotify();
   const handleInputChange = (
     e:
       | React.ChangeEvent<

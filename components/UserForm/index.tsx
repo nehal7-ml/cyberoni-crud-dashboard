@@ -16,7 +16,7 @@ import { redirect, useRouter } from "next/navigation";
 const apiUrl = process.env.NEXT_PUBLIC_API_URL;
 
 const UserForm = ({ method, action, initial }: FormProps) => {
-  const toast = useNotify();
+  const {toast} = useNotify();
 
   const [userData, setUserData] = useState<CreateUserDTO>(
     (initial as CreateUserDTO) || {
