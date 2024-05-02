@@ -23,7 +23,7 @@ function MapForm({
 }) {
     const [openForm, setOpenForm] = useState(false);
     let [items, setItems] = useState(defaultValue || {});
-    const toast = useNotify();
+    const {toast} = useNotify();
     const initial = useMemo(() => {
         let data: any;
         if (schema.items.type === "map") {

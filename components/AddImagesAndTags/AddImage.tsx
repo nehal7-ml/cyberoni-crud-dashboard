@@ -19,7 +19,7 @@ function AddImage({
   submit?: boolean;
 }) {
   const [images, setImages] = useState<CreateImageDTO[]>(defaultImages || []);
-  const toast = useNotify();
+  const {toast} = useNotify();
 
   const [imageModal, setImageModal] = useState(false);
   const [currentImageIndex, setCurrentImageIndex] = useState(-1);

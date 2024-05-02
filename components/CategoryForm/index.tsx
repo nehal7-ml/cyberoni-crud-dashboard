@@ -30,7 +30,7 @@ function CategoryForm({
       children: [],
     },
   );
-  const toast = useNotify();
+  const {toast} = useNotify();
 
   async function handleSubmit() {
     setLoading(true);
