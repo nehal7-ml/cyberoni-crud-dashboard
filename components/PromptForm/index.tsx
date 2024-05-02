@@ -6,7 +6,7 @@ import { CreateTagDTO } from "@/crud/DTOs";
 import React, { useEffect, useState } from "react";
 import Notification, {
   NotificationType,
-  toast,
+  useNotify,
 } from "@/components/Notification";
 import ListInput from "../ListInput";
 import { redirect, useRouter } from "next/navigation";
@@ -48,7 +48,7 @@ const GptPromptForm = ({
   initial?: CreateGptPromptDTO;
 }) => {
   const [loading, setLoading] = useState(false);
-
+  const toast = useNotify();
   const [currentCategory, setCurrentCategory] = useState(-1);
   const [categoryList, setCategoryList] = useState<GptCategory[]>(categories);
   const [gptPromptData, setGptPromptData] = useState<CreateGptPromptDTO>(
@@ -470,6 +470,8 @@ const GptPromptForm = ({
               }} action={'prompt'}  defaultValue={currentCategory > -1 ? categoryList[currentCategory] : undefined} />
           </div>
           <AddImagesAndTags
+            images={gptPromptData.image}
+            tags={gptPromptData.tags}
             maxImages={1}
             onImagesAndTagsChange={handleChangedImage}
             maxTags={10}
@@ -485,7 +487,6 @@ const GptPromptForm = ({
           </button>
         </form>
       </div>
-      <Notification />
     </div>
   );
 };

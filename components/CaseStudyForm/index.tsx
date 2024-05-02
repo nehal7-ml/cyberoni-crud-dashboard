@@ -7,7 +7,7 @@ import { PlusCircle, X } from "lucide-react";
 import UserPersonaForm from "./UserPersonaForm";
 import { CreateImageDTO } from "@/crud/DTOs";
 import ListInput from "../ListInput";
-import Notification, { toast } from "../Notification";
+import Notification, { useNotify } from "../Notification";
 import { Service } from "@prisma/client";
 import LoadingDots from "../shared/loading-dots";
 import Ajv from "ajv";
@@ -37,6 +37,7 @@ function CaseStudyForm({
   initial?: CreateCaseStudy;
 }) {
   const [loading, setLoading] = useState(false);
+  const toast = useNotify();
 
   const [userPersonaForm, setUserPersonaForm] = useState(false);
 

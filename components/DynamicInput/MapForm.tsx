@@ -5,7 +5,7 @@ import Chip from "./Chip";
 import { PlusCircle, X } from "lucide-react";
 import Modal from "../shared/Modal";
 import FloatingLabelInput from "../shared/FloatingLabelInput";
-import Notification, { toast } from "../Notification";
+import Notification, { useNotify } from "../Notification";
 
 function MapForm({
     schema,
@@ -23,7 +23,7 @@ function MapForm({
 }) {
     const [openForm, setOpenForm] = useState(false);
     let [items, setItems] = useState(defaultValue || {});
-
+    const toast = useNotify();
     const initial = useMemo(() => {
         let data: any;
         if (schema.items.type === "map") {
@@ -103,7 +103,7 @@ function MapForm({
     }
 
     useEffect(() => {
-        console.log(items, defaultValue, "Arrayingput");
+        // console.log(items, defaultValue, "Arrayingput");
         if (!deepEqual(items, defaultValue)) {
             onChange(items);
 
@@ -146,7 +146,6 @@ function MapForm({
                         </button>
                     </div>
                 </div>
-                <Notification />
             </Modal>
             <button onClick={() => (setMode('ADD'), setCurrentItem(initial), setOpenForm(true))} type="button" className="flex gap-3 bg-blue-500 p-2 rounded text-white w-fit justify-center items-end">
                 <PlusCircle />

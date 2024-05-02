@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from "react";
 import AddImagesAndTags from "../AddImagesAndTags";
-import Notification, { toast } from "../Notification";
+import Notification, { useNotify } from "../Notification";
 import { BlogSchema } from "@/crud/jsonSchemas";
 import {
   BlogCategory,
@@ -56,7 +56,7 @@ function BlogForm({
     },
   );
   const [rawJson, setRawJson] = useState(JSON.stringify(blogData, null, 2));
-
+  const toast = useNotify();
   const handleInputChange = (
     e:
       | React.ChangeEvent<
@@ -418,7 +418,6 @@ function BlogForm({
           </button>
         </form>
       </div>
-      <Notification />
     </div>
   );
 }

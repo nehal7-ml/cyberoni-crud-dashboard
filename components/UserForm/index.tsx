@@ -7,7 +7,7 @@ import { Role } from "@prisma/client";
 import React, { useState } from "react";
 import Notification, {
   NotificationType,
-  toast,
+  useNotify,
 } from "@/components/Notification";
 import { FormProps } from "@/crud/commonDTO";
 import PasswordGenerator from "../PasswordInput";
@@ -16,9 +16,7 @@ import { redirect, useRouter } from "next/navigation";
 const apiUrl = process.env.NEXT_PUBLIC_API_URL;
 
 const UserForm = ({ method, action, initial }: FormProps) => {
-  const [notify, setNotify] = useState(false);
-  const [notifyMessage, setNotifyMessage] = useState("");
-  const [notifyType, setNotifyType] = useState<"success" | "fail">("fail");
+  const toast = useNotify();
 
   const [userData, setUserData] = useState<CreateUserDTO>(
     (initial as CreateUserDTO) || {
@@ -246,7 +244,6 @@ const UserForm = ({ method, action, initial }: FormProps) => {
           </button>
         </form>
       </div>
-      <Notification></Notification>
     </div>
   );
 };

@@ -5,7 +5,7 @@ import React, { useEffect, useState } from "react";
 import { FileUploader } from "react-drag-drop-files";
 import Loading from "../Loading";
 import { Edit, PlusCircle, X, XCircle } from "lucide-react";
-import Notification, { toast } from "../Notification";
+import Notification, { useNotify } from "../Notification";
 
 function AddImage({
   defaultImages,
@@ -19,8 +19,10 @@ function AddImage({
   submit?: boolean;
 }) {
   const [images, setImages] = useState<CreateImageDTO[]>(defaultImages || []);
+  const toast = useNotify();
 
   const [imageModal, setImageModal] = useState(false);
+  const [currentImageIndex, setCurrentImageIndex] = useState(-1);
   const [image, setImage] = useState<CreateImageDTO>({
     name: "",
     src: "",
@@ -57,7 +59,10 @@ function AddImage({
     console.log("loaded Image");
   };
 
-  const handleRemoveImage = async (imageToRemove: CreateImageDTO) => {
+  const handleRemoveImage = async (
+    imageToRemove: CreateImageDTO,
+    index: number,
+  ) => {
     const newFiles = images.filter((image) => image.src !== imageToRemove.src);
     setImages(newFiles);
     onImagesChange(newFiles);
@@ -65,11 +70,11 @@ function AddImage({
 
   function handleSave() {
     const currentImage = image;
-    let toUpdate = images.filter((image) => image.src === currentImage.src)[0];
+    let toUpdate = currentImageIndex === -1 ? false : true;
 
     if (toUpdate) {
-      let newFiles = images.map((image) => {
-        if (image.src === currentImage.src) {
+      let newFiles = images.map((image, index) => {
+        if (index === currentImageIndex) {
           return {
             ...image,
             src: currentImage.src,
@@ -77,6 +82,7 @@ function AddImage({
           };
         } else return image;
       });
+
       onImagesChange(newFiles);
     } else if (currentImage.name && currentImage.src) {
       let newFiles = images;
@@ -104,6 +110,7 @@ function AddImage({
 
   useEffect(() => {
     if (defaultImages && defaultImages.length > 0) {
+      console.log(defaultImages);
       setImages(defaultImages);
     }
   }, [defaultImages]);
@@ -113,8 +120,9 @@ function AddImage({
     }
   }, [submit]);
 
-  function updateImage(image: CreateImageDTO) {
-    setImage(image);
+  function updateImage(image: CreateImageDTO, index: number = -1) {
+    setCurrentImageIndex(index);
+    setImage(index === -1 ? image : images[index]);
     setImageModal(true);
   }
   return (
@@ -122,7 +130,7 @@ function AddImage({
       <h2 className="mb-2 text-lg font-semibold">Add Images</h2>
       <div className="mb-4">
         <div className="mb-4 flex flex-wrap gap-2">
-          {images.map((image) => (
+          {images.map((image, index) => (
             <div
               key={image.src}
               className="relative flex flex-col rounded bg-gray-200 p-2"
@@ -143,7 +151,7 @@ function AddImage({
                 <button
                   type="button"
                   className="ml-2 text-red-600 hover:text-red-800 focus:outline-none focus:ring focus:ring-red-300"
-                  onClick={() => handleRemoveImage(image)}
+                  onClick={() => handleRemoveImage(image, index)}
                 >
                   <XCircle />
                 </button>
@@ -153,7 +161,7 @@ function AddImage({
                 <button
                   type="button"
                   className="ml-2 rounded-md p-1 text-blue-600 hover:text-blue-800 hover:shadow-md focus:outline-none focus:ring focus:ring-red-300"
-                  onClick={() => updateImage(image)}
+                  onClick={() => updateImage(image, index)}
                 >
                   <Edit />
                 </button>
@@ -165,7 +173,7 @@ function AddImage({
         <div>
           <button
             type="button"
-            onClick={() => setImageModal(true)}
+            onClick={() => (setImageModal(true), setImage({ name: "", src: "" }), setCurrentImageIndex(-1))}
             className="rounded-full bg-blue-500 p-2 hover:bg-blue-600 hover:shadow-lg"
           >
             <PlusCircle className=" text-white" />
@@ -201,6 +209,7 @@ function AddImage({
                   className="rounded border p-2 "
                   type="text"
                   id="name"
+                  name="image-name"
                   value={image.name || ""}
                   onChange={(e) =>
                     setImage((prev) => ({ ...prev, name: e.target.value }))
@@ -225,9 +234,6 @@ function AddImage({
                   {image.id ? "Update" : "Save"}
                 </button>
               </div>
-            </div>
-            <div>
-              <Notification />
             </div>
           </div>
         </div>

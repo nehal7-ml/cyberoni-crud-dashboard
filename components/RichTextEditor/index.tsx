@@ -166,6 +166,7 @@ const Editor = ({
                 /<script>[\s\S]*?<\/script>/g,
                 /<style>[\s\S]*?<\/style>/g,
               ],
+              
               setup: (editor) => {
                 console.log("running setup");
                 markdownPlugin(editor);

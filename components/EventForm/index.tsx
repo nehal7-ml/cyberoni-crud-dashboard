@@ -6,7 +6,7 @@ import { EventStatus } from "@prisma/client";
 import React, { useEffect, useState } from "react";
 import Notification, {
   NotificationType,
-  toast,
+  useNotify,
 } from "@/components/Notification";
 import { redirect, useRouter } from "next/navigation";
 import LoadingDots from "../shared/loading-dots";
@@ -22,7 +22,7 @@ const EventForm = ({
     initial?: CreateEventDTO;
 }) => {
   const [loading, setLoading] = useState(false);
-
+  const toast = useNotify();
   const [eventData, setEventData] = useState<CreateEventDTO>(
     initial || {
       name: "",

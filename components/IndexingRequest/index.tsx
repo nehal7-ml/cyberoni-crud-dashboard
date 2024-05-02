@@ -5,7 +5,7 @@ import Modal from "../shared/Modal";
 import { FormEvent, useEffect, useState } from "react";
 import { indexEverything } from "./submit";
 import Loading from "../Loading";
-import Notification, { toast } from "../Notification";
+import Notification, { useNotify } from "../Notification";
 import LoadingDots from "../shared/loading-dots";
 import Link from "next/link";
 
@@ -13,7 +13,7 @@ function IndexingRequest() {
   const [loading, setLoading] = useState(false);
   const [infoModal, setInfoModal] = useState(false);
   const [progress, setProgress] = useState(0);
-
+  const toast = useNotify();
   async function requestIndexing(event: FormEvent) {
     event.preventDefault();
     setLoading((prev) => !prev);

@@ -1,11 +1,13 @@
 "use client";
 import { Check, Info, X } from "lucide-react";
+import { useRouter, useSearchParams } from "next/navigation";
 import React, {
   useState,
   useEffect,
   Dispatch,
   useContext,
   createContext,
+  useRef,
 } from "react";
 
 export type NotificationType = "success" | "error" | "info";
@@ -19,74 +21,93 @@ export type NotificationProps = {
   options?: NotificationOptions;
 };
 
-let updateState: (newValue: NotificationProps & { show: boolean }) => void;
 
-const NotificationContext = createContext<
-  NotificationProps & { show: boolean }
->({
-  show: false,
-  message: "",
-});
 
-const useMyState = () => useContext(NotificationContext);
-
-const NotificationComponent = () => {
-  const state = useMyState();
+const Notification = () => {
+  const router = useRouter();
+  const searchParams = useSearchParams();
+  const [message, setMessage] = useState(searchParams.get("message") as string);
+  // console.log(searchParams.get('notifyType'));
+  const [type, setType] = useState(searchParams.get("notifyType") || "success");
+  const [autoClose, setAutoClose] = useState(
+    Number(searchParams.get("autoClose") ?? 0)
+  );
+  const [notify, setNotify] = useState(false);
 
   useEffect(() => {
-    console.log(state);
-  }, [state]);
+    setMessage(searchParams.get("message") as string);
+    setNotify(searchParams.get("notify") === "true" ? true : false);
+    setAutoClose(Number(searchParams.get("autoClose") ?? 0));
+    setType(searchParams.get("notifyType") || "success");
+  }, [searchParams]);
+
+  useEffect(() => {
+    if (notify && autoClose) {
+      if (autoClose>0) {
+        setTimeout(() => {
+          const newSearch = new URLSearchParams(searchParams);
+          newSearch.delete("notify");
+          newSearch.delete("message");
+          newSearch.delete("autoClose");
+          newSearch.delete("notifyType");
+          router.replace("?" + newSearch.toString(), { scroll: false });
+          setNotify(false);
+        }, autoClose);
+      }
+    }
+  }, [notify, router, autoClose, searchParams]);
+
+  function close() {
+    const newSearch = new URLSearchParams(searchParams);
+    newSearch.delete("notify");
+    newSearch.delete("message");
+    newSearch.delete("autoClose");
+    newSearch.delete("notifyType");
+    router.replace("?" + newSearch.toString(), { scroll: false });
+    setNotify(false);
+  }
+
   return (
     <div
-      className={`fixed bottom-10 right-10 flex rounded p-4 ${state.options?.type === "success" ? "bg-green-500 text-white" : state.options?.type === "error" ? "bg-red-500 text-white" : "bg-red-700 text-zinc-900"} ${state.show ? "z-[10000] opacity-100" : "hidden opacity-0"} font-semibold transition-opacity  duration-300 `}
+      className={`fixed bottom-10 right-10 flex rounded p-4 
+      ${type === "success" ? "bg-green-500 text-white" : type === "error" ? "bg-red-500 text-white" : "bg-red-700 text-zinc-900"} 
+      ${notify ? "z-[10000] opacity-100" : "hidden opacity-0"} font-semibold transition-opacity  duration-300 `}
     >
-      <button onClick={() => updateState({message: "", show: false })} className="cursor-pointer">
-        {state.options?.type === "success" ? (
+      <button
+        onClick={() => close()}
+        className="cursor-pointer"
+      >
+        {type === "success" ? (
           <Check className="mr-2" />
-        ) : state.options?.type === "error" ? (
+        ) : type === "error" ? (
           <X className="mr-2" />
         ) : (
           <Info className="mr-2" />
         )}
       </button>
-      {state.message}
+      {message}
     </div>
   );
 };
 
-function toast(message: string, options: NotificationOptions) {
-  updateState({
-    message,
-    show: true,
-    options,
-  });
 
-  setTimeout(() => {
-    updateState({
-      message: "",
-      show: false,
-    });
-  }, options?.autoClose ?? 5000);
+
+function useNotify() {
+  const router = useRouter();
+  const routerRef = useRef(router);
+
+  routerRef.current = router;
+
+  const [{ push, replace }] = useState({
+    push: (path: string) => routerRef.current.push(path, { scroll: false }),
+    replace: (path: string) =>
+      routerRef.current.replace(path, { scroll: false }),
+  });
+  return (message: string, options: NotificationOptions) =>
+    replace(
+      `?notify=true&notifyType=${options.type}&message=${message}&autoClose=${options?.autoClose ?? 3000}`,
+    );
 }
 
-// Define a provider component to manage the shared state
-const Notification = () => {
-  const [value, setValue] = useState<NotificationProps & { show: boolean }>({
-    show: false,
-    message: "",
-  });
-
-  // Function to update the shared state
-  const updateValue = (newValue: NotificationProps & { show: boolean }) => {
-    setValue(newValue);
-  };
-  updateState = updateValue;
-
-  return (
-    <NotificationContext.Provider value={value}>
-      <NotificationComponent></NotificationComponent>
-    </NotificationContext.Provider>
-  );
-};
-export { toast };
+export { useNotify };
 export default Notification;

@@ -2,7 +2,7 @@ import { useEffect, useState } from "react";
 import DynamicInput from "../DynamicInput";
 import Modal from "../shared/Modal";
 import { CategoryType } from "@/types/global";
-import Notification, { toast } from "../Notification";
+import Notification, { useNotify } from "../Notification";
 import { X } from "lucide-react";
 import LoadingDots from "../shared/loading-dots";
 import DeleteModal from "../DeleteModal";
@@ -30,6 +30,7 @@ function CategoryForm({
       children: [],
     },
   );
+  const toast = useNotify();
 
   async function handleSubmit() {
     setLoading(true);
@@ -187,7 +188,6 @@ function CategoryForm({
             Categories
           </button>
         </div>
-        <Notification />
       </Modal>
 
       <DeleteModal

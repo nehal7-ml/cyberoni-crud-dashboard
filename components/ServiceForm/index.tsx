@@ -13,7 +13,7 @@ import { Edit, PlusCircle, X } from "lucide-react";
 import { CreateSubServiceDTO } from "@/crud/DTOs";
 import Notification, {
   NotificationType,
-  toast,
+  useNotify,
 } from "@/components/Notification";
 import CreateSubService from "./SubServiceForm";
 import Image from "next/image";
@@ -39,7 +39,7 @@ function ServiceForm({
   const [loading, setLoading] = useState(false);
   
   const [showDialog, setShowDialog] = useState(false);
-
+  const toast = useNotify();
   const [serviceData, setServiceData] = useState<CreateServiceDTO>(
     initial || {
       hourlyRate: 0,
@@ -446,7 +446,6 @@ function ServiceForm({
           <DescriptionForm handleDescritionChange={handleDescritionChange} />
         </div>
       </div>
-      <Notification></Notification>
     </div>
   );
 }

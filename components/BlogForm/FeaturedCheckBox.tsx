@@ -1,7 +1,7 @@
 "use client";
 
 import { CreateBlogDTO } from "@/crud/DTOs";
-import Notification, { toast } from "../Notification";
+import Notification, { useNotify } from "../Notification";
 import { useState } from "react";
 import Loading from "../Loading";
 
@@ -28,6 +28,7 @@ function FeaturedCheckbox({
   );
 
   const [loading, setLoading] = useState(false);
+  const toast = useNotify();
 
   async function updateFeatured(e: React.ChangeEvent<HTMLInputElement>) {
     const { name, value, checked } = e.target;

@@ -3,7 +3,7 @@
 import { CreateDiscountDTO, Discount } from "@/crud/DTOs";
 import { FormEvent, useEffect, useState } from "react";
 import { z } from "zod";
-import Notification, { toast } from "@/components/Notification";
+import Notification, { useNotify } from "@/components/Notification";
 import { FormProps } from "@/crud/commonDTO";
 import DateInput from "../DateInput";
 import { useRouter } from "next/navigation";
@@ -19,6 +19,7 @@ const discountSchema = z.object({
 
 function DiscountsForm({ initial, method, action }: FormProps) {
   const [loading, setLoading] = useState(false);
+  const toast = useNotify();
 
   const [discountData, setDiscountData] = useState<CreateDiscountDTO>(
     (initial as CreateDiscountDTO) || {

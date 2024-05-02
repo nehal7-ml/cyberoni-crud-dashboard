@@ -10,7 +10,7 @@ import { CreateTagDTO } from "@/crud/DTOs";
 import React, { ChangeEvent, useEffect, useState } from "react";
 import Notification, {
   NotificationType,
-  toast,
+  useNotify,
 } from "@/components/Notification";
 import CreateSupplier from "./CreateSupplier";
 import { X } from "lucide-react";
@@ -27,7 +27,7 @@ const ProductForm = ({
   categories,
 }: FormProps & { categories: ProductCategory[] }) => {
   const [loading, setLoading] = useState(false);
-
+  const toast = useNotify();
   const [supplier, setSupplier] = useState<CreateSupplierDTO | undefined>(
     undefined,
   );
@@ -444,7 +444,6 @@ const ProductForm = ({
           ></CreateSupplier>
         </div>
       </div>
-      <Notification />
     </div>
   );
 };
