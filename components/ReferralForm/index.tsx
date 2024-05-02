@@ -4,7 +4,7 @@ import { EventStatus, ReferralPriority, ReferralType } from "@prisma/client";
 import React, { FormEvent, useEffect, useRef, useState } from "react";
 import Notification, {
   NotificationType,
-  toast,
+  useNotify,
 } from "@/components/Notification";
 import { redirect, useRouter } from "next/navigation";
 import { stripSlashes } from "@/lib/utils";
@@ -23,7 +23,7 @@ const ReferralForm = ({
   const appUrl = process.env.NEXT_PUBLIC_APP_URL as string;
 
   const [loading, setLoading] = useState(false);
-
+  const {toast} = useNotify();
   const [invalidLink, setInvalidLink] = useState(false);
   const [expiry, setExpiry] = useState(initial?.expires ? true : false);
   const [linkType, setLinkType] = useState<"External" | "Internal">(
@@ -517,7 +517,6 @@ const ReferralForm = ({
           </button>
         </form>
       </div>
-      <Notification />
     </div>
   );
 };

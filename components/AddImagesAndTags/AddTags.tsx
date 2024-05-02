@@ -1,7 +1,7 @@
 "use client";
 import { CreateTagDTO } from "@/crud/DTOs";
 import React, { useEffect, useState } from "react";
-import Notification, { toast } from "../Notification";
+import Notification, { useNotify } from "../Notification";
 import * as z from "zod";
 
 // Define a Zod schema for tag names
@@ -21,6 +21,7 @@ function AddTags({
 }) {
   const [tags, setTags] = useState<CreateTagDTO[]>(defaultTags || []);
   const [newTagName, setNewTagName] = useState("");
+  const {toast} = useNotify();
 
   const handleRemoveTag = (tagToRemove: CreateTagDTO) => {
     let newTags = tags.filter((tag) => tag.name !== tagToRemove.name);
@@ -118,7 +119,6 @@ function AddTags({
             Delete All Tags
           </button>
         </div>
-        <Notification />
       </div>
     </>
   );

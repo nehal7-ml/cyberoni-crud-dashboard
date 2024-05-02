@@ -1,92 +1,108 @@
 "use client";
+import { createContext, useContext, useState, useEffect } from "react";
 import { Check, Info, X } from "lucide-react";
-import React, {
-  useState,
-  useEffect,
-  Dispatch,
-  useContext,
-  createContext,
-} from "react";
-
+import { ToastContainer, toast } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 export type NotificationType = "success" | "error" | "info";
 
-export type NotificationOptions = {
+export interface NotificationOptions {
   type?: NotificationType;
-  autoClose?: number | 5000;
-};
-export type NotificationProps = {
-  message: string;
-  options?: NotificationOptions;
-};
-
-let updateState: (newValue: NotificationProps & { show: boolean }) => void;
-
-const NotificationContext = createContext<
-  NotificationProps & { show: boolean }
->({
-  show: false,
-  message: "",
-});
-
-const useMyState = () => useContext(NotificationContext);
-
-const NotificationComponent = () => {
-  const state = useMyState();
-
-  useEffect(() => {
-    console.log(state);
-  }, [state]);
-  return (
-    <div
-      className={`fixed bottom-10 right-10 flex rounded p-4 ${state.options?.type === "success" ? "bg-green-500 text-white" : state.options?.type === "error" ? "bg-red-500 text-white" : "bg-red-700 text-zinc-900"} ${state.show ? "z-[10000] opacity-100" : "hidden opacity-0"} font-semibold transition-opacity  duration-300 `}
-    >
-      <button onClick={() => updateState({message: "", show: false })} className="cursor-pointer">
-        {state.options?.type === "success" ? (
-          <Check className="mr-2" />
-        ) : state.options?.type === "error" ? (
-          <X className="mr-2" />
-        ) : (
-          <Info className="mr-2" />
-        )}
-      </button>
-      {state.message}
-    </div>
-  );
-};
-
-function toast(message: string, options: NotificationOptions) {
-  updateState({
-    message,
-    show: true,
-    options,
-  });
-
-  setTimeout(() => {
-    updateState({
-      message: "",
-      show: false,
-    });
-  }, options?.autoClose ?? 5000);
+  autoClose?: number;
 }
 
-// Define a provider component to manage the shared state
-const Notification = () => {
-  const [value, setValue] = useState<NotificationProps & { show: boolean }>({
-    show: false,
+export interface NotificationProps {
+  message: string;
+  options: NotificationOptions;
+}
+
+const defaultOptions: NotificationOptions = {
+  type: "success",
+  autoClose: 5000,
+};
+
+const NotificationContext = createContext<{
+  state: NotificationProps;
+  toast: (message: string, options?: NotificationOptions) => void;
+}>({
+  state: { message: "", options: defaultOptions },
+  toast: () => {}, // default empty function
+});
+
+export const NotificationProvider: React.FC<{ children: React.ReactNode }> = ({
+  children,
+}: {
+  children: React.ReactNode;
+}) => {
+  const [notification, setNotification] = useState<NotificationProps>({
     message: "",
+    options: defaultOptions,
   });
 
-  // Function to update the shared state
-  const updateValue = (newValue: NotificationProps & { show: boolean }) => {
-    setValue(newValue);
+  const toast = (
+    message: string,
+    options: NotificationOptions = defaultOptions,
+  ) => {
+    console.log("notiifcation runnning");
+    setNotification({ message, options });
   };
-  updateState = updateValue;
+
+  useEffect(() => {
+    if (notification?.options?.autoClose) {
+      const timer = setTimeout(
+        () => setNotification({ message: "", options: defaultOptions }),
+        notification.options.autoClose,
+      );
+      return () => clearTimeout(timer);
+    }
+  }, [notification]);
 
   return (
-    <NotificationContext.Provider value={value}>
-      <NotificationComponent></NotificationComponent>
+    <NotificationContext.Provider value={{ toast, state: notification }}>
+      {children}
+      {notification && (
+        <NotificationComponent
+          message={notification.message}
+          options={notification.options}
+        />
+      )}
     </NotificationContext.Provider>
   );
 };
-export { toast };
-export default Notification;
+
+const NotificationComponent: React.FC<NotificationProps> = ({
+  message,
+  options,
+}) => {
+  useEffect(() => {
+    if (message.length > 0) {
+      toast(message, {
+        autoClose: options.autoClose,
+        type: options.type,
+      });
+    }
+  });
+  return (
+    <>
+      {
+        <ToastContainer
+          position="bottom-right"
+          icon={
+            options.type === "success" ? (
+              <Check className="text-green-500" />
+            ) : options.type === "info" ? (
+              <Info />
+            ) : (
+              <X className="text-red-500" />
+            )
+          }
+        />
+      }
+    </>
+  );
+};
+
+export function useNotify() {
+  return useContext(NotificationContext);
+}
+
+export default NotificationProvider;
