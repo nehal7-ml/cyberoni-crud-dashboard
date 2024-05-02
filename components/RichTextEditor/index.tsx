@@ -123,8 +123,9 @@ const Editor = ({
           <RichTextEditor
             ref={editorRef}
             apiKey={"w5nc9aqbzcv7ao6jscyo80kncaq1vbpp63v2wqazfsbjkowp"}
+        
             init={{
-              content_css: "writer",
+              content_css: ['tinymce-5', '/styles/tinymce.css'],
               plugins: [
                 "advlist",
                 "autolink",
@@ -165,7 +166,8 @@ const Editor = ({
               protect: [
                 /<script>[\s\S]*?<\/script>/g,
                 /<style>[\s\S]*?<\/style>/g,
-              ],
+              ],            
+
               
               setup: (editor) => {
                 console.log("running setup");
