@@ -145,7 +145,7 @@ export async function reset(
 async function remove(userId: string, prismaClient: PrismaClient) {
   const users = prismaClient.user;
   const existingUser = await users.findUnique({ where: { id: userId } });
-  if (existingUser)
+  if (!existingUser)
     throw { status: 400, message: `User ${userId} doesn't exists` };
   else {
     await users.delete({ where: { id: userId } });
