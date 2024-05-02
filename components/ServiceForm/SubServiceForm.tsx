@@ -311,6 +311,8 @@ function SubServiceForm({
             <AddImagesAndTags
               maxImages={1}
               onImagesAndTagsChange={handleChangedImage}
+              defaultImages={subServiceData.images}
+              defaultTags={subServiceData.tags}
             ></AddImagesAndTags>
             <button
               type="submit"

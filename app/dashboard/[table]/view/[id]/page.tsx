@@ -81,7 +81,7 @@ async function UpdateForm({
     const res = await readEvent(params.id, prisma);
     if (!res) redirect("/404");
     const {  ...event } = res;
-    // console.log(event);
+    console.log(event);
     return (
       <EventForm
         method="PUT"

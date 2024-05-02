@@ -218,6 +218,7 @@ const EventForm = ({
           </div>
           <AddImagesAndTags
             images={eventData.image}
+            tags={eventData.tags}
             maxImages={1}
             onImagesAndTagsChange={handleChangedImage}
           ></AddImagesAndTags>
