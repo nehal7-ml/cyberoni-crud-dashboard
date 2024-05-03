@@ -22,7 +22,7 @@ function ReferralTableItems({ records, page }: { records: Referral[], page: numb
       page={page}
       rows={(records as Referral[]).map((value, index) => {
         const row: any = [];
-        row.push(<CopyButton showText={true} text={value.redirect} />);
+        row.push(<CopyButton showText={true} text={`${stripSlashes(appUrl)}${value.type === "REDIRECT" ? "/referrals" : "/affiliate"}/${value.prefix}?${value.utmPraram.current.toString()}`} />);
         row.push(value.campaignId);
         row.push(
           value.expires ? new Date(value.expires).toLocaleDateString() : "NA",
