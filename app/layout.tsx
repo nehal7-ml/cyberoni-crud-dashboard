@@ -26,7 +26,6 @@ export default async function RootLayout({
         <Suspense>
           <NotificationProvider>
           {children}
-
           </NotificationProvider>
         </Suspense>
       </body>

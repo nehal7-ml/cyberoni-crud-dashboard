@@ -10,6 +10,7 @@ import { redirect, useRouter } from "next/navigation";
 import { stripSlashes } from "@/lib/utils";
 import DateInput from "../DateInput";
 import LoadingDots from "../shared/loading-dots";
+const appUrl = process.env.NEXT_PUBLIC_APP_URL as string;
 
 const ReferralForm = ({
   method,
@@ -20,7 +21,6 @@ const ReferralForm = ({
   action: string;
   initial?: CreateReferralDTO;
 }) => {
-  const appUrl = process.env.NEXT_PUBLIC_APP_URL as string;
 
   const [loading, setLoading] = useState(false);
   const {toast} = useNotify();
