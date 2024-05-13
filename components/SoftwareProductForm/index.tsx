@@ -126,8 +126,6 @@ function SoftwareProductForm({
     setLoading(false);
   };
 
-
-
   function handleCategoryChange(
     category: SoftwareProductCategory,
     index: number,
@@ -230,13 +228,23 @@ function SoftwareProductForm({
           <DynamicInput
             onChange={(e) =>
               setSoftwareProductData((prev) => ({
-                ...prev,
-                ...e,
-
+                title: e.title,
+                subTitle: e.subTitle,
+                description: e.description,
+                link: e.link,
+                githubLink: e.githubLink,
+                pricing: e.pricing,
+                status: e.status,
                 blog:
                   e.blogLink.length > 0
-                    ? { id: extractUUID(e.blogLink) }
+                    ? {
+                        id: extractUUID(e.blogLink),
+                        title: prev.blog?.title as string,
+                      }
                     : undefined,
+                images: prev.images,
+                tags: prev.tags,
+                category: prev.category,
               }))
             }
             schema={SoftwareProductFormSchema}

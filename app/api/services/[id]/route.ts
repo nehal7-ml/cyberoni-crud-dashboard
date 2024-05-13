@@ -4,6 +4,7 @@ import { read, remove as removeService, update } from "@/crud/service";
 import { CreateServiceDTO } from "@/crud/DTOs";
 import { NextRequest, NextResponse } from "next/server";
 import apiHandler from "@/errorHandler";
+import { revalidatePath } from "next/cache";
 
 export const { POST, DELETE, GET, PATCH, PUT } = apiHandler({
   GET: get,
@@ -14,6 +15,7 @@ async function put(req: NextRequest, { params }: { params: { id: string } }) {
   const serviceId = params.id as string;
   const service = (await req.json()) as CreateServiceDTO;
   const updatedUser = await update(serviceId, service, prisma);
+  revalidatePath(`/dashboard/services/view/${serviceId}`);
   return NextResponse.json({ message: "update success", data: updatedUser });
 }
 async function remove(

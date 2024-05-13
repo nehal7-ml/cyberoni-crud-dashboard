@@ -5,6 +5,7 @@ import { CreateReferralDTO } from "@/crud/DTOs";
 import { NextRequest, NextResponse } from "next/server";
 import apiHandler from "@/errorHandler";
 import { HttpError } from "@/lib/utils";
+import { revalidatePath } from "next/cache";
 
 export const { POST, DELETE, GET, PATCH, PUT } = apiHandler({
   GET: get,
@@ -18,6 +19,7 @@ async function put(req: NextRequest, { params }: { params: { id: string } }) {
   const res = await fetch(referral.link);
   if (res.status >= 400) throw HttpError(406, "Link in unreachable");
   const updatedUser = await update(referralId, referral, prisma);
+  revalidatePath(`/dashboard/referrals/view/${referralId}`);
   return NextResponse.json({ message: "update success", data: updatedUser });
 }
 async function remove(

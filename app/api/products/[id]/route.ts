@@ -10,6 +10,7 @@ import apiHandler from "@/errorHandler";
 import { CreateProductDTO } from "@/crud/DTOs";
 import { verifyAsin } from "@/lib/amazon";
 import { verifyAliExpressId } from "@/lib/aliExpress";
+import { revalidatePath } from "next/cache";
 
 export const { POST, DELETE, GET, PATCH, PUT } = apiHandler({
   GET: get,
@@ -22,6 +23,7 @@ async function put(req: NextRequest, { params }: { params: { id: string } }) {
 
   const product = (await req.json()) as CreateProductDTO;
   const updatedProduct = await update(productId, product, prisma);
+  revalidatePath(`/dashboard/products/view/${productId}`);
   return NextResponse.json({ message: "update success", data: updatedProduct });
 }
 async function remove(

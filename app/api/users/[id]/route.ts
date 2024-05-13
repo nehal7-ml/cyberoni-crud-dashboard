@@ -2,6 +2,7 @@ import { prisma } from "@/lib/prisma";
 import { CreateUserDTO, read, remove as removeUser, update } from "@/crud/user";
 import { NextRequest, NextResponse } from "next/server";
 import apiHandler from "@/errorHandler";
+import { revalidatePath } from "next/cache";
 
 export const { POST, DELETE, GET, PATCH, PUT } = apiHandler({
   GET: get,
@@ -13,6 +14,7 @@ async function put(req: NextRequest, { params }: { params: { id: string } }) {
   const user = (await req.json()) as CreateUserDTO;
   //console.log(user);
   const updatedUser = await update(userId, user, prisma);
+  revalidatePath(`/dashboard/users/view/${userId}`);
   return NextResponse.json({ message: "update success", data: updatedUser });
 }
 async function remove(

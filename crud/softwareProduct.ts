@@ -23,20 +23,20 @@ async function create(
     data: {
       title,
       subTitle,
-      description,    
+      description,
       pricing,
       link,
       githubLink,
       status,
-      blog : product.blog? {connect: { id: product.blog.id }} : undefined,
+      blog: product.blog ? { connect: { id: product.blog.id } } : undefined,
       images: await connectImages(product.images, []),
-      tags: {connectOrCreate: connectTags(product.tags || [], []).connectOrCreate},
+      tags: { connectOrCreate: connectTags(product.tags || [], []).connectOrCreate },
       category: category
         ? {
-            connect: {
-              id: category.id,
-            },
-          }
+          connect: {
+            id: category.id,
+          },
+        }
         : undefined,
     },
   });
@@ -58,7 +58,7 @@ async function read(
     },
   });
 
-  return product ;
+  return product;
 }
 
 async function update(
@@ -92,20 +92,20 @@ async function update(
     data: {
       title,
       subTitle,
-      description,    
+      description,
       pricing,
       link,
       githubLink,
       status,
-      blog : productData.blog? {connect: { id: productData.blog.id }} : undefined,
+      blog: productData.blog ? { connect: { id: productData.blog.id } } : { disconnect: true },
       images: await connectImages(productData.images, oldProduct!.images),
       tags: connectTags(productData.tags, oldProduct!.tags),
       category: productData.category
         ? {
-            connect: {
-              id: productData.category.id,
-            },
-          }
+          connect: {
+            id: productData.category.id,
+          },
+        }
         : undefined,
     },
   });
@@ -144,11 +144,11 @@ async function getAll(
     },
     orderBy: options?.orderby
       ? {
-          [options.orderby]: options.order,
-        }
+        [options.orderby]: options.order,
+      }
       : {
-          createdAt: "desc",
-        },
+        createdAt: "desc",
+      },
   });
 
   const totalCount = await prismaClient.softwareProduct.count();
