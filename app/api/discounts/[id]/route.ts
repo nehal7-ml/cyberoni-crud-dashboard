@@ -5,6 +5,7 @@ import { CreateDiscountDTO } from "@/crud/DTOs";
 import { NextRequest, NextResponse } from "next/server";
 import apiHandler from "@/errorHandler";
 import { HttpError } from "@/lib/utils";
+import { revalidatePath } from "next/cache";
 
 export const { POST, DELETE, GET, PATCH, PUT } = apiHandler({
   GET: get,
@@ -16,6 +17,7 @@ async function put(req: NextRequest, { params }: { params: { id: string } }) {
   const discountId = params.id as string;
   const discount = (await req.json()) as CreateDiscountDTO;
   const updatedUser = await update(discountId, discount, prisma);
+  revalidatePath(`/dashboard/discounts/view/${discountId}`);
   return NextResponse.json({ message: "update success", data: updatedUser });
 }
 async function remove(

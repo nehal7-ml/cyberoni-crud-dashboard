@@ -4,6 +4,7 @@ import { read, remove as removeCaseStudy, update } from "@/crud/casestudy";
 import { CreateCaseStudy } from "@/crud/DTOs";
 import { NextRequest, NextResponse } from "next/server";
 import apiHandler from "@/errorHandler";
+import { revalidatePath } from "next/cache";
 
 export const { POST, DELETE, GET, PATCH, PUT } = apiHandler({
   GET: get,
@@ -12,9 +13,11 @@ export const { POST, DELETE, GET, PATCH, PUT } = apiHandler({
 });
 
 async function put(req: NextRequest, { params }: { params: { id: string } }) {
-  const casestudyID = params.id as string;
-  const casestudy = (await req.json()) as CreateCaseStudy;
-  const updatedUser = await update(casestudyID, casestudy, prisma);
+  const caseStudyId = params.id as string;
+  const caseStudy = (await req.json()) as CreateCaseStudy;
+  const updatedUser = await update(caseStudyId, caseStudy, prisma);
+  revalidatePath(`/dashboard/casestudies/view/${caseStudyId}`);
+
   return NextResponse.json({ message: "update success", data: updatedUser });
 }
 async function remove(

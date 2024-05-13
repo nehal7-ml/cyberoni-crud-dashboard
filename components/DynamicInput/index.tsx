@@ -127,7 +127,7 @@ const DynamicInput: React.FC<DynamicInputProps> = ({ schema, onChange, defaultVa
     }
 
     if (!deepEqual(currentData, defaultValue) && currentData !== undefined) {
-      console.log("calling change");
+      // console.log("calling change", currentData, defaultValue);
       onChange(currentData)
 
     }

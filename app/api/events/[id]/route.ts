@@ -8,6 +8,7 @@ import {
 import { NextRequest, NextResponse } from "next/server";
 import apiHandler from "@/errorHandler";
 import { CreateEventDTO } from "@/crud/DTOs";
+import { revalidatePath } from "next/cache";
 
 export const { POST, DELETE, GET, PATCH, PUT } = apiHandler({
   GET: get,
@@ -19,6 +20,8 @@ async function put(req: NextRequest, { params }: { params: { id: string } }) {
   const eventId = params.id as string;
   const event = (await req.json()) as CreateEventDTO;
   const updatedUser = await update(eventId, event, prisma);
+  revalidatePath(`/dashboard/events/view/${eventId}`);
+
   return NextResponse.json({ message: "update success", data: updatedUser });
 }
 async function remove(

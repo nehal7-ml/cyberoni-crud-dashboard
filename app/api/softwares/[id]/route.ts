@@ -5,6 +5,7 @@ import { NextRequest, NextResponse } from "next/server";
 import apiHandler from "@/errorHandler";
 import { CreateSoftwareProductDTO } from "@/crud/DTOs";
 import { update, remove as removeSoftware, read } from "@/crud/softwareProduct";
+import { revalidatePath } from "next/cache";
 
 export const { POST, DELETE, GET, PATCH, PUT } = apiHandler({
   GET: get,
@@ -17,6 +18,7 @@ async function put(req: NextRequest, { params }: { params: { id: string } }) {
 
   const product = (await req.json()) as CreateSoftwareProductDTO;
   const updatedProduct = await update(productId, product, prisma);
+  revalidatePath(`/dashboard/softwares/view/${productId}`);
   return NextResponse.json({ message: "update success", data: updatedProduct });
 }
 async function remove(
