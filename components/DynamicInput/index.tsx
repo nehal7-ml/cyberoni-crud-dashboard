@@ -7,10 +7,18 @@ import { Schema } from "zod";
 import MapForm from "./MapForm";
 export type FormSchema =
   {
-    type: "string" | "number" | "date";
+    type:  "number" | "date";
     title: string;
     required: boolean;
     disabled?: boolean;
+  }| {
+    type: "string"
+    title: string;
+    required: boolean;
+    disabled?: boolean;
+    pattern?: string
+
+
   }
   | {
     type: "select" | "multi-select";
@@ -137,12 +145,13 @@ const DynamicInput: React.FC<DynamicInputProps> = ({ schema, onChange, defaultVa
             value={currentData as string}
             onChange={handleTextChange}
             disabled={schema.disabled ?? false}
+            pattern={schema.pattern ?? undefined}
+            title={`provide valid ${schema.title}`}
 
           />
         ) : schema.type === "number" ? (
           <FloatingLabelInput
             placeholder={schema.title}
-
             type={"text"}
             className=""
             name={schema.title}
@@ -162,7 +171,7 @@ const DynamicInput: React.FC<DynamicInputProps> = ({ schema, onChange, defaultVa
         ) : schema.type === "select" ? (
           <div>
             <label>{schema.title} : </label>
-            <select className="border p-4 rounded-md">
+            <select className="border p-4 rounded-md" value={currentData} onChange={(e) => setCurrentData(e.target.value)}>
               {schema.options.map((option) => (
                 <option key={option.value} value={option.value}>
                   {option.label}

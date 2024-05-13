@@ -33,7 +33,18 @@ async function getCategories(type: CategoryType, prisma: PrismaClient) {
         },
         include: { children: true },
       });
+    
 
+    case "software": {
+      return await prisma.softwareProductCategory.findMany({
+        where: {
+          parent: {
+            is: null,
+          },
+        },
+        include: { children: true },
+      })
+    }
     default:
       throw new Error(`Unknown category type: ${type}`);
   }
@@ -94,6 +105,26 @@ async function updateCategory(
       });
       if (!existing) throw HttpError(404, "Category not found");
       return await prisma.blogCategory.update({
+        where: { id },
+        data: {
+          name: category.name,
+          children: createOrUpdateOrDeleteChildren(
+            category.children,
+            existing.children,
+          ),
+        },
+        include: {
+          children: true,
+        },
+      });
+    }
+    case "software": {
+      let existing = await prisma.softwareProductCategory.findUnique({
+        where: { id },
+        include: { children: true },
+      });
+      if (!existing) throw HttpError(404, "Category not found");
+      return await prisma.softwareProductCategory.update({
         where: { id },
         data: {
           name: category.name,
@@ -209,7 +240,32 @@ async function addCategory(
           children: true,
         },
       });
-      break;
+    }
+    case "software": {
+      let existingCategory = await prisma.softwareProductCategory.findFirst({
+        where: {
+          parent: {
+            name: category.name,
+            parent: null,
+          },
+        },
+      });
+      if (existingCategory) HttpError(400, "Category already exists");
+      return await prisma.softwareProductCategory.create({
+        data: {
+          name: category.name,
+          children: {
+            create: category.children.map((child) => {
+              return {
+                name: child.name,
+              };
+            }),
+          },
+        },
+        include: {
+          children: true,
+        },
+      });
     }
     default:
       throw new Error(`Unknown category type: ${type}`);
@@ -282,6 +338,20 @@ async function removeCategory(
 
       return await prisma.blogCategory.delete({ where: { id } });
     }
+
+    case "software": {
+      let existingCategory = await prisma.softwareProductCategory.findUnique({
+        where: { id },
+        include: { children: true },
+      });
+      await prisma.softwareProductCategory.deleteMany({
+        where: {
+          id: { in: existingCategory?.children?.map((child) => child.id) },
+        },
+      });
+
+      return await prisma.softwareProductCategory.delete({ where: { id } });
+    }
     default:
       throw new Error(`Unknown category type: ${type}`);
   }
@@ -314,6 +384,14 @@ async function readCategory(
           children: true,
         },
       });
+
+    case "software":
+      return await prisma.softwareProductCategory.findUnique({
+        where: { id },
+        include: {
+          children: true,
+        },
+      })
   }
 }
 

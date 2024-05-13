@@ -7,6 +7,19 @@ import { X } from "lucide-react";
 import LoadingDots from "../shared/loading-dots";
 import DeleteModal from "../DeleteModal";
 
+import { z } from 'zod'
+const categorySchema =
+  z.object({
+    name: z.string().min(1, "Category Name cannot be empty"),
+    children: z.array(
+      z.object({
+        name: z.string().min(1, "Sub Category Name cannot be empty"),
+      })
+    ).min(1, "Provide at least one subcategory")
+  })
+
+
+
 function CategoryForm({
   action,
   onChange,
@@ -30,9 +43,21 @@ function CategoryForm({
       children: [],
     },
   );
-  const {toast} = useNotify();
+  const { toast } = useNotify();
 
   async function handleSubmit() {
+
+    const valid = categorySchema.safeParse(category)
+
+    if(!valid.success){
+
+      console.log(valid.error.errors);
+      for(let err of (valid.error.errors)){
+        toast(err.message, {type: 'error'});
+      }
+      return 
+    }
+
     setLoading(true);
     console.log(category);
     const res = await fetch(
@@ -51,7 +76,7 @@ function CategoryForm({
         type: "success",
       });
       const { data } = await res.json();
-      console.log("recieved data" ,data);
+      console.log("recieved data", data);
       onChange(data, method === "POST" ? "add" : "update");
       setShowDialog(false);
 
@@ -74,14 +99,14 @@ function CategoryForm({
     });
   }
 
-    useEffect(() => {
-      if (defaultValue) {
-        setCategory(defaultValue);
-      } else {
-        setCategory({name: "", children: []});
-      }
-    }, [defaultValue]);
- 
+  useEffect(() => {
+    if (defaultValue) {
+      setCategory(defaultValue);
+    } else {
+      setCategory({ name: "", children: [] });
+    }
+  }, [defaultValue]);
+
   return (
     <>
       <div className="flex items-center justify-normal gap-4">
@@ -108,24 +133,24 @@ function CategoryForm({
           Edit category
         </button>
 
-        <button
-          type="button"
-          onClick={() => {
+          <button
+            type="button"
+            onClick={() => {
 
-            if (!category.id) {
-              toast("Please select a category to delete", {
-                type: "error",
-              })
+              if (!category.id) {
+                toast("Please select a category to delete", {
+                  type: "error",
+                })
 
-              return
-            }
-            setDeleteModal(true);
-            setMethod("DELETE");
-          }}
-          className="text-sm text-red-700"
-        >
-          delete category
-        </button>
+                return
+              }
+              setDeleteModal(true);
+              setMethod("DELETE");
+            }}
+            className="text-sm text-red-700"
+          >
+            delete category
+          </button>
         </>
         }
 

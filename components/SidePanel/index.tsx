@@ -6,6 +6,7 @@ import {
   BrainCircuit,
   CalendarCheck2,
   Cpu,
+  Disc3,
   LinkIcon,
   LogOutIcon,
   Microscope,
@@ -46,6 +47,15 @@ async function SidePanel(props: React.BaseHTMLAttributes<HTMLDivElement>) {
             <Cpu />
 
             <div className="pl-3 text-left">Services</div>
+          </Link>
+          <Link
+            className={`flex items-center justify-start  rounded-lg  p-2 text-gray-800  hover:cursor-pointer hover:bg-blue-600 hover:text-white`}
+            href={"/dashboard/softwares/1"}
+            prefetch={false}
+          >
+            <Disc3 />
+
+            <div className="pl-3 text-left">Software Products</div>
           </Link>
           <Link
             className={`flex items-center justify-start  rounded-lg  p-2 text-gray-800  hover:cursor-pointer hover:bg-blue-600 hover:text-white`}

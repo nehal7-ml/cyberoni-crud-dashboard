@@ -7,6 +7,8 @@ import ProductTableItems from "@/components/DashboardTableItems/ProductTableItem
 import PromptTableItems from "@/components/DashboardTableItems/PromptTableItem";
 import ReferralTableItems from "@/components/DashboardTableItems/ReferralTableItem";
 import ServiceTableItems from "@/components/DashboardTableItems/ServiceTableItems";
+import SoftwareTableItems from "@/components/DashboardTableItems/SoftwareTableItems";
+import SoftwareTableItem from "@/components/DashboardTableItems/SoftwareTableItems";
 import UserTableItems from "@/components/DashboardTableItems/UserTableItem";
 import Pagination from "@/components/Pagination";
 import Table from "@/components/Table";
@@ -14,16 +16,17 @@ import { TableItem } from "@/components/Table/TableItem";
 import { getAll as getAllBlogs } from "@/crud/blog";
 import { getAll as getAllCaseStudies } from "@/crud/casestudy";
 import { getAll as getAllDiscounts } from "@/crud/discount";
-import { CreateBlogDTO, DisplayBlogDTO, DisplayProductDTO } from "@/crud/DTOs";
+import { CreateBlogDTO, DisplayBlogDTO, DisplayProductDTO, DisplaySoftwareProductDTO } from "@/crud/DTOs";
 import { getAll as getAllEvents } from "@/crud/event";
 import { getAll as getAllProducts } from "@/crud/product";
 import { getAll as getAllPrompts } from "@/crud/prompt";
 import { getAll as getAllReferrals } from "@/crud/referral";
 import { getAll as getAllServices } from "@/crud/service";
+import { getAll as getAllSoftwares } from "@/crud/softwareProduct";
 import { DisplayUserDTO, getAll as getAllUser } from "@/crud/user";
 import { prisma } from "@/lib/prisma";
 import { seoUrl, stripSlashes } from "@/lib/utils";
-import { TableType } from "@/types/global";
+import { OrderTableBy, TableType } from "@/types/global";
 import {
   CaseStudy,
   Discount,
@@ -70,9 +73,14 @@ async function Blogs({
         <ReferralTableItems   page={page} records={data.records as Referral[]} />
       ) : params.table === "services" ? (
         <ServiceTableItems  page={page} records={data.records as Service[]} />
-      ) : params.table === "users" ? (
+      ): params.table ==="softwares" ? (
+        <SoftwareTableItems  page={page} records={data.records as DisplaySoftwareProductDTO[]} />
+      )
+      
+      
+      : params.table === "users" ? (
         <UserTableItems page={page} records={data.records as DisplayUserDTO[]} />
-      ) : (
+      ) :   (
         rows
       )}
       <Pagination
@@ -86,7 +94,7 @@ async function getData(
   page: number,
   table: TableType,
   searchParams: {
-    orderBy: "updatedAt" | "title" | "name" | "email" | "prefix";
+    orderBy: OrderTableBy;
     order: "asc" | "desc";
   },
 ) {
@@ -146,6 +154,14 @@ async function getData(
     });
     return res;
   }
+
+  if(table === "softwares") {
+    let res = await getAllSoftwares(page, 10, prisma, {
+      orderby: searchParams.orderBy as "updatedAt" | "pricing",
+      order: searchParams.order,
+    });
+    return res;
+  }
   if (table === "users") {
     let res = await getAllUser(page, 10, prisma, {
       orderby: searchParams.orderBy as "updatedAt" | "email",
@@ -153,5 +169,7 @@ async function getData(
     });
     return res;
   }
+
+
 }
 export default Blogs;

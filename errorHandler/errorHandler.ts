@@ -37,7 +37,14 @@ export default function errorHandler(
         { message: "Author email not found" },
         { status: 400 },
       );
-    }
+    } if(
+      (err as PrismaClientKnownRequestError).code === "P2025" && 
+      err.message.includes("BlogToSoftwareProduct")) {
+        return NextResponse.json(
+          { message: "Blog not found" },
+          { status: 400 },
+        );
+      }
     return NextResponse.json({ message: err.message }, { status: 500 });
   }
 }

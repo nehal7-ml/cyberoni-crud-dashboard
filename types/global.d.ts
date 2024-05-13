@@ -1,6 +1,7 @@
 export type TableType =
   | "blogs"
   | "services"
+  | "softwares"
   | "casestudies"
   | "users"
   | "products"
@@ -22,8 +23,11 @@ export type OrderTableBy =
   | "price"
   | "date"
   | "publishDate"
-  | "inventory";
+  | "inventory"
+  | "status"
+  | "pricing"
+  ;
 export type OrderTable = "desc" | "asc";
 
 
-export type CategoryType = "product" | "prompt" | "blog" | "service"
+export type CategoryType = "product" | "prompt" | "blog" | "service" | "software"

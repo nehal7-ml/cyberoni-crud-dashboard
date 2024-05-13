@@ -12,6 +12,8 @@ import {
   ServiceCart,
   ServiceCartItem,
   ServiceDescription,
+  SoftwarePricing,
+  SoftwareProductStatus,
   SubService,
   Supplier,
   Tag,
@@ -45,8 +47,8 @@ export type BlogCategory = {
 }
 export type CreateCategory = {
   id?: string;
-  name: string;  
-  children: {name:string, id?:string} []
+  name: string;
+  children: { name: string, id?: string }[]
 }
 export type DisplayBlogDTO = Blog & { author: User, tags: Tag[], images: Image[] };
 export type CreateImageDTO = {
@@ -139,7 +141,7 @@ export type CreateGptPromptDTO = {
   costPerToken: number;
   profitMargin: number;
   tags: CreateTagDTO[];
-  image: CreateImageDTO [];
+  image: CreateImageDTO[];
   botUrl?: string;
   conversationStarters: GptConvoStarters[] | [],
   seed: number,
@@ -345,7 +347,7 @@ export type ProductCategory = {
   id: string;
   name: string;
   children?: ProductCategory[];
-  parent? : ProductCategory | null;
+  parent?: ProductCategory | null;
   parentId?: string | null;
 
 }
@@ -378,3 +380,43 @@ export type CreateEventDTO = {
   status: EventStatus;
   isVirtual: boolean;
 };
+
+
+export type CreateSoftwareProductDTO = {
+  id?: string;
+  title: string;
+  subTitle: string;
+  description?: string;
+  images: CreateImageDTO[];
+  tags: CreateTagDTO[];
+  pricing: SoftwarePricing;
+  link?: string;
+  githubLink?: string;
+  blog?: { id: string, title:string };
+  status: SoftwareProductStatus;
+  category?: SoftwareProductCategory
+
+};
+
+export type SoftwareProductCategory = {
+  id: string;
+  name: string;
+  children?: SoftwareProductCategory[];
+  parent?: SoftwareProductCategory | null;
+  parentId?: string | null;
+}
+
+export type DisplaySoftwareProductDTO = {
+  id: string;
+  title: string;
+  subTitle: string;
+  description?: string;
+  images: CreateImageDTO[];
+  tags: CreateTagDTO[];
+  pricing: SoftwarePricing;
+  link?: string;
+  githubLink?: string;
+  status: SoftwareProductStatus;
+  category?: SoftwareProductCategory
+  blog?: { id: string }
+}
