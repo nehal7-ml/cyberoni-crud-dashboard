@@ -44,7 +44,7 @@ function BlogTable({
             index: value.id,
             row: row,
 
-            viewLink: `${stripSlashes(process.env.NEXT_PUBLIC_APP_URL!)}/blogs/post${seoUrl(value.title, value.id)}`,
+            viewLink: `${stripSlashes(process.env.NEXT_PUBLIC_APP_URL!)}/blogs/post/${seoUrl(value.title, value.id)}`,
           };
         })}
       ></Table>

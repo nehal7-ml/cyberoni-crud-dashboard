@@ -288,3 +288,13 @@ export function deepEqual(obj1: any, obj2: any) {
 
   return true;
 }
+
+
+export function extractUUID(dataURI: string) {
+  const sections = dataURI.split('-');
+  const lastFiveSections = sections.slice(-5);
+  // fetch data
+  const uuid = lastFiveSections.join('-')
+  return uuid
+}
+

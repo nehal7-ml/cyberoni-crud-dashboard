@@ -6,6 +6,7 @@ import ProductForm from "@/components/ProductForm";
 import GptPromptForm from "@/components/PromptForm";
 import ReferralForm from "@/components/ReferralForm";
 import ServiceForm from "@/components/ServiceForm";
+import SoftwareProductForm from "@/components/SoftwareProductForm";
 import UserForm from "@/components/UserForm";
 import { BlogCategory, CreateReferralDTO } from "@/crud/DTOs";
 import { getCategories } from "@/crud/categories";
@@ -58,7 +59,21 @@ async function CreateForm({
         action={`/api/products/add`}
       />
     );
-  } else if (params.table === "prompts") {
+  } else if (params.table === "softwares") {
+    const categories = await getCategories("software", prisma);
+
+    return (
+      <SoftwareProductForm
+        categories={categories}
+        method="POST"
+        action={`/api/softwares/add`}
+      />
+    );
+
+  }
+
+
+  else if (params.table === "prompts") {
     const categories = await getCategories("prompt", prisma);
 
     //console.log(prompt);

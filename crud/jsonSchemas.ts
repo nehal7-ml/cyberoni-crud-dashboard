@@ -514,3 +514,73 @@ export const CaseStudySchema = {
 }
 
 
+
+
+export const SoftwareProductSchema = {
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "type": "object",
+  "properties": {
+    "title": {
+      "type": "string",
+      "description": "The title of the software product."
+    },
+    "subTitle": {
+      "type": "string",
+      "description": "The subtitle of the software product."
+    },
+    "description": {
+      "type": "string",
+      "description": "A brief description of the software product.",
+      "nullable": true
+    },
+    "images": {
+      "type": "array",
+      "items": {
+        "$ref": "#/definitions/CreateImageDTO"
+      },
+      "description": "List of images associated with the software product."
+    },
+    "tags": {
+      "type": "array",
+      "items": {
+        "$ref": "#/definitions/CreateTagDTO"
+      },
+      "description": "List of tags associated with the software product."
+    },
+    "pricing": {
+      "$ref": "#/definitions/SoftwarePricing",
+      "description": "Pricing model of the software product."
+    },
+    "link": {
+      "type": "string",
+      "description": "A link to the product's homepage or informational page.",
+      "nullable": true
+    },
+    "githubLink": {
+      "type": "string",
+      "description": "A link to the product's GitHub repository.",
+      "nullable": true
+    },
+    "status": {
+      "$ref": "#/definitions/SoftwareProductStatus",
+      "description": "The current release status of the software product."
+    },
+
+  },
+  "required": ["title", "subTitle", "images", "tags", "pricing", "status"],
+  "definitions": {
+    "CreateImageDTO": ImageSchema,
+    "CreateTagDTO":  TagSchema,
+    "SoftwarePricing": {
+      "type": "string",
+      "enum": ["Freemium", "Free", "Paid", "Subscription"],
+      "description": "Enumerated pricing models available for software products."
+    },
+    "SoftwareProductStatus": {
+      "type": "string",
+      "enum": ["Released", "ComingSoon", "Planned"],
+      "description": "Enumerated status types for the software product release."
+    },
+
+  }
+}

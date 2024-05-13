@@ -6,6 +6,7 @@ import ProductForm from "@/components/ProductForm";
 import GptPromptForm from "@/components/PromptForm";
 import ReferralForm from "@/components/ReferralForm";
 import ServiceForm from "@/components/ServiceForm";
+import SoftwareProductForm from "@/components/SoftwareProductForm";
 import UserForm from "@/components/UserForm";
 import { read as readBlog } from "@/crud/blog";
 import { read as readCaseStudy } from "@/crud/casestudy";
@@ -20,12 +21,14 @@ import {
   CreateProductDTO,
   CreateReferralDTO,
   CreateServiceDTO,
+  CreateSoftwareProductDTO,
 } from "@/crud/DTOs";
 import { read as readEvent } from "@/crud/event";
 import { read as readProduct } from "@/crud/product";
 import { read as readPrompt } from "@/crud/prompt";
 import { read as readReferral } from "@/crud/referral";
 import { getAll as getAllServices, read as readService } from "@/crud/service";
+import { read  as readSoftware} from "@/crud/softwareProduct";
 import { CreateUserDTO, read as readUser } from "@/crud/user";
 import { prisma } from "@/lib/prisma";
 import { TableType } from "@/types/global";
@@ -132,7 +135,25 @@ async function UpdateForm({
         action={`/api/referrals/${params.id}`}
       />
     );
-  } else if (params.table === "services") {
+  } 
+  else if (params.table === "softwares") {
+    const res = await readSoftware(params.id, prisma);
+    if (!res) redirect("/404");
+    const {  updatedAt, createdAt ,...software } = res;
+    const categories = await getCategories("software", prisma);
+
+    // console.log(event);
+    return (
+      <SoftwareProductForm
+        categories={categories}
+        method="PUT"
+        initial={software as CreateSoftwareProductDTO}
+        action={`/api/softwares/${params.id}`}
+      />
+    );
+  }
+  
+  else if (params.table === "services") {
     const service = (await readService(params.id, prisma)) as CreateServiceDTO;
     // console.log(service);
     return (

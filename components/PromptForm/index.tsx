@@ -421,7 +421,18 @@ const GptPromptForm = ({
                     value={currentCategory}
                     name="category"
                     id=""
-                    onChange={(e) => setCurrentCategory(Number(e.target.value))}
+                    onChange={(e) => {
+                      setCurrentCategory(Number(e.target.value))
+                      setGptPromptData((prev) => ({
+                        ...prev,
+                        category: (categoryList[Number(e.target.value)].children) ? {
+                          id: categoryList[Number(e.target.value)].children![0].id as string,
+                          name: categoryList[Number(e.target.value)].children![0].name as string,
+                        } : undefined,
+                      }))
+
+
+                    }}
                   >
                     <option value={-1}>Select Category</option>
                     {categoryList?.map((category, index) => (

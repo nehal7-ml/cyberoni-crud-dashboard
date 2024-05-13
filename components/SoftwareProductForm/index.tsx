@@ -3,12 +3,10 @@
 import { useEffect, useState } from "react";
 import AddImagesAndTags from "../AddImagesAndTags";
 import Notification, { useNotify } from "../Notification";
-import { BlogSchema } from "@/crud/jsonSchemas";
 import {
-  BlogCategory,
-  CreateBlogDTO,
+  SoftwareProductCategory,
+  CreateSoftwareProductDTO,
   CreateTagDTO,
-  DisplayBlogDTO,
 } from "@/crud/DTOs";
 import { redirect, useParams, useRouter } from "next/navigation";
 import { CreateImageDTO } from "@/crud/DTOs";
@@ -18,45 +16,51 @@ import addFormats from "ajv-formats";
 import DateInput from "../DateInput";
 import LoadingDots from "../shared/loading-dots";
 import CategoryForm from "../CategoryForm";
+import { SoftwareProductSchema } from "@/crud/jsonSchemas";
+import DynamicInput from "../DynamicInput";
+import { SoftwareProductFormSchema } from "./formSchema";
+import { extractUUID, seoUrl, stripSlashes } from "@/lib/utils";
 
 const ajv = new Ajv();
 addFormats(ajv);
-const validate = ajv.compile(BlogSchema);
+const validate = ajv.compile(SoftwareProductSchema);
 
-function BlogForm({
+function SoftwareProductForm({
   categories,
   method,
   action,
   initial,
 }: {
   method: "POST" | "PUT";
-  categories: BlogCategory[];
+  categories: SoftwareProductCategory[];
   action: string;
-  initial?: CreateBlogDTO;
+  initial?: CreateSoftwareProductDTO;
 }) {
   const [loading, setLoading] = useState(false);
 
-  const [initialContent, setInitialContent] = useState(initial?.content || "");
-
   const [currentCategory, setCurrentCategory] = useState(-1);
-  const [categoryList, setCategoryList] = useState<BlogCategory[]>(categories);
-  const [blogData, setBlogData] = useState<CreateBlogDTO>(
-    initial || {
-      title: "",
-      subTitle: "",
-      description: "",
-      featured: false,
-      date: new Date(),
-      publishDate: new Date(),
-      category: undefined,
-      content: "",
-      author: { email: "" },
-      tags: [],
-      images: [],
-    },
+  const [categoryList, setCategoryList] =
+    useState<SoftwareProductCategory[]>(categories);
+  const [softwareProductData, setSoftwareProductData] =
+    useState<CreateSoftwareProductDTO>(
+      initial || {
+        title: "",
+        subTitle: "",
+        description: "",
+        pricing: "Free",
+        status: "Planned",
+        link: "",
+        githubLink: "",
+        blog: undefined,
+        tags: [],
+        images: [],
+        category: undefined,
+      },
+    );
+  const [rawJson, setRawJson] = useState(
+    JSON.stringify(softwareProductData, null, 2),
   );
-  const [rawJson, setRawJson] = useState(JSON.stringify(blogData, null, 2));
-  const {toast} = useNotify();
+  const { toast } = useNotify();
   const handleInputChange = (
     e:
       | React.ChangeEvent<
@@ -67,12 +71,12 @@ function BlogForm({
     const { name, value } = e.target;
 
     if (name == "author") {
-      setBlogData((prevData) => ({
+      setSoftwareProductData((prevData) => ({
         ...prevData,
         author: { email: value as string },
       }));
     } else {
-      setBlogData((prevData) => ({
+      setSoftwareProductData((prevData) => ({
         ...prevData,
         [name]: value,
       }));
@@ -82,7 +86,7 @@ function BlogForm({
   const handleCheckboxChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, checked } = e.target;
 
-    setBlogData((prevData) => ({
+    setSoftwareProductData((prevData) => ({
       ...prevData,
       [name]: checked,
     }));
@@ -92,16 +96,15 @@ function BlogForm({
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setLoading(true);
-    const apiUrl = process.env.NEXT_PUBLIC_API_URL;
     const headers = {
       "Content-Type": "application/json",
       Authorization: "Bearer your-access-token",
     };
     // Send the userData to your backend for creating the user
-    console.log(blogData);
+    console.log(softwareProductData);
     const res = await fetch(`${action}`, {
       method: method,
-      body: JSON.stringify(blogData),
+      body: JSON.stringify(softwareProductData),
       headers,
     });
     let resJson = await res.json();
@@ -112,7 +115,7 @@ function BlogForm({
         type: "success",
       });
 
-      router.replace(`/dashboard/blogs/view/${resJson.data.id}`);
+      router.replace(`/dashboard/softwares/view/${resJson.data.id}`);
     } else {
       toast(`${resJson.message}`, {
         autoClose: 5000,
@@ -123,15 +126,10 @@ function BlogForm({
     setLoading(false);
   };
 
-  function setQuillData(value: string) {
-    setBlogData((prevData) => ({
-      ...prevData,
-      content: value,
-    }));
-  }
+
 
   function handleCategoryChange(
-    category: BlogCategory,
+    category: SoftwareProductCategory,
     index: number,
     action: "add" | "update" | "delete",
   ) {
@@ -156,14 +154,14 @@ function BlogForm({
   }
 
   useEffect(() => {
-    if (initial) setBlogData(initial);
+    if (initial) setSoftwareProductData(initial);
   }, [initial]);
 
   function handleChangedImageAndTag(
     images: CreateImageDTO[],
     tags: CreateTagDTO[],
   ) {
-    setBlogData((prevData) => ({
+    setSoftwareProductData((prevData) => ({
       ...prevData,
       images,
       tags,
@@ -188,19 +186,19 @@ function BlogForm({
         );
       else {
         if (Object.keys(newData).length > 0) {
-          for (let key of Object.keys(blogData)) {
-            if (key === "date" || key === "publishDate" && newData[key]) {
+          for (let key of Object.keys(softwareProductData)) {
+            if (key === "date" || (key === "publishDate" && newData[key])) {
               console.log(newData[key] as string);
-              setBlogData((prev) => ({
+              setSoftwareProductData((prev) => ({
                 ...prev,
                 [key]: new Date(newData[key] as string),
               }));
-            } else setBlogData((prev) => ({ ...prev, [key]: newData[key] }));
+            } else
+              setSoftwareProductData((prev) => ({
+                ...prev,
+                [key]: newData[key],
+              }));
           }
-        }
-
-        if (newData.content as string) {
-          setInitialContent(newData.content as string);
         }
       }
     } catch (error) {
@@ -210,6 +208,7 @@ function BlogForm({
   }
 
   useEffect(() => {
+    console.log(initial);
     if (initial && initial.category && initial.category.parent) {
       let cat = categories.findIndex(
         (c) => c.id === initial.category?.parent?.id,
@@ -217,106 +216,49 @@ function BlogForm({
       setCurrentCategory(cat);
     }
   }, [categories, initial]);
+
+  useEffect(() => {
+    console.log(softwareProductData);
+  }, [softwareProductData]);
   return (
     <div className="light:bg-gray-100 light:text-black flex min-h-screen  items-center justify-center bg-gray-100 dark:bg-gray-700 dark:text-gray-800 ">
       <div className="w-full max-w-3xl rounded bg-white p-8 shadow-md">
         <h2 className="mb-4 text-2xl font-semibold">
-          {method === "POST" ? "Create" : "Update"} Blog
+          {method === "POST" ? "Create" : "Update"} Software Product
         </h2>
         <form onSubmit={handleSubmit} className="h-fit">
-          <div className="mb-4">
-            <label className="block" htmlFor="json">
-              Json input auto fill:{" "}
-            </label>
-            <textarea
-              className={"w-full p-3 ring-2 invalid:ring-red-500"}
-              name="json"
-              id=""
-              rows={7}
-              value={rawJson}
-              onChange={(event) => setRawJson(event.target.value)}
-            ></textarea>
-            <button
-              className="w-full rounded bg-blue-500 p-2 text-white hover:bg-blue-600 focus:outline-none focus:ring focus:ring-blue-300"
-              type="button"
-              onClick={() => parseJson(rawJson)}
-            >
-              Parse Json
-            </button>
-          </div>
-          <div className="my-4 flex items-center  justify-center gap-3 text-center font-bold">
-            <hr className="w-1/3" /> OR <hr className="w-1/3" />
-          </div>
-          <div className="mb-4">
-            <label className="block text-sm font-medium text-gray-700">
-              Title:
-            </label>
-            <input
-              type="text"
-              name="title"
-              className="mt-1 w-full rounded border p-2"
-              value={blogData.title}
-              onChange={handleInputChange}
-            />
-          </div>
-          <div className="mb-4">
-            <label className="block text-sm font-medium text-gray-700">
-              Author email/username:
-            </label>
-            <input
-              type="text"
-              name="author"
-              className="mt-1 w-full rounded border p-2"
-              value={blogData.author.email}
-              onChange={handleInputChange}
-            />
-          </div>
-          <div className="mb-4">
-            <label className="block text-sm font-medium text-gray-700">
-              Publish Date:
-            </label>
-            <DateInput
-              name="publishDate"
-              value={blogData.publishDate}
-              onDateChange={handleInputChange}
-            />
-          </div>
-          <div className="mb-4">
-            <label className="block text-sm font-medium text-gray-700">
-              SubTitle:
-            </label>
-            <input
-              type="text"
-              name="subTitle"
-              className="mt-1 w-full rounded border p-2"
-              value={blogData.subTitle}
-              onChange={handleInputChange}
-            />
-          </div>
-          <div className="mb-4">
-            <label className="block text-sm font-medium text-gray-700">
-              Description:
-            </label>
-            <textarea
-              name="description"
-              rows={7}
-              className="mt-1 w-full rounded border p-2"
-              value={blogData.description}
-              onChange={handleInputChange}
-            />
-          </div>
-          <div className="mb-4">
-            <label className="block text-sm font-medium text-gray-700">
-              Featured:
-              <input
-                type="checkbox"
-                name="featured"
-                className="ml-2"
-                checked={blogData.featured}
-                onChange={handleCheckboxChange}
-              />
-            </label>
-          </div>
+          <DynamicInput
+            onChange={(e) =>
+              setSoftwareProductData((prev) => ({
+                ...prev,
+                ...e,
+
+                blog:
+                  e.blogLink.length > 0
+                    ? { id: extractUUID(e.blogLink) }
+                    : undefined,
+              }))
+            }
+            schema={SoftwareProductFormSchema}
+            defaultValue={{
+              title: softwareProductData.title,
+              subTitle: softwareProductData.subTitle,
+              description: softwareProductData.description,
+              link: softwareProductData.link,
+              githubLink: softwareProductData.githubLink,
+              pricing: softwareProductData.pricing,
+              status: softwareProductData.status,
+              blogLink: softwareProductData.blog
+                ? `${stripSlashes(
+                    process.env.NEXT_PUBLIC_API_URL!,
+                  )}/blogs/post/${seoUrl(
+                    softwareProductData.blog!.title,
+                    softwareProductData.blog!.id,
+                  )}`
+                : "",
+            }}
+          />
+
           {categoryList && categoryList.length > 0 ? (
             <>
               <div className="mb-4">
@@ -327,16 +269,18 @@ function BlogForm({
                     name="category"
                     id=""
                     onChange={(e) => {
-                      setCurrentCategory(Number(e.target.value))
-                      setBlogData((prev) => ({
+                      setCurrentCategory(Number(e.target.value));
+                      setSoftwareProductData((prev) => ({
                         ...prev,
-                        category: (categoryList[Number(e.target.value)].children) ? {
-                          id: categoryList[Number(e.target.value)].children![0].id as string,
-                          name: categoryList[Number(e.target.value)].children![0].name as string,
-                        } : undefined,
-                      }))
-
-
+                        category: categoryList[Number(e.target.value)].children
+                          ? {
+                              id: categoryList[Number(e.target.value)]
+                                .children![0].id as string,
+                              name: categoryList[Number(e.target.value)]
+                                .children![0].name as string,
+                            }
+                          : undefined,
+                      }));
                     }}
                   >
                     <option value={-1}>Select Category</option>
@@ -354,16 +298,19 @@ function BlogForm({
                   <select
                     name="category"
                     id=""
-                    value={blogData.category?.id ?? -1}
-                    onChange={(e) =>
-                      setBlogData((prev) => ({
+                    value={softwareProductData.category?.id ?? -1}
+                    onChange={(e) => {
+                      setSoftwareProductData((prev) => ({
+                        category:
+                          e.target.value == "-1"
+                            ? undefined
+                            : {
+                                id: e.target.value,
+                                name: e.target.value,
+                              },
                         ...prev,
-                        category: {
-                          id: e.target.value,
-                          name: e.target.value,
-                        },
-                      }))
-                    }
+                      }));
+                    }}
                   >
                     {currentCategory > -1
                       ? categoryList[currentCategory].children?.map(
@@ -384,36 +331,16 @@ function BlogForm({
               onChange={(category, type) => {
                 handleCategoryChange(category, currentCategory, type);
               }}
-              action={"blog"}
+              action={"software"}
               defaultValue={
                 currentCategory > -1 ? categories[currentCategory] : undefined
               }
             />
           </div>
-          <div className="mb-4 h-fit">
-            <label className="block text-sm font-medium text-gray-700">
-              Content:
-            </label>
-            <Editor
-              onChange={setQuillData}
-              defaultValue={initialContent}
-            ></Editor>
-          </div>
-          <div className="mb-4">
-            <label className="block text-sm font-medium text-gray-700">
-              Template:
-            </label>
-            <select
-              name="templateId"
-              className="mt-1 w-full rounded border p-2"
-            >
-              <option value={undefined}>default</option>
-            </select>
-          </div>
           <div className="mb-4">
             <AddImagesAndTags
-              tags={blogData.tags}
-              images={blogData.images}
+              tags={softwareProductData.tags}
+              images={softwareProductData.images}
               onImagesAndTagsChange={handleChangedImageAndTag}
               maxImages={1}
               maxTags={10}
@@ -425,7 +352,9 @@ function BlogForm({
             className="flex w-full items-center justify-center gap-2 rounded bg-blue-500 p-2 text-white hover:bg-blue-600 focus:outline-none focus:ring focus:ring-blue-300 disabled:bg-gray-400"
           >
             {loading ? <LoadingDots /> : null}
-            {method === "POST" ? "Create Blog" : "Update Blog"}
+            {method === "POST"
+              ? "Create SoftwareProduct"
+              : "Update SoftwareProduct"}
           </button>
         </form>
       </div>
@@ -433,4 +362,4 @@ function BlogForm({
   );
 }
 
-export default BlogForm;
+export default SoftwareProductForm;

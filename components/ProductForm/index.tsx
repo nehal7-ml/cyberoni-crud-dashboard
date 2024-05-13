@@ -27,7 +27,7 @@ const ProductForm = ({
   categories,
 }: FormProps & { categories: ProductCategory[] }) => {
   const [loading, setLoading] = useState(false);
-  const {toast} = useNotify();
+  const { toast } = useNotify();
   const [supplier, setSupplier] = useState<CreateSupplierDTO | undefined>(
     undefined,
   );
@@ -175,7 +175,7 @@ const ProductForm = ({
   }
 
   useEffect(() => {
-    async function fetchSuppliers() {}
+    async function fetchSuppliers() { }
 
     fetchSuppliers();
   }, []);
@@ -294,7 +294,18 @@ const ProductForm = ({
                     value={currentCategory}
                     name="category"
                     id=""
-                    onChange={(e) => setCurrentCategory(Number(e.target.value))}
+                    onChange={(e) => {
+                      setCurrentCategory(Number(e.target.value))
+                      setProductData((prev) => ({
+                        ...prev,
+                        category: (categoryList[Number(e.target.value)].children) ? {
+                          id: categoryList[Number(e.target.value)].children![0].id as string,
+                          name: categoryList[Number(e.target.value)].children![0].name as string,
+                        } : undefined,
+                      }))
+
+
+                    }}
                   >
                     <option value={-1}>Select Category</option>
                     {categoryList.map((category, index) => (
@@ -325,12 +336,12 @@ const ProductForm = ({
                   >
                     {currentCategory > -1
                       ? categoryList[currentCategory].children?.map(
-                          (category) => (
-                            <option key={category.id} value={category.id}>
-                              {category.name}
-                            </option>
-                          ),
-                        )
+                        (category) => (
+                          <option key={category.id} value={category.id}>
+                            {category.name}
+                          </option>
+                        ),
+                      )
                       : null}
                   </select>
                 </label>
