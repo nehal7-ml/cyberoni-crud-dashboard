@@ -285,78 +285,17 @@ const ProductForm = ({
               onChange={handleInputChange}
             />
           </div>
-          {categoryList && categoryList.length > 0 ? (
-            <>
-              <div className="mb-4">
-                <label className="block text-sm font-medium text-gray-700">
-                  Category:
-                  <select
-                    value={currentCategory}
-                    name="category"
-                    id=""
-                    onChange={(e) => {
-                      setCurrentCategory(Number(e.target.value))
-                      setProductData((prev) => ({
-                        ...prev,
-                        category: (categoryList[Number(e.target.value)].children) ? {
-                          id: categoryList[Number(e.target.value)].children![0].id as string,
-                          name: categoryList[Number(e.target.value)].children![0].name as string,
-                        } : undefined,
-                      }))
-
-
-                    }}
-                  >
-                    <option value={-1}>Select Category</option>
-                    {categoryList.map((category, index) => (
-                      <option key={category.id} value={index}>
-                        {category.name}
-                      </option>
-                    ))}
-                  </select>
-                </label>
-              </div>
-              <div className="mb-4">
-                <label className="block text-sm font-medium text-gray-700">
-                  Sub-Category:
-                  <select
-                    name="category"
-                    id=""
-                    value={productData.category?.id ?? -1}
-                    onChange={(e) =>
-                      setProductData((prev) => ({
-                        ...prev,
-                        category: {
-                          id: e.target.value,
-                          name: e.target.value,
-                          parentID: categoryList[currentCategory].id,
-                        },
-                      }))
-                    }
-                  >
-                    {currentCategory > -1
-                      ? categoryList[currentCategory].children?.map(
-                        (category) => (
-                          <option key={category.id} value={category.id}>
-                            {category.name}
-                          </option>
-                        ),
-                      )
-                      : null}
-                  </select>
-                </label>
-              </div>
-            </>
-          ) : null}
+          
           <div className="mb-4">
             <CategoryForm
-              onChange={(category, type) => {
-                handleCategoryChange(category, currentCategory, type);
+              onChange={(category) => {
+                setProductData((productData) => ({
+                  ...productData,
+                  category: category,
+                }))
               }}
               action={"product"}
-              defaultValue={
-                currentCategory > -1 ? categoryList[currentCategory] : undefined
-              }
+              selected={productData.category as  { id: string; name: string, parentId: string | null }} 
             />
           </div>
           <div className="mb-4">

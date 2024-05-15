@@ -412,73 +412,14 @@ const GptPromptForm = ({
               />
             </div>
           </div>
-          {categoryList && categoryList.length > 0 ? (
-            <>
-              <div className="mb-4">
-                <label className="block text-sm font-medium text-gray-700">
-                  Category:
-                  <select
-                    value={currentCategory}
-                    name="category"
-                    id=""
-                    onChange={(e) => {
-                      setCurrentCategory(Number(e.target.value))
-                      setGptPromptData((prev) => ({
-                        ...prev,
-                        category: (categoryList[Number(e.target.value)].children) ? {
-                          id: categoryList[Number(e.target.value)].children![0].id as string,
-                          name: categoryList[Number(e.target.value)].children![0].name as string,
-                        } : undefined,
-                      }))
-
-
-                    }}
-                  >
-                    <option value={-1}>Select Category</option>
-                    {categoryList?.map((category, index) => (
-                      <option key={category.id} value={index}>
-                        {category.name}
-                      </option>
-                    ))}
-                  </select>
-                </label>
-              </div>
-              <div className="mb-4">
-                <label className="block text-sm font-medium text-gray-700">
-                  Sub-Category:
-                  <select
-                    name="category"
-                    id=""
-                    value={gptPromptData.category?.name ?? -1}
-                    onChange={(e) =>
-                      setGptPromptData((prev) => ({
-                        ...prev,
-                        category: {
-                          name: e.target.value,
-                          id: e.target.value,
-                        },
-                      }))
-                    }
-                  >
-                    {currentCategory > -1
-                      ? categoryList[currentCategory].children?.map(
-                        (category) => (
-                          <option key={category.id} value={category.id}>
-                            {category.name}
-                          </option>
-                        ),
-                      )
-                      : null}
-                  </select>
-                </label>
-              </div>
-            </>
-          ) : null}
+          
           <div className="mb-4">
             <CategoryForm
-              onChange={(category, type) => {
-                handleCategoryChange(category, currentCategory, type);
-              }} action={'prompt'}  defaultValue={currentCategory > -1 ? categoryList[currentCategory] : undefined} />
+              onChange={(category) => {
+                setGptPromptData((prev) => ({ ...prev, category }));
+              }} 
+              action={'prompt'}  
+              selected={gptPromptData.category as  { id: string; name: string, parentId: string | null }} />
           </div>
           <AddImagesAndTags
             images={gptPromptData.image}
