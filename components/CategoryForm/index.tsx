@@ -7,64 +7,62 @@ import { X } from "lucide-react";
 import LoadingDots from "../shared/loading-dots";
 import DeleteModal from "../DeleteModal";
 
-import { z } from 'zod'
-const categorySchema =
-  z.object({
-    name: z.string().min(1, "Category Name cannot be empty"),
-    children: z.array(
-      z.object({
-        name: z.string().min(1, "Sub Category Name cannot be empty"),
-      })
-    ).min(1, "Provide at least one subcategory")
-  })
-
-
+import { z } from "zod";
+import { CreateCategory } from "@/crud/DTOs";
+const categorySchema = z.object({
+  name: z.string().trim().min(1, "Category Name cannot be empty"),
+  children: z.array(
+    z.object({
+      name: z.string().trim().min(1, "Sub Category Name cannot be empty"),
+    }),
+  ),
+});
 
 function CategoryForm({
   action,
   onChange,
-  defaultValue,
+  selected,
 }: {
   action: CategoryType;
-  onChange: (data: any, type: "add" | "update" | "delete") => void;
-  defaultValue?: {
-    id?: string;
-    name: string;
-    children?: { id?: string; name: string }[];
-  };
+  onChange: (
+    Category: { name: string; id: string; parentId: string | null } | undefined,
+  ) => void;
+  selected?: { name: string; id: string; parentId: string | null };
 }) {
   const [showDialog, setShowDialog] = useState(false);
   const [deleteModal, setDeleteModal] = useState(false);
   const [loading, setLoading] = useState(false);
+
+  const [categories, setCategories] = useState<CreateCategory[]>([]);
   const [method, setMethod] = useState<"POST" | "PUT" | "DELETE">("POST");
-  const [category, setCategory] = useState(
-    defaultValue || {
-      name: "",
-      children: [],
-    },
-  );
+  const [currentIndex, setCurrentIndex] = useState(-1);
+  const [currentSubCategory, setCurrentSubCategory] = useState(-1);
+  const [currentCategory, setCurrentCategory] = useState<CreateCategory>({
+    id: "",
+    name: "",
+    children: [],
+  });
+
   const { toast } = useNotify();
 
   async function handleSubmit() {
+    const valid = categorySchema.safeParse(currentCategory);
 
-    const valid = categorySchema.safeParse(category)
-
-    if(!valid.success){
-
+    if (!valid.success) {
       console.log(valid.error.errors);
-      for(let err of (valid.error.errors)){
-        toast(err.message, {type: 'error'});
+      for (let err of valid.error.errors) {
+        toast(err.message, { type: "error" });
       }
-      return 
+      return;
     }
 
     setLoading(true);
-    console.log(category);
+    console.log(currentCategory);
     const res = await fetch(
-      `/api/categories/${action}/${method == "POST" ? `add` : `${defaultValue?.id}`}`,
+      `/api/categories/${action}/${method == "POST" ? `add` : `${currentCategory?.id}`}`,
       {
         method: method,
-        body: JSON.stringify(category),
+        body: JSON.stringify(currentCategory),
         headers: {
           "Content-Type": "application/json",
         },
@@ -77,9 +75,12 @@ function CategoryForm({
       });
       const { data } = await res.json();
       console.log("recieved data", data);
-      onChange(data, method === "POST" ? "add" : "update");
+      setCategories((prev) =>
+        method == "POST"
+          ? [...prev, data]
+          : prev.map((c) => (c.id == data.id ? data : c)),
+      );
       setShowDialog(false);
-
     } else {
       toast("Something went wrong", {
         type: "error",
@@ -93,67 +94,166 @@ function CategoryForm({
     name: string;
     children: { name: string; id?: string }[];
   }) {
-    setCategory({
+    setCurrentCategory((prev)=>({
+      ...prev,
       name: data.name,
       children: data.children,
-    });
+    }));
   }
 
   useEffect(() => {
-    if (defaultValue) {
-      setCategory(defaultValue);
-    } else {
-      setCategory({ name: "", children: [] });
+    if (selected && categories.length > 0) {
+      // console.log(selected);
+      if (selected.parentId !== null) {
+        const category = categories.findIndex((c) => c.id == selected.parentId);
+        if (category !== currentIndex) {
+          setCurrentIndex(category);
+          setCurrentCategory(categories[category]);
+        }
+
+        const subCategory = categories[category].children.findIndex(
+          (c) => c.id == selected.id,
+        );
+        if (subCategory !== currentSubCategory) {
+          setCurrentSubCategory(subCategory);
+        }
+      } else {
+        const category = categories.findIndex((c) => c.id == selected.id);
+        if (category !== currentIndex) {
+          setCurrentIndex(category);
+          setCurrentCategory(categories[category]);
+        }
+      }
     }
-  }, [defaultValue]);
+  }, [categories, currentIndex, currentSubCategory, selected]);
+
+  useEffect(() => {
+    async function fetchData() {
+      const res = await fetch(`/api/categories/${action}/all`);
+      const { data } = await res.json();
+      setCategories(data);
+    }
+
+    fetchData();
+  }, [action]);
 
   return (
     <>
+      <div>
+        {categories.length > 0 ? (
+          <>
+            <div className="my-4">
+              <label className="block text-sm font-medium text-gray-700">
+                Category:
+                <select
+                  className="rounded-md p-3"
+                  value={currentIndex}
+                  name="category"
+                  id=""
+                  onChange={(e) => {
+                    setCurrentIndex(Number(e.target.value));
+                    setCurrentCategory(categories[Number(e.target.value)]);
+                    setCurrentSubCategory(-1);
+                    onChange({
+                      name: categories[Number(e.target.value)].name,
+                      id: categories[Number(e.target.value)].id!,
+                      parentId: null,
+                    });
+                  }}
+                >
+                  <option value={-1}>Select Category</option>
+                  {categories?.map((category, index) => (
+                    <option key={category.id} value={index}>
+                      {category.name}
+                    </option>
+                  ))}
+                </select>
+              </label>
+            </div>
+            <div className="mb-4">
+              <label className="block text-sm font-medium text-gray-700">
+                Sub-Category:
+                <select
+                  className="rounded-md p-3"
+                  name="category"
+                  id=""
+                  value={currentSubCategory}
+                  onChange={(e) => {
+                    setCurrentSubCategory(Number(e.target.value));
+
+                    onChange({
+                      id: currentCategory.children[Number(e.target.value)].id!,
+                      name: currentCategory.children[Number(e.target.value)]
+                        .name,
+                      parentId: currentCategory.id!,
+                    });
+                  }}
+                >
+                  {currentIndex > -1 ? (
+                    <>
+                      {categories[currentIndex].children.length > 0 && (
+                        <option value={-1}>Select Sub-Category</option>
+                      )}
+
+                      {categories[currentIndex].children?.map(
+                        (category, index) => (
+                          <option className="" key={category.id} value={index}>
+                            {category.name}
+                          </option>
+                        ),
+                      )}
+                    </>
+                  ) : null}
+                </select>
+              </label>
+            </div>
+          </>
+        ) : null}
+      </div>
       <div className="flex items-center justify-normal gap-4">
         <button
           type="button"
           onClick={() => {
             setMethod("POST");
-
-            setCategory({ name: "", children: [] });
-            setShowDialog(true)
+            setCurrentCategory({ name: "", children: [] });
+            setShowDialog(true);
           }}
           className="text-sm text-slate-500"
         >
           Add category
         </button>
-        {defaultValue && <> <button
-          type="button"
-          onClick={() => {
-            setMethod("PUT");
-            setShowDialog(true)
-          }}
-          className="text-sm text-slate-500"
-        >
-          Edit category
-        </button>
+        {currentIndex > -1 && (
+          <>
+            {" "}
+            <button
+              type="button"
+              onClick={() => {
+                setMethod("PUT");
+                setShowDialog(true);
+              }}
+              className="text-sm text-slate-500"
+            >
+              Edit category
+            </button>
+            <button
+              type="button"
+              onClick={() => {
+                if (!currentCategory.id) {
+                  toast("Please select a category to delete", {
+                    type: "error",
+                  });
 
-          <button
-            type="button"
-            onClick={() => {
-
-              if (!category.id) {
-                toast("Please select a category to delete", {
-                  type: "error",
-                })
-
-                return
-              }
-              setDeleteModal(true);
-              setMethod("DELETE");
-            }}
-            className="text-sm text-red-700"
-          >
-            delete category
-          </button>
-        </>
-        }
-
+                  return;
+                }
+                setDeleteModal(true);
+                setMethod("DELETE");
+              }}
+              className="text-sm text-red-700"
+            >
+              delete category
+            </button>
+          </>
+        )}
       </div>
       <Modal show={showDialog} setShow={setShowDialog}>
         <div className="relative mx-auto flex w-fit flex-col items-center justify-end gap-3  bg-gray-50 p-5">
@@ -164,7 +264,10 @@ function CategoryForm({
             <X />
           </button>
           <DynamicInput
-            defaultValue={{ name: category.name, children: category.children }}
+            defaultValue={{
+              name: currentCategory.name,
+              children: currentCategory.children,
+            }}
             onChange={handleChange}
             schema={{
               type: "object",
@@ -218,11 +321,14 @@ function CategoryForm({
       <DeleteModal
         isOpen={deleteModal}
         onClose={() => setDeleteModal(false)}
-        url={`/api/categories/${action}/${defaultValue?.id}`}
+        url={`/api/categories/${action}/${currentCategory?.id}`}
         onDelete={() => (
-          setShowDialog(false),
-          setCategory({ name: "", children: [] }),
-          onChange({ id: defaultValue?.id }, "delete")
+          setDeleteModal(false),
+          setCurrentIndex(-1),
+          setCurrentSubCategory(-1),
+          setCurrentCategory({ name: "", children: [] }),
+          setCategories((prev) => prev.filter((c) => c.id != currentCategory?.id)),
+          onChange(undefined)
         )}
       ></DeleteModal>
     </>

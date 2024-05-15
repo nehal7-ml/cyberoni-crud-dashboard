@@ -7,6 +7,7 @@ import {
   SoftwareProductCategory,
   CreateSoftwareProductDTO,
   CreateTagDTO,
+  CreateCategory,
 } from "@/crud/DTOs";
 import { redirect, useParams, useRouter } from "next/navigation";
 import { CreateImageDTO } from "@/crud/DTOs";
@@ -20,6 +21,7 @@ import { SoftwareProductSchema } from "@/crud/jsonSchemas";
 import DynamicInput from "../DynamicInput";
 import { SoftwareProductFormSchema } from "./formSchema";
 import { extractUUID, seoUrl, stripSlashes } from "@/lib/utils";
+import { ZodNullable } from "zod";
 
 const ajv = new Ajv();
 addFormats(ajv);
@@ -165,7 +167,6 @@ function SoftwareProductForm({
       tags,
     }));
 
-    console.log(images);
   }
 
   function parseJson(json: string) {
@@ -186,7 +187,7 @@ function SoftwareProductForm({
         if (Object.keys(newData).length > 0) {
           for (let key of Object.keys(softwareProductData)) {
             if (key === "date" || (key === "publishDate" && newData[key])) {
-              console.log(newData[key] as string);
+              //console.log(newData[key] as string);
               setSoftwareProductData((prev) => ({
                 ...prev,
                 [key]: new Date(newData[key] as string),
@@ -206,7 +207,7 @@ function SoftwareProductForm({
   }
 
   useEffect(() => {
-    console.log(initial);
+    //console.log(initial);
     if (initial && initial.category && initial.category.parent) {
       let cat = categories.findIndex(
         (c) => c.id === initial.category?.parent?.id,
@@ -215,9 +216,7 @@ function SoftwareProductForm({
     }
   }, [categories, initial]);
 
-  useEffect(() => {
-    console.log(softwareProductData);
-  }, [softwareProductData]);
+
   return (
     <div className="light:bg-gray-100 light:text-black flex min-h-screen  items-center justify-center bg-gray-100 dark:bg-gray-700 dark:text-gray-800 ">
       <div className="w-full max-w-3xl rounded bg-white p-8 shadow-md">
@@ -267,82 +266,17 @@ function SoftwareProductForm({
             }}
           />
 
-          {categoryList && categoryList.length > 0 ? (
-            <>
-              <div className="mb-4">
-                <label className="block text-sm font-medium text-gray-700">
-                  Category:
-                  <select
-                    value={currentCategory}
-                    name="category"
-                    id=""
-                    onChange={(e) => {
-                      setCurrentCategory(Number(e.target.value));
-                      setSoftwareProductData((prev) => ({
-                        ...prev,
-                        category: categoryList[Number(e.target.value)].children
-                          ? {
-                              id: categoryList[Number(e.target.value)]
-                                .children![0].id as string,
-                              name: categoryList[Number(e.target.value)]
-                                .children![0].name as string,
-                            }
-                          : undefined,
-                      }));
-                    }}
-                  >
-                    <option value={-1}>Select Category</option>
-                    {categoryList?.map((category, index) => (
-                      <option key={category.id} value={index}>
-                        {category.name}
-                      </option>
-                    ))}
-                  </select>
-                </label>
-              </div>
-              <div className="mb-4">
-                <label className="block text-sm font-medium text-gray-700">
-                  Sub-Category:
-                  <select
-                    name="category"
-                    id=""
-                    value={softwareProductData.category?.id ?? -1}
-                    onChange={(e) => {
-                      setSoftwareProductData((prev) => ({
-                        category:
-                          e.target.value == "-1"
-                            ? undefined
-                            : {
-                                id: e.target.value,
-                                name: e.target.value,
-                              },
-                        ...prev,
-                      }));
-                    }}
-                  >
-                    {currentCategory > -1
-                      ? categoryList[currentCategory].children?.map(
-                          (category) => (
-                            <option key={category.id} value={category.id}>
-                              {category.name}
-                            </option>
-                          ),
-                        )
-                      : null}
-                  </select>
-                </label>
-              </div>
-            </>
-          ) : null}
+          
           <div className="mb-4">
             <CategoryForm
-              onChange={(category, type) => {
-                handleCategoryChange(category, currentCategory, type);
+              onChange={(category) => {
+                setSoftwareProductData((prev) => ({
+                  ...prev,
+                  category: category,
+                }))
               }}
               action={"software"}
-              defaultValue={
-                currentCategory > -1 ? categories[currentCategory] : undefined
-              }
+              selected={softwareProductData.category as { id: string; name: string, parentId: string | null }}
             />
           </div>
           <div className="mb-4">

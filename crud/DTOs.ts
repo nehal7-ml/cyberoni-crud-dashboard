@@ -40,7 +40,7 @@ export type BlogCategory = {
   id?: string
   name: string;
   children?: BlogCategory[],
-  parentId?: string
+  parentId?: string | null
   parent?: {
     id: string;
   } | null;
@@ -164,7 +164,7 @@ export type GptCategory = {
   parent?: {
     id: string;
   } | null;
-  parentId?: string
+  parentId?: string | null
 }
 export type GptSteps = {
   index: number,
