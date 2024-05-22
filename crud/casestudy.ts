@@ -9,7 +9,7 @@ export async function create(caseStudy: CreateCaseStudy, prisma: PrismaClient) {
   const cases = prisma.caseStudy;
   let images = await connectOrCreateObject(caseStudy.images, []);
   let competetiveAnalysis = await connectOrCreateObject(
-    caseStudy.competetiveAnalysis,
+    caseStudy.competitiveAnalysis,
     [],
   );
   let wireFrames = await connectOrCreateObject(caseStudy.wireFrames!, []);
@@ -34,7 +34,7 @@ export async function create(caseStudy: CreateCaseStudy, prisma: PrismaClient) {
       images: createImageJson(images),
       userFlow: createImageJson(userFlow),
       wireFrames: createImageJson(wireFrames),
-      competetiveAnalysis: createImageJson(competetiveAnalysis),
+      competitiveAnalysis: createImageJson(competetiveAnalysis),
       type: caseStudy.serviceId ? { connect: { id: caseStudy.serviceId } } : {},
       subServices: caseStudy.subServices
         ? { connect: caseStudy.subServices }
@@ -53,7 +53,7 @@ export async function read(caseStudyId: string, prisma: PrismaClient) {
   });
   return {
     ...caseStudy,
-    competetiveAnalysis: caseStudy?.competetiveAnalysis as CreateImageDTO[],
+    competitiveAnalysis: caseStudy?.competitiveAnalysis as CreateImageDTO[],
     architecture: caseStudy?.architecture as CreateImageDTO[],
     images: caseStudy?.images as CreateImageDTO[],
     hifiDesign: caseStudy?.hifiDesign as CreateImageDTO[],
@@ -73,8 +73,8 @@ export async function update(
     caseStudy.images,
     oldCase?.images as unknown as Image[],
   );
-  let competetiveAnalysis = await connectOrCreateObject(
-    caseStudy.competetiveAnalysis,
+  let competitiveAnalysis = await connectOrCreateObject(
+    caseStudy.competitiveAnalysis,
     oldCase?.images as unknown as Image[],
   );
   let wireFrames = await connectOrCreateObject(
@@ -103,7 +103,7 @@ export async function update(
       userResearch: caseStudy.userResearch,
       keyLearning: caseStudy.keyLearning,
       possibleSolutions: caseStudy.possibleSolutions,
-      competetiveAnalysis: createImageJson(competetiveAnalysis),
+      competitiveAnalysis: createImageJson(competitiveAnalysis),
       problemStatement: caseStudy.problemStatement,
       uniqueFeatures: caseStudy.uniqueFeatures,
       userPersonas: caseStudy.userPersonas,

@@ -14,8 +14,16 @@ import { read as readReferral } from "@/crud/referral";
 import { getAll as getAllServices } from "@/crud/service";
 import { prisma } from "@/lib/prisma";
 import { TableType } from "@/types/global";
+import { Metadata } from "next";
 import { redirect } from "next/navigation";
+export async function generateMetadata({ params }: {
+  params: { table: string }
+}) {
 
+  return {
+    title: `create ${params.table}`,
+  } as Metadata
+}
 async function CreateForm({
   params,
   searchParams,

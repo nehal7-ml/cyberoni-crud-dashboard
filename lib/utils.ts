@@ -216,7 +216,7 @@ export function arraysAreEqual(array1: any[], array2: any[]) {
     }
     // If both values are objects, recursively compare them
     else if (typeof value1 === "object" && typeof value2 === "object") {
-      if (!objectsAreEqual(value1, value2)) {
+      if (!deepEqual(value1, value2)) {
         return false;
       }
     }

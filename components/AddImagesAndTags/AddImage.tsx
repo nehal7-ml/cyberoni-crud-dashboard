@@ -1,6 +1,6 @@
 "use client";
 import { CreateImageDTO } from "@/crud/DTOs";
-import { bufferToB64, generateUUID } from "@/lib/utils";
+import { arraysAreEqual, bufferToB64, generateUUID } from "@/lib/utils";
 import React, { useEffect, useState } from "react";
 import { FileUploader } from "react-drag-drop-files";
 import Loading from "../Loading";
@@ -12,11 +12,13 @@ function AddImage({
   onImagesChange,
   maxImages,
   submit,
+  name
 }: {
   defaultImages?: CreateImageDTO[];
   onImagesChange: (images: CreateImageDTO[]) => void;
   maxImages?: number;
   submit?: boolean;
+  name?:string
 }) {
   const [images, setImages] = useState<CreateImageDTO[]>(defaultImages || []);
   const {toast} = useNotify();
@@ -109,16 +111,13 @@ function AddImage({
   }
 
   useEffect(() => {
-    if (defaultImages && defaultImages.length > 0) {
-      console.log(defaultImages);
+    //console.log("images chnage uef : ", defaultImages, images, name);
+    if (defaultImages && defaultImages.length > 0 && !arraysAreEqual(images, defaultImages)) {
+    console.log("setinig  updateing imafe", defaultImages);
       setImages(defaultImages);
     }
-  }, [defaultImages]);
+  }, [defaultImages, images, name]);
 
-  useEffect(() => {
-    if (submit) {
-    }
-  }, [submit]);
 
   function updateImage(image: CreateImageDTO, index: number = -1) {
     setCurrentImageIndex(index);

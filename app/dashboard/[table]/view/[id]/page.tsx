@@ -32,7 +32,18 @@ import { read  as readSoftware} from "@/crud/softwareProduct";
 import { CreateUserDTO, read as readUser } from "@/crud/user";
 import { prisma } from "@/lib/prisma";
 import { TableType } from "@/types/global";
+import { Metadata } from "next";
 import { redirect } from "next/navigation";
+
+
+export async function generateMetadata({ params }: {
+  params: { table: string }
+}) {
+
+  return {
+    title: `update ${params.table}`,
+  } as Metadata
+}
 
 async function UpdateForm({
   params,
