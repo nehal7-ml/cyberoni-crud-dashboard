@@ -30,7 +30,21 @@ async function create(
       status,
       blog: product.blog ? { connect: { id: product.blog.id } } : undefined,
       images: await connectImages(product.images, []),
-      tags: { connectOrCreate: connectTags(product.tags || [], []).connectOrCreate },
+      tags: {
+        connectOrCreate: connectTags(product.tags || [], []).connectOrCreate,
+      },
+      subscriptionModel:
+        product.pricing === "Subscription" && product.subscriptionModels
+          ? {
+            create: product.subscriptionModels.map((model) => ({
+              name: model.name,
+              price: model.price,
+              features: model.features,
+              status: model.status,
+              type: model.type,
+            })),
+          }
+          : undefined,
       category: category
         ? {
           connect: {
@@ -44,17 +58,15 @@ async function create(
   return createdProduct;
 }
 
-async function read(
-  productId: string,
-  prismaClient: PrismaClient,
-) {
+async function read(productId: string, prismaClient: PrismaClient) {
   const product = await prismaClient.softwareProduct.findUnique({
     where: { id: productId },
     include: {
       images: true,
       tags: true,
       category: true,
-      blog: true
+      blog: true,
+      subscriptionModel: true,
     },
   });
 
@@ -72,9 +84,10 @@ async function update(
       tags: true,
       images: true,
       category: true,
+      subscriptionModel: true
     },
   });
-  if (!oldProduct) throw HttpError(404, "Product Not found");
+  if (!oldProduct) throw HttpError(404, "Product not found");
 
   const {
     title,
@@ -87,6 +100,21 @@ async function update(
     status,
     category,
   } = productData;
+
+  const createModels =
+    productData.pricing === "Subscription" && productData.subscriptionModels
+      ? productData.subscriptionModels.filter((model) => !model.id)
+      : [];
+  const updateModels =
+    productData.pricing === "Subscription" && productData.subscriptionModels
+      ? productData.subscriptionModels.filter((model) => model.id)
+      : [];
+
+  const disconnectModels =
+    productData.pricing === "Subscription" && productData.subscriptionModels
+      ? productData.subscriptionModels.filter((model) => (!model.id && oldProduct.subscriptionModel?.find((oldModel) => oldModel.id === model.id)))
+      : [];
+
   const updatedProduct = await prismaClient.softwareProduct.update({
     where: { id: productId },
     data: {
@@ -97,7 +125,33 @@ async function update(
       link,
       githubLink,
       status,
-      blog: productData.blog ? { connect: { id: productData.blog.id } } : { disconnect: true },
+      subscriptionModel:
+        productData.pricing === "Subscription" && productData.subscriptionModels
+          ? {
+            create: createModels.map((model) => ({
+              name: model.name,
+              price: model.price,
+              type: model.type,
+              features: model.features,
+              status: model.status,
+            })),
+            update: updateModels.map((model) => ({
+              where: { id: model.id! },
+              data: {
+                name: model.name,
+                price: model.price,
+                type: model.type,
+                features: model.features,
+                status: model.status,
+              },
+            })),
+
+            disconnect: disconnectModels.map((model) => ({ id: model.id! })),
+          }
+          : undefined,
+      blog: productData.blog
+        ? { connect: { id: productData.blog.id } }
+        : { disconnect: true },
       images: await connectImages(productData.images, oldProduct!.images),
       tags: connectTags(productData.tags, oldProduct!.tags),
       category: productData.category

@@ -66,3 +66,45 @@ export const SoftwareProductFormSchema: FormSchema = {
     required: true,
     toString: object => object.title
 };
+
+
+export const SubscriptionModelSchema: FormSchema = {
+    title: "Subscription Model",
+    description: "Subscription Model",
+    type: "array",
+    items: {
+        title: "Subscription Item",
+        type: "object",
+        properties: {
+            "title": {
+                type: "string",
+                required: true,
+                title: "Title",
+            },
+            "subTitle": {
+                type: "string",
+                required: true,
+                title: "Description",
+            },
+            "price": {
+                type: "number",
+                required: true,
+                title: "Price",
+            },
+            'type': {
+                type: 'select',
+                options: [
+                    { label: 'Yearly', value: 'YEARLY' },
+                    { label: 'Monthly', value: 'MONTHLY' }
+                ],
+                required: true,
+                title: 'Type'
+            }
+        },
+        description: "Subscription Item",
+        required: true,
+        
+    },
+    toString: object => object.title,
+    required: true
+}

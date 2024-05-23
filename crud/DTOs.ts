@@ -15,6 +15,8 @@ import {
   SoftwarePricing,
   SoftwareProductStatus,
   SubService,
+  SubscriptionPeriod,
+  SubscriptionStatus,
   Supplier,
   Tag,
   User,
@@ -392,11 +394,25 @@ export type CreateSoftwareProductDTO = {
   pricing: SoftwarePricing;
   link?: string;
   githubLink?: string;
-  blog?: { id: string, title:string };
+  blog?: { id: string, title: string };
   status: SoftwareProductStatus;
   category?: SoftwareProductCategory
+  subscriptionModels?: SubscriptionModel[]
 
 };
+
+export type SubscriptionModel = {
+  id?: string | null;
+  name: string;
+  price: number;
+  features: {
+    title: string;
+    subTitle: string;
+
+  },
+  status: SubscriptionStatus
+  type: SubscriptionPeriod
+}
 
 export type SoftwareProductCategory = {
   id: string;

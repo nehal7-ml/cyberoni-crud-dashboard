@@ -17,15 +17,14 @@ import addFormats from "ajv-formats";
 import DateInput from "../DateInput";
 import LoadingDots from "../shared/loading-dots";
 import CategoryForm from "../CategoryForm";
-import { SoftwareProductSchema } from "@/crud/jsonSchemas";
 import DynamicInput from "../DynamicInput";
-import { SoftwareProductFormSchema } from "./formSchema";
+import { SoftwareProductFormSchema, SubscriptionModelSchema } from "./formSchema";
 import { extractUUID, seoUrl, stripSlashes } from "@/lib/utils";
 import { ZodNullable } from "zod";
+import { SoftwareProductSchema } from "../zodSchemas";
+import JsonInput from "../shared/JsonInput";
 
-const ajv = new Ajv();
-addFormats(ajv);
-const validate = ajv.compile(SoftwareProductSchema);
+
 
 function SoftwareProductForm({
   categories,
@@ -57,42 +56,15 @@ function SoftwareProductForm({
         tags: [],
         images: [],
         category: undefined,
+        subscriptionModels: undefined,
       },
     );
   const [rawJson, setRawJson] = useState(
-    JSON.stringify(softwareProductData, null, 2),
+    JSON.stringify(SoftwareProductSchema.parse(softwareProductData), null, 2),
   );
+
   const { toast } = useNotify();
-  const handleInputChange = (
-    e:
-      | React.ChangeEvent<
-          HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement
-        >
-      | { target: { name: string; value: string | number | Date } },
-  ) => {
-    const { name, value } = e.target;
 
-    if (name == "author") {
-      setSoftwareProductData((prevData) => ({
-        ...prevData,
-        author: { email: value as string },
-      }));
-    } else {
-      setSoftwareProductData((prevData) => ({
-        ...prevData,
-        [name]: value,
-      }));
-    }
-  };
-
-  const handleCheckboxChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const { name, checked } = e.target;
-
-    setSoftwareProductData((prevData) => ({
-      ...prevData,
-      [name]: checked,
-    }));
-  };
   const router = useRouter();
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -117,7 +89,7 @@ function SoftwareProductForm({
         type: "success",
       });
 
-      router.replace(`/dashboard/softwares/view/${resJson.data.id}`);
+      router.push(`/dashboard/softwares/view/${resJson.data.id}`);
     } else {
       toast(`${resJson.message}`, {
         autoClose: 5000,
@@ -128,30 +100,6 @@ function SoftwareProductForm({
     setLoading(false);
   };
 
-  function handleCategoryChange(
-    category: SoftwareProductCategory,
-    index: number,
-    action: "add" | "update" | "delete",
-  ) {
-    if (action === "add") {
-      // Add the category only if it doesn't already exist in the list
-      setCategoryList((prev) =>
-        prev.find((c) => c.id === category.id) ? prev : [...prev, category],
-      );
-    } else if (action === "update") {
-      // Update the category based on id
-      const newCatList = categoryList;
-      newCatList[index] = category;
-      setCategoryList(newCatList);
-    } else if (action === "delete") {
-      // Delete the category based on id (more secure)
-      setCurrentCategory(-1);
-      setCategoryList((prev) => prev.splice(index, 1));
-    } else {
-      // Optionally handle unexpected actions
-      console.error("Unhandled action:", action);
-    }
-  }
 
   useEffect(() => {
     if (initial) setSoftwareProductData(initial);
@@ -173,36 +121,22 @@ function SoftwareProductForm({
     try {
       const newData = JSON.parse(json);
 
-      const valid = validate(newData);
-      if (!valid)
-        alert(
-          validate.errors
-            ?.map(
-              (err) =>
-                `${err.instancePath} ${err.message} (${err.schemaPath}) `,
-            )
-            .join("\n"),
-        );
-      else {
-        if (Object.keys(newData).length > 0) {
-          for (let key of Object.keys(softwareProductData)) {
-            if (key === "date" || (key === "publishDate" && newData[key])) {
-              //console.log(newData[key] as string);
-              setSoftwareProductData((prev) => ({
-                ...prev,
-                [key]: new Date(newData[key] as string),
-              }));
-            } else
-              setSoftwareProductData((prev) => ({
-                ...prev,
-                [key]: newData[key],
-              }));
-          }
+      const valid = SoftwareProductSchema.safeParse(newData);
+      if (!valid.success)
+        for (const e of valid.error.errors) {
+          toast(`${e.path} ${e.message}`, {
+            type: "error",
+          });
         }
+
+      else {
+        setSoftwareProductData((prev) => ({ ...prev, ...newData }));
       }
     } catch (error) {
       console.log("invalid JSON", error);
-      alert("Error parsing JSON" + error);
+      toast(`Invalid Json`, {
+        type: "error",
+      })
     }
   }
 
@@ -224,6 +158,7 @@ function SoftwareProductForm({
           {method === "POST" ? "Create" : "Update"} Software Product
         </h2>
         <form onSubmit={handleSubmit} className="h-fit">
+          <JsonInput rawJson={rawJson} parseJson={parseJson} setRawJson={setRawJson} />
           <DynamicInput
             onChange={(e) =>
               setSoftwareProductData((prev) => ({
@@ -237,9 +172,9 @@ function SoftwareProductForm({
                 blog:
                   e.blogLink.length > 0
                     ? {
-                        id: extractUUID(e.blogLink),
-                        title: prev.blog?.title as string,
-                      }
+                      id: extractUUID(e.blogLink),
+                      title: prev.blog?.title as string,
+                    }
                     : undefined,
                 images: prev.images,
                 tags: prev.tags,
@@ -257,16 +192,28 @@ function SoftwareProductForm({
               status: softwareProductData.status,
               blogLink: softwareProductData.blog
                 ? `${stripSlashes(
-                    process.env.NEXT_PUBLIC_API_URL!,
-                  )}/blogs/post/${seoUrl(
-                    softwareProductData.blog!.title,
-                    softwareProductData.blog!.id,
-                  )}`
+                  process.env.NEXT_PUBLIC_API_URL!,
+                )}/blogs/post/${seoUrl(
+                  softwareProductData.blog!.title,
+                  softwareProductData.blog!.id,
+                )}`
                 : "",
             }}
           />
 
-          
+          {softwareProductData.pricing === 'Subscription' &&
+            <div className="mb-4">
+              <DynamicInput
+
+                defaultValue={softwareProductData.subscriptionModels ?? []}
+                onChange={(e) => setSoftwareProductData((prev) => ({ ...prev, subscriptionModels: e }))}
+                schema={SubscriptionModelSchema}
+
+              />
+            </div>
+          }
+
+
           <div className="mb-4">
             <CategoryForm
               onChange={(category) => {
