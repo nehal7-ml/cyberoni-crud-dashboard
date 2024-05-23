@@ -1,27 +1,24 @@
 "use client";
 import { CreateCaseStudy, UserPersona } from "@/crud/DTOs";
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import AddImage from "../AddImagesAndTags/AddImage";
 import Image from "next/image";
 import { PlusCircle, X } from "lucide-react";
-import UserPersonaForm from "./UserPersonaForm";
 import { CreateImageDTO } from "@/crud/DTOs";
 import ListInput from "../ListInput";
 import Notification, { useNotify } from "../Notification";
 import { Service } from "@prisma/client";
 import LoadingDots from "../shared/loading-dots";
-import Ajv from "ajv";
-import addFormats from "ajv-formats";
-import { CaseStudySchema } from "@/crud/jsonSchemas";
+import { CaseStudySchema } from "./schema";
+import { SafeParseReturnType } from "zod";
+import DynamicInput from "../DynamicInput";
+import { userPersona } from "./zodSchema";
+import { useRouter } from "next/navigation";
 
 type SubService = {
   id: string;
   title: string;
 };
-
-const ajv = new Ajv();
-addFormats(ajv);
-const validate = ajv.compile(CaseStudySchema);
 
 function CaseStudyForm({
   method,
@@ -37,8 +34,8 @@ function CaseStudyForm({
   initial?: CreateCaseStudy;
 }) {
   const [loading, setLoading] = useState(false);
-  const {toast} = useNotify();
-
+  const { toast } = useNotify();
+  const router = useRouter();
   const [userPersonaForm, setUserPersonaForm] = useState(false);
 
   const [caseData, setCaseData] = useState<CreateCaseStudy>(
@@ -51,24 +48,26 @@ function CaseStudyForm({
           serviceId: types[0].id,
           subServices: [],
           architecture: [],
-          competetiveAnalysis: [],
+          competitiveAnalysis: [],
           goals: [],
           images: [],
           keyLearning: "",
-          preview: "",
-          title: "",
+          preview: "test preview",
+          title: "Test Title",
           userFlow: [],
           userProblems: [],
           userPersonas: [],
           wireFrames: [],
           uniqueFeatures: "",
           possibleSolutions: [],
-          problemStatement: "",
+          problemStatement: "Test Problem",
           userResearch: "",
           hifiDesign: [],
         },
   );
-  const [rawJson, setRawJson] = useState(JSON.stringify(caseData, null, 2));
+  const [rawJson, setRawJson] = useState(
+    JSON.stringify(CaseStudySchema.parse(caseData), null, 2),
+  );
 
   // console.log(types);
   const handleSubmit = async (e: React.FormEvent) => {
@@ -88,19 +87,22 @@ function CaseStudyForm({
       headers,
     });
     let resJson = await res.json();
+    setLoading(false);
 
     if (res.status == 200) {
       toast(`${resJson.message}`, {
         autoClose: 5000,
         type: "success",
       });
+
+      router.push(`/dashboard/casestudies/view/${resJson.data.id}`);
+
     } else {
       toast(`${resJson.message}`, {
         autoClose: 5000,
         type: "error",
       });
     }
-    setLoading(false);
   };
 
   const handleAddSubService = (e: React.ChangeEvent<HTMLSelectElement>) => {
@@ -147,54 +149,42 @@ function CaseStudyForm({
   }
 
   function handleImageChange(name: string, images: CreateImageDTO[]) {
-    console.log(images);
+    // console.log(images);
     setCaseData((prevData) => ({
       ...prevData,
       [name]: images,
     }));
   }
 
-  function addPersona(persona: UserPersona) {
-    setCaseData((prevData) => ({
-      ...prevData,
-      userPersonas: [...caseData.userPersonas, persona],
-    }));
-    setUserPersonaForm(false);
-  }
-
   function parseJson(json: string) {
     try {
       const newData = JSON.parse(json);
 
-      const valid = validate(newData);
-      if (!valid)
-        alert(
-          validate.errors
-            ?.map(
-              (err) =>
-                `${err.instancePath} ${err.message} (${err.schemaPath}) `,
-            )
-            .join("\n"),
-        );
-      else {
-        if (Object.keys(newData).length > 0) {
-          console.log(newData);
-          for (let key of Object.keys(caseData)) {
-            console.log(key, newData[key]);
-            setCaseData((prev) => ({ ...prev, [key]: newData[key] }));
-          }
+      const valid = CaseStudySchema.safeParse(newData);
+      if (!valid.success)
+        for (const e of valid.error.errors) {
+          toast(`${e.path} ${e.message}`, {
+            type: "error",
+          });
         }
+      else {
+        console.log("parsed data: ", newData);
+        setCaseData((prev) => ({ ...prev, ...newData }));
       }
     } catch (error) {
       console.log("invalid JSON", error);
-      alert("Error parsing JSON" + error);
+      toast("Invalid JSON", {
+        type: "error",
+      });
     }
   }
+
+
 
   return (
     <>
       <div className="light:bg-gray-100 light:text-black flex h-[94vh]  max-h-screen items-center justify-center bg-gray-100 dark:bg-gray-700 dark:text-gray-800 ">
-        <div className="h-full max-h-full w-full  rounded bg-white p-8 mx-4 shadow-md">
+        <div className="mx-4 h-full max-h-full  w-full rounded bg-white p-8 shadow-md">
           <h2 className="mb-4 text-2xl font-semibold">
             {method === "POST" ? "Create" : "Update"} Case study
           </h2>
@@ -256,27 +246,29 @@ function CaseStudyForm({
                   Sub Service :
                 </label>
                 <div className="my-1 flex flex-wrap gap-2">
-                  {caseData.subServices.map((tag, index) => (
-                    <div
-                      key={index}
-                      className="flex items-center justify-around rounded bg-blue-200 p-2 text-blue-800"
-                    >
-                      <span className="line-clamp-1">
-                        {
-                          types
-                            .filter((obj) => obj.id === caseData.serviceId)[0]
-                            .SubServices.filter((s) => s.id === tag.id)[0].title
-                        }
-                      </span>
-                      <button
-                        type="button"
-                        className="ml-2 text-red-600 hover:text-red-800 focus:outline-none focus:ring focus:ring-red-300"
-                        onClick={() => handleRemoveSubService(tag.id)}
+                  {caseData.subServices &&
+                    caseData.subServices.map((tag, index) => (
+                      <div
+                        key={index}
+                        className="flex items-center justify-around rounded bg-blue-200 p-2 text-blue-800"
                       >
-                        X
-                      </button>
-                    </div>
-                  ))}
+                        <span className="line-clamp-1">
+                          {
+                            types
+                              .filter((obj) => obj.id === caseData.serviceId)[0]
+                              .SubServices.filter((s) => s.id === tag.id)[0]
+                              .title
+                          }
+                        </span>
+                        <button
+                          type="button"
+                          className="ml-2 text-red-600 hover:text-red-800 focus:outline-none focus:ring focus:ring-red-300"
+                          onClick={() => handleRemoveSubService(tag.id)}
+                        >
+                          X
+                        </button>
+                      </div>
+                    ))}
                 </div>
                 <select
                   name="subServiceId"
@@ -385,53 +377,42 @@ function CaseStudyForm({
                 <label className="block text-sm font-medium text-gray-700">
                   User Personas:
                 </label>
-                <div>
-                  {caseData.userPersonas?.map((user, index) => {
-                    return (
-                      <div
-                        className={`my-4 flex h-fit w-14 flex-col gap-5 border-2 border-dotted bg-gray-600 p-2 `}
-                        key={index}
-                      >
-                        <div className="h-1/2">
-                          <Image
-                            src={user.image?.src as string}
-                            alt={``}
-                            height={500}
-                            width={500}
-                          ></Image>
-                        </div>
-                        <div className="justify-evenly">
-                          <div className="font-bold  text-white">
-                            {user.name}
-                          </div>
-                        </div>
-                      </div>
-                    );
-                  })}
-                </div>
-                <div className="flex w-full items-end justify-center  p-2">
-                  <button
-                    type="button"
-                    onClick={() => setUserPersonaForm(true)}
-                    className="rounded-full bg-blue-500 p-2 hover:bg-blue-600 hover:shadow-lg"
-                  >
-                    <PlusCircle className=" text-white" />
-                  </button>
-                </div>
+                <DynamicInput
+                  onChange={(value) =>
+                    setCaseData({
+                      ...caseData,
+                      userPersonas: value.map((p: any) => ({
+                        ...p,
+                        image: p.image[0],
+                      })) as UserPersona[],
+                    })
+                  }
+                  defaultValue={useMemo(()=>caseData.userPersonas.map((persona) => ({
+                    ...persona,
+                    image: [persona.image],
+                  })) , [caseData.userPersonas])}
+                  schema={userPersona}
+                />
               </div>
               <div className="mb-4">
                 <label className="block text-sm font-medium text-gray-700">
                   Image 1 :
                 </label>
                 <AddImage
+                  name="image-1"
                   maxImages={1}
-                  defaultImages={caseData.images[0] ? [caseData.images[0]] : []}
-                  onImagesChange={(images) =>
+                  defaultImages={useMemo(
+                    () => (caseData.images[0] ? [caseData.images[0]] : []),
+                    [caseData.images],
+                  )}
+                  onImagesChange={(images) => {
+                    console.log("callcaing chnage");
+
                     setCaseData((prev) => ({
                       ...prev,
-                      images: [images[0], ...prev.images.slice(1)],
-                    }))
-                  }
+                      images: [images[0], ...prev.images.slice(-1)],
+                    }));
+                  }}
                 />
               </div>
               <div className="mb-4">
@@ -439,8 +420,12 @@ function CaseStudyForm({
                   Image 2:
                 </label>
                 <AddImage
+                  name="image-2"
                   maxImages={1}
-                  defaultImages={caseData.images[1] ? [caseData.images[1]] : []}
+                  defaultImages={useMemo(
+                    () => (caseData.images[0] ? [caseData.images[0]] : []),
+                    [caseData.images],
+                  )}
                   onImagesChange={(images) =>
                     setCaseData((prev) => ({
                       ...prev,
@@ -454,6 +439,7 @@ function CaseStudyForm({
                   Wireframes:
                 </label>
                 <AddImage
+                  name="wireframes"
                   maxImages={5}
                   defaultImages={caseData.wireFrames ? caseData.wireFrames : []}
                   onImagesChange={(images) =>
@@ -466,6 +452,7 @@ function CaseStudyForm({
                   hifi designs:
                 </label>
                 <AddImage
+                  name="hifi-design"
                   maxImages={5}
                   defaultImages={caseData.hifiDesign ? caseData.hifiDesign : []}
                   onImagesChange={(images) =>
@@ -478,6 +465,7 @@ function CaseStudyForm({
                   user flow:
                 </label>
                 <AddImage
+                  name="user-flow"
                   maxImages={5}
                   defaultImages={caseData.userFlow ? caseData.userFlow : []}
                   onImagesChange={(images) =>
@@ -490,6 +478,7 @@ function CaseStudyForm({
                   architecture Analysis:
                 </label>
                 <AddImage
+                  name="architecture-analysis"
                   maxImages={5}
                   defaultImages={
                     caseData.architecture ? caseData.architecture : []
@@ -501,13 +490,13 @@ function CaseStudyForm({
               </div>
               <div className="mb-4">
                 <label className="block text-sm font-medium text-gray-700">
-                  Competetive Analysis:
+                  Competitive Analysis:
                 </label>
                 <AddImage
                   maxImages={1}
                   defaultImages={
-                    caseData.competetiveAnalysis
-                      ? caseData.competetiveAnalysis
+                    caseData.competitiveAnalysis
+                      ? caseData.competitiveAnalysis
                       : []
                   }
                   onImagesChange={(images) =>
@@ -526,20 +515,6 @@ function CaseStudyForm({
               {method === "POST" ? "Create Case study" : "Update Case study"}
             </button>
           </form>
-          <div
-            className={`container fixed left-0 top-0 mx-auto  flex flex-col justify-center ${userPersonaForm ? "" : " hidden"}`}
-          >
-            <div className="absolute right-3 top-3 z-30 flex justify-end">
-              <button
-                type="button"
-                className="m-3 self-end"
-                onClick={() => setUserPersonaForm(false)}
-              >
-                <X color="red" className="cursor-pointer" />
-              </button>
-            </div>
-            <UserPersonaForm onSubmit={addPersona} />
-          </div>
         </div>
       </div>
     </>

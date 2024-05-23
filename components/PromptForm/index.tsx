@@ -11,26 +11,18 @@ import Notification, {
 import ListInput from "../ListInput";
 import { redirect, useRouter } from "next/navigation";
 import { JSONSchemaType, SomeJSONSchema } from "ajv/dist/types/json-schema";
-import {
-  GptConversationStartersSchema,
-  GptPromptSchema,
-  GptStepsSchema,
-  GptVariablesSchema,
-  sysCommandsSchema,
-} from "@/crud/jsonSchemas";
-import Tooltip from "../shared/ToolTip";
-import { InfoIcon } from "lucide-react";
-import Ajv from "ajv";
-import addFormats from "ajv-formats"
+
+import addFormats from "ajv-formats";
 import DynamicInput, { FormSchema } from "../DynamicInput";
-import { conversationStartersProperties, stepProperties, sysCommandProperties, variablesNeededProperties } from "./formSchema";
+import {
+  conversationStartersProperties,
+  stepProperties,
+  sysCommandProperties,
+  variablesNeededProperties,
+} from "./formSchema";
 import LoadingDots from "../shared/loading-dots";
 import CategoryForm from "../CategoryForm";
-
-
-const ajv = new Ajv();
-addFormats(ajv);
-const validate = ajv.compile(GptPromptSchema);
+import { GptPromptSchema } from "../zodSchemas";
 
 const GptPromptForm = ({
   method,
@@ -48,7 +40,7 @@ const GptPromptForm = ({
   initial?: CreateGptPromptDTO;
 }) => {
   const [loading, setLoading] = useState(false);
-  const {toast} = useNotify();
+  const { toast } = useNotify();
   const [currentCategory, setCurrentCategory] = useState(-1);
   const [categoryList, setCategoryList] = useState<GptCategory[]>(categories);
   const [gptPromptData, setGptPromptData] = useState<CreateGptPromptDTO>(
@@ -84,10 +76,15 @@ const GptPromptForm = ({
     },
   );
 
-  const [rawJson, setRawJson] = useState(JSON.stringify(gptPromptData, null, 2));
+  const [rawJson, setRawJson] = useState(
+    JSON.stringify(gptPromptData, null, 2),
+  );
+
   useEffect(() => {
     if (initial && initial.category && initial.category.parent) {
-      let cat = categoryList.findIndex((c) => c.id === initial.category?.parent?.id);
+      let cat = categoryList.findIndex(
+        (c) => c.id === initial.category?.parent?.id,
+      );
       setCurrentCategory(cat);
     }
   }, [categories, categoryList, initial]);
@@ -96,33 +93,23 @@ const GptPromptForm = ({
     try {
       const newData = JSON.parse(json);
 
-      const valid = validate(newData);
-      if (!valid)
-        alert(
-          validate.errors
-            ?.map(
-              (err) =>
-                `${err.instancePath} ${err.message} (${err.schemaPath}) `,
-            )
-            .join("\n"),
-        );
-      else {
-        if (Object.keys(newData).length > 0) {
-          console.log(newData);
-          for (let key of Object.keys(gptPromptData)) {
-            console.log(key, newData[key]);
-            setGptPromptData((prev) => ({ ...prev, [key]: newData[key] }));
-          }
+      const valid = GptPromptSchema.safeParse(newData);
+      if (!valid.success)
+        for (const e of valid.error.errors) {
+          toast(`${e.path} ${e.message}`, {
+            type: "error",
+          });
         }
-
-
+      else {
+        setGptPromptData((prev) => ({ ...prev, ...newData }))
       }
     } catch (error) {
       console.log("invalid JSON", error);
-      alert("Error parsing JSON" + error);
+      toast(`Invalid Json`, {
+        type: "error",
+      });
     }
   }
-
 
   const handleInputChange = (
     e: React.ChangeEvent<
@@ -162,7 +149,6 @@ const GptPromptForm = ({
       message("error", resJson.message);
     }
     setLoading(false);
-
   };
 
   function message(type: NotificationType, message: string) {
@@ -203,7 +189,7 @@ const GptPromptForm = ({
       setCategoryList((prev) =>
         prev.find((c) => c.id === category.id) ? prev : [...prev, category],
       );
-      setCurrentCategory(-1)
+      setCurrentCategory(-1);
     } else if (action === "update") {
       // Update the category based on id
       const newCatList = categoryList;
@@ -222,7 +208,6 @@ const GptPromptForm = ({
     }
   }
 
-
   return (
     <div className="light:bg-gray-100 light:text-black flex max-h-screen items-center justify-center p-2 dark:bg-gray-700 dark:text-gray-800">
       <div className="m-1 h-full max-h-screen w-full  overflow-scroll rounded bg-white p-8 shadow-md">
@@ -230,7 +215,6 @@ const GptPromptForm = ({
           {method === "POST" ? "Create" : "Update"} GPT Prompt
         </h2>
         <form onSubmit={handleSubmit}>
-
           <div className="mb-4">
             <label className="block" htmlFor="json">
               Json input auto fill:{" "}
@@ -283,7 +267,7 @@ const GptPromptForm = ({
               name="prompt"
               rows={3}
               className="mt-1 w-full rounded border p-2"
-              value={gptPromptData.prompt  ?? ""}
+              value={gptPromptData.prompt ?? ""}
               onChange={handleInputChange}
             />
           </div>
@@ -295,7 +279,7 @@ const GptPromptForm = ({
             <select
               name="status"
               className="mt-1 w-full rounded border p-2"
-              value={gptPromptData.model?? ""}
+              value={gptPromptData.model ?? ""}
               onChange={handleInputChange}
             >
               <option value={"gpt-3.5-turbo"}>gpt-3.5-turbo</option>
@@ -317,19 +301,44 @@ const GptPromptForm = ({
           </div>
 
           <div className="mb-4">
-            <DynamicInput schema={sysCommandProperties} onChange={(data) => (setGptPromptData((prev) => ({ ...prev, sysCommands: data })))} defaultValue={gptPromptData.sysCommands} />
+            <DynamicInput
+              schema={sysCommandProperties}
+              onChange={(data) =>
+                setGptPromptData((prev) => ({ ...prev, sysCommands: data }))
+              }
+              defaultValue={gptPromptData.sysCommands}
+            />
           </div>
           <div>
-            <DynamicInput schema={stepProperties} defaultValue={gptPromptData.steps} onChange={(data) => (setGptPromptData((prev) => ({ ...prev, steps: data })))} />
+            <DynamicInput
+              schema={stepProperties}
+              defaultValue={gptPromptData.steps}
+              onChange={(data) =>
+                setGptPromptData((prev) => ({ ...prev, steps: data }))
+              }
+            />
           </div>
           <div>
-            <DynamicInput schema={variablesNeededProperties} defaultValue={gptPromptData.variables} onChange={(data) => (setGptPromptData((prev) => ({ ...prev, variables: data })))} />
+            <DynamicInput
+              schema={variablesNeededProperties}
+              defaultValue={gptPromptData.variables}
+              onChange={(data) =>
+                setGptPromptData((prev) => ({ ...prev, variables: data }))
+              }
+            />
           </div>
           <div>
-            <DynamicInput schema={conversationStartersProperties} defaultValue={gptPromptData.conversationStarters} onChange={(data) => (setGptPromptData((prev) => ({ ...prev, conversationStarters: data })))} />
+            <DynamicInput
+              schema={conversationStartersProperties}
+              defaultValue={gptPromptData.conversationStarters}
+              onChange={(data) =>
+                setGptPromptData((prev) => ({
+                  ...prev,
+                  conversationStarters: data,
+                }))
+              }
+            />
           </div>
-
-
 
           <div className="mb-4">
             <ListInput
@@ -395,7 +404,7 @@ const GptPromptForm = ({
                 type="number"
                 name="costPerToken"
                 className="mt-1 w-full rounded border p-2"
-                value={gptPromptData.costPerToken.toString()  ?? ""}
+                value={gptPromptData.costPerToken.toString() ?? ""}
                 onChange={handleNumberInput}
               />
             </div>
@@ -412,14 +421,21 @@ const GptPromptForm = ({
               />
             </div>
           </div>
-          
+
           <div className="mb-4">
             <CategoryForm
               onChange={(category) => {
                 setGptPromptData((prev) => ({ ...prev, category }));
-              }} 
-              action={'prompt'}  
-              selected={gptPromptData.category as  { id: string; name: string, parentId: string | null }} />
+              }}
+              action={"prompt"}
+              selected={
+                gptPromptData.category as {
+                  id: string;
+                  name: string;
+                  parentId: string | null;
+                }
+              }
+            />
           </div>
           <AddImagesAndTags
             images={gptPromptData.image}
@@ -432,7 +448,7 @@ const GptPromptForm = ({
           <button
             disabled={loading}
             type="submit"
-            className="w-full flex justify-center items-center rounded bg-blue-500 p-2 text-white hover:bg-blue-600 focus:outline-none focus:ring focus:ring-blue-300"
+            className="flex w-full items-center justify-center rounded bg-blue-500 p-2 text-white hover:bg-blue-600 focus:outline-none focus:ring focus:ring-blue-300"
           >
             {loading ? <LoadingDots /> : null}
             {method === "POST" ? "Create" : "Update"} GPT Prompt

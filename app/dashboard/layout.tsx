@@ -6,6 +6,8 @@ import { Suspense } from "react";
 import { Loader } from "lucide-react";
 import Loading from "@/components/Loading";
 import IndexingRequest from "@/components/IndexingRequest";
+import { Metadata } from "next";
+
 
 export default function DashboardLayout({
   children, // will be a page or nested layout

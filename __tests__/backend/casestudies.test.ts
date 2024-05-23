@@ -36,7 +36,7 @@ describe("Case Study Functions", () => {
     userResearch: "",
     keyLearning: "",
     userPersonas: [],
-    competetiveAnalysis: [],
+    competitiveAnalysis: [],
     wireFrames: [],
     architecture: [],
     hifiDesign: [],

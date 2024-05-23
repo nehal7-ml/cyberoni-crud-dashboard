@@ -1,31 +1,38 @@
-import React, { useState, FormEvent, ChangeEvent, useMemo, useEffect } from "react";
+import React, {
+  useState,
+  FormEvent,
+  ChangeEvent,
+  useMemo,
+  useEffect,
+} from "react";
 import DateInput from "../DateInput";
 import ArrayForm from "./ArrayForm";
 import { deepEqual } from "@/lib/utils";
 import FloatingLabelInput from "../shared/FloatingLabelInput";
 import { Schema } from "zod";
 import MapForm from "./MapForm";
+import AddImage from "../AddImagesAndTags/AddImage";
 export type FormSchema =
-  {
-    type:  "number" | "date";
+  | {
+    type: "number" | "date";
     title: string;
     required: boolean;
     disabled?: boolean;
-  }| {
-    type: "string"
+  }
+  | {
+    type: "string";
     title: string;
     required: boolean;
     disabled?: boolean;
-    pattern?: string
-
-
+    pattern?: string;
   }
   | {
     type: "select" | "multi-select";
     options: { label: string; value: string }[];
     required: boolean;
     title: string;
-  } | {
+  }
+  | {
     title: string;
     description: string;
     type: "array";
@@ -45,6 +52,12 @@ export type FormSchema =
     toString: (object: any) => string;
   }
   | {
+    type: "image";
+    title: string;
+    description: string;
+    required: boolean;
+  }
+  | {
     title: string;
     description: string;
     type: "map";
@@ -58,7 +71,11 @@ interface DynamicInputProps {
   schema: FormSchema;
   onChange: (data: any) => void;
 }
-const DynamicInput: React.FC<DynamicInputProps> = ({ schema, onChange, defaultValue }) => {
+const DynamicInput: React.FC<DynamicInputProps> = ({
+  schema,
+  onChange,
+  defaultValue,
+}) => {
   const current = useMemo(() => {
     let data: any;
     if (schema.type === "map") {
@@ -96,7 +113,8 @@ const DynamicInput: React.FC<DynamicInputProps> = ({ schema, onChange, defaultVa
       data = new Date();
     } else if (schema.type === "multi-select") {
       data = [];
-
+    } else if (schema.type === "image") {
+      data = [];
     }
 
     return data;
@@ -104,34 +122,31 @@ const DynamicInput: React.FC<DynamicInputProps> = ({ schema, onChange, defaultVa
   const [currentData, setCurrentData] = useState(defaultValue ?? current);
 
   const handleTextChange = (e: ChangeEvent<HTMLInputElement>) => {
-    setCurrentData(e.target.value)
+    setCurrentData(e.target.value);
     onChange(e.target.value);
   };
   const handleNumberChange = (e: ChangeEvent<HTMLInputElement>) => {
-    setCurrentData(
-      isNaN(Number(e.target.value))
-        ? 0
-        : Number(e.target.value),
-    );
+    let data = isNaN(Number(e.target.value)) ? 0 : Number(e.target.value);
+    setCurrentData(data);
+
+    onChange(data);
   };
 
   const handleDateChange = (e: { target: { name: string; value: Date } }) => {
     setCurrentData(e.target.value);
+    onChange(e.target.value);
   };
 
   useEffect(() => {
-
-    // console.log(current, currentData);
-    if (defaultValue === undefined) {
-      setCurrentData(current)
+    //console.log("dynamic form ",defaultValue, currentData);
+    if (defaultValue === undefined || defaultValue === null) {
+      setCurrentData(current);
     }
-
-    if (!deepEqual(currentData, defaultValue) && currentData !== undefined) {
-      // console.log("calling change", currentData, defaultValue);
-      onChange(currentData)
-
+    if (!currentData  && !deepEqual(currentData, defaultValue)) {
+      console.log("calling change", currentData, defaultValue);
+      setCurrentData(defaultValue);
     }
-  }, [current, currentData, defaultValue, onChange, schema.title]);
+  }, [current, currentData, defaultValue, onChange]);
 
   return (
     <div>
@@ -147,7 +162,6 @@ const DynamicInput: React.FC<DynamicInputProps> = ({ schema, onChange, defaultVa
             disabled={schema.disabled ?? false}
             pattern={schema.pattern ?? undefined}
             title={`provide valid ${schema.title}`}
-
           />
         ) : schema.type === "number" ? (
           <FloatingLabelInput
@@ -159,19 +173,24 @@ const DynamicInput: React.FC<DynamicInputProps> = ({ schema, onChange, defaultVa
             onChange={handleNumberChange}
             pattern="[0-9]*"
             disabled={schema.disabled ?? false}
-
           />
         ) : schema.type === "date" ? (
           <DateInput
             name={schema.title}
             onDateChange={handleDateChange}
             value={currentData as Date}
-
           />
         ) : schema.type === "select" ? (
           <div>
             <label>{schema.title} : </label>
-            <select className="border p-4 rounded-md" value={currentData} onChange={(e) => setCurrentData(e.target.value)}>
+            <select
+              className="rounded-md border p-4"
+              value={currentData}
+              onChange={(e) => (
+                onChange(e.target.value),
+                setCurrentData(e.target.value)
+              )}
+            >
               {schema.options.map((option) => (
                 <option key={option.value} value={option.value}>
                   {option.label}
@@ -180,13 +199,18 @@ const DynamicInput: React.FC<DynamicInputProps> = ({ schema, onChange, defaultVa
             </select>
           </div>
         ) : schema.type === "map" ? (
-           <MapForm defaultValue={currentData} schema={schema} onChange={(data:any)=>setCurrentData(data)} />
+          <MapForm
+            defaultValue={currentData}
+            schema={schema}
+            onChange={(data: any) => (onChange(data), setCurrentData(data))}
+          />
         ) : schema.type === "array" ? (
           <ArrayForm
             defaultValue={currentData}
             schema={schema}
             onChange={(newArray) => {
               setCurrentData(newArray);
+              onChange(newArray);
             }}
           />
         ) : schema.type === "multi-select" ? (
@@ -199,16 +223,24 @@ const DynamicInput: React.FC<DynamicInputProps> = ({ schema, onChange, defaultVa
                 defaultValue={currentData[key]}
                 schema={value}
                 onChange={(newData) => {
+                  onChange({ ...currentData, [key]: newData });
                   setCurrentData((prev: any) => ({ ...prev, [key]: newData }));
                 }}
               />
             ))}
           </div>
-        )
-
-          : null}
+        ) : schema.type === "image" ? (
+          <AddImage
+            name={schema.title}
+            defaultImages={currentData}
+            onImagesChange={(images) => (
+              onChange(images),
+              setCurrentData(images)
+            )}
+            maxImages={1}
+          />
+        ) : null}
       </div>
-
     </div>
   );
 };

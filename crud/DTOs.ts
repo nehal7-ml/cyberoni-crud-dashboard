@@ -279,7 +279,7 @@ export type CreateCaseStudy = {
   userResearch: string;
   keyLearning: string;
   userPersonas: UserPersona[];
-  competetiveAnalysis: CreateImageDTO[];
+  competitiveAnalysis: CreateImageDTO[];
   wireFrames?: CreateImageDTO[];
   hifiDesign?: CreateImageDTO[];
   userFlow?: CreateImageDTO[];

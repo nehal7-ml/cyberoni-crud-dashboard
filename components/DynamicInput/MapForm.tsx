@@ -23,7 +23,7 @@ function MapForm({
 }) {
     const [openForm, setOpenForm] = useState(false);
     let [items, setItems] = useState(defaultValue || {});
-    const {toast} = useNotify();
+    const { toast } = useNotify();
     const initial = useMemo(() => {
         let data: any;
         if (schema.items.type === "map") {
@@ -81,6 +81,8 @@ function MapForm({
 
             return
         }
+        let newItems = { ...items, [key]: currentItem };
+        onChange(newItems);
         setItems((prev) => ({ ...prev, [key]: currentItem }))
         setCurrentItem(currentItem);
         setCurrentKey(key);
@@ -94,6 +96,8 @@ function MapForm({
 
             return
         }
+
+        onChange({ ...items, [key]: currentItem });
         setItems((prev) => ({
             ...prev, [key]: currentItem
         }));
@@ -104,11 +108,13 @@ function MapForm({
 
     useEffect(() => {
         // console.log(items, defaultValue, "Arrayingput");
-        if (!deepEqual(items, defaultValue)) {
-            onChange(items);
+        if (!defaultValue && !deepEqual(items, defaultValue)) {
+            setCurrentItem(defaultValue);
 
         }
     }, [defaultValue, items, onChange]);
+
+
     return (
         <div className="flex flex-col justify-start items-center w-full">
             <div className="w-full font-semibold">{schema.title} : </div>
@@ -124,8 +130,10 @@ function MapForm({
                             setOpenForm(true);
                         }}
                         onDelete={() => {
-                            delete items[key];
-                            setItems({ ...items });
+                            let newItems = items
+                            delete newItems[key];
+                            onChange(newItems);
+                            setItems({ ...newItems });
                         }}
                     />
                 ))}

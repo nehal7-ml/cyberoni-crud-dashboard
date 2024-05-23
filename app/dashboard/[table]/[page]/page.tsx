@@ -35,11 +35,19 @@ import {
   Referral,
   Service,
 } from "@prisma/client";
+import { Metadata } from "next";
 import React, { ReactNode, useMemo } from "react";
 
 export const dynamic = "force-dynamic";
 
+export async function generateMetadata({ params }: {
+  params: { table: string }
+}) {
 
+  return {
+    title: params.table,
+  } as Metadata
+}
 async function Blogs({
   params,
   searchParams,
