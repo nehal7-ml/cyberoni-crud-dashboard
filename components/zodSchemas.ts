@@ -24,7 +24,7 @@ const SubServiceSchema = z.object({
   overheadCost: z.number(),
   complexity: z.number(),
   skillLevel: z.string(),
-  image: ImageSchema.optional(),
+  image: ImageSchema.optional().nullable(),
   tags: z.array(TagSchema),
 });
 

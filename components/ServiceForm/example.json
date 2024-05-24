@@ -23,7 +23,7 @@
     "SubServices": [
         {
             "title": "Frontend Development",
-            "pricingModel": "Hourly",
+            "pricingModel": "DEFAULT",
             "serviceDeliverables": ["HTML/CSS", "JavaScript"],
             "serviceUsageScore": 85,
             "description": "Creating beautiful and responsive interfaces.",
