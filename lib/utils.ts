@@ -265,7 +265,7 @@ function objectsAreEqual(
 }
 
 export function deepEqual(obj1: any, obj2: any) {
-  if(typeof obj1 !== typeof obj2) return false
+  if (typeof obj1 !== typeof obj2) return false
 
   if (obj1 === obj2) return true;
 
@@ -300,6 +300,8 @@ export function extractUUID(dataURI: string) {
 
 
 
-export async function sleep(ms:number) {
+export async function sleep(ms: number) {
   return new Promise(resolve => setTimeout(resolve, ms));
 }
+
+

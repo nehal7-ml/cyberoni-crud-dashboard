@@ -1,0 +1,23 @@
+{
+    "title": "Awesome App",
+    "subTitle": "The best app for managing tasks",
+    "description": "An innovative app that helps you manage tasks efficiently.",
+    "images": [
+        {
+            "name": "app_screenshot1",
+            "src": "https://example.com/images/app_screenshot1.png"
+        }
+    ],
+    "tags": [
+        {
+            "name": "productivity"
+        },
+        {
+            "name": "tasks"
+        }
+    ],
+    "pricing": "Freemium",
+    "link": "https://example.com/awesome_app",
+    "githubLink": "https://github.com/example/awesome_app",
+    "status": "Released"
+}

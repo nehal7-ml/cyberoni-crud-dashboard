@@ -6,7 +6,6 @@ import {
   CreateServiceDescription,
   DisplayServiceDTO,
 } from "@/crud/DTOs";
-import { ServiceSchema } from "@/crud/jsonSchemas";
 import { CreateTagDTO } from "@/crud/DTOs";
 import React, { useEffect, useState } from "react";
 import { Edit, PlusCircle, X } from "lucide-react";
@@ -22,10 +21,11 @@ import ListInput from "../ListInput";
 import { useRouter } from "next/navigation";
 import Ajv from "ajv";
 import LoadingDots from "../shared/loading-dots";
-
-const ajv = new Ajv();
-//addFormats(ajv)
-const validate = ajv.compile(ServiceSchema);
+import example from "./example.json";
+import { ServiceSchema } from "../zodSchemas";
+import JsonInput from "../shared/JsonInput";
+import DynamicInput from "../DynamicInput";
+import { FaqsFormSchema } from "./formSchema";
 
 function ServiceForm({
   method,
@@ -37,9 +37,9 @@ function ServiceForm({
   initial?: CreateServiceDTO;
 }) {
   const [loading, setLoading] = useState(false);
-  
+
   const [showDialog, setShowDialog] = useState(false);
-  const {toast} = useNotify();
+  const { toast } = useNotify();
   const [serviceData, setServiceData] = useState<CreateServiceDTO>(
     initial || {
       hourlyRate: 0,
@@ -53,13 +53,13 @@ function ServiceForm({
       ServiceDescription: [],
       tags: [],
       image: undefined,
+      faqs: []
     },
   );
   const [editSubservice, setEditSubservice] = useState<number>(-1);
 
   const [descriptionForm, setDescriptionForm] = useState(false);
-  const [rawJson, setRawJson] = useState(JSON.stringify(serviceData, null, 2));
-  const [json, setJson] = useState<{ [key: string]: any }>({});
+  const [rawJson, setRawJson] = useState(JSON.stringify(ServiceSchema.parse(serviceData), null, 2));
 
   const handleNumberInputChange = (
     e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>,
@@ -173,27 +173,13 @@ function ServiceForm({
     try {
       const newData = JSON.parse(json);
 
-      const valid = validate(newData);
-      if (!valid) {
-        toast(
-          validate.errors
-            ?.map(
-              (err) =>
-                `${err.instancePath} ${err.message} (${err.schemaPath}) `,
-            )
-            .join("\n") as string,
-          {
-            type: "error",
-          },
-        );
-      } else {
-        setJson(newData);
-        if (Object.keys(newData).length > 0) {
-          console.log(newData);
-          for (let key of Object.keys(serviceData)) {
-            setServiceData((prev) => ({ ...prev, [key]: newData[key] }));
-          }
+      const valid = ServiceSchema.safeParse(newData);
+      if (!valid.success) {
+        for (const e of valid.error.errors) {
+          toast(`${e.path} ${e.message}`, { type: "error" });
         }
+      } else {
+        setServiceData((prev) => ({ ...prev, ...valid.data as CreateServiceDTO }));
       }
     } catch (error) {
       console.log("invalid JSON", (error as Error).name);
@@ -209,26 +195,12 @@ function ServiceForm({
           {method === "PUT" ? "Update" : "Create"} Service
         </h2>
         <form onSubmit={handleSubmit} className="flex flex-col">
-          <div className="mb-4">
-            <label className="block" htmlFor="json">
-              Json input auto fill:{" "}
-            </label>
-            <textarea
-              className={"w-full p-3 ring-2 invalid:ring-red-500"}
-              name="json"
-              id=""
-              rows={7}
-              value={rawJson}
-              onChange={(event) => setRawJson(event.target.value)}
-            ></textarea>
-            <button
-              className="w-full rounded bg-blue-500 p-2 text-white hover:bg-blue-600 focus:outline-none focus:ring focus:ring-blue-300"
-              type="button"
-              onClick={() => parseJson(rawJson)}
-            >
-              Parse Json
-            </button>
-          </div>
+          <JsonInput
+            rawJson={rawJson}
+            parseJson={parseJson}
+            setRawJson={setRawJson}
+            example={JSON.stringify(example, null, 2)}
+          />
           <div className="mb-4">
             <label className="block text-sm font-medium text-gray-700">
               Title:
@@ -394,6 +366,13 @@ function ServiceForm({
               Add Subservice
             </button>
           </div>
+
+          <DynamicInput defaultValue={serviceData.faqs?? []}
+            onChange={(value) => {
+              setServiceData((prev) => ({ ...prev, faqs: value }));
+            }}
+            schema={FaqsFormSchema}
+          />
 
           <AddImagesAndTags
             maxImages={1}

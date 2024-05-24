@@ -1,0 +1,27 @@
+{
+    "title": "The Future of Web Development",
+    "subTitle": "Exploring the trends and technologies shaping the web",
+    "description": "An in-depth look at the future of web development.",
+    "featured": true,
+    "date": "2024-05-24T14:00:00Z",
+    "publishDate": "2024-05-24T14:00:00Z",
+    "content": "Web development is constantly evolving...",
+    "templateId": "webdev_future",
+    "author": {
+        "email": "author@example.com"
+    },
+    "images": [
+        {
+            "name": "webdev_future",
+            "src": "https://example.com/images/webdev_future.png"
+        }
+    ],
+    "tags": [
+        {
+            "name": "web development"
+        },
+        {
+            "name": "trends"
+        }
+    ]
+}

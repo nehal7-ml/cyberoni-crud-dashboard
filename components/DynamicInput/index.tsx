@@ -138,15 +138,13 @@ const DynamicInput: React.FC<DynamicInputProps> = ({
   };
 
   useEffect(() => {
-    //console.log("dynamic form ",defaultValue, currentData);
-    if (defaultValue === undefined || defaultValue === null) {
-      setCurrentData(current);
-    }
-    if (!currentData  && !deepEqual(currentData, defaultValue)) {
+    console.log("dynamic form ", defaultValue, currentData,!deepEqual(currentData, defaultValue));
+
+    if (defaultValue && !deepEqual(currentData, defaultValue)) {
       console.log("calling change", currentData, defaultValue);
       setCurrentData(defaultValue);
     }
-  }, [current, currentData, defaultValue, onChange]);
+  }, [current, currentData, defaultValue, onChange,schema.type]);
 
   return (
     <div>
@@ -161,7 +159,7 @@ const DynamicInput: React.FC<DynamicInputProps> = ({
             onChange={handleTextChange}
             disabled={schema.disabled ?? false}
             pattern={schema.pattern ?? undefined}
-            title={`provide valid ${schema.title}`}
+            title={`${schema.title}`}
           />
         ) : schema.type === "number" ? (
           <FloatingLabelInput

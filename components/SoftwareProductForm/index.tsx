@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import AddImagesAndTags from "../AddImagesAndTags";
 import Notification, { useNotify } from "../Notification";
 import {
@@ -18,13 +18,15 @@ import DateInput from "../DateInput";
 import LoadingDots from "../shared/loading-dots";
 import CategoryForm from "../CategoryForm";
 import DynamicInput from "../DynamicInput";
-import { SoftwareProductFormSchema, SubscriptionModelSchema } from "./formSchema";
+import {
+  SoftwareProductFormSchema,
+  SubscriptionModelSchema,
+} from "./formSchema";
 import { extractUUID, seoUrl, stripSlashes } from "@/lib/utils";
 import { ZodNullable } from "zod";
 import { SoftwareProductSchema } from "../zodSchemas";
 import JsonInput from "../shared/JsonInput";
-
-
+import example from "./example.json";
 
 function SoftwareProductForm({
   categories,
@@ -39,9 +41,6 @@ function SoftwareProductForm({
 }) {
   const [loading, setLoading] = useState(false);
 
-  const [currentCategory, setCurrentCategory] = useState(-1);
-  const [categoryList, setCategoryList] =
-    useState<SoftwareProductCategory[]>(categories);
   const [softwareProductData, setSoftwareProductData] =
     useState<CreateSoftwareProductDTO>(
       initial || {
@@ -100,7 +99,6 @@ function SoftwareProductForm({
     setLoading(false);
   };
 
-
   useEffect(() => {
     if (initial) setSoftwareProductData(initial);
   }, [initial]);
@@ -114,7 +112,6 @@ function SoftwareProductForm({
       images,
       tags,
     }));
-
   }
 
   function parseJson(json: string) {
@@ -128,28 +125,26 @@ function SoftwareProductForm({
             type: "error",
           });
         }
-
       else {
-        setSoftwareProductData((prev) => ({ ...prev, ...newData }));
+        console.log(valid.data);
+        setSoftwareProductData((prev) => ({
+          ...prev,
+          ...(valid.data as CreateSoftwareProductDTO),
+          blog: valid.data.blogLink
+            ? {
+                id: extractUUID(valid.data.blogLink),
+                title: valid.data.blogLink,
+              }
+            : prev.blog,
+        }));
       }
     } catch (error) {
       console.log("invalid JSON", error);
       toast(`Invalid Json`, {
         type: "error",
-      })
+      });
     }
   }
-
-  useEffect(() => {
-    //console.log(initial);
-    if (initial && initial.category && initial.category.parent) {
-      let cat = categories.findIndex(
-        (c) => c.id === initial.category?.parent?.id,
-      );
-      setCurrentCategory(cat);
-    }
-  }, [categories, initial]);
-
 
   return (
     <div className="light:bg-gray-100 light:text-black flex min-h-screen  items-center justify-center bg-gray-100 dark:bg-gray-700 dark:text-gray-800 ">
@@ -158,7 +153,12 @@ function SoftwareProductForm({
           {method === "POST" ? "Create" : "Update"} Software Product
         </h2>
         <form onSubmit={handleSubmit} className="h-fit">
-          <JsonInput rawJson={rawJson} parseJson={parseJson} setRawJson={setRawJson} />
+          <JsonInput
+            rawJson={rawJson}
+            parseJson={parseJson}
+            setRawJson={setRawJson}
+            example={JSON.stringify(example, null, 2)}
+          />
           <DynamicInput
             onChange={(e) =>
               setSoftwareProductData((prev) => ({
@@ -172,9 +172,9 @@ function SoftwareProductForm({
                 blog:
                   e.blogLink.length > 0
                     ? {
-                      id: extractUUID(e.blogLink),
-                      title: prev.blog?.title as string,
-                    }
+                        id: extractUUID(e.blogLink),
+                        title: prev.blog?.title as string,
+                      }
                     : undefined,
                 images: prev.images,
                 tags: prev.tags,
@@ -182,37 +182,42 @@ function SoftwareProductForm({
               }))
             }
             schema={SoftwareProductFormSchema}
-            defaultValue={{
-              title: softwareProductData.title,
-              subTitle: softwareProductData.subTitle,
-              description: softwareProductData.description,
-              link: softwareProductData.link,
-              githubLink: softwareProductData.githubLink,
-              pricing: softwareProductData.pricing,
-              status: softwareProductData.status,
-              blogLink: softwareProductData.blog
-                ? `${stripSlashes(
-                  process.env.NEXT_PUBLIC_API_URL!,
-                )}/blogs/post/${seoUrl(
-                  softwareProductData.blog!.title,
-                  softwareProductData.blog!.id,
-                )}`
-                : "",
-            }}
+            defaultValue={useMemo(
+              () => ({
+                title: softwareProductData.title,
+                subTitle: softwareProductData.subTitle,
+                description: softwareProductData.description,
+                link: softwareProductData.link,
+                githubLink: softwareProductData.githubLink,
+                pricing: softwareProductData.pricing,
+                status: softwareProductData.status,
+                blogLink: softwareProductData.blog
+                  ? `${stripSlashes(
+                      process.env.NEXT_PUBLIC_API_URL!,
+                    )}/blogs/post/${seoUrl(
+                      softwareProductData.blog!.title,
+                      softwareProductData.blog!.id,
+                    )}`
+                  : "",
+              }),
+              [softwareProductData],
+            )}
           />
 
-          {softwareProductData.pricing === 'Subscription' &&
+          {softwareProductData.pricing === "Subscription" && (
             <div className="mb-4">
               <DynamicInput
-
                 defaultValue={softwareProductData.subscriptionModels ?? []}
-                onChange={(e) => setSoftwareProductData((prev) => ({ ...prev, subscriptionModels: e }))}
+                onChange={(e) =>
+                  setSoftwareProductData((prev) => ({
+                    ...prev,
+                    subscriptionModels: e,
+                  }))
+                }
                 schema={SubscriptionModelSchema}
-
               />
             </div>
-          }
-
+          )}
 
           <div className="mb-4">
             <CategoryForm
@@ -220,10 +225,16 @@ function SoftwareProductForm({
                 setSoftwareProductData((prev) => ({
                   ...prev,
                   category: category,
-                }))
+                }));
               }}
               action={"software"}
-              selected={softwareProductData.category as { id: string; name: string, parentId: string | null }}
+              selected={
+                softwareProductData.category as {
+                  id: string;
+                  name: string;
+                  parentId: string | null;
+                }
+              }
             />
           </div>
           <div className="mb-4">

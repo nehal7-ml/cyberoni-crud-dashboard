@@ -14,7 +14,8 @@ import { SafeParseReturnType } from "zod";
 import DynamicInput from "../DynamicInput";
 import { userPersona } from "./zodSchema";
 import { useRouter } from "next/navigation";
-
+import JsonInput from "../shared/JsonInput";
+import example from "./example.json";
 type SubService = {
   id: string;
   title: string;
@@ -96,7 +97,6 @@ function CaseStudyForm({
       });
 
       router.push(`/dashboard/casestudies/view/${resJson.data.id}`);
-
     } else {
       toast(`${resJson.message}`, {
         autoClose: 5000,
@@ -179,8 +179,6 @@ function CaseStudyForm({
     }
   }
 
-
-
   return (
     <>
       <div className="light:bg-gray-100 light:text-black flex h-[94vh]  max-h-screen items-center justify-center bg-gray-100 dark:bg-gray-700 dark:text-gray-800 ">
@@ -190,26 +188,12 @@ function CaseStudyForm({
           </h2>
           <form onSubmit={handleSubmit} className=" h-[90%]">
             <div className="h-full overflow-y-auto px-2 py-4">
-              <div className="mb-4">
-                <label className="block" htmlFor="json">
-                  Json input auto fill:{" "}
-                </label>
-                <textarea
-                  className={"w-full p-3 ring-2 invalid:ring-red-500"}
-                  name="json"
-                  id=""
-                  rows={7}
-                  value={rawJson}
-                  onChange={(event) => setRawJson(event.target.value)}
-                ></textarea>
-                <button
-                  className="w-full rounded bg-blue-500 p-2 text-white hover:bg-blue-600 focus:outline-none focus:ring focus:ring-blue-300"
-                  type="button"
-                  onClick={() => parseJson(rawJson)}
-                >
-                  Parse Json
-                </button>
-              </div>
+              <JsonInput
+                rawJson={rawJson}
+                parseJson={parseJson}
+                setRawJson={setRawJson}
+                example={JSON.stringify(example, null, 2)}
+              />
               <div className="mb-4">
                 <label className="block text-sm font-medium text-gray-700">
                   Title:
@@ -229,7 +213,7 @@ function CaseStudyForm({
                 <select
                   name="serviceId"
                   className="mt-1 w-full rounded border p-2"
-                  value={caseData.serviceId || types[0].id}
+                  value={caseData.serviceId ?? types[0].id}
                   onChange={handleInputChange}
                 >
                   <option disabled>Select Service</option>
@@ -274,11 +258,11 @@ function CaseStudyForm({
                   name="subServiceId"
                   className={`mt-1 w-full rounded border p-2  disabled:bg-gray-400 disabled:text-gray-400`}
                   onChange={handleAddSubService}
-                  disabled={
-                    caseData.serviceId && caseData.serviceId?.length > 0
+                  disabled={useMemo(() => {
+                    return caseData.serviceId && caseData.serviceId?.length > 0
                       ? false
-                      : true
-                  }
+                      : true;
+                  }, [caseData.serviceId])}
                 >
                   <option value={""} className="text-gray-400">
                     Select SubService
@@ -387,10 +371,14 @@ function CaseStudyForm({
                       })) as UserPersona[],
                     })
                   }
-                  defaultValue={useMemo(()=>caseData.userPersonas.map((persona) => ({
-                    ...persona,
-                    image: [persona.image],
-                  })) , [caseData.userPersonas])}
+                  defaultValue={useMemo(
+                    () =>
+                      caseData.userPersonas.map((persona) => ({
+                        ...persona,
+                        image: [persona.image],
+                      })),
+                    [caseData.userPersonas],
+                  )}
                   schema={userPersona}
                 />
               </div>

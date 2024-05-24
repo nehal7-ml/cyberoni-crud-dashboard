@@ -23,7 +23,8 @@ import {
 import LoadingDots from "../shared/loading-dots";
 import CategoryForm from "../CategoryForm";
 import { GptPromptSchema } from "../zodSchemas";
-
+import JsonInput from "../shared/JsonInput";
+import example from "./example.json";
 const GptPromptForm = ({
   method,
   categories,
@@ -101,7 +102,7 @@ const GptPromptForm = ({
           });
         }
       else {
-        setGptPromptData((prev) => ({ ...prev, ...newData }))
+        setGptPromptData((prev) => ({ ...prev, ...newData }));
       }
     } catch (error) {
       console.log("invalid JSON", error);
@@ -215,26 +216,12 @@ const GptPromptForm = ({
           {method === "POST" ? "Create" : "Update"} GPT Prompt
         </h2>
         <form onSubmit={handleSubmit}>
-          <div className="mb-4">
-            <label className="block" htmlFor="json">
-              Json input auto fill:{" "}
-            </label>
-            <textarea
-              className={"w-full p-3 ring-2 invalid:ring-red-500"}
-              name="json"
-              id=""
-              rows={7}
-              value={rawJson}
-              onChange={(event) => setRawJson(event.target.value)}
-            ></textarea>
-            <button
-              className="w-full rounded bg-blue-500 p-2 text-white hover:bg-blue-600 focus:outline-none focus:ring focus:ring-blue-300"
-              type="button"
-              onClick={() => parseJson(rawJson)}
-            >
-              Parse Json
-            </button>
-          </div>
+          <JsonInput
+            rawJson={rawJson}
+            parseJson={parseJson}
+            setRawJson={setRawJson}
+            example={JSON.stringify(example, null, 2)}
+          />
           <div className="mb-4">
             <label className="block text-sm font-medium text-gray-700">
               Title:

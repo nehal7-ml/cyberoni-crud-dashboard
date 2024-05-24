@@ -1,11 +1,13 @@
 import { PricingModel } from "@prisma/client";
-import { z } from 'zod';
+import { z } from "zod";
 
 const TagSchema = z.object({
+  id: z.string().optional(),
   name: z.string(),
 });
 
 const ImageSchema = z.object({
+  id: z.string().optional(),
   name: z.string(),
   src: z.string(),
 });
@@ -47,58 +49,59 @@ const ServiceSchema = z.object({
   previewContent: z.string(),
   ServiceDescription: z.array(
     z.object({
+      id: z.string().optional(),
       title: z.string(),
       content: z.string(),
       imageOnLeft: z.boolean(),
       image: ImageSchema,
-    })
+    }),
   ),
   hourlyRate: z.number(),
   valueBrought: z.array(z.string()),
   skillsUsed: z.array(z.string()),
   htmlEmbed: z.string().optional(),
-  image: ImageSchema.optional(),
+  image: ImageSchema.optional().nullable(),
   SubServices: z.array(SubServiceSchema),
   tags: z.array(TagSchema),
   faqs: z.array(
     z.object({
       question: z.string(),
       answer: z.string(),
-    })
-  ),
+    }),
+  ).optional(),
 });
 
 const sysCommandsSchema = z.record(
   z.object({
-    priority: z.enum(['HIGH', 'MEDIUM', 'LOW']),
+    priority: z.enum(["HIGH", "MEDIUM", "LOW"]),
     context: z.string(),
     example: z.string(),
-  })
+  }),
 );
 
 const GptStepsSchema = z.array(
   z.object({
     index: z.number(),
     command: z.string(),
-    callTo: z.union([z.literal('@LLM'), z.number()]),
-    priority: z.enum(['HIGH', 'MEDIUM', 'LOW']),
+    callTo: z.union([z.literal("@LLM"), z.number()]),
+    priority: z.enum(["HIGH", "MEDIUM", "LOW"]),
     context: z.string(),
     goal: z.string(),
-  })
+  }),
 );
 
 const GptVariablesSchema = z.array(
   z.object({
     title: z.string(),
     description: z.string(),
-  })
+  }),
 );
 
 const GptConversationStartersSchema = z.array(
   z.object({
     title: z.string(),
     description: z.string(),
-  })
+  }),
 );
 
 const GptPromptSchema = z.object({
@@ -143,13 +146,8 @@ const UserPersonaSchema = z.object({
 });
 
 const CaseStudySchema = z.object({
+  id: z.string().optional(),
   title: z.string().min(1),
-  serviceId: z.string().optional(),
-  subServices: z.array(
-    z.object({
-      id: z.string(),
-    })
-  ).optional(),
   preview: z.string().min(1),
   problemStatement: z.string().min(1),
   userProblems: z.array(z.string().min(1)),
@@ -168,15 +166,23 @@ const CaseStudySchema = z.object({
 });
 
 const SoftwareProductSchema = z.object({
+  id: z.string().optional(),
   title: z.string(),
   subTitle: z.string(),
   description: z.string().nullable().optional(),
   images: z.array(ImageSchema),
   tags: z.array(TagSchema),
-  pricing: z.enum(['Freemium', 'Free', 'Paid', 'Subscription']),
+  pricing: z.enum(["Freemium", "Free", "Paid", "Subscription"]),
   link: z.string().nullable().optional(),
   githubLink: z.string().nullable().optional(),
-  status: z.enum(['Released', 'ComingSoon', 'Planned']),
+  blogLink: z
+    .string()
+    .regex(
+      /https?:\/\/.*[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-5][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}$/,
+      "not valid cybershoptech blog link",
+    )
+    .optional(),
+  status: z.enum(["Released", "ComingSoon", "Planned"]),
 });
 
 export {

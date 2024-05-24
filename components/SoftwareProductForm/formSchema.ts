@@ -84,7 +84,7 @@ export const SubscriptionModelSchema: FormSchema = {
             "subTitle": {
                 type: "string",
                 required: true,
-                title: "Description",
+                title: "subTitle",
             },
             "price": {
                 type: "number",

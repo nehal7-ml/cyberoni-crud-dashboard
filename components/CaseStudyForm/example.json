@@ -1,0 +1,61 @@
+{
+    "title": "Improving User Onboarding",
+    "preview": "A case study on enhancing the onboarding process for new users.",
+    "problemStatement": "Users find it difficult to navigate through the onboarding process.",
+    "userProblems": ["Confusing interface", "Lack of guidance"],
+    "possibleSolutions": ["Redesign interface", "Add step-by-step guidance"],
+    "goals": ["Increase user retention", "Improve user satisfaction"],
+    "images": [
+        {
+            "name": "onboarding_step1",
+            "src": "https://example.com/images/onboarding_step1.png"
+        }
+    ],
+    "uniqueFeatures": "Interactive tutorials",
+    "userResearch": "Surveys and interviews with new users",
+    "keyLearning": "Users prefer visual guidance over text-based instructions.",
+    "userPersonas": [
+        {
+            "bio": "A tech-savvy millennial looking for a user-friendly app.",
+            "name": "John Doe",
+            "gender": "Male",
+            "age": 28,
+            "goals": ["Quick onboarding", "Easy navigation"],
+            "painPoints": ["Confusing UI", "Lack of instructions"],
+            "image": {
+                "name": "john_doe",
+                "src": "https://example.com/images/john_doe.png"
+            }
+        }
+    ],
+    "competitiveAnalysis": [
+        {
+            "name": "competitor_analysis",
+            "src": "https://example.com/images/competitor_analysis.png"
+        }
+    ],
+    "wireFrames": [
+        {
+            "name": "wireframe1",
+            "src": "https://example.com/images/wireframe1.png"
+        }
+    ],
+    "hifiDesign": [
+        {
+            "name": "hifi_design",
+            "src": "https://example.com/images/hifi_design.png"
+        }
+    ],
+    "userFlow": [
+        {
+            "name": "user_flow",
+            "src": "https://example.com/images/user_flow.png"
+        }
+    ],
+    "architecture": [
+        {
+            "name": "architecture",
+            "src": "https://example.com/images/architecture.png"
+        }
+    ]
+}

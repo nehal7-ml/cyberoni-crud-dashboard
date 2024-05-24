@@ -81,6 +81,7 @@ export type CreateServiceDescription = {
   image: CreateImageDTO;
 };
 export type CreateFaqDTO = {
+  id?: string ;
   question: string;
   answer: string;
 };
