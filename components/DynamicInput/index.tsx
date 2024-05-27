@@ -14,74 +14,82 @@ import MapForm from "./MapForm";
 import AddImage from "../AddImagesAndTags/AddImage";
 import AddTags from "../AddImagesAndTags/AddTags";
 import useDefaultValues from "./DefaultValues";
+import FloatingLabelTextArea from "../shared/FloatingLabelTextArea";
+import Editor from "../RichTextEditor";
 export type FormSchema =
   | {
-    type: "number" | "date";
-    title: string;
-    required: boolean;
-    disabled?: boolean;
-  }
+      type: "number" | "date";
+      title: string;
+      required: boolean;
+      disabled?: boolean;
+    }
   | {
-    type: "string";
-    title: string;
-    required: boolean;
-    disabled?: boolean;
-    pattern?: string;
-  }
+      type: "string";
+      title: string;
+      required: boolean;
+      disabled?: boolean;
+      pattern?: string;
+    }
   | {
-    type: "boolean";
-    title: string;
-    required: boolean;
-  }
+      type: "text";
+      title: string;
+      required: boolean;
+    }
   | {
-    type: "select" | "multi-select";
-    options: { label: string; value: string }[];
-    required: boolean;
-    title: string;
-  }
+      type: "rich-text";
+      title: string;
+      required: boolean;
+    }
   | {
-    title: string;
-    description: string;
-    type: "array";
-    required: boolean;
-    items: FormSchema;
-    toString: (object: any) => string;
-  }
+      type: "boolean";
+      title: string;
+      required: boolean;
+    }
   | {
-    type: "object";
+      type: "select" | "multi-select";
+      options: { label: string; value: string }[];
+      required: boolean;
+      title: string;
+    }
+  | {
+      title: string;
+      description: string;
+      type: "array";
+      required: boolean;
+      items: FormSchema;
+      toString: (object: any) => string;
+    }
+  | {
+      type: "object";
 
-    title: string;
-    description: string;
-    required: boolean;
-    properties: {
-      [key: string]: FormSchema;
+      title: string;
+      description: string;
+      required: boolean;
+      properties: {
+        [key: string]: FormSchema;
+      };
+      toString: (object: any) => string;
+    }
+  | {
+      type: "image";
+      title: string;
+      required: boolean;
+      max?: number;
+    }
+  | {
+      type: "tags";
+      title?: "Tags";
+      description: string;
+      max?: number;
+    }
+  | {
+      title: string;
+      description: string;
+      type: "map";
+      required: boolean;
+      items: FormSchema;
+      toString: (object: any) => string;
     };
-    toString: (object: any) => string;
-  }
-  | {
-    type: "image";
-    title: string;
-    required: boolean;
-    max?: number;
-  }
-  | {
-    type: 'tags';
-    title: "Tags"
-    description: string;
-    max?: number
-
-
-  }
-
-
-  | {
-    title: string;
-    description: string;
-    type: "map";
-    required: boolean;
-    items: FormSchema;
-    toString: (object: any) => string;
-  };
 
 interface DynamicInputProps {
   defaultValue: any;
@@ -93,10 +101,12 @@ const DynamicInput: React.FC<DynamicInputProps> = ({
   onChange,
   defaultValue,
 }) => {
-  const current = useDefaultValues({schema})
+  const current = useDefaultValues({ schema });
   const [currentData, setCurrentData] = useState(defaultValue ?? current);
 
-  const handleTextChange = (e: ChangeEvent<HTMLInputElement>) => {
+  const handleTextChange = (
+    e: ChangeEvent<HTMLInputElement | HTMLTextAreaElement>,
+  ) => {
     setCurrentData(e.target.value);
     onChange(e.target.value);
   };
@@ -117,7 +127,7 @@ const DynamicInput: React.FC<DynamicInputProps> = ({
       // console.log("calling change", schema.title, currentData, defaultValue);
       setCurrentData(defaultValue);
     }
-  }, [ currentData, defaultValue]);
+  }, [currentData, defaultValue]);
 
   return (
     <div>
@@ -133,6 +143,23 @@ const DynamicInput: React.FC<DynamicInputProps> = ({
             disabled={schema.disabled ?? false}
             pattern={schema.pattern ?? undefined}
             title={`${schema.title}`}
+          />
+        ) : schema.type === "text" ? (
+          <FloatingLabelTextArea
+            className=""
+            placeholder={schema.title}
+            value={currentData as string}
+            rows={7}
+            name={schema.title}
+            onChange={handleTextChange}
+          />
+        ) : schema.type === "rich-text" ? (
+          <Editor
+            onChange={(text) => {
+              onChange(text);
+              setCurrentData(text);
+            }}
+            defaultValue={currentData}
           />
         ) : schema.type === "number" ? (
           <FloatingLabelInput
@@ -217,23 +244,15 @@ const DynamicInput: React.FC<DynamicInputProps> = ({
             onImagesChange={(images) => (
               onChange(images), setCurrentData(images)
             )}
-            maxImages={schema.max ||  1}
+            maxImages={schema.max || 1}
           />
-        ) 
-        
-        :schema.type === 'tags'? (
+        ) : schema.type === "tags" ? (
           <AddTags
-          
             defaultTags={currentData}
-            onTagsChange={(tags) => (
-              onChange(tags), setCurrentData(tags)
-            )}
+            onTagsChange={(tags) => (onChange(tags), setCurrentData(tags))}
             maxTags={schema.max || 10}
-           />
-        
-        )
-        
-        : null}
+          />
+        ) : null}
       </div>
     </div>
   );

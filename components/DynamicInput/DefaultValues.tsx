@@ -31,7 +31,7 @@ function useDefaultValues({ schema }: { schema: FormSchema }) {
                     data[key] = "";
                 }
             }
-        } else if (schema.type === "string") {
+        } else if (schema.type === "string" || schema.type === "text" || schema.type === "rich-text") {
             data = "";
         } else if (schema.type === "select") {
             data = schema.options[0].value;

@@ -56,9 +56,9 @@ function ArrayForm({
 
   useEffect(() => {
 
-    console.log("useEffect Ayyay form:  ", schema.title, items, defaultValue);
+    //console.log("useEffect Ayyay form:  ", schema.title, items, defaultValue);
     if (!arraysAreEqual(items, defaultValue)) {
-      console.log("chanings items Arrys", items, defaultValue);
+      //console.log("chanings items Arrys", items, defaultValue);
       setItems(defaultValue);
     }
   }, [defaultValue, items]);

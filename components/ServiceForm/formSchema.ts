@@ -72,7 +72,7 @@ const SubServiceFormSchema: FormSchema = {
           required: true,
         },
         description: {
-          type: "string",
+          type: "text",
           title: "Description",
           required: true,
         },
