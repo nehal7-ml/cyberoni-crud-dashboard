@@ -9,13 +9,13 @@ import ListInput from "../ListInput";
 import Notification, { useNotify } from "../Notification";
 import { Service } from "@prisma/client";
 import LoadingDots from "../shared/loading-dots";
-import { CaseStudySchema } from "./schema";
 import { SafeParseReturnType } from "zod";
 import DynamicInput from "../DynamicInput";
-import { userPersona } from "./zodSchema";
+import { userPersona } from "./formSchema";
 import { useRouter } from "next/navigation";
 import JsonInput from "../shared/JsonInput";
 import example from "./example.json";
+import { CaseStudySchema } from "../zodSchemas";
 type SubService = {
   id: string;
   title: string;
