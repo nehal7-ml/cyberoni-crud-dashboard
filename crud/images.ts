@@ -33,7 +33,7 @@ export async function createObject(image: CreateImageDTO | undefined) {
 
 export async function connectOrCreateObject(
   newImages: CreateImageDTO[],
-  oldImages: Image[],
+  oldImages: CreateImageDTO[],
 ) {
   let imageConnect: {
     create: CreateImageDTO[];

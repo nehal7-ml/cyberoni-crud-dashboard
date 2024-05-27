@@ -44,6 +44,8 @@ describe("SoftwareProduct Service", () => {
         link: "http://example.com",
         githubLink: "http://github.com/example",
         status: "Released" as SoftwareProductStatus,
+        
+        
         tags: [],
         blog: { id: "1", title: 'test titlte' },
         category: { id: "1", name: "Test Category" },
@@ -54,6 +56,7 @@ describe("SoftwareProduct Service", () => {
         ...productData,
         blogId: productData.blog?.id as  string,
         softwareProductCategoryId: productData.category?.id as string,
+        internal:false,
         createdAt: new Date(),
         updatedAt: new Date(),
       };
@@ -124,6 +127,7 @@ describe("SoftwareProduct Service", () => {
         blogId: "1",
         createdAt: new Date(),
         updatedAt: new Date(),
+        internal:false
       };
 
       const updatedProductData = {
@@ -143,6 +147,7 @@ describe("SoftwareProduct Service", () => {
         ...updatedProductData,
         softwareProductCategoryId: "1",
         blogId: "1",
+        internal:false,
         createdAt: new Date(),
         updatedAt: new Date(),
       };
@@ -218,6 +223,7 @@ describe("SoftwareProduct Service", () => {
           status: "Released",
           softwareProductCategoryId: "1",
           blogId: "1",
+          internal:false,
           createdAt: new Date(),
           updatedAt: new Date(),
         },

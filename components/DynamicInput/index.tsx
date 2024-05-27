@@ -105,9 +105,13 @@ const DynamicInput: React.FC<DynamicInputProps> = ({
           data[key] = "";
         }
       }
-    } else if (schema.type === "string" || schema.type === "select") {
+    } else if (schema.type === "string" ) {
       data = "";
-    } else if (schema.type === "number") {
+    }else if(schema.type === "select"){
+      data = schema.options[0].value; 
+    }
+    
+    else if (schema.type === "number") {
       data = 0;
     } else if (schema.type === "date") {
       data = new Date();

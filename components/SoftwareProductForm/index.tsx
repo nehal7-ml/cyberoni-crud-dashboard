@@ -39,6 +39,7 @@ function SoftwareProductForm({
   action: string;
   initial?: CreateSoftwareProductDTO;
 }) {
+  // console.log(initial);
   const [loading, setLoading] = useState(false);
 
   const [softwareProductData, setSoftwareProductData] =
@@ -55,7 +56,7 @@ function SoftwareProductForm({
         tags: [],
         images: [],
         category: undefined,
-        subscriptionModels: undefined,
+        subscriptionModel: undefined,
       },
     );
   const [rawJson, setRawJson] = useState(
@@ -207,11 +208,11 @@ function SoftwareProductForm({
           {softwareProductData.pricing === "Subscription" && (
             <div className="mb-4">
               <DynamicInput
-                defaultValue={softwareProductData.subscriptionModels ?? []}
+                defaultValue={softwareProductData.subscriptionModel ?? []}
                 onChange={(e) =>
                   setSoftwareProductData((prev) => ({
                     ...prev,
-                    subscriptionModels: e,
+                    subscriptionModel: e,
                   }))
                 }
                 schema={SubscriptionModelSchema}

@@ -158,7 +158,7 @@ async function UpdateForm({
       <SoftwareProductForm
         categories={categories}
         method="PUT"
-        initial={software as CreateSoftwareProductDTO}
+        initial={software as unknown as CreateSoftwareProductDTO}
         action={`/api/softwares/${params.id}`}
       />
     );

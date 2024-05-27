@@ -1,3 +1,4 @@
+import { features } from "process";
 import { FormSchema } from "../DynamicInput";
 import { SoftwareProductStatus, SoftwarePricing } from "@prisma/client";
 export const SoftwareProductFormSchema: FormSchema = {
@@ -76,7 +77,7 @@ export const SubscriptionModelSchema: FormSchema = {
         title: "Subscription Item",
         type: "object",
         properties: {
-            "title": {
+            "name": {
                 type: "string",
                 required: true,
                 title: "Title",
@@ -84,7 +85,7 @@ export const SubscriptionModelSchema: FormSchema = {
             "subTitle": {
                 type: "string",
                 required: true,
-                title: "subTitle",
+                title: "Description",
             },
             "price": {
                 type: "number",
@@ -99,12 +100,47 @@ export const SubscriptionModelSchema: FormSchema = {
                 ],
                 required: true,
                 title: 'Type'
+            }, 
+            features: {
+                type: 'array',
+                title: 'Features',
+                description: 'Features',
+                required: false,
+                items: {
+                    type: 'object',
+                    title: 'Feature',
+                    description: 'Feature Items',
+                    required: true,
+                    properties: {
+                        title: {
+                            type: 'string',
+                            required: true,
+                            title: 'Title'
+                        },
+                        subTitle: {
+                            type: 'string',
+                            required: true,
+                            title: 'Description'
+                        }
+                    }
+                }, 
+                toString: (object:any)=>object.title
+            },
+            credits: {
+                type: "number",
+                required: false,
+                title: "Credits",
+            },
+            profit: {
+                type: "number",
+                required:true,
+                title: "% Profit",
             }
         },
         description: "Subscription Item",
         required: true,
         
     },
-    toString: object => object.title,
+    toString: object => object.name,
     required: true
 }
