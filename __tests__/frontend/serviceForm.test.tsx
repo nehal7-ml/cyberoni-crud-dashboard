@@ -1,8 +1,12 @@
+/**
+ * @jest-environment jsdom
+ */
+
 import React from "react";
 import { render, screen, fireEvent } from "@testing-library/react";
 import SubserviceForm from "@/components/ServiceForm";
 
-describe("SubserviceForm", () => {
+describe("SubService Form", () => {
   it("should render the form and allow user input", () => {
     const handleSubmit = jest.fn();
     render(<SubserviceForm action="/api/service/add" method="POST"     />);
