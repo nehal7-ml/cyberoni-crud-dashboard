@@ -7,6 +7,7 @@ import { PlusCircle, X } from "lucide-react";
 import DateInput from "../DateInput";
 import Modal from "../shared/Modal";
 import ListInput from "../ListInput";
+import useDefaultValues from "./DefaultValues";
 
 function ArrayForm({
   schema,
@@ -27,53 +28,9 @@ function ArrayForm({
   const [currentIndex, setCurrentIndex] = useState(-1);
   let [items, setItems] = useState(defaultValue || []);
 
-  const initial = useMemo(() => {
-    let data: any;
-    if (schema.items.type === "map") {
-      data = {};
-    }
-
-    if (schema.items.type === "array") {
-      data = [];
-    }
-
-    if (schema.items.type === "object") {
-      data = {};
-      const keys = Object.keys(schema.items.properties);
-
-      for (let key of keys) {
-        if (schema.items.properties[key].type === "array") {
-          data[key] = [];
-        } else if (schema.items.properties[key].type === "object") {
-          data[key] = {};
-        } else if (schema.items.properties[key].type === "map") {
-          data[key] = {};
-        } else if (schema.items.properties[key].type === "string") {
-          data[key] = "";
-        } else if (schema.items.properties[key].type === "number") {
-          data[key] = 0;
-        } else {
-          data[key] = "";
-        }
-      }
-    } else if (
-      schema.items.type === "string" ||
-      schema.items.type === "select"
-    ) {
-      data = "";
-    } else if (schema.items.type === "number") {
-      data = 0;
-    } else if (schema.items.type === "date") {
-      data = new Date();
-    } else if (schema.items.type === "multi-select") {
-      data = [];
-    }
-    else if (schema.items.type === "image") {
-      data = [];
-    }
-
-    return data;
-  }, [schema]);
+  const initial = useDefaultValues({
+    schema: schema.items,
+  })
 
   const [currentItem, setCurrentItem] = useState<any>(initial);
 
@@ -89,8 +46,9 @@ function ArrayForm({
   function updateItem(index: number) {
     const newItems = items;
     newItems[index] = currentItem;
-    setItems(newItems);
     onChange(newItems);
+    setItems(newItems);
+
     setCurrentItem(initial);
     setOpenForm(false);
     setCurrentIndex(-1);
@@ -98,12 +56,12 @@ function ArrayForm({
 
   useEffect(() => {
 
-    // console.log("useEffect Ayyay form:  ", items, defaultValue);
-    if (!defaultValue  && !arraysAreEqual(items, defaultValue)) {
-      // console.log("chanings items", items, defaultValue);
+    console.log("useEffect Ayyay form:  ", schema.title, items, defaultValue);
+    if (!arraysAreEqual(items, defaultValue)) {
+      console.log("chanings items Arrys", items, defaultValue);
       setItems(defaultValue);
     }
-  }, [defaultValue, items, onChange]);
+  }, [defaultValue, items]);
 
 
 

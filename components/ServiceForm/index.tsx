@@ -25,7 +25,7 @@ import example from "./example.json";
 import { ServiceSchema } from "../zodSchemas";
 import JsonInput from "../shared/JsonInput";
 import DynamicInput from "../DynamicInput";
-import { FaqsFormSchema } from "./formSchema";
+import {  ServiceFormSchema } from "./formSchema";
 
 function ServiceForm({
   method,
@@ -53,56 +53,30 @@ function ServiceForm({
       ServiceDescription: [],
       tags: [],
       image: undefined,
-      faqs: []
+      faqs: [],
     },
   );
-  const [editSubservice, setEditSubservice] = useState<number>(-1);
 
-  const [descriptionForm, setDescriptionForm] = useState(false);
-  const [rawJson, setRawJson] = useState(JSON.stringify(ServiceSchema.parse(serviceData), null, 2));
+  const [rawJson, setRawJson] = useState(
+    JSON.stringify(ServiceSchema.parse(serviceData), null, 2),
+  );
 
-  const handleNumberInputChange = (
-    e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>,
-  ) => {
-    const { name, value } = e.target;
 
-    setServiceData({
-      ...serviceData,
-      [name]: Number(value),
-    });
-  };
 
-  const handleInputChange = (
-    e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>,
-  ) => {
-    const { name, value } = e.target;
-    console.log(name, ":   ", typeof value);
-    setServiceData((prevData) => ({
-      ...prevData,
-      [name]: value,
-    }));
-  };
-  function handleChangedImage(image: CreateImageDTO[], tags: CreateTagDTO[]) {
-    setServiceData((prevData) => ({
-      ...prevData,
-      image: image[0],
-      tags,
-    }));
-  }
   const router = useRouter();
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setLoading(true);
-    const apiUrl = process.env.NEXT_PUBLIC_API_URL;
-    const headers = {
-      "Content-Type": "application/json",
-      Authorization: "Bearer your-access-token",
-    };
+
+    let valid =  ServiceSchema.safeParse(serviceData);
+    if(!valid.success){
+        toast(`invalid Body`, {type: 'error'})
+        return 
+    }
     // Send the userData to your backend for creating the user
     const res = await fetch(action, {
       method,
       body: JSON.stringify(serviceData),
-      headers,
     });
     let resJson = await res.json();
 
@@ -113,57 +87,14 @@ function ServiceForm({
       message("error", resJson.message);
     }
     setLoading(false);
-
   };
 
   function message(type: NotificationType, message: string) {
     toast(message, { type });
   }
 
-  const handleCheckboxChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const { name, checked } = e.target;
 
-    setServiceData((prevData) => ({
-      ...prevData,
-      [name]: checked,
-    }));
-  };
-
-  function handleSubServiceChange(subServices: CreateSubServiceDTO[]) {
-    setServiceData((prevData) => ({
-      ...prevData,
-      SubServices: subServices,
-    }));
-
-    setShowDialog(false);
-  }
-
-  function handleRemoveSubService(subServiceToRemove: CreateSubServiceDTO) {
-    if (subServiceToRemove.id) {
-      setServiceData((prevData) => ({
-        ...prevData,
-        SubServices: prevData.SubServices?.filter(
-          (subService) => subService.id !== subServiceToRemove.id,
-        ),
-      }));
-    } else {
-      setServiceData((prevData) => ({
-        ...prevData,
-        SubServices: prevData.SubServices?.filter(
-          (subService) => subService.title !== subServiceToRemove.title,
-        ),
-      }));
-    }
-  }
-
-  function handleDescritionChange(description: CreateServiceDescription) {
-    setServiceData((prev) => ({
-      ...prev,
-      ServiceDescription: [...prev.ServiceDescription, description],
-    }));
-
-    setDescriptionForm(false);
-  }
+  
 
   useEffect(() => {
     if (initial) setServiceData(initial as CreateServiceDTO);
@@ -179,7 +110,12 @@ function ServiceForm({
           toast(`${e.path} ${e.message}`, { type: "error" });
         }
       } else {
-        setServiceData((prev) => ({ ...prev, ...valid.data as CreateServiceDTO }));
+
+        console.log(serviceData, valid.data);
+        setServiceData((prev) => ({
+          ...prev,
+          ...(valid.data as CreateServiceDTO),
+        }));
       }
     } catch (error) {
       console.log("invalid JSON", (error as Error).name);
@@ -201,229 +137,21 @@ function ServiceForm({
             setRawJson={setRawJson}
             example={JSON.stringify(example, null, 2)}
           />
-          <div className="mb-4">
-            <label className="block text-sm font-medium text-gray-700">
-              Title:
-            </label>
-            <input
-              type="text"
-              name="title"
-              className="mt-1 w-full rounded border p-2"
-              value={serviceData.title}
-              onChange={handleInputChange}
-              required
-            />
-          </div>
-          <div className="mb-4">
-            <label className="block text-sm font-medium text-gray-700">
-              Featured:
-              <input
-                type="checkbox"
-                name="featured"
-                className="ml-2"
-                checked={serviceData.featured}
-                onChange={handleCheckboxChange}
-              />
-            </label>
-          </div>
-          <div className="mb-4">
-            <label className="block text-sm font-medium text-gray-700">
-              Hourly Rate:
-            </label>
-            <input
-              type="number"
-              name="hourlyRate"
-              className="mt-1 w-full rounded border p-2"
-              value={serviceData.hourlyRate == 0 ? "" : serviceData.hourlyRate}
-              onChange={handleNumberInputChange}
-              required
-            />
-          </div>
-
-          <div className="mb-4 h-fit   flex-grow">
-            <label className="block text-sm font-medium text-gray-700">
-              Description:
-            </label>
-            {serviceData.ServiceDescription?.map((section, index) => {
-              return (
-                <div
-                  className={`my-4 flex w-full gap-5 border-2 border-dotted p-2 ${section.imageOnLeft ? "flex-row" : "flex-row-reverse"}`}
-                  key={index}
-                >
-                  <div className="flex justify-end ">
-                    <button
-                      className="mx-10   my-3 self-end"
-                      onClick={() =>
-                        setServiceData((prev) => ({
-                          ...prev,
-                          ServiceDescription: prev.ServiceDescription.filter(
-                            (desc, ind) => ind !== index,
-                          ),
-                        }))
-                      }
-                    >
-                      <X color="red" className="cursor-pointer" />
-                    </button>
-                  </div>
-                  <div className="w-1/3 ">
-                    <Image
-                      src={section.image.src}
-                      alt={`${index}-section`}
-                      height={500}
-                      width={500}
-                    ></Image>
-                  </div>
-                  <div className="w-2/3 justify-evenly">
-                    <div className="text-3xl font-bold">{section.title}</div>
-                    <div>{section.content}</div>
-                  </div>
-                </div>
-              );
-            })}
-
-            <div className="flex w-full items-end justify-center  p-2">
-              <button
-                type="button"
-                onClick={() => {
-                  setDescriptionForm(true);
-                }}
-                className="rounded-full bg-blue-500 p-2 hover:bg-blue-600 hover:shadow-lg"
-              >
-                <PlusCircle className=" text-white" />
-              </button>
-            </div>
-          </div>
-          <div className="mb-4">
-            <label className="block text-sm font-medium text-gray-700">
-              Preview Content:
-            </label>
-            <textarea
-              name="previewContent"
-              rows={4} // Adjust the number of rows as needed
-              className="mt-1 w-full rounded border p-2"
-              value={serviceData.previewContent}
-              onChange={handleInputChange}
-              required
-            />
-          </div>
-          <div className="mb-4">
-            <ListInput
-              label="Value Brought"
-              initial={serviceData.valueBrought}
-              onChange={(values) =>
-                setServiceData((prev) => ({ ...prev, valueBrought: values }))
-              }
-            />
-          </div>
-          <div className="mb-4">
-            <ListInput
-              label="Skills used"
-              initial={serviceData.skillsUsed}
-              onChange={(values) =>
-                setServiceData((prev) => ({ ...prev, skillsUsed: values }))
-              }
-            />
-          </div>
-
-          <div className="my-4 flex flex-wrap gap-10">
-            {serviceData.SubServices?.map((subService, index) => {
-              return (
-                <div
-                  key={index}
-                  className="flex items-center rounded bg-blue-200 p-2 text-blue-800"
-                >
-                  <button
-                    type="button"
-                    className="flex gap-2"
-                    onClick={() => {
-                      setEditSubservice(index);
-                      setShowDialog(true);
-                    }}
-                  >
-                    <span>{subService.title}</span>
-                    <Edit />
-                  </button>
-                  <button
-                    type="button"
-                    className="ml-2 text-red-600 hover:text-red-800 focus:outline-none focus:ring focus:ring-red-300"
-                    onClick={() => handleRemoveSubService(subService)}
-                  >
-                    X
-                  </button>
-                </div>
-              );
-            })}
-
-            <button
-              type="button"
-              onClick={() => {
-                setEditSubservice(-1);
-
-                setShowDialog(!showDialog);
-              }}
-              className="w-full rounded bg-blue-500 p-2 text-white hover:bg-blue-600 focus:outline-none focus:ring focus:ring-blue-300"
-            >
-              Add Subservice
-            </button>
-          </div>
-
-          <DynamicInput defaultValue={serviceData.faqs?? []}
-            onChange={(value) => {
-              setServiceData((prev) => ({ ...prev, faqs: value }));
-            }}
-            schema={FaqsFormSchema}
+          <DynamicInput
+            defaultValue={serviceData}
+            schema={ServiceFormSchema}
+            onChange={(e) => setServiceData(e)}
           />
-
-          <AddImagesAndTags
-            maxImages={1}
-            onImagesAndTagsChange={handleChangedImage}
-            images={serviceData?.image ? [serviceData?.image] : []}
-            tags={serviceData?.tags}
-          ></AddImagesAndTags>
           <button
             disabled={loading}
             type="submit"
-            className="w-full flex justify-center items-center rounded bg-blue-500 p-2 text-white hover:bg-blue-600 focus:outline-none focus:ring focus:ring-blue-300"
+            className="flex w-full items-center justify-center rounded bg-blue-500 p-2 text-white hover:bg-blue-600 focus:outline-none focus:ring focus:ring-blue-300"
           >
+            {" "}
             {loading ? <LoadingDots /> : null}
-
             {method === "PUT" ? "Update Service" : "Create Service"}
           </button>
         </form>
-
-        {showDialog && (
-          <div
-            className={`fixed left-0 top-0 flex w-screen flex-col justify-center ${showDialog ? "" : " hidden"}`}
-          >
-            <div className="z-30 flex justify-end ">
-              <button
-                className="mx-10   my-3 self-end"
-                onClick={() => setShowDialog(!showDialog)}
-              >
-                <X color="red" className="cursor-pointer" />
-              </button>
-            </div>
-            <CreateSubService
-              current={editSubservice}
-              subServices={serviceData.SubServices ?? []}
-              handleSubServiceChange={handleSubServiceChange}
-            ></CreateSubService>
-          </div>
-        )}
-        <div
-          className={`fixed left-0 top-0 flex w-screen flex-col justify-center ${descriptionForm ? "" : " hidden"}`}
-        >
-          <div className="z-30 flex justify-end">
-            <button
-              type="button"
-              className="mx-10 my-3 self-end"
-              onClick={() => setDescriptionForm(false)}
-            >
-              <X color="red" className="cursor-pointer" />
-            </button>
-          </div>
-          <DescriptionForm handleDescritionChange={handleDescritionChange} />
-        </div>
       </div>
     </div>
   );

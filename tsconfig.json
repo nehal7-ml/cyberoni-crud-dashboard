@@ -31,6 +31,6 @@
     "**/*.tsx",
     ".next/types/**/*.ts",
     "next.config.js"
-  ],
+, "__tests__/frontend/serviceForm.test.tsx"  ],
   "exclude": ["node_modules"]
 }
