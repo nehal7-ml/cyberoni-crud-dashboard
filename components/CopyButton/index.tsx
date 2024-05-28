@@ -17,7 +17,7 @@ const CopyButton = ({
     navigator.clipboard
       .writeText(text)
       .then(() => {
-        console.log("Text copied to clipboard:", text);
+        // console.log("Text copied to clipboard:", text);
         setCopied(true);
         setTimeout(() => setCopied(false), 750); // Reset copied state after 3 seconds
       })
@@ -31,7 +31,7 @@ const CopyButton = ({
       {showText ? (
         <div className="w-40 overflow-clip text-ellipsis">{text}</div>
       ) : null}
-      <button onClick={copyToClipboard} className="p-3">
+      <button type="button" onClick={copyToClipboard} className="p-3">
         {copied ? <CopyCheckIcon className="text-green-400" /> : <Copy />}
       </button>
     </div>

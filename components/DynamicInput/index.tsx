@@ -12,59 +12,84 @@ import FloatingLabelInput from "../shared/FloatingLabelInput";
 import { Schema } from "zod";
 import MapForm from "./MapForm";
 import AddImage from "../AddImagesAndTags/AddImage";
+import AddTags from "../AddImagesAndTags/AddTags";
+import useDefaultValues from "./DefaultValues";
+import FloatingLabelTextArea from "../shared/FloatingLabelTextArea";
+import Editor from "../RichTextEditor";
 export type FormSchema =
   | {
-    type: "number" | "date";
-    title: string;
-    required: boolean;
-    disabled?: boolean;
-  }
+      type: "number" | "date";
+      title: string;
+      required: boolean;
+      disabled?: boolean;
+    }
   | {
-    type: "string";
-    title: string;
-    required: boolean;
-    disabled?: boolean;
-    pattern?: string;
-  }
+      type: "string";
+      title: string;
+      required: boolean;
+      disabled?: boolean;
+      pattern?: string;
+    }
   | {
-    type: "select" | "multi-select";
-    options: { label: string; value: string }[];
-    required: boolean;
-    title: string;
-  }
+      type: "text";
+      title: string;
+      required: boolean;
+    }
   | {
-    title: string;
-    description: string;
-    type: "array";
-    required: boolean;
-    items: FormSchema;
-    toString: (object: any) => string;
-  }
+      type: "rich-text";
+      title: string;
+      required: boolean;
+    }
   | {
-    type: "object";
+      type: "boolean";
+      title: string;
+      required: boolean;
+    }
+  | {
+      type: "select" | "multi-select";
+      options: { label: string; value: string }[];
+      required: boolean;
+      title: string;
+    }
+  | {
+      title: string;
+      description: string;
+      type: "array";
+      required: boolean;
+      items: FormSchema;
+      toString: (object: any) => string;
+    }
+  | {
+      type: "object";
 
-    title: string;
-    description: string;
-    required: boolean;
-    properties: {
-      [key: string]: FormSchema;
+      title: string;
+      description: string;
+      required: boolean;
+      properties: {
+        [key: string]: FormSchema;
+      };
+      toString: (object: any) => string;
+    }
+  | {
+      type: "image";
+      title: string;
+      required: boolean;
+      max?: number;
+    }
+  | {
+      type: "tags";
+      title?: "Tags";
+      description: string;
+      max?: number;
+    }
+  | {
+      title: string;
+      description: string;
+      type: "map";
+      required: boolean;
+      items: FormSchema;
+      toString: (object: any) => string;
     };
-    toString: (object: any) => string;
-  }
-  | {
-    type: "image";
-    title: string;
-    description: string;
-    required: boolean;
-  }
-  | {
-    title: string;
-    description: string;
-    type: "map";
-    required: boolean;
-    items: FormSchema;
-    toString: (object: any) => string;
-  };
 
 interface DynamicInputProps {
   defaultValue: any;
@@ -76,52 +101,12 @@ const DynamicInput: React.FC<DynamicInputProps> = ({
   onChange,
   defaultValue,
 }) => {
-  const current = useMemo(() => {
-    let data: any;
-    if (schema.type === "map") {
-      data = {};
-    }
-
-    if (schema.type === "array") {
-      data = [];
-    }
-
-    if (schema.type === "object") {
-      data = {};
-      const keys = Object.keys(schema.properties);
-
-      for (let key of keys) {
-        if (schema.properties[key].type === "array") {
-          data[key] = [];
-        } else if (schema.properties[key].type === "object") {
-          data[key] = {};
-        } else if (schema.properties[key].type === "map") {
-          data[key] = {};
-        } else if (schema.properties[key].type === "string") {
-          data[key] = "";
-        } else if (schema.properties[key].type === "number") {
-          data[key] = 0;
-        } else {
-          data[key] = "";
-        }
-      }
-    } else if (schema.type === "string" || schema.type === "select") {
-      data = "";
-    } else if (schema.type === "number") {
-      data = 0;
-    } else if (schema.type === "date") {
-      data = new Date();
-    } else if (schema.type === "multi-select") {
-      data = [];
-    } else if (schema.type === "image") {
-      data = [];
-    }
-
-    return data;
-  }, [schema]);
+  const current = useDefaultValues({ schema });
   const [currentData, setCurrentData] = useState(defaultValue ?? current);
 
-  const handleTextChange = (e: ChangeEvent<HTMLInputElement>) => {
+  const handleTextChange = (
+    e: ChangeEvent<HTMLInputElement | HTMLTextAreaElement>,
+  ) => {
     setCurrentData(e.target.value);
     onChange(e.target.value);
   };
@@ -138,15 +123,11 @@ const DynamicInput: React.FC<DynamicInputProps> = ({
   };
 
   useEffect(() => {
-    //console.log("dynamic form ",defaultValue, currentData);
-    if (defaultValue === undefined || defaultValue === null) {
-      setCurrentData(current);
-    }
-    if (!currentData  && !deepEqual(currentData, defaultValue)) {
-      console.log("calling change", currentData, defaultValue);
+    if (!deepEqual(currentData, defaultValue)) {
+      // console.log("calling change", schema.title, currentData, defaultValue);
       setCurrentData(defaultValue);
     }
-  }, [current, currentData, defaultValue, onChange]);
+  }, [currentData, defaultValue]);
 
   return (
     <div>
@@ -161,7 +142,24 @@ const DynamicInput: React.FC<DynamicInputProps> = ({
             onChange={handleTextChange}
             disabled={schema.disabled ?? false}
             pattern={schema.pattern ?? undefined}
-            title={`provide valid ${schema.title}`}
+            title={`${schema.title}`}
+          />
+        ) : schema.type === "text" ? (
+          <FloatingLabelTextArea
+            className=""
+            placeholder={schema.title}
+            value={currentData as string}
+            rows={7}
+            name={schema.title}
+            onChange={handleTextChange}
+          />
+        ) : schema.type === "rich-text" ? (
+          <Editor
+            onChange={(text) => {
+              onChange(text);
+              setCurrentData(text);
+            }}
+            defaultValue={currentData}
           />
         ) : schema.type === "number" ? (
           <FloatingLabelInput
@@ -180,6 +178,17 @@ const DynamicInput: React.FC<DynamicInputProps> = ({
             onDateChange={handleDateChange}
             value={currentData as Date}
           />
+        ) : schema.type === "boolean" ? (
+          <label className="flex items-center gap-2">
+            <span>{schema.title}</span>
+            <input
+              type="checkbox"
+              value={currentData}
+              onChange={(e) => (
+                onChange(e.target.checked), setCurrentData(e.target.checked)
+              )}
+            />
+          </label>
         ) : schema.type === "select" ? (
           <div>
             <label>{schema.title} : </label>
@@ -187,8 +196,7 @@ const DynamicInput: React.FC<DynamicInputProps> = ({
               className="rounded-md border p-4"
               value={currentData}
               onChange={(e) => (
-                onChange(e.target.value),
-                setCurrentData(e.target.value)
+                onChange(e.target.value), setCurrentData(e.target.value)
               )}
             >
               {schema.options.map((option) => (
@@ -209,8 +217,8 @@ const DynamicInput: React.FC<DynamicInputProps> = ({
             defaultValue={currentData}
             schema={schema}
             onChange={(newArray) => {
-              setCurrentData(newArray);
               onChange(newArray);
+              setCurrentData(newArray);
             }}
           />
         ) : schema.type === "multi-select" ? (
@@ -234,10 +242,15 @@ const DynamicInput: React.FC<DynamicInputProps> = ({
             name={schema.title}
             defaultImages={currentData}
             onImagesChange={(images) => (
-              onChange(images),
-              setCurrentData(images)
+              onChange(images), setCurrentData(images)
             )}
-            maxImages={1}
+            maxImages={schema.max || 1}
+          />
+        ) : schema.type === "tags" ? (
+          <AddTags
+            defaultTags={currentData}
+            onTagsChange={(tags) => (onChange(tags), setCurrentData(tags))}
+            maxTags={schema.max || 10}
           />
         ) : null}
       </div>

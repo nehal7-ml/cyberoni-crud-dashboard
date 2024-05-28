@@ -38,7 +38,7 @@ async function create(service: CreateServiceDTO, prismaClient: PrismaClient) {
       skillsUsed: service.skillsUsed,
       htmlEmbed: service.htmlEmbed,
       image: image ? { create: image } : {},
-      tags: {connectOrCreate: connectTags(service.tags || [], []).connectOrCreate},
+      tags: { connectOrCreate: connectTags(service.tags || [], []).connectOrCreate },
       faqs: {
         create: service.faqs ? service.faqs : [],
       },
@@ -57,6 +57,14 @@ async function create(service: CreateServiceDTO, prismaClient: PrismaClient) {
       SubServices: true,
       image: true,
       tags: true,
+      faqs: {
+        select: {
+          id: true,
+          question: true,
+          answer: true
+        }
+      },
+
       ServiceDescription: {
         include: {
           image: true,
@@ -84,7 +92,13 @@ async function update(
           image: true
         }
       },
-      faqs: true,
+      faqs: {
+        select: {
+          id: true,
+          question: true,
+          answer: true
+        }
+      },
       tags: true,
 
     }
@@ -93,6 +107,11 @@ async function update(
   if (!oldService) throw HttpError(404, 'Service not found')
   let image = await createImageObject(service.image);
 
+  let createFaqs = service.faqs?.filter(faq => !faq.id) || []
+  let updateFaqs = service.faqs?.filter(faq => faq.id) || []
+  let deleteFaqs = oldService.faqs?.filter(oldFaq => 
+    !(service.faqs || []).some(newFaq => newFaq.id === oldFaq.id)
+) || [];
   // let currentService = await services.findUnique({ where: { id: serviceId } })
   let updatedService = await services.update({
     where: { id: serviceId },
@@ -118,6 +137,11 @@ async function update(
             ? { create: image }
             : {},
       tags: connectTags(service.tags || [], oldService.tags),
+      faqs: {
+        create: createFaqs,
+        update: updateFaqs.map(faq => ({ where: { id: faq.id }, data: faq })),
+        deleteMany: deleteFaqs.map(faq => ({ id: faq.id })),
+      },
       SubServices: await updateSubServiceObject(
         service.SubServices as CreateSubServiceDTO[],
         oldService?.SubServices as CreateSubServiceDTO[]
@@ -132,6 +156,13 @@ async function update(
       image: true,
       tags: true,
       ServiceDescription: true,
+      faqs: {
+        select: {
+          id: true,
+          question: true,
+          answer: true
+        }
+      }
     },
   });
   await updateIndex(updatedService.id, updatedService.title, "URL_UPDATED")
@@ -158,8 +189,8 @@ async function read(serviceId: string, prismaClient: PrismaClient) {
     include: {
       SubServices: {
         include: {
-          image:true,
-          tags:true,
+          image: true,
+          tags: true,
         }
       },
       ServiceDescription: {
@@ -169,6 +200,14 @@ async function read(serviceId: string, prismaClient: PrismaClient) {
       },
       image: true,
       tags: true,
+      faqs: {
+        select: {
+          id: true,
+          question: true,
+          answer: true
+        }
+      }
+
     },
   });
   if (existingService) return existingService;
@@ -208,9 +247,9 @@ async function getAll(
         },
       },
     },
-    orderBy: options?.orderby? {
+    orderBy: options?.orderby ? {
       [options.orderby]: options.order
-    }:{
+    } : {
       updatedAt: 'asc'
     }
   });

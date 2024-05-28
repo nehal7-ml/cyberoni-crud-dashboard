@@ -15,6 +15,8 @@ import {
   SoftwarePricing,
   SoftwareProductStatus,
   SubService,
+  SubscriptionPeriod,
+  SubscriptionStatus,
   Supplier,
   Tag,
   User,
@@ -79,6 +81,7 @@ export type CreateServiceDescription = {
   image: CreateImageDTO;
 };
 export type CreateFaqDTO = {
+  id?: string;
   question: string;
   answer: string;
 };
@@ -389,14 +392,47 @@ export type CreateSoftwareProductDTO = {
   description?: string;
   images: CreateImageDTO[];
   tags: CreateTagDTO[];
-  pricing: SoftwarePricing;
+  pricing: 'Free' | 'Freemium' | 'Paid';
   link?: string;
   githubLink?: string;
-  blog?: { id: string, title:string };
+  blog?: { id: string, title: string };
   status: SoftwareProductStatus;
   category?: SoftwareProductCategory
+  subscriptionModel?: SubscriptionModel[]
+
+} | {
+  id?: string;
+  title: string;
+  subTitle: string;
+  description?: string;
+  images: CreateImageDTO[];
+  tags: CreateTagDTO[];
+  pricing: 'Subscription';
+  link?: string;
+  githubLink?: string;
+  blog?: { id: string, title: string };
+  status: SoftwareProductStatus;
+  category?: SoftwareProductCategory
+  subscriptionModel: SubscriptionModel[]
+
+
 
 };
+
+export type SubscriptionModel = {
+  id?: string | null;
+  name: string;
+  price: number;
+  features: {
+    title: string;
+    subTitle: string;
+
+  },
+  status: SubscriptionStatus
+  type: SubscriptionPeriod
+  credits: number | 0
+  profit: number | 0
+}
 
 export type SoftwareProductCategory = {
   id: string;

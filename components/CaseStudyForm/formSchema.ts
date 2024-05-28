@@ -28,7 +28,6 @@ export const userPersona:FormSchema ={
         image: {
           type: "image",
           title: "image",
-          description: "User image",
           required: true,
         },
         gender: {

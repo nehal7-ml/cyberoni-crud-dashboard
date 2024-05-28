@@ -13,9 +13,11 @@ const Tooltip: React.FC<TooltipProps> = ({ text, children }) => {
   const tooltipContainerRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
+    let current = tooltipRef.current;
+
     function handleFocus(e: FocusEvent) {
       if (tooltipRef.current) {
-        console.log("visible");
+        // console.log("visible");
         const tooltipRect = tooltipRef.current.getBoundingClientRect();
         const viewportHeight = window.innerHeight;
 
@@ -31,8 +33,8 @@ const Tooltip: React.FC<TooltipProps> = ({ text, children }) => {
     }
 
     return () => {
-      if (tooltipContainerRef.current) {
-        tooltipContainerRef.current?.removeEventListener(
+      if (current) {
+        current.removeEventListener(
           "mouseenter",
           handleFocus,
         );
@@ -45,7 +47,10 @@ const Tooltip: React.FC<TooltipProps> = ({ text, children }) => {
         {children}
         <div
           ref={tooltipRef}
-          className={`absolute z-[99999] ${position === "above" ? "bottom-0 left-0 mb-8" : "right-0 top-full mt-2"} rounded-md bg-gray-800 px-2 py-1 text-center text-xs text-white opacity-0 transition-opacity duration-300 ease-in-out group-hover:opacity-100`}
+          className={`absolute z-[99999] ${position === "above" ? "bottom-0 left-0 mb-8" : "right-0 top-full mt-2"}
+           rounded-md bg-gray-800 px-2 py-1 text-center text-xs 
+           text-white opacity-0 transition-opacity duration-300
+            ease-in-out group-hover:opacity-100`}
         >
           {text}
           <svg

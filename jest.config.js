@@ -12,7 +12,8 @@ const config = {
   // Add more setup options before each test is run
   // setupFilesAfterEnv: ['<rootDir>/jest.setup.js'],
 
-  testEnvironment: "jest-environment-jsdom",
+  coverageProvider: 'v8',
+  testEnvironment: 'jsdom',
   moduleNameMapper: {
     // Handle module aliases
     "^@/components/(.*)$": "<rootDir>/components/$1",
@@ -23,5 +24,6 @@ const config = {
     "^@/lib/*": "<rootDir>/lib$1",
     "^@/styles/*": "<rootDir>/styles$1",
   },
+  "coverageReporters": ["text-summary", "html"]  
 };
 module.exports = createJestConfig(config);

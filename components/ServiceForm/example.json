@@ -1,0 +1,57 @@
+{
+    "title": "Web Development Service",
+    "previewContent": "Professional web development services to build your online presence.",
+    "ServiceDescription": [
+        {
+            "title": "Custom Website",
+            "content": "We build custom websites tailored to your needs.",
+            "imageOnLeft": true,
+            "image": {
+                "name": "custom_website",
+                "src": "https://example.com/images/custom_website.png"
+            }
+        }
+    ],
+    "hourlyRate": 50,
+    "valueBrought": ["High-quality code", "Responsive design"],
+    "skillsUsed": ["HTML", "CSS", "JavaScript"],
+    "htmlEmbed": "<div>Web Development Service</div>",
+    "image": {
+        "name": "web_development",
+        "src": "https://example.com/images/web_development.png"
+    },
+    "SubServices": [
+        {
+            "title": "Frontend Development",
+            "pricingModel": "DEFAULT",
+            "serviceDeliverables": ["HTML/CSS", "JavaScript"],
+            "serviceUsageScore": 85,
+            "description": "Creating beautiful and responsive interfaces.",
+            "department": "Development",
+            "estimated_hours_times_fifty_percent": 20,
+            "estimated_hours_times_one_hundred_percent": 40,
+            "overheadCost": 500,
+            "complexity": 3,
+            "skillLevel": "Intermediate",
+            "tags": [
+                {
+                    "name": "frontend"
+                }
+            ]
+        }
+    ],
+    "tags": [
+        {
+            "name": "web"
+        },
+        {
+            "name": "development"
+        }
+    ],
+    "faqs": [
+        {
+            "question": "What is the turnaround time?",
+            "answer": "Typically 2-4 weeks."
+        }
+    ]
+}

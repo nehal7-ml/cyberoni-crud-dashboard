@@ -68,6 +68,7 @@ export async function update(
       serviceDeliverables: subService.serviceDeliverables,
       serviceUsageScore: subService.serviceUsageScore,
       skillLevel: subService.skillLevel,
+      
       image:
         image && image.id
           ? {

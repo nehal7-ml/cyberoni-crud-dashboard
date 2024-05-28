@@ -1,0 +1,66 @@
+{
+    "description": "Generate a creative story prompt.",
+    "title": "Creative Story Prompt",
+    "prompt": "Once upon a time in a distant galaxy...",
+    "model": "text-davinci-003",
+    "temperature": 0.7,
+    "max_tokens": 200,
+    "top_p": 0.95,
+    "best_of": 3,
+    "frequency_penalty": 0,
+    "presence_penalty": 0.6,
+    "stop": ["The end"],
+    "timesUsed": 10,
+    "timesIntegrated": 5,
+    "costPerToken": 0.01,
+    "profitMargin": 0.2,
+    "tags": [
+        {
+            "name": "story"
+        },
+        {
+            "name": "creative"
+        }
+    ],
+    "image": {
+        "name": "creative_story",
+        "src": "https://example.com/images/creative_story.png"
+    },
+    "botUrl": "https://example.com/bots/creative_story",
+    "conversationStarters": [
+        {
+            "title": "What if you were a character in a fairytale?",
+            "description": "Imagine yourself as the hero of a magical story."
+        }
+    ],
+    "seed": 42,
+    "startPhrase": "Once upon a time",
+    "sysCommands": {
+        "exampleCommand": {
+            "priority": "HIGH",
+            "context": "Generate an example",
+            "example": "This is an example."
+        }
+    },
+    "steps": [
+        {
+            "index": 1,
+            "command": "Generate prompt",
+            "callTo": "@LLM",
+            "priority": "HIGH",
+            "context": "Initial generation",
+            "goal": "Create a base prompt"
+        }
+    ],
+    "stream": false,
+    "toolChoice": "default",
+    "tools": {
+        "tool1": "exampleTool"
+    },
+    "variables": [
+        {
+            "title": "Setting",
+            "description": "The location where the story takes place."
+        }
+    ]
+}
