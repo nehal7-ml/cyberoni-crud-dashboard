@@ -3,7 +3,6 @@
 import { useEffect, useState } from "react";
 import AddImagesAndTags from "../AddImagesAndTags";
 import Notification, { useNotify } from "../Notification";
-import { BlogSchema } from "@/crud/jsonSchemas";
 import {
   BlogCategory,
   CreateBlogDTO,
@@ -18,10 +17,9 @@ import addFormats from "ajv-formats";
 import DateInput from "../DateInput";
 import LoadingDots from "../shared/loading-dots";
 import CategoryForm from "../CategoryForm";
-
-const ajv = new Ajv();
-addFormats(ajv);
-const validate = ajv.compile(BlogSchema);
+import { BlogSchema } from "../zodSchemas";
+import JsonInput from "../shared/JsonInput";
+import example from "./example.json";
 
 function BlogForm({
   categories,
@@ -50,18 +48,18 @@ function BlogForm({
       publishDate: new Date(),
       category: undefined,
       content: "",
-      author: { email: "" },
+      author: { email: "author@example.com" },
       tags: [],
       images: [],
     },
   );
-  const [rawJson, setRawJson] = useState(JSON.stringify(blogData, null, 2));
+  const [rawJson, setRawJson] = useState(JSON.stringify(BlogSchema.parse(blogData), null, 2));
   const { toast } = useNotify();
   const handleInputChange = (
     e:
       | React.ChangeEvent<
-        HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement
-      >
+          HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement
+        >
       | { target: { name: string; value: string | number | Date } },
   ) => {
     const { name, value } = e.target;
@@ -176,32 +174,20 @@ function BlogForm({
     try {
       const newData = JSON.parse(json);
 
-      const valid = validate(newData);
-      if (!valid)
-        alert(
-          validate.errors
-            ?.map(
-              (err) =>
-                `${err.instancePath} ${err.message} (${err.schemaPath}) `,
-            )
-            .join("\n"),
-        );
-      else {
-        if (Object.keys(newData).length > 0) {
-          for (let key of Object.keys(blogData)) {
-            if (key === "date" || key === "publishDate" && newData[key]) {
-              console.log(newData[key] as string);
-              setBlogData((prev) => ({
-                ...prev,
-                [key]: new Date(newData[key] as string),
-              }));
-            } else setBlogData((prev) => ({ ...prev, [key]: newData[key] }));
-          }
+      const valid = BlogSchema.safeParse(newData);
+      if (!valid.success) {
+        for (const e of valid.error.errors) {
+          toast(`${e.path} ${e.message}`, {
+            type: "error",
+          });
         }
+      } else {
+        setBlogData((prev) => ({
+          ...prev,
+          ...valid.data,
 
-        if (newData.content as string) {
-          setInitialContent(newData.content as string);
-        }
+        }));
+        setInitialContent(valid.data.content);
       }
     } catch (error) {
       console.log("invalid JSON", error);
@@ -224,26 +210,12 @@ function BlogForm({
           {method === "POST" ? "Create" : "Update"} Blog
         </h2>
         <form onSubmit={handleSubmit} className="h-fit">
-          <div className="mb-4">
-            <label className="block" htmlFor="json">
-              Json input auto fill:{" "}
-            </label>
-            <textarea
-              className={"w-full p-3 ring-2 invalid:ring-red-500"}
-              name="json"
-              id=""
-              rows={7}
-              value={rawJson}
-              onChange={(event) => setRawJson(event.target.value)}
-            ></textarea>
-            <button
-              className="w-full rounded bg-blue-500 p-2 text-white hover:bg-blue-600 focus:outline-none focus:ring focus:ring-blue-300"
-              type="button"
-              onClick={() => parseJson(rawJson)}
-            >
-              Parse Json
-            </button>
-          </div>
+          <JsonInput
+            parseJson={parseJson}
+            rawJson={rawJson}
+            setRawJson={setRawJson}
+            example={JSON.stringify(example, null, 2)}
+          />
           <div className="my-4 flex items-center  justify-center gap-3 text-center font-bold">
             <hr className="w-1/3" /> OR <hr className="w-1/3" />
           </div>
@@ -317,7 +289,7 @@ function BlogForm({
               />
             </label>
           </div>
-          
+
           <div className="mb-4">
             <CategoryForm
               onChange={(category) => {
@@ -328,7 +300,11 @@ function BlogForm({
               }}
               action={"blog"}
               selected={
-                blogData.category as { id: string; name: string, parentId: string | null }
+                blogData.category as {
+                  id: string;
+                  name: string;
+                  parentId: string | null;
+                }
               }
             />
           </div>

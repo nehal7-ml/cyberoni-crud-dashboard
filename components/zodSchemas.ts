@@ -33,10 +33,9 @@ const BlogSchema = z.object({
   subTitle: z.string(),
   description: z.string(),
   featured: z.boolean(),
-  date: z.string().datetime(),
-  publishDate: z.string().datetime(),
+  date: z.coerce.date(),
+  publishDate: z.coerce.date(),
   content: z.string(),
-  templateId: z.string(),
   author: z.object({
     email: z.string().email(),
   }),
