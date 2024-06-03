@@ -181,7 +181,7 @@ const SoftwareProductSchema = z.object({
       "not valid cybershoptech blog link",
     )
     .optional(),
-  status: z.enum(["Released", "ComingSoon", "Planned"]),
+  status: z.enum(["Released", "Beta", "Alpha","ComingSoon", "Planned"]),
 });
 
 export {
