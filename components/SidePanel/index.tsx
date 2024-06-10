@@ -57,13 +57,7 @@ async function SidePanel(props: React.BaseHTMLAttributes<HTMLDivElement>) {
 
             <div className="pl-3 text-left">Software Products</div>
           </Link>
-          <Link
-            className={`flex items-center justify-start  rounded-lg  p-2 text-gray-800  hover:cursor-pointer hover:bg-blue-600 hover:text-white`}
-            href={"/dashboard/products/1"}
-          >
-            <Package />
-            <div className="pl-3 text-left">Products</div>
-          </Link>
+
           <Link
             className={`flex items-center justify-start  rounded-lg  p-2 text-gray-800  hover:cursor-pointer hover:bg-blue-600 hover:text-white`}
             href={"/dashboard/events/1"}
@@ -73,13 +67,7 @@ async function SidePanel(props: React.BaseHTMLAttributes<HTMLDivElement>) {
             <CalendarCheck2 />
             <div className="pl-3 text-left">Events</div>
           </Link>
-          <Link
-            className={`flex items-center justify-start  rounded-lg  p-2 text-gray-800  hover:cursor-pointer hover:bg-blue-600 hover:text-white`}
-            href={"/dashboard/prompts/1"}
-          >
-            <BrainCircuit />
-            <div className="pl-3 text-left">Prompts</div>
-          </Link>
+
           <Link
             className={`flex items-center justify-start  rounded-lg  p-2 text-gray-800  hover:cursor-pointer hover:bg-blue-600 hover:text-white`}
             href={"/dashboard/blogs/1"}

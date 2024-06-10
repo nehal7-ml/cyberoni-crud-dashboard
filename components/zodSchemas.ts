@@ -1,4 +1,4 @@
-import { PricingModel } from "@prisma/client";
+import { EventStatus, PricingModel } from "@prisma/client";
 import { z } from "zod";
 
 const TagSchema = z.object({
@@ -181,8 +181,22 @@ const SoftwareProductSchema = z.object({
       "not valid cybershoptech blog link",
     )
     .optional(),
-  status: z.enum(["Released", "Beta", "Alpha","ComingSoon", "Planned"]),
+  status: z.enum(["Released", "Beta", "Alpha", "ComingSoon", "Planned"]),
 });
+
+
+const EventSchema = z.object({
+  name: z.string().min(1),
+  date: z.coerce.date(),
+  eventLink: z.string().url("Event link must be a valid URL"),
+  description: z.string().min(1),
+  isVirtual: z.boolean(),
+  location: z.string().url(),
+  status: z.nativeEnum(EventStatus),
+  image: z.array(ImageSchema),
+  tags: z.array(TagSchema),
+});
+
 
 export {
   TagSchema,
@@ -198,4 +212,5 @@ export {
   UserPersonaSchema,
   CaseStudySchema,
   SoftwareProductSchema,
+  EventSchema
 };
