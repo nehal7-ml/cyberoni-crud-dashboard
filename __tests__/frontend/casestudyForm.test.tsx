@@ -2,7 +2,7 @@
 import React from "react";
 import { render, screen, fireEvent, waitFor } from "@testing-library/react";
 import { Service } from "@prisma/client";
-import { CreateCaseStudy } from "@/crud/DTOs";
+import { CreateCaseStudyDTO } from "@/crud/DTOs";
 import CaseStudyForm from "@/components/CaseStudyForm";
 
 jest.mock("next/image", () => {
@@ -77,7 +77,7 @@ const mockServices: (Service & {
   },
 ];
 
-const mockInitialData: CreateCaseStudy = {
+const mockInitialData: CreateCaseStudyDTO = {
   serviceId: "1",
   subServices: [{ id: "1-1" }],
   architecture: [],

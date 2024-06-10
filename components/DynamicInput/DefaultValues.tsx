@@ -1,9 +1,22 @@
 import { useMemo } from "react";
 import { FormSchema } from ".";
 
-function useDefaultValues({ schema }: { schema: FormSchema }) {
+function useDefaultValues({ schema , defaultValue}: { schema: FormSchema , defaultValue?: any}) {
     const current = useMemo(() => {
         let data: any;
+
+        if(defaultValue) {
+            data = defaultValue;
+
+            if(schema.type === 'rich-text') {
+                data = {
+                    initial: defaultValue,
+                    current: defaultValue
+                }
+            }
+            return data;
+        }
+
         if (schema.type === "map") {
             data = {};
         }
@@ -31,9 +44,18 @@ function useDefaultValues({ schema }: { schema: FormSchema }) {
                     data[key] = "";
                 }
             }
-        } else if (schema.type === "string" || schema.type === "text" || schema.type === "rich-text") {
+        } else if (schema.type === "string" || schema.type === "text") {
             data = "";
-        } else if (schema.type === "select") {
+        }
+        else if (schema.type === 'rich-text') {
+            data = {
+                initial:  "",
+                current:  ""
+            }
+        }
+
+
+        else if (schema.type === "select") {
             data = schema.options[0].value;
         } else if (schema.type === "boolean") {
             data = false;
@@ -48,7 +70,7 @@ function useDefaultValues({ schema }: { schema: FormSchema }) {
         }
 
         return data;
-    }, [schema]);
+    }, [defaultValue,  schema]);
 
     return current
 

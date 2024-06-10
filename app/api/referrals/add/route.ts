@@ -13,8 +13,7 @@ async function post(req: Request) {
   if (req.method === "POST") {
     const referral = (await req.json()) as CreateReferralDTO;
     try {
-      const res = await fetch(referral.link);
-      if (res.status >= 400) throw HttpError(406, "Link in unreachable");
+      await fetch(referral.link).catch(() => { throw HttpError(406, "Link in unreachable"); });
       const newReferral = await create(referral, prisma);
       return NextResponse.json({ message: "Add success", data: newReferral });
     } catch (error) {
@@ -25,7 +24,7 @@ async function post(req: Request) {
           { message: "Duplicate prefix/username" },
           { status: 400 },
         );
-      else return NextResponse.json({ message: err.message }, { status: 400 });
+      else return NextResponse.json({ message: err.message }, { status: (error as HttpError).status ?? 500 });
     }
   }
 }

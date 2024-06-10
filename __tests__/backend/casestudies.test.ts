@@ -13,7 +13,7 @@ import {
   jest,
 } from "@jest/globals";
 import { mockDeep, mockReset, DeepMockProxy } from "jest-mock-extended";
-import { CreateCaseStudy, DisplayServiceDTO } from "@/crud/DTOs";
+import { CreateCaseStudyDTO, DisplayServiceDTO } from "@/crud/DTOs";
 import { DefaultArgs, JsonValue } from "@prisma/client/runtime/library";
 import { MockContext, Context, createMockContext } from "./context";
 import { prisma } from "@/lib/prisma";
@@ -23,7 +23,7 @@ let ctx: Context;
 
 describe("Case Study Functions", () => {
   let service: DisplayServiceDTO | null;
-  const caseStudy: CreateCaseStudy = {
+  const caseStudy: CreateCaseStudyDTO = {
     title: "Test Case Study",
     subServices: [],
     preview: "",

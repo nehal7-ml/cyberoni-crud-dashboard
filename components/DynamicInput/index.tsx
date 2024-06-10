@@ -101,33 +101,36 @@ const DynamicInput: React.FC<DynamicInputProps> = ({
   onChange,
   defaultValue,
 }) => {
-  const current = useDefaultValues({ schema });
-  const [currentData, setCurrentData] = useState(defaultValue ?? current);
+  const current = useDefaultValues({ schema , defaultValue});
+  const [currentData, setCurrentData] = useState(current);
 
   const handleTextChange = (
     e: ChangeEvent<HTMLInputElement | HTMLTextAreaElement>,
   ) => {
-    setCurrentData(e.target.value);
     onChange(e.target.value);
+    setCurrentData(e.target.value);
+
   };
   const handleNumberChange = (e: ChangeEvent<HTMLInputElement>) => {
     let data = isNaN(Number(e.target.value)) ? 0 : Number(e.target.value);
+    onChange(data);
     setCurrentData(data);
 
-    onChange(data);
   };
 
   const handleDateChange = (e: { target: { name: string; value: Date } }) => {
-    setCurrentData(e.target.value);
     onChange(e.target.value);
+    setCurrentData(e.target.value);
+
   };
 
   useEffect(() => {
     if (!deepEqual(currentData, defaultValue)) {
       // console.log("calling change", schema.title, currentData, defaultValue);
       setCurrentData(defaultValue);
+      
     }
-  }, [currentData, defaultValue]);
+  }, [currentData, defaultValue, schema.type]);
 
   return (
     <div>
@@ -157,9 +160,10 @@ const DynamicInput: React.FC<DynamicInputProps> = ({
           <Editor
             onChange={(text) => {
               onChange(text);
-              setCurrentData(text);
+              setCurrentData((prev:any)=> ({...prev, current: text}));
+
             }}
-            defaultValue={currentData}
+            defaultValue={currentData.initial}
           />
         ) : schema.type === "number" ? (
           <FloatingLabelInput
@@ -173,11 +177,14 @@ const DynamicInput: React.FC<DynamicInputProps> = ({
             disabled={schema.disabled ?? false}
           />
         ) : schema.type === "date" ? (
-          <DateInput
-            name={schema.title}
-            onDateChange={handleDateChange}
-            value={currentData as Date}
-          />
+          <div className="flex gap-4  items-center">
+            <div>{schema.title}</div>
+            <DateInput
+              name={schema.title}
+              onDateChange={handleDateChange}
+              value={currentData as Date}
+            />
+          </div>
         ) : schema.type === "boolean" ? (
           <label className="flex items-center gap-2">
             <span>{schema.title}</span>
@@ -238,14 +245,17 @@ const DynamicInput: React.FC<DynamicInputProps> = ({
             ))}
           </div>
         ) : schema.type === "image" ? (
-          <AddImage
-            name={schema.title}
-            defaultImages={currentData}
-            onImagesChange={(images) => (
-              onChange(images), setCurrentData(images)
-            )}
-            maxImages={schema.max || 1}
-          />
+          <div>
+            <div>{schema.title}</div>
+            <AddImage
+              name={schema.title}
+              defaultImages={currentData}
+              onImagesChange={(images) => (
+                onChange(images), setCurrentData(images)
+              )}
+              maxImages={schema.max || 1}
+            />
+          </div>
         ) : schema.type === "tags" ? (
           <AddTags
             defaultTags={currentData}

@@ -47,7 +47,7 @@ export function TableItem(props: TableItemProps) {
         return (
           <td
             key={index}
-            className="whitespace-nowrap px-6 py-4 text-center text-sm font-light text-gray-900 max-w-md text-ellipsis overflow-hidden"
+            className="whitespace-nowrap px-6 py-4 text-center text-sm font-light text-gray-900 max-w-[5em] text-ellipsis overflow-hidden"
           >
             {item}
           </td>

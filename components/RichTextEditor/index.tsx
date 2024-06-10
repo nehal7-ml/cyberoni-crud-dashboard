@@ -90,8 +90,9 @@ const Editor = ({
   defaultValue?: string;
   onChange: (text: string) => void;
 }) => {
+
+  console.log("editor: ", defaultValue);
   const [initialValue, setInitialValue] = useState(defaultValue || undefined);
-  const [value, setValue] = useState<string>("");
   const [showPreview, setShowPreview] = useState(false);
   const editorRef = useRef<RichTextEditor>(null);
   // const previewRef = useRef<ReactQuill>(null);
@@ -103,8 +104,10 @@ const Editor = ({
   }
 
   useEffect(() => {
+
+    console.log("useeefetc", defaultValue);
+    if(!defaultValue) return
     setInitialValue(defaultValue || "");
-    setValue(defaultValue || "");
   }, [defaultValue]);
 
   useEffect(() => {
@@ -113,7 +116,6 @@ const Editor = ({
 
   function updatePreviewAndHandleChange(state: string) {
     onChange(state);
-    setValue(state);
   }
 
   return (
@@ -145,7 +147,6 @@ const Editor = ({
                 "nonbreaking",
                 "save",
                 "table",
-                "directionality",
                 "emoticons",
                 "image",
                 "code",

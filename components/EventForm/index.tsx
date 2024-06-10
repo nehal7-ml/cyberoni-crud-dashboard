@@ -11,7 +11,11 @@ import Notification, {
 import { redirect, useRouter } from "next/navigation";
 import LoadingDots from "../shared/loading-dots";
 import { revalidatePath } from "next/cache";
-
+import JsonInput from "../shared/JsonInput";
+import { EventSchema } from "../zodSchemas";
+import example from './example.json'
+import DynamicInput from "../DynamicInput";
+import eventFormSchema from "./formSchema";
 const EventForm = ({
   method,
   action,
@@ -19,16 +23,16 @@ const EventForm = ({
 }: {
   method: "POST" | "PUT";
   action: string;
-    initial?: CreateEventDTO;
+  initial?: CreateEventDTO;
 }) => {
   const [loading, setLoading] = useState(false);
-  const {toast} = useNotify();
+  const { toast } = useNotify();
   const [eventData, setEventData] = useState<CreateEventDTO>(
     initial || {
       name: "",
       date: new Date(),
       eventLink: "",
-      description: "",
+      description: "Event Description",
       isVirtual: false,
       location: "",
       status: "UPCOMING",
@@ -36,6 +40,8 @@ const EventForm = ({
       tags: [],
     },
   );
+
+  const [rawJson, setRawJson] = useState(JSON.stringify(EventSchema.parse(initial ?? example), null, 2));
   const [date, setDate] = useState(
     (initial?.date || new Date()).toISOString().split("T")[0],
   );
@@ -78,7 +84,7 @@ const EventForm = ({
       body: JSON.stringify(eventData),
     });
     let resJson = await res.json();
-    
+
     if (res.status == 200) {
       message("success", resJson.message);
 
@@ -106,6 +112,30 @@ const EventForm = ({
     }));
   }
 
+  function parseJson(json: string) {
+    try {
+      const newData = JSON.parse(json);
+      const valid = EventSchema.safeParse(newData)
+
+      if (!valid.success) {
+        for (const e of valid.error.errors) {
+          toast(`${e.path} ${e.message}`, {
+            type: "error",
+          });
+        }
+      } else {
+
+        setEventData(valid.data)
+      }
+
+    } catch (error) {
+      toast("Error parsing JSON: " + error, { type: 'error' })
+    }
+  }
+
+  function handleDataChange(data: CreateEventDTO) {
+    setEventData(data)
+  }
   return (
     <div className="light:bg-gray-100 light:text-black flex min-h-screen items-center justify-center dark:bg-gray-700 dark:text-gray-800">
       <div className="max-h-screen w-full max-w-4xl overflow-scroll rounded bg-white p-8 shadow-md">
@@ -113,115 +143,9 @@ const EventForm = ({
           {method === "POST" ? "Create" : "Update"} Event
         </h2>
         <form onSubmit={handleSubmit}>
-          <div className="mb-4">
-            <label className="block text-sm font-medium text-gray-700">
-              Name :
-            </label>
-            <input
-              type="text"
-              name="name"
-              className="mt-1 w-full rounded border p-2"
-              value={eventData.name}
-              onChange={handleInputChange}
-              required
-            />
-          </div>
-          <div className="mb-4">
-            <label className="block text-sm font-medium text-gray-700">
-              Date:
-            </label>
-            <input
-              type="date"
-              name="date"
-              className="mt-1 w-full rounded border p-2"
-              value={date}
-              required
-              onChange={(event) => {
-                setDate(event.target.value);
-                setEventData((prev) => ({
-                  ...prev,
-                  date: new Date(event.target.value),
-                }));
-              }}
-            />
-          </div>
-          <div className="mb-4">
-            <label className="block text-sm font-medium text-gray-700">
-              Status:
-            </label>
-            <select
-              name="status"
-              className="mt-1 w-full rounded border p-2"
-              value={eventData.status}
-              onChange={handleInputChange}
-              required
-            >
-              {Object.values(EventStatus).map((status) => (
-                <option key={status} value={status}>
-                  {status}
-                </option>
-              ))}
-            </select>
-          </div>
-          <div className="mb-4">
-            <label className="block text-sm font-medium text-gray-700">
-              Event Link:
-            </label>
-            <input
-              type="url"
-              name="eventLink"
-              className="mt-1 w-full rounded border p-2"
-              value={eventData.eventLink}
-              onChange={handleInputChange}
-              required
-            />
-          </div>
-          <div className="mb-4">
-            <label className="block text-sm font-medium text-gray-700">
-              Is Virtual:
-              <input
-                type="checkbox"
-                name="isVirtual"
-                className="ml-2 "
-                checked={eventData.isVirtual}
-                onChange={handleInputChange}
-              />
-            </label>
-          </div>
-          <div className="mb-4">
-            <label className="block text-sm font-medium text-gray-700">
-              Description:
-            </label>
-            <textarea
-              name="description"
-              rows={4} // Adjust the number of rows as needed
-              className="mt-1 w-full rounded border p-2"
-              value={eventData.description}
-              onChange={handleInputChange}
-              required
-            />
-          </div>
-          <div className="mb-4">
-            <label className="block text-sm font-medium text-gray-700">
-              Location :
-            </label>
-            <input
-            type="text"
-            name="location"
-            placeholder="Google Maps URL"
-            title="Enter a valid Google Maps URL"
-            className="mt-1 w-full rounded border p-2 invalid:border-red-400 invalid:text-red-400 invalid:outline-red-500 invalid:ring-red-500"
-            value={eventData.location as string}
-            onChange={handleInputChange}
-              pattern="^https?:\/\/((www\.)?google\.com\/maps\/(embed\?|search\?)|maps\.app\.goo\.gl\/).+$"
-          />
-          </div>
-          <AddImagesAndTags
-            images={eventData.image}
-            tags={eventData.tags}
-            maxImages={1}
-            onImagesAndTagsChange={handleChangedImage}
-          ></AddImagesAndTags>
+
+          <JsonInput rawJson={rawJson} setRawJson={setRawJson} example={JSON.stringify(example, null, 2)} parseJson={parseJson} />
+          <DynamicInput defaultValue={eventData} onChange={handleDataChange} schema={eventFormSchema} />
           <button
             disabled={loading}
             type="submit"

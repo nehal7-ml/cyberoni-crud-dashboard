@@ -15,7 +15,7 @@ import { read as readDiscount } from "@/crud/discount";
 import {
   BlogCategory,
   CreateBlogDTO,
-  CreateCaseStudy,
+  CreateCaseStudyDTO,
   CreateDiscountDTO,
   CreateGptPromptDTO,
   CreateProductDTO,
@@ -66,7 +66,7 @@ async function UpdateForm({
     const caseStudy = (await readCaseStudy(
       params.id,
       prisma,
-    )) as CreateCaseStudy;
+    )) as CreateCaseStudyDTO;
     const service = await getAllServices(0, 0, prisma);
 
     if (caseStudy)

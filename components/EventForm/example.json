@@ -1,0 +1,21 @@
+{
+    "name": "Sample Event",
+    "date": "2024-06-05T00:00:00.000Z",
+    "eventLink": "https://example.com/event",
+    "description": "This is a sample event description.",
+    "isVirtual": true,
+    "location": "https://www.google.com/maps/place/Sample+Location",
+    "status": "UPCOMING",
+    "image": [
+      {
+        "name": "image1",
+        "src": "https://example.com/image1.jpg"
+      }
+    ],
+    "tags": [
+      {
+        "name": "Sample Tag"
+      }
+    ]
+  }
+  

@@ -7,21 +7,73 @@ import Loading from "../Loading";
 import { Edit, PlusCircle, X, XCircle } from "lucide-react";
 import Notification, { useNotify } from "../Notification";
 
+function ImageChip({
+  image,
+  index,
+  onDelete,
+  update,
+}: {
+  image: CreateImageDTO;
+  index: number;
+  update: (index: number) => void;
+  onDelete: (index: number) => void;
+}) {
+  return (
+    <>
+      <div
+        key={image.src}
+        className="relative flex flex-col rounded bg-gray-200 p-2"
+      >
+        {/* eslint-disable-next-line @next/next/no-img-element */}
+        <img
+          src={image.src}
+          alt={image.name as string}
+          className="h-20 w-20 cursor-pointer object-cover"
+          onClick={() => {
+            update(index);
+          }}
+        />
+        <div className="line-clamp-1 w-20 text-ellipsis p-1 hover:line-clamp-none hover:w-auto hover:overflow-visible hover:whitespace-nowrap hover:shadow-md">
+          {image.name}
+        </div>
+        <div className="absolute right-2 top-1  flex items-center justify-center">
+          <button
+            type="button"
+            className="ml-2 text-red-600 hover:text-red-800 focus:outline-none focus:ring focus:ring-red-300"
+            onClick={() => onDelete(index)}
+          >
+            <XCircle />
+          </button>
+        </div>
+
+        <div className="  flex items-center justify-center">
+          <button
+            type="button"
+            className="ml-2 rounded-md p-1 text-blue-600 hover:text-blue-800 hover:shadow-md focus:outline-none focus:ring focus:ring-red-300"
+            onClick={() => update(index)}
+          >
+            <Edit />
+          </button>
+        </div>
+      </div>
+    </>
+  );
+}
 function AddImage({
   defaultImages,
   onImagesChange,
   maxImages,
   submit,
-  name
+  name,
 }: {
   defaultImages?: CreateImageDTO[];
   onImagesChange: (images: CreateImageDTO[]) => void;
   maxImages?: number;
   submit?: boolean;
-  name?:string
+  name?: string;
 }) {
   const [images, setImages] = useState<CreateImageDTO[]>(defaultImages || []);
-  const {toast} = useNotify();
+  const { toast } = useNotify();
 
   const [imageModal, setImageModal] = useState(false);
   const [currentImageIndex, setCurrentImageIndex] = useState(-1);
@@ -61,11 +113,8 @@ function AddImage({
     console.log("loaded Image");
   };
 
-  const handleRemoveImage = async (
-    imageToRemove: CreateImageDTO,
-    index: number,
-  ) => {
-    const newFiles = images.filter((image) => image.src !== imageToRemove.src);
+  const handleRemoveImage = async (toRemove: number) => {
+    const newFiles = images.filter((_image, index) => index === toRemove);
     setImages(newFiles);
     onImagesChange(newFiles);
   };
@@ -112,16 +161,19 @@ function AddImage({
 
   useEffect(() => {
     //console.log("images chnage uef : ", defaultImages, images, name);
-    if (defaultImages && defaultImages.length > 0 && !arraysAreEqual(images, defaultImages)) {
-    console.log("setinig  updateing imafe", defaultImages);
+    if (
+      defaultImages &&
+      defaultImages.length > 0 &&
+      !arraysAreEqual(images, defaultImages)
+    ) {
+      console.log("setinig  updateing imafe", defaultImages);
       setImages(defaultImages);
     }
   }, [defaultImages, images, name]);
 
-
-  function updateImage(image: CreateImageDTO, index: number = -1) {
+  function updateImage(index: number = -1) {
     setCurrentImageIndex(index);
-    setImage(index === -1 ? image : images[index]);
+    setImage(images[index]);
     setImageModal(true);
   }
   return (
@@ -130,49 +182,24 @@ function AddImage({
       <div className="mb-4">
         <div className="mb-4 flex flex-wrap gap-2">
           {images.map((image, index) => (
-            <div
-              key={image.src}
-              className="relative flex flex-col rounded bg-gray-200 p-2"
-            >
-              {/* eslint-disable-next-line @next/next/no-img-element */}
-              <img
-                src={image.src}
-                alt={image.name as string}
-                className="h-20 w-20 cursor-pointer object-cover"
-                onClick={() => {
-                  updateImage(image);
-                }}
-              />
-              <div className="line-clamp-1 w-20 text-ellipsis p-1 hover:line-clamp-none hover:w-auto hover:overflow-visible hover:whitespace-nowrap hover:shadow-md">
-                {image.name}
-              </div>
-              <div className="absolute right-2 top-1  flex items-center justify-center">
-                <button
-                  type="button"
-                  className="ml-2 text-red-600 hover:text-red-800 focus:outline-none focus:ring focus:ring-red-300"
-                  onClick={() => handleRemoveImage(image, index)}
-                >
-                  <XCircle />
-                </button>
-              </div>
-
-              <div className="  flex items-center justify-center">
-                <button
-                  type="button"
-                  className="ml-2 rounded-md p-1 text-blue-600 hover:text-blue-800 hover:shadow-md focus:outline-none focus:ring focus:ring-red-300"
-                  onClick={() => updateImage(image, index)}
-                >
-                  <Edit />
-                </button>
-              </div>
-            </div>
+            <ImageChip
+              key={index}
+              index={index}
+              image={image}
+              update={updateImage}
+              onDelete={handleRemoveImage}
+            />
           ))}
         </div>
 
         <div>
           <button
             type="button"
-            onClick={() => (setImageModal(true), setImage({ name: "", src: "" }), setCurrentImageIndex(-1))}
+            onClick={() => (
+              setImageModal(true),
+              setImage({ name: "", src: "" }),
+              setCurrentImageIndex(-1)
+            )}
             className="rounded-full bg-blue-500 p-2 hover:bg-blue-600 hover:shadow-lg"
           >
             <PlusCircle className=" text-white" />
