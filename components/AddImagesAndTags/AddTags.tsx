@@ -21,7 +21,7 @@ function AddTags({
 }) {
   const [tags, setTags] = useState<CreateTagDTO[]>(defaultTags || []);
   const [newTagName, setNewTagName] = useState("");
-  const {toast} = useNotify();
+  const { toast } = useNotify();
 
   const handleRemoveTag = (tagToRemove: CreateTagDTO) => {
     let newTags = tags.filter((tag) => tag.name !== tagToRemove.name);
@@ -80,7 +80,7 @@ function AddTags({
       <h2 className="mb-2 text-lg font-semibold">Add Tags</h2>
       <div className="mb-4">
         <div className="flex flex-wrap gap-2">
-          {tags.map((tag) => (
+          {tags && tags.map((tag) => (
             <div
               key={tag.name}
               className="flex items-center rounded bg-blue-200 p-2 text-blue-800"

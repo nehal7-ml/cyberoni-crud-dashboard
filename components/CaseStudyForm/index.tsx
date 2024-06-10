@@ -1,5 +1,5 @@
 "use client";
-import { CreateCaseStudy, UserPersona } from "@/crud/DTOs";
+import { CreateCaseStudyDTO, UserPersona } from "@/crud/DTOs";
 import { useEffect, useMemo, useState } from "react";
 import AddImage from "../AddImagesAndTags/AddImage";
 import Image from "next/image";
@@ -11,7 +11,7 @@ import { Service } from "@prisma/client";
 import LoadingDots from "../shared/loading-dots";
 import { SafeParseReturnType } from "zod";
 import DynamicInput from "../DynamicInput";
-import { userPersona } from "./formSchema";
+import { caseStudyFormSchema, userPersona } from "./formSchema";
 import { useRouter } from "next/navigation";
 import JsonInput from "../shared/JsonInput";
 import example from "./example.json";
@@ -32,14 +32,14 @@ function CaseStudyForm({
   types: (Service & {
     SubServices: SubService[];
   })[];
-  initial?: CreateCaseStudy;
+  initial?: CreateCaseStudyDTO;
 }) {
   const [loading, setLoading] = useState(false);
   const { toast } = useNotify();
   const router = useRouter();
   const [userPersonaForm, setUserPersonaForm] = useState(false);
 
-  const [caseData, setCaseData] = useState<CreateCaseStudy>(
+  const [caseData, setCaseData] = useState<CreateCaseStudyDTO>(
     initial
       ? {
           ...initial,
@@ -75,17 +75,11 @@ function CaseStudyForm({
     setLoading(true);
 
     e.preventDefault();
-    const apiUrl = process.env.NEXT_PUBLIC_API_URL;
-    const headers = {
-      "Content-Type": "application/json",
-      Authorization: "Bearer your-access-token",
-    };
-    // Send the userData to your backend for creating the user
+
     console.log(caseData);
     const res = await fetch(`${action}`, {
       method: method,
       body: JSON.stringify(caseData),
-      headers,
     });
     let resJson = await res.json();
     setLoading(false);
@@ -141,21 +135,6 @@ function CaseStudyForm({
     }));
   };
 
-  function handleListInput(name: string, value: string[]) {
-    setCaseData((prevData) => ({
-      ...prevData,
-      [name]: value,
-    }));
-  }
-
-  function handleImageChange(name: string, images: CreateImageDTO[]) {
-    // console.log(images);
-    setCaseData((prevData) => ({
-      ...prevData,
-      [name]: images,
-    }));
-  }
-
   function parseJson(json: string) {
     try {
       const newData = JSON.parse(json);
@@ -179,6 +158,18 @@ function CaseStudyForm({
     }
   }
 
+  function handleDataChange(data: CreateCaseStudyDTO) {
+    setCaseData((prev) => ({
+      ...prev,
+      ...data,
+      userPersonas: data.userPersonas.map((userPersona) => ({
+        ...userPersona,
+        // @ts-expect-error
+        image: userPersona.image ? userPersona.image[0] : undefined,
+      })),
+    }));
+  }
+
   return (
     <>
       <div className="light:bg-gray-100 light:text-black flex h-[94vh]  max-h-screen items-center justify-center bg-gray-100 dark:bg-gray-700 dark:text-gray-800 ">
@@ -194,18 +185,7 @@ function CaseStudyForm({
                 setRawJson={setRawJson}
                 example={JSON.stringify(example, null, 2)}
               />
-              <div className="mb-4">
-                <label className="block text-sm font-medium text-gray-700">
-                  Title:
-                </label>
-                <input
-                  type="text"
-                  name="title"
-                  className="mt-1 w-full rounded border p-2"
-                  value={caseData.title}
-                  onChange={handleInputChange}
-                />
-              </div>
+
               <div className="mb-4">
                 <label className="block text-sm font-medium text-gray-700">
                   Service :
@@ -282,216 +262,20 @@ function CaseStudyForm({
                 </select>
               </div>
 
-              <div className="mb-4">
-                <label className="block text-sm font-medium text-gray-700">
-                  Preview:
-                </label>
-                <textarea
-                  name="preview"
-                  rows={7}
-                  className="mt-1 w-full rounded border p-2"
-                  value={caseData.preview}
-                  onChange={handleInputChange}
-                />
-              </div>
-              <div className="mb-4">
-                <label className="block text-sm font-medium text-gray-700">
-                  problemStatement:
-                </label>
-                <textarea
-                  name="problemStatement"
-                  rows={7}
-                  className="mt-1 w-full rounded border p-2"
-                  value={caseData.problemStatement}
-                  onChange={handleInputChange}
-                />
-              </div>
-              <div className="mb-4">
-                <ListInput
-                  label="Goals"
-                  initial={caseData.goals}
-                  onChange={(values) => handleListInput("goals", values)}
-                />
-              </div>
-              <div className="mb-4">
-                <ListInput
-                  label="Possible solutions"
-                  initial={caseData.possibleSolutions}
-                  onChange={(values) =>
-                    handleListInput("possibleSolutions", values)
-                  }
-                />
-              </div>
-              <div className="mb-4">
-                <ListInput
-                  label="User Problem "
-                  initial={caseData.userProblems}
-                  onChange={(values) => handleListInput("userProblems", values)}
-                />
-              </div>
-              <div className="mb-4">
-                <label className="block text-sm font-medium text-gray-700">
-                  Understanding the problems:
-                </label>
-                <div>
-                  <textarea
-                    name="userResearch"
-                    rows={7}
-                    className="mt-1 w-full rounded border p-2"
-                    value={caseData.userResearch}
-                    onChange={handleInputChange}
-                  />
-                </div>
-              </div>
-              <div className="mb-4">
-                <label className="block text-sm font-medium text-gray-700">
-                  Key Learnings:
-                </label>
-                <div>
-                  <textarea
-                    name="keyLearning"
-                    rows={7}
-                    className="mt-1 w-full rounded border p-2"
-                    value={caseData.keyLearning}
-                    onChange={handleInputChange}
-                  />
-                </div>
-              </div>
-              <div className="mb-4 h-fit   flex-grow">
-                <label className="block text-sm font-medium text-gray-700">
-                  User Personas:
-                </label>
-                <DynamicInput
-                  onChange={(value) =>
-                    setCaseData({
-                      ...caseData,
-                      userPersonas: value.map((p: any) => ({
-                        ...p,
-                        image: p.image[0],
-                      })) as UserPersona[],
-                    })
-                  }
-                  defaultValue={useMemo(
-                    () =>
-                      caseData.userPersonas.map((persona) => ({
-                        ...persona,
-                        image: [persona.image],
-                      })),
-                    [caseData.userPersonas],
-                  )}
-                  schema={userPersona}
-                />
-              </div>
-              <div className="mb-4">
-                <label className="block text-sm font-medium text-gray-700">
-                  Image 1 :
-                </label>
-                <AddImage
-                  name="image-1"
-                  maxImages={1}
-                  defaultImages={useMemo(
-                    () => (caseData.images[0] ? [caseData.images[0]] : []),
-                    [caseData.images],
-                  )}
-                  onImagesChange={(images) => {
-                    console.log("callcaing chnage");
-
-                    setCaseData((prev) => ({
-                      ...prev,
-                      images: [images[0], ...prev.images.slice(-1)],
-                    }));
-                  }}
-                />
-              </div>
-              <div className="mb-4">
-                <label className="block text-sm font-medium text-gray-700">
-                  Image 2:
-                </label>
-                <AddImage
-                  name="image-2"
-                  maxImages={1}
-                  defaultImages={useMemo(
-                    () => (caseData.images[0] ? [caseData.images[0]] : []),
-                    [caseData.images],
-                  )}
-                  onImagesChange={(images) =>
-                    setCaseData((prev) => ({
-                      ...prev,
-                      images: [...prev.images.slice(0, 1), images[0]],
-                    }))
-                  }
-                />
-              </div>
-              <div className="mb-4">
-                <label className="block text-sm font-medium text-gray-700">
-                  Wireframes:
-                </label>
-                <AddImage
-                  name="wireframes"
-                  maxImages={5}
-                  defaultImages={caseData.wireFrames ? caseData.wireFrames : []}
-                  onImagesChange={(images) =>
-                    handleImageChange("wireFrames", images)
-                  }
-                />
-              </div>
-              <div className="mb-4">
-                <label className="block text-sm font-medium text-gray-700">
-                  hifi designs:
-                </label>
-                <AddImage
-                  name="hifi-design"
-                  maxImages={5}
-                  defaultImages={caseData.hifiDesign ? caseData.hifiDesign : []}
-                  onImagesChange={(images) =>
-                    handleImageChange("hifiDesign", images)
-                  }
-                />
-              </div>
-              <div className="mb-4">
-                <label className="block text-sm font-medium text-gray-700">
-                  user flow:
-                </label>
-                <AddImage
-                  name="user-flow"
-                  maxImages={5}
-                  defaultImages={caseData.userFlow ? caseData.userFlow : []}
-                  onImagesChange={(images) =>
-                    handleImageChange("userFlow", images)
-                  }
-                />
-              </div>
-              <div className="mb-4">
-                <label className="block text-sm font-medium text-gray-700">
-                  architecture Analysis:
-                </label>
-                <AddImage
-                  name="architecture-analysis"
-                  maxImages={5}
-                  defaultImages={
-                    caseData.architecture ? caseData.architecture : []
-                  }
-                  onImagesChange={(images) =>
-                    handleImageChange("architecture", images)
-                  }
-                />
-              </div>
-              <div className="mb-4">
-                <label className="block text-sm font-medium text-gray-700">
-                  Competitive Analysis:
-                </label>
-                <AddImage
-                  maxImages={1}
-                  defaultImages={
-                    caseData.competitiveAnalysis
-                      ? caseData.competitiveAnalysis
-                      : []
-                  }
-                  onImagesChange={(images) =>
-                    handleImageChange("competetiveAnalysis", images)
-                  }
-                />
-              </div>
+              <DynamicInput
+                schema={caseStudyFormSchema}
+                defaultValue={useMemo(
+                  () => ({
+                    ...caseData,
+                    userPersonas: caseData.userPersonas?.map((userPersona) => ({
+                      ...userPersona,
+                      image: userPersona.image ? [userPersona.image] : [],
+                    })),
+                  }),
+                  [caseData],
+                )}
+                onChange={handleDataChange}
+              />
             </div>
 
             <button

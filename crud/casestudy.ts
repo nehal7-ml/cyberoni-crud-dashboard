@@ -2,10 +2,10 @@ import "server-only";
 import { Image, PrismaClient } from "@prisma/client";
 import { CreateImageDTO } from "./DTOs";
 import { connectOrCreateObject, createImageJson } from "./images";
-import { CreateCaseStudy } from "./DTOs";
+import { CreateCaseStudyDTO } from "./DTOs";
 export type CaseStudyType = "ECOMMERCE" | "LANDING" | "SOFTWARE" | "GRAPHICS";
 
-export async function create(caseStudy: CreateCaseStudy, prisma: PrismaClient) {
+export async function create(caseStudy: CreateCaseStudyDTO, prisma: PrismaClient) {
   const cases = prisma.caseStudy;
   let images = await connectOrCreateObject(caseStudy.images, []);
   let competetiveAnalysis = await connectOrCreateObject(
@@ -59,12 +59,12 @@ export async function read(caseStudyId: string, prisma: PrismaClient) {
     hifiDesign: caseStudy?.hifiDesign as CreateImageDTO[],
     userFlow: caseStudy?.userFlow as CreateImageDTO[],
     wireFrames: caseStudy?.wireFrames as CreateImageDTO[],
-  } as CreateCaseStudy;
+  } as CreateCaseStudyDTO;
 }
 
 export async function update(
   caseStudyId: string,
-  caseStudy: CreateCaseStudy,
+  caseStudy: CreateCaseStudyDTO,
   prisma: PrismaClient,
 ) {
   const cases = prisma.caseStudy;

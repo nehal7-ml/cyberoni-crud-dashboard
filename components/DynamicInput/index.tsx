@@ -245,14 +245,17 @@ const DynamicInput: React.FC<DynamicInputProps> = ({
             ))}
           </div>
         ) : schema.type === "image" ? (
-          <AddImage
-            name={schema.title}
-            defaultImages={currentData}
-            onImagesChange={(images) => (
-              onChange(images), setCurrentData(images)
-            )}
-            maxImages={schema.max || 1}
-          />
+          <div>
+            <div>{schema.title}</div>
+            <AddImage
+              name={schema.title}
+              defaultImages={currentData}
+              onImagesChange={(images) => (
+                onChange(images), setCurrentData(images)
+              )}
+              maxImages={schema.max || 1}
+            />
+          </div>
         ) : schema.type === "tags" ? (
           <AddTags
             defaultTags={currentData}

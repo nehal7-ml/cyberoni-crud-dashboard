@@ -267,7 +267,7 @@ export type CreateReferralDTO = {
   }
   | {};
 };
-export type CreateCaseStudy = {
+export type CreateCaseStudyDTO = {
   id?: string;
   title: string;
   serviceId?: string;

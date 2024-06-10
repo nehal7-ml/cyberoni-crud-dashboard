@@ -104,7 +104,12 @@ function ArrayForm({
             {schema.items.type === "string" ? (
               <>
                 <ListInput
-                  onChange={(data) => setItems(data)}
+                  onChange={(newItems) => {
+                    onChange(newItems);
+                    setItems(newItems);
+                    setOpenForm(false);
+                    setCurrentIndex(-1);
+                  }}
                   initial={items as string[]}
                   label={schema.title}
                 />
