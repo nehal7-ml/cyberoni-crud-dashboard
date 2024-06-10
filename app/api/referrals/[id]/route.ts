@@ -16,8 +16,7 @@ export const { POST, DELETE, GET, PATCH, PUT } = apiHandler({
 async function put(req: NextRequest, { params }: { params: { id: string } }) {
   const referralId = params.id as string;
   const referral = (await req.json()) as CreateReferralDTO;
-  const res = await fetch(referral.link);
-  if (res.status >= 400) throw HttpError(406, "Link in unreachable");
+  await fetch(referral.link).catch(() => { throw HttpError(406, "Link in unreachable"); });
   const updatedUser = await update(referralId, referral, prisma);
   revalidatePath(`/dashboard/referrals/view/${referralId}`);
   return NextResponse.json({ message: "update success", data: updatedUser });
