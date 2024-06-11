@@ -1,8 +1,10 @@
 import React from "react";
 import { useSeoUtils } from "./useSideBarUtils";
-import Tooltip from "@/components/shared/ToolTip";
 import FloatingLabelInput from "@/components/shared/FloatingLabelInput";
 import FloatingLabelTextArea from "@/components/shared/FloatingLabelTextArea";
+import { Progress } from "@/components/ui/progress";
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
+import { Button } from "@/components/ui/button";
 interface SideBarProps {
   textAreaValue: string;
 }
@@ -37,7 +39,7 @@ const SeoChecker: React.FC<SideBarProps> = ({ textAreaValue }) => {
   let wordCount = wordsArray.length;
 
   // Checking and processing h1 tags
-  const h1Check = /<h1>(\S*?)<\/h1>/i.exec(textAreaValue);
+  const h1Check = /<h1\b[^>]*>(.*?)<\/h1>/i.exec(textAreaValue);
   const keywordInH1 =
     h1Check &&
     new RegExp(`\\b${keyword.toLowerCase()}\\b`, "i").test(
@@ -175,12 +177,8 @@ const SeoChecker: React.FC<SideBarProps> = ({ textAreaValue }) => {
         <div style={{ display: "flex", flexDirection: "column" }}>
           <div style={{ marginTop: "2rem" }}>
             <FloatingLabelInput
-              label="1. Enter focus keyword"
-              variant="outlined"
+              placeholder="1. Enter focus keyword"
               value={keyword}
-              fullWidth
-              InputLabelProps={{ shrink: true }}
-              inputProps={{ style: { paddingLeft: "15px" } }}
               onChange={handleKeywordChange}
             />
             <div
@@ -195,17 +193,25 @@ const SeoChecker: React.FC<SideBarProps> = ({ textAreaValue }) => {
           </div>
 
           <div style={{ display: "flex" }}>
-            <Tooltip placement="top" title="Google Search result preview">
-              {/* eslint-disable-next-line @next/next/no-img-element */}
-              <img
-                height="50"
-                width="50"
-                src="https://upload.wikimedia.org/wikipedia/commons/thumb/5/53/Google_%22G%22_Logo.svg/800px-Google_%22G%22_Logo.svg.png"
-                alt="Google logo"
-                style={{ marginRight: "1rem" }}
-              />
-            </Tooltip>
-            <h3>Google Preview</h3>
+            <TooltipProvider>
+              <Tooltip>
+                <TooltipTrigger asChild>
+                  <div   className="flex justify-center items-center">
+                    {/* eslint-disable-next-line @next/next/no-img-element */}
+                    <img
+                      height="50"
+                      width="50"
+                      src="https://upload.wikimedia.org/wikipedia/commons/c/c1/Google_%22G%22_logo.svg"
+                      alt="Google logo"
+                    />
+                    <h3>Google Preview</h3>
+                  </div>
+                </TooltipTrigger>
+                <TooltipContent>
+                Google Search result preview
+                </TooltipContent>
+              </Tooltip>
+            </TooltipProvider>
           </div>
 
           <div
@@ -232,7 +238,7 @@ const SeoChecker: React.FC<SideBarProps> = ({ textAreaValue }) => {
             </h6>
             <span
               className="text-sm"
-              
+
               color="text.secondary"
               style={{ fontSize: "14px", wordWrap: "break-word" }}
             >
@@ -250,13 +256,8 @@ const SeoChecker: React.FC<SideBarProps> = ({ textAreaValue }) => {
               }}
             >
               <FloatingLabelInput
-                label="2. Enter Page Title"
-                variant="outlined"
+                placeholder="2. Enter Page Title"
                 value={pageTitle}
-                InputLabelProps={{
-                  shrink: true,
-                }}
-                fullWidth
                 onFocus={() => setTitleHelperVisibility(true)}
                 onBlur={handleTitleBlur}
                 onChange={handlePageTitleChange}
@@ -273,63 +274,56 @@ const SeoChecker: React.FC<SideBarProps> = ({ textAreaValue }) => {
                     <>
                       {helper.keywordInTitle
                         ? renderHelper(
-                            helper.keywordInTitle,
-                            `The focus keyword "${keyword}" appears in the Page Title`,
-                            () => "green"
-                          )
+                          helper.keywordInTitle,
+                          `The focus keyword "${keyword}" appears in the Page Title`,
+                          () => "green"
+                        )
                         : renderHelper(
-                            helper.keywordInTitle,
-                            `The focus keyword "${keyword}" doesn't appear in the Page Title`,
-                            () => "red"
-                          )}
+                          helper.keywordInTitle,
+                          `The focus keyword "${keyword}" doesn't appear in the Page Title`,
+                          () => "red"
+                        )}
                       {helper.keywordAtBeginning
                         ? renderHelper(
-                            helper.keywordAtBeginning,
-                            "Focus keyword appears at the beginning of the Page Title",
-                            () => "green"
-                          )
+                          helper.keywordAtBeginning,
+                          "Focus keyword appears at the beginning of the Page Title",
+                          () => "green"
+                        )
                         : renderHelper(
-                            helper.keywordAtBeginning,
-                            "Put the focus keyword at the beginning of Page Title",
-                            () => "red"
-                          )}
+                          helper.keywordAtBeginning,
+                          "Put the focus keyword at the beginning of Page Title",
+                          () => "red"
+                        )}
                       {helper.titleTooLong
                         ? renderHelper(
-                            false,
-                            `The Page Title is too long. Remove ${
-                              pageTitle.length - 60
-                            } characters.`,
-                            () => "red"
-                          )
+                          false,
+                          `The Page Title is too long. Remove ${pageTitle.length - 60
+                          } characters.`,
+                          () => "red"
+                        )
                         : helper.titleGreat
-                        ? renderHelper(
+                          ? renderHelper(
                             true,
-                            `The Page Title length is great! ${
-                              60 - pageTitle.length
-                            } characters available. (${
-                              pageTitle.length
+                            `The Page Title length is great! ${60 - pageTitle.length
+                            } characters available. (${pageTitle.length
                             } of 60 characters used)`,
                             () => "green"
                           )
-                        : helper.titleSufficient
-                        ? renderHelper(
-                            true,
-                            `The Page Title length is sufficient! ${
-                              60 - pageTitle.length
-                            } characters available. (${
-                              pageTitle.length
-                            } of 60 characters used)`,
-                            () => "yellow"
-                          )
-                        : renderHelper(
-                            false,
-                            `The Page Title is too short, ${
-                              60 - pageTitle.length
-                            } characters available. (${
-                              pageTitle.length
-                            } of 60 characters used)`,
-                            () => "red"
-                          )}
+                          : helper.titleSufficient
+                            ? renderHelper(
+                              true,
+                              `The Page Title length is sufficient! ${60 - pageTitle.length
+                              } characters available. (${pageTitle.length
+                              } of 60 characters used)`,
+                              () => "yellow"
+                            )
+                            : renderHelper(
+                              false,
+                              `The Page Title is too short, ${60 - pageTitle.length
+                              } characters available. (${pageTitle.length
+                              } of 60 characters used)`,
+                              () => "red"
+                            )}
                     </>
                   ) : (
                     <div
@@ -368,7 +362,7 @@ const SeoChecker: React.FC<SideBarProps> = ({ textAreaValue }) => {
             >
               <FloatingLabelTextArea
                 placeholder="3. Enter Meta Description"
-                value={metaDescription}                
+                value={metaDescription}
                 rows={4}
                 onChange={handleMetaDescriptionChange}
                 onFocus={() => setDescriptionHelperVisibility(true)}
@@ -386,52 +380,45 @@ const SeoChecker: React.FC<SideBarProps> = ({ textAreaValue }) => {
                     <>
                       {helper.keywordInDescription
                         ? renderHelper(
-                            helper.keywordInDescription,
-                            `The focus keyword "${keyword}" appears in the Meta description`,
-                            () => "green"
-                          )
+                          helper.keywordInDescription,
+                          `The focus keyword "${keyword}" appears in the Meta description`,
+                          () => "green"
+                        )
                         : renderHelper(
-                            helper.keywordInDescription,
-                            `The focus keyword "${keyword}" doesn't appear in the Meta description`,
-                            () => "red"
-                          )}
+                          helper.keywordInDescription,
+                          `The focus keyword "${keyword}" doesn't appear in the Meta description`,
+                          () => "red"
+                        )}
                       {helper.descriptionTooLong
                         ? renderHelper(
-                            false,
-                            `The Meta Description is too long. Remove ${
-                              metaDescription.length - 160
-                            } characters.`,
-                            () => "red"
-                          )
+                          false,
+                          `The Meta Description is too long. Remove ${metaDescription.length - 160
+                          } characters.`,
+                          () => "red"
+                        )
                         : helper.descriptionGreat
-                        ? renderHelper(
+                          ? renderHelper(
                             true,
-                            `The Meta Description length is great! ${
-                              160 - metaDescription.length
-                            } characters available. (${
-                              metaDescription.length
+                            `The Meta Description length is great! ${160 - metaDescription.length
+                            } characters available. (${metaDescription.length
                             } of 160 characters used)`,
                             () => "green"
                           )
-                        : helper.descriptionSufficient
-                        ? renderHelper(
-                            true,
-                            `The Meta Description length is sufficient! ${
-                              160 - metaDescription.length
-                            } characters available. (${
-                              metaDescription.length
-                            } of 160 characters used)`,
-                            () => "yellow"
-                          )
-                        : renderHelper(
-                            false,
-                            `The Meta Description is too short, ${
-                              160 - metaDescription.length
-                            } characters available. (${
-                              metaDescription.length
-                            } of 160 characters used)`,
-                            () => "red"
-                          )}
+                          : helper.descriptionSufficient
+                            ? renderHelper(
+                              true,
+                              `The Meta Description length is sufficient! ${160 - metaDescription.length
+                              } characters available. (${metaDescription.length
+                              } of 160 characters used)`,
+                              () => "yellow"
+                            )
+                            : renderHelper(
+                              false,
+                              `The Meta Description is too short, ${160 - metaDescription.length
+                              } characters available. (${metaDescription.length
+                              } of 160 characters used)`,
+                              () => "red"
+                            )}
                     </>
                   ) : (
                     <div
@@ -474,157 +461,141 @@ const SeoChecker: React.FC<SideBarProps> = ({ textAreaValue }) => {
         >
           <div style={{ marginTop: "1rem", marginBottom: "1rem" }}>
             <h4>Page Title score ({calculateTitleScore()})</h4>
-            <LinearProgress
-              variant="determinate"
+            <Progress
+              className=""
               value={calculateTitleScore()}
             />
           </div>
 
           {helper.keywordNotEmpty
             ? renderHelper(
-                true,
-                `The focus keyword "${keyword}" has been set.`,
-                () => "green"
-              )
+              true,
+              `The focus keyword "${keyword}" has been set.`,
+              () => "green"
+            )
             : renderHelper(
-                false,
-                "No focus keyword has been set.",
-                () => "red"
-              )}
+              false,
+              "No focus keyword has been set.",
+              () => "red"
+            )}
           {helper.keywordInTitle && helper.keywordNotEmpty
             ? renderHelper(
-                helper.keywordInTitle,
-                `The focus keyword appears in the Page Title`,
-                () => "green"
-              )
+              helper.keywordInTitle,
+              `The focus keyword appears in the Page Title`,
+              () => "green"
+            )
             : renderHelper(
-                false,
-                `The focus keyword doesn't appear in the Page Title`,
-                () => "red"
-              )}
+              false,
+              `The focus keyword doesn't appear in the Page Title`,
+              () => "red"
+            )}
           {helper.keywordAtBeginning && helper.keywordNotEmpty
             ? renderHelper(
-                helper.keywordAtBeginning,
-                "Focus keyword appears at the beginning of the Page Title",
-                () => "green"
-              )
+              helper.keywordAtBeginning,
+              "Focus keyword appears at the beginning of the Page Title",
+              () => "green"
+            )
             : renderHelper(
-                false,
-                "Put the focus keyword at the beginning of Page Title",
-                () => "red"
-              )}
+              false,
+              "Put the focus keyword at the beginning of Page Title",
+              () => "red"
+            )}
           {helper.titleTooLong
             ? renderHelper(
-                false,
-                `The Page Title is too long. Remove ${
-                  pageTitle.length - 60
-                } characters.`,
-                () => "red"
-              )
+              false,
+              `The Page Title is too long. Remove ${pageTitle.length - 60
+              } characters.`,
+              () => "red"
+            )
             : helper.titleGreat
-            ? renderHelper(
+              ? renderHelper(
                 true,
-                `The Page Title length is great! ${
-                  60 - pageTitle.length
-                } characters available. (${
-                  pageTitle.length
+                `The Page Title length is great! ${60 - pageTitle.length
+                } characters available. (${pageTitle.length
                 } of 60 characters used)`,
                 () => "green"
               )
-            : helper.titleSufficient
-            ? renderHelper(
-                true,
-                `The Page Title length is sufficient! ${
-                  60 - pageTitle.length
-                } characters available. (${
-                  pageTitle.length
-                } of 60 characters used)`,
-                () => "yellow"
-              )
-            : renderHelper(
-                false,
-                `The Page Title is too short, ${
-                  60 - pageTitle.length
-                } characters available. (${
-                  pageTitle.length
-                } of 60 characters used)`,
-                () => "red"
-              )}
+              : helper.titleSufficient
+                ? renderHelper(
+                  true,
+                  `The Page Title length is sufficient! ${60 - pageTitle.length
+                  } characters available. (${pageTitle.length
+                  } of 60 characters used)`,
+                  () => "yellow"
+                )
+                : renderHelper(
+                  false,
+                  `The Page Title is too short, ${60 - pageTitle.length
+                  } characters available. (${pageTitle.length
+                  } of 60 characters used)`,
+                  () => "red"
+                )}
 
           <div style={{ marginTop: "1rem", marginBottom: "1rem" }}>
             <h4>Meta Description score ({calculateDescriptionScore()})</h4>
-            <LinearProgress
-              variant="determinate"
+            <Progress
               value={calculateDescriptionScore()}
             />
           </div>
 
           {helper.keywordNotEmpty
             ? renderHelper(
-                true,
-                `The focus keyword "${keyword}" has been set.`,
-                () => "green"
-              )
+              true,
+              `The focus keyword "${keyword}" has been set.`,
+              () => "green"
+            )
             : renderHelper(
-                false,
-                "No focus keyword has been set.",
-                () => "red"
-              )}
+              false,
+              "No focus keyword has been set.",
+              () => "red"
+            )}
 
           {helper.keywordInDescription && helper.keywordNotEmpty
             ? renderHelper(
-                helper.keywordInTitle,
-                `The focus keyword appears in the Meta Description`,
-                () => "green"
-              )
+              helper.keywordInTitle,
+              `The focus keyword appears in the Meta Description`,
+              () => "green"
+            )
             : renderHelper(
-                false,
-                `The focus keyword doesn't appear in the Meta Description`,
-                () => "red"
-              )}
+              false,
+              `The focus keyword doesn't appear in the Meta Description`,
+              () => "red"
+            )}
 
           {helper.descriptionTooLong
             ? renderHelper(
-                false,
-                `The Meta Description is too long. Remove ${
-                  metaDescription.length - 160
-                } characters.`,
-                () => "red"
-              )
+              false,
+              `The Meta Description is too long. Remove ${metaDescription.length - 160
+              } characters.`,
+              () => "red"
+            )
             : helper.descriptionGreat
-            ? renderHelper(
+              ? renderHelper(
                 true,
-                `The Meta Description length is great! ${
-                  160 - metaDescription.length
-                } characters available. (${
-                  metaDescription.length
+                `The Meta Description length is great! ${160 - metaDescription.length
+                } characters available. (${metaDescription.length
                 } of 160 characters used)`,
                 () => "green"
               )
-            : helper.descriptionSufficient
-            ? renderHelper(
-                true,
-                `The Meta Description length is sufficient! ${
-                  160 - metaDescription.length
-                } characters available. (${
-                  metaDescription.length
-                } of 160 characters used)`,
-                () => "yellow"
-              )
-            : renderHelper(
-                false,
-                `The Meta Description is too short, ${
-                  160 - metaDescription.length
-                } characters available. (${
-                  metaDescription.length
-                } of 160 characters used)`,
-                () => "red"
-              )}
+              : helper.descriptionSufficient
+                ? renderHelper(
+                  true,
+                  `The Meta Description length is sufficient! ${160 - metaDescription.length
+                  } characters available. (${metaDescription.length
+                  } of 160 characters used)`,
+                  () => "yellow"
+                )
+                : renderHelper(
+                  false,
+                  `The Meta Description is too short, ${160 - metaDescription.length
+                  } characters available. (${metaDescription.length
+                  } of 160 characters used)`,
+                  () => "red"
+                )}
 
           <div style={{ marginTop: "1rem", marginBottom: "1rem" }}>
             <h4>Content score ({calculateContentScore()})</h4>
-            <LinearProgress
-              variant="determinate"
+            <Progress
               value={calculateContentScore()}
             />
           </div>
@@ -632,130 +603,130 @@ const SeoChecker: React.FC<SideBarProps> = ({ textAreaValue }) => {
           {h1Check
             ? renderHelper(true, `You've added a H1. Good job!`, () => "green")
             : renderHelper(
-                false,
-                "You should add a H1 tag to your content.",
-                () => "red"
-              )}
+              false,
+              "You should add a H1 tag to your content.",
+              () => "red"
+            )}
 
           {keywordInH1 && helper.keywordNotEmpty
             ? renderHelper(
-                true,
-                `The focus keyword '${keyword}' appears in the H1!`,
-                () => "green"
-              )
+              true,
+              `The focus keyword '${keyword}' appears in the H1!`,
+              () => "green"
+            )
             : renderHelper(
-                false,
-                `The focus keyword doesn't appear in H1`,
-                () => "red"
-              )}
+              false,
+              `The focus keyword doesn't appear in H1`,
+              () => "red"
+            )}
 
           {textWithoutHTML !== ""
             ? renderHelper(
-                true,
-                `You've added text to your content.`,
-                () => "green"
-              )
+              true,
+              `You've added text to your content.`,
+              () => "green"
+            )
             : renderHelper(
-                false,
-                "Your content does not contain any text.",
-                () => "red"
-              )}
+              false,
+              "Your content does not contain any text.",
+              () => "red"
+            )}
 
           {wordCount >= 300
             ? renderHelper(
-                true,
-                `Your text contains ${wordCount} words, which is above the recommended minimum of 300.`,
-                () => "green"
-              )
+              true,
+              `Your text contains ${wordCount} words, which is above the recommended minimum of 300.`,
+              () => "green"
+            )
             : renderHelper(
-                false,
-                `Your text contains ${wordCount} words. Add more content to reach the recommended minimum of 300 words.`,
-                () => "red"
-              )}
+              false,
+              `Your text contains ${wordCount} words. Add more content to reach the recommended minimum of 300 words.`,
+              () => "red"
+            )}
 
           {keywordInFirstParagraph &&
-          textWithoutHTML !== "" &&
-          helper.keywordNotEmpty
+            textWithoutHTML !== "" &&
+            helper.keywordNotEmpty
             ? renderHelper(
-                true,
-                `Your first paragraph contains the keyword '${keyword}'.`,
-                () => "green"
-              )
+              true,
+              `Your first paragraph contains the keyword '${keyword}'.`,
+              () => "green"
+            )
             : renderHelper(
-                false,
-                `Your first paragraph does not contain the focused keyword. Consider adding it for better SEO.`,
-                () => "red"
-              )}
+              false,
+              `Your first paragraph does not contain the focused keyword. Consider adding it for better SEO.`,
+              () => "red"
+            )}
 
           {imgCheck
             ? renderHelper(
-                true,
-                `Your text contains image, which is good for SEO.`,
-                () => "green"
-              )
+              true,
+              `Your text contains image, which is good for SEO.`,
+              () => "green"
+            )
             : renderHelper(
-                false,
-                `Your text does not contain any image. Consider adding some for better SEO.`,
-                () => "red"
-              )}
+              false,
+              `Your text does not contain any image. Consider adding some for better SEO.`,
+              () => "red"
+            )}
 
           {helper.keywordInImgAlt && helper.keywordNotEmpty
             ? renderHelper(
-                true,
-                `Your images have alt attributes that contain the keyword '${keyword}', which is good for SEO.`,
-                () => "green"
-              )
+              true,
+              `Your images have alt attributes that contain the keyword '${keyword}', which is good for SEO.`,
+              () => "green"
+            )
             : renderHelper(
-                false,
-                `Your images do not have alt attributes containing the focused keyword. Consider adding them for better SEO.`,
-                () => "red"
-              )}
+              false,
+              `Your images do not have alt attributes containing the focused keyword. Consider adding them for better SEO.`,
+              () => "red"
+            )}
 
           {linkCheck
             ? renderHelper(
-                true,
-                `Your text contains links, which is good for SEO.`,
-                () => "green"
-              )
+              true,
+              `Your text contains links, which is good for SEO.`,
+              () => "green"
+            )
             : renderHelper(
-                false,
-                `Your text does not contain any links. Consider adding some for better SEO.`,
-                () => "red"
-              )}
+              false,
+              `Your text does not contain any links. Consider adding some for better SEO.`,
+              () => "red"
+            )}
 
           {helper.keywordNotEmpty ? (
             <>
               {wordCount > 0 &&
-              actualDensity >= desiredMinDensity &&
-              actualDensity <= desiredMaxDensity
+                actualDensity >= desiredMinDensity &&
+                actualDensity <= desiredMaxDensity
                 ? renderHelper(
-                    true,
-                    `The keyword '${keyword}' is used ${keywordOccurrences} times, maintaining a keyword density of ${actualDensity.toFixed(
-                      2
-                    )}%. This is within the optimal range of ${desiredMinDensity}% - ${desiredMaxDensity}%.`,
-                    () => "green"
-                  )
+                  true,
+                  `The keyword '${keyword}' is used ${keywordOccurrences} times, maintaining a keyword density of ${actualDensity.toFixed(
+                    2
+                  )}%. This is within the optimal range of ${desiredMinDensity}% - ${desiredMaxDensity}%.`,
+                  () => "green"
+                )
                 : wordCount > 0 && actualDensity < desiredMinDensity
-                ? renderHelper(
+                  ? renderHelper(
                     false,
                     `The keyword '${keyword}' is only used ${keywordOccurrences} times, resulting in a keyword density of ${actualDensity.toFixed(
                       2
                     )}%. For better SEO, try to use it more frequently to reach the desired keyword density range of ${desiredMinDensity}% - ${desiredMaxDensity}%.`,
                     () => "red"
                   )
-                : wordCount > 0 && actualDensity > desiredMaxDensity
-                ? renderHelper(
-                    false,
-                    `The keyword '${keyword}' is used ${keywordOccurrences} times, resulting in a keyword density of ${actualDensity.toFixed(
-                      2
-                    )}%. This is above the optimal range and could lead to keyword stuffing. Try to reduce the usage of the keyword to maintain a density within the range of ${desiredMinDensity}% - ${desiredMaxDensity}%.`,
-                    () => "red"
-                  )
-                : renderHelper(
-                    false,
-                    "There are no words in the text. Please add content.",
-                    () => "red"
-                  )}
+                  : wordCount > 0 && actualDensity > desiredMaxDensity
+                    ? renderHelper(
+                      false,
+                      `The keyword '${keyword}' is used ${keywordOccurrences} times, resulting in a keyword density of ${actualDensity.toFixed(
+                        2
+                      )}%. This is above the optimal range and could lead to keyword stuffing. Try to reduce the usage of the keyword to maintain a density within the range of ${desiredMinDensity}% - ${desiredMaxDensity}%.`,
+                      () => "red"
+                    )
+                    : renderHelper(
+                      false,
+                      "There are no words in the text. Please add content.",
+                      () => "red"
+                    )}
             </>
           ) : (
             renderHelper(false, "No focus keyword has been set.", () => "red")
@@ -763,15 +734,15 @@ const SeoChecker: React.FC<SideBarProps> = ({ textAreaValue }) => {
 
           {keywordInImgName && helper.keywordNotEmpty
             ? renderHelper(
-                true,
-                `Your images' filenames contain the keyword '${keyword}', which is good for SEO.`,
-                () => "green"
-              )
+              true,
+              `Your images' filenames contain the keyword '${keyword}', which is good for SEO.`,
+              () => "green"
+            )
             : renderHelper(
-                false,
-                `Your images' filenames do not contain the focused keyword. Consider renaming them for better SEO.`,
-                () => "red"
-              )}
+              false,
+              `Your images' filenames do not contain the focused keyword. Consider renaming them for better SEO.`,
+              () => "red"
+            )}
         </div>
       );
     }
@@ -781,28 +752,27 @@ const SeoChecker: React.FC<SideBarProps> = ({ textAreaValue }) => {
     <div
       style={{
         width: 370,
-        height: "100vh",
         backgroundColor: "#fff",
         borderRight: "1px solid #ddd",
         padding: "1rem",
       }}
+      className="w-96 overflow-hidden h-full"
     >
-      <List>
-        <ListItem
-          button
-          selected={activeMenu === "input"}
+      <ul className="flex flex-col justify-center items-start">
+        <li
+
+          className={`${activeMenu === "input" ? `bg-blue-300` : ``} p-4 cursor-pointer rounded-md w-full`}
           onClick={() => setActiveMenu("input")}
         >
-          <ListItemText primary="Input" />
-        </ListItem>
-        <ListItem
-          button
-          selected={activeMenu === "tips"}
+          <span />Input
+        </li>
+        <li
+          className={`${activeMenu === "tips" ? `bg-blue-300` : ``} p-4 cursor-pointer rounded-md w-full`}
           onClick={() => setActiveMenu("tips")}
         >
-          <ListItemText primary="SEO Optimization tips" />
-        </ListItem>
-      </List>
+          <span />SEO Optimization tips
+        </li>
+      </ul>
       <div
         style={{
           borderBottom: "1px solid #ddd",
@@ -810,7 +780,7 @@ const SeoChecker: React.FC<SideBarProps> = ({ textAreaValue }) => {
           marginBottom: "1rem",
         }}
       ></div>
-      {renderContent()}
+      <div className="w-full max-h-[45rem] overflow-y-auto"> {renderContent()}</div>
     </div>
   );
 };
