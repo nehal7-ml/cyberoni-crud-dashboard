@@ -82,7 +82,7 @@ function AddImage({
     src: "",
   });
 
-  const fileTypes = ["JPG", "PNG", "GIF"];
+  const fileTypes = ["JPG", "PNG", "GIF", "WEBP"];
 
   const [loading, setLoading] = useState(false);
 
