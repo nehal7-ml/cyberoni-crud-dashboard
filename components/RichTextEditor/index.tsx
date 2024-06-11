@@ -187,6 +187,11 @@ const Editor = ({
           </>
         )}
       </div>
+
+      <button>
+        
+      </button>
+       
     </div>
   );
 };

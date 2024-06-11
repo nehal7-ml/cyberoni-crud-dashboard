@@ -1,16 +1,8 @@
 import React from "react";
 import { useSeoUtils } from "./useSideBarUtils";
-
-import {
-    TextField,
-    List,
-    ListItem,
-    ListItemText,
-    Tooltip,
-    Box,
-    Typography,
-    LinearProgress,
-  } from "@mui/material";
+import Tooltip from "@/components/shared/ToolTip";
+import FloatingLabelInput from "@/components/shared/FloatingLabelInput";
+import FloatingLabelTextArea from "@/components/shared/FloatingLabelTextArea";
 interface SideBarProps {
   textAreaValue: string;
 }
@@ -160,9 +152,9 @@ const SeoChecker: React.FC<SideBarProps> = ({ textAreaValue }) => {
     colorFn: () => string
   ) => {
     return (
-      <Box sx={{ display: "flex", alignItems: "center", marginTop: "0.5rem" }}>
-        <Box
-          sx={{
+      <div style={{ display: "flex", alignItems: "center", marginTop: "0.5rem" }}>
+        <div
+          style={{
             minWidth: 16,
             minHeight: 16,
             width: 16,
@@ -172,17 +164,17 @@ const SeoChecker: React.FC<SideBarProps> = ({ textAreaValue }) => {
             borderRadius: "50%",
           }}
         />
-        <Typography variant="body2">{label}</Typography>
-      </Box>
+        <span className="text-sm">{label}</span>
+      </div>
     );
   };
 
   const renderContent = () => {
     if (activeMenu === "input") {
       return (
-        <Box sx={{ display: "flex", flexDirection: "column" }}>
-          <Box sx={{ marginTop: "2rem" }}>
-            <TextField
+        <div style={{ display: "flex", flexDirection: "column" }}>
+          <div style={{ marginTop: "2rem" }}>
+            <FloatingLabelInput
               label="1. Enter focus keyword"
               variant="outlined"
               value={keyword}
@@ -191,8 +183,8 @@ const SeoChecker: React.FC<SideBarProps> = ({ textAreaValue }) => {
               inputProps={{ style: { paddingLeft: "15px" } }}
               onChange={handleKeywordChange}
             />
-            <Box
-              sx={{
+            <div
+              style={{
                 width: "100%",
                 borderBottom: "1px dashed #aaa",
                 paddingTop: "10px",
@@ -200,10 +192,11 @@ const SeoChecker: React.FC<SideBarProps> = ({ textAreaValue }) => {
                 marginBottom: "15px",
               }}
             />
-          </Box>
+          </div>
 
-          <Box sx={{ display: "flex" }}>
+          <div style={{ display: "flex" }}>
             <Tooltip placement="top" title="Google Search result preview">
+              {/* eslint-disable-next-line @next/next/no-img-element */}
               <img
                 height="50"
                 width="50"
@@ -213,10 +206,10 @@ const SeoChecker: React.FC<SideBarProps> = ({ textAreaValue }) => {
               />
             </Tooltip>
             <h3>Google Preview</h3>
-          </Box>
+          </div>
 
-          <Box
-            sx={{
+          <div
+            style={{
               backgroundColor: "#f8f8f8",
               padding: "1rem",
               marginTop: "1rem",
@@ -224,45 +217,39 @@ const SeoChecker: React.FC<SideBarProps> = ({ textAreaValue }) => {
               textAlign: "left",
             }}
           >
-            <Typography
-              variant="body2"
-              component="div"
+            <span
+              className="text-sm"
               color="text.secondary"
-              gutterBottom
-              sx={{ fontSize: "13px" }}
+              style={{ fontSize: "13px" }}
             >
               {"example.com > sample-url"}
-            </Typography>
-            <Typography
-              variant="h6"
-              component="div"
-              gutterBottom
-              sx={{ color: "#1967D2", wordWrap: "break-word" }}
+            </span>
+            <h6 style={{ color: "#1967D2", wordWrap: "break-word" }}
             >
               {pageTitle
                 ? formatTitle(pageTitle)
                 : "This is an Example page Title"}
-            </Typography>
-            <Typography
-              variant="body2"
-              component="div"
+            </h6>
+            <span
+              className="text-sm"
+              
               color="text.secondary"
-              sx={{ fontSize: "14px", wordWrap: "break-word" }}
+              style={{ fontSize: "14px", wordWrap: "break-word" }}
             >
               {metaDescription
                 ? formatDescription(metaDescription)
-                : "Use the input fields to write a custom page Title and Meta description. This preview box shows you how your page will look in the search results from Google."}
-            </Typography>
-          </Box>
+                : "Use the input fields to write a custom page Title and Meta description. This preview div shows you how your page will look in the search results from Google."}
+            </span>
+          </div>
 
-          <Box sx={{ marginTop: "2rem" }}>
-            <Box
-              sx={{
+          <div style={{ marginTop: "2rem" }}>
+            <div
+              style={{
                 width: "100%",
                 marginBottom: "1rem",
               }}
             >
-              <TextField
+              <FloatingLabelInput
                 label="2. Enter Page Title"
                 variant="outlined"
                 value={pageTitle}
@@ -276,8 +263,8 @@ const SeoChecker: React.FC<SideBarProps> = ({ textAreaValue }) => {
               />
 
               {titleHelperVisibility && (
-                <Box
-                  sx={{
+                <div
+                  style={{
                     marginTop: "1rem",
                     textAlign: "left",
                   }}
@@ -345,15 +332,15 @@ const SeoChecker: React.FC<SideBarProps> = ({ textAreaValue }) => {
                           )}
                     </>
                   ) : (
-                    <Box
-                      sx={{
+                    <div
+                      style={{
                         display: "flex",
                         alignItems: "center",
                         marginTop: "0.5rem",
                       }}
                     >
-                      <Box
-                        sx={{
+                      <div
+                        style={{
                           minWidth: 16,
                           minHeight: 16,
                           width: 16,
@@ -363,43 +350,34 @@ const SeoChecker: React.FC<SideBarProps> = ({ textAreaValue }) => {
                           borderRadius: "50%",
                         }}
                       />
-                      <Typography variant="body2">
+                      <span className="text-sm">
                         Please enter focus keyword into the Keyword field at the
                         start of the form (Enter focus keyword).
-                      </Typography>
-                    </Box>
+                      </span>
+                    </div>
                   )}
-                </Box>
+                </div>
               )}
-            </Box>
+            </div>
 
-            <Box
-              sx={{
+            <div
+              style={{
                 width: "100%",
                 marginBottom: "1rem",
               }}
             >
-              <TextField
-                label="3. Enter Meta Description"
-                variant="outlined"
-                value={metaDescription}
-                fullWidth
-                multiline
+              <FloatingLabelTextArea
+                placeholder="3. Enter Meta Description"
+                value={metaDescription}                
                 rows={4}
-                InputLabelProps={{
-                  shrink: true,
-                }}
-                inputProps={{
-                  style: { paddingLeft: "5px", paddingTop: "5px" },
-                }}
                 onChange={handleMetaDescriptionChange}
                 onFocus={() => setDescriptionHelperVisibility(true)}
                 onBlur={handleDescriptionBlur}
               />
 
               {descriptionHelperVisibility && (
-                <Box
-                  sx={{
+                <div
+                  style={{
                     marginTop: "1rem",
                     textAlign: "left",
                   }}
@@ -456,15 +434,15 @@ const SeoChecker: React.FC<SideBarProps> = ({ textAreaValue }) => {
                           )}
                     </>
                   ) : (
-                    <Box
-                      sx={{
+                    <div
+                      style={{
                         display: "flex",
                         alignItems: "center",
                         marginTop: "0.5rem",
                       }}
                     >
-                      <Box
-                        sx={{
+                      <div
+                        style={{
                           minWidth: 16,
                           minHeight: 16,
                           width: 16,
@@ -474,33 +452,33 @@ const SeoChecker: React.FC<SideBarProps> = ({ textAreaValue }) => {
                           borderRadius: "50%",
                         }}
                       />
-                      <Typography variant="body2">
+                      <span className="text-sm">
                         Please enter focus keyword into the Keyword field at the
                         start of the form (Enter focus keyword).
-                      </Typography>
-                    </Box>
+                      </span>
+                    </div>
                   )}
-                </Box>
+                </div>
               )}
-            </Box>
-          </Box>
-        </Box>
+            </div>
+          </div>
+        </div>
       );
     } else if (activeMenu === "tips") {
       return (
-        <Box
-          sx={{
+        <div
+          style={{
             marginTop: "1rem",
             textAlign: "left",
           }}
         >
-          <Box sx={{ marginTop: "1rem", marginBottom: "1rem" }}>
+          <div style={{ marginTop: "1rem", marginBottom: "1rem" }}>
             <h4>Page Title score ({calculateTitleScore()})</h4>
             <LinearProgress
               variant="determinate"
               value={calculateTitleScore()}
             />
-          </Box>
+          </div>
 
           {helper.keywordNotEmpty
             ? renderHelper(
@@ -573,13 +551,13 @@ const SeoChecker: React.FC<SideBarProps> = ({ textAreaValue }) => {
                 () => "red"
               )}
 
-          <Box sx={{ marginTop: "1rem", marginBottom: "1rem" }}>
+          <div style={{ marginTop: "1rem", marginBottom: "1rem" }}>
             <h4>Meta Description score ({calculateDescriptionScore()})</h4>
             <LinearProgress
               variant="determinate"
               value={calculateDescriptionScore()}
             />
-          </Box>
+          </div>
 
           {helper.keywordNotEmpty
             ? renderHelper(
@@ -643,13 +621,13 @@ const SeoChecker: React.FC<SideBarProps> = ({ textAreaValue }) => {
                 () => "red"
               )}
 
-          <Box sx={{ marginTop: "1rem", marginBottom: "1rem" }}>
+          <div style={{ marginTop: "1rem", marginBottom: "1rem" }}>
             <h4>Content score ({calculateContentScore()})</h4>
             <LinearProgress
               variant="determinate"
               value={calculateContentScore()}
             />
-          </Box>
+          </div>
 
           {h1Check
             ? renderHelper(true, `You've added a H1. Good job!`, () => "green")
@@ -794,14 +772,14 @@ const SeoChecker: React.FC<SideBarProps> = ({ textAreaValue }) => {
                 `Your images' filenames do not contain the focused keyword. Consider renaming them for better SEO.`,
                 () => "red"
               )}
-        </Box>
+        </div>
       );
     }
   };
 
   return (
-    <Box
-      sx={{
+    <div
+      style={{
         width: 370,
         height: "100vh",
         backgroundColor: "#fff",
@@ -825,15 +803,15 @@ const SeoChecker: React.FC<SideBarProps> = ({ textAreaValue }) => {
           <ListItemText primary="SEO Optimization tips" />
         </ListItem>
       </List>
-      <Box
-        sx={{
+      <div
+        style={{
           borderBottom: "1px solid #ddd",
           paddingBottom: "1rem",
           marginBottom: "1rem",
         }}
-      ></Box>
+      ></div>
       {renderContent()}
-    </Box>
+    </div>
   );
 };
 

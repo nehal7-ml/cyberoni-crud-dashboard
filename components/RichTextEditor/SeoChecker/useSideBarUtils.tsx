@@ -14,7 +14,7 @@ export const useSeoUtils = () => {
   // Function to handle changes at input fields
   const handleChange =
     (setter: React.Dispatch<React.SetStateAction<string>>) =>
-    (event: React.ChangeEvent<HTMLInputElement>) => {
+    (event: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
       setter(event.target.value);
     };
 
