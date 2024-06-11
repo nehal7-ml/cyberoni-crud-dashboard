@@ -114,7 +114,7 @@ function AddImage({
   };
 
   const handleRemoveImage = async (toRemove: number) => {
-    const newFiles = images.filter((_image, index) => index === toRemove);
+    const newFiles = images.filter((_image, index) => index !== toRemove);
     setImages(newFiles);
     onImagesChange(newFiles);
   };
