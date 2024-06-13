@@ -80,7 +80,11 @@ function LoginForm() {
               disabled={csrfToken == ""}
               className="flex items-center justify-center gap-2 p-4 text-center text-2xl font-bold hover:shadow-sm disabled:cursor-not-allowed disabled:text-gray-400"
               type="submit"
+<<<<<<< HEAD
               id="#login-button"
+=======
+          id="#login-button"
+>>>>>>> 6735424901082b947c80382fa204406ba0bd89d3
             >
               <div className="flex-1">Sign in Now</div>
               <div className="flex h-10 w-10 items-center justify-center rounded-full bg-black">
