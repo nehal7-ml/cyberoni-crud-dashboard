@@ -6,28 +6,31 @@ import {
   useState,
 } from "react";
 
-function ClientInput(
-  props: DetailedHTMLProps<
-    InputHTMLAttributes<HTMLInputElement>,
-    HTMLInputElement
-  >,
-) {
+interface ClientInputProps
+  extends DetailedHTMLProps<InputHTMLAttributes<HTMLInputElement>, HTMLInputElement> {
+  id: string;
+}
+
+function ClientInput(props: ClientInputProps) {
+  const { id, ...rest } = props;
   const [isClient, setIsClient] = useState(false);
   const [input, setInput] = useState("");
 
   useEffect(() => {
     setIsClient(true);
   }, []);
+
   return (
     <>
       {isClient ? (
-        <input key="client" {...props} />
+        <input key="client" id={id} {...rest} />
       ) : (
         <input
           key="server"
+          id={id}
           value={input}
           onChange={() => {}}
-          className={props.className}
+          className={rest.className}
         />
       )}
     </>

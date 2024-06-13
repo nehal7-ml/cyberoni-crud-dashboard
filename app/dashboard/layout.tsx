@@ -17,7 +17,7 @@ export default function DashboardLayout({
   params: any;
 }) {
   return (
-    <section className="grid h-full w-full grid-cols-12 gap-2">
+    <section id="#user-dashboard" className="grid h-full w-full grid-cols-12 gap-2">
       <SidePanel className="col-span-2 h-screen  max-h-screen"></SidePanel>
       <div className="col-span-10 h-screen">
         <div className="flex items-center justify-between py-3">
