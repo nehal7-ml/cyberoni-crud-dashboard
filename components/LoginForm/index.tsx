@@ -48,9 +48,10 @@ function LoginForm() {
             <ClientInput
               className="focus:shadow-outline peer w-full appearance-none rounded-xl border bg-transparent px-4 py-4 leading-tight  text-gray-700 shadow-lg focus:outline-none"
               name="username"
-              id="email"
+              id="#email"
               type="email"
-              placeholder=""
+              placeholder="Example@gmail.com"
+
               required
             />
             <label
@@ -65,7 +66,9 @@ function LoginForm() {
               className="focus:shadow-outline peer w-full appearance-none rounded-xl border bg-transparent px-4 py-4 leading-tight  text-gray-700 shadow-lg focus:outline-none"
               name="password"
               type="password"
-              placeholder=""
+              placeholder="Your password"
+              id="#password"
+
               required
             />
             <label
@@ -80,11 +83,7 @@ function LoginForm() {
               disabled={csrfToken == ""}
               className="flex items-center justify-center gap-2 p-4 text-center text-2xl font-bold hover:shadow-sm disabled:cursor-not-allowed disabled:text-gray-400"
               type="submit"
-<<<<<<< HEAD
               id="#login-button"
-=======
-          id="#login-button"
->>>>>>> 6735424901082b947c80382fa204406ba0bd89d3
             >
               <div className="flex-1">Sign in Now</div>
               <div className="flex h-10 w-10 items-center justify-center rounded-full bg-black">

@@ -64,33 +64,33 @@ async function Blogs({
   let rows = [] as ReactNode[];
 
   return (
-    <main className="flex flex-col items-center py-5">
+    <main id="#users-dashboard" className="flex flex-col items-center py-5">
       {params.table === "blogs" ? (
-        <BlogTable  page={page} records={data.records as DisplayBlogDTO[]} />
+        <BlogTable page={page} records={data.records as DisplayBlogDTO[]} />
       ) : params.table === "casestudies" ? (
-        <CaseStudyTable  page={page} records={data.records as CaseStudy[]} />
+        <CaseStudyTable page={page} records={data.records as CaseStudy[]} />
       ) : params.table === "discounts" ? (
-        <DiscountTableItems  page={page} records={data.records as Discount[]} />
+        <DiscountTableItems page={page} records={data.records as Discount[]} />
       ) : params.table === "events" ? (
-        <EventTableItems  page={page} records={data.records as Event[]} />
+        <EventTableItems page={page} records={data.records as Event[]} />
       ) : params.table === "products" ? (
-        <ProductTableItems  page={page}  records={data.records as DisplayProductDTO[]} />
+        <ProductTableItems page={page} records={data.records as DisplayProductDTO[]} />
       ) : params.table === "prompts" ? (
-        <PromptTableItems   page={page} records={data.records as GptPrompt[]} />
+        <PromptTableItems page={page} records={data.records as GptPrompt[]} />
       ) : params.table === "referrals" ? (
-        <ReferralTableItems   page={page} records={data.records as Referral[]} />
+        <ReferralTableItems page={page} records={data.records as Referral[]} />
       ) : params.table === "services" ? (
-        <ServiceTableItems  page={page} records={data.records as Service[]} />
-      ): params.table ==="softwares" ? (
-        <SoftwareTableItems  page={page} records={data.records as DisplaySoftwareProductDTO[]} />
+        <ServiceTableItems page={page} records={data.records as Service[]} />
+      ) : params.table === "softwares" ? (
+        <SoftwareTableItems page={page} records={data.records as DisplaySoftwareProductDTO[]} />
       )
-      
-      
-      : params.table === "users" ? (
-        <UserTableItems page={page} records={data.records as DisplayUserDTO[]} />
-      ) :   (
-        rows
-      )}
+
+
+        : params.table === "users" ? (
+          <UserTableItems page={page} records={data.records as DisplayUserDTO[]} />
+        ) : (
+          rows
+        )}
       <Pagination
         currentPage={page}
         totalPages={data?.totalPages || 0}
@@ -163,7 +163,7 @@ async function getData(
     return res;
   }
 
-  if(table === "softwares") {
+  if (table === "softwares") {
     let res = await getAllSoftwares(page, 10, prisma, {
       orderby: searchParams.orderBy as "updatedAt" | "pricing",
       order: searchParams.order,
