@@ -26,7 +26,7 @@ function BlogTable({
         type="blogs"
         rows={records.map((value, index) => {
           const row: any = [];
-          row.push(value.title);
+          row.push(<div className="max-w-prose">{value.title}</div>);
           row.push(
             <FeaturedCheckbox
               initial={value as CreateBlogDTO}
