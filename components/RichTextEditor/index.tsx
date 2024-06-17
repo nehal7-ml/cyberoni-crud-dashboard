@@ -1,10 +1,9 @@
-import { useState, useEffect,  useRef } from "react";
+import { useState, useEffect, useRef } from "react";
 import { Editor as RichTextEditor } from "@tinymce/tinymce-react";
 import { addAutoFormatParameter, bufferToB64 } from "@/lib/utils";
 import { markdownPlugin } from "./plugins/markDown";
 import LoadingDots from "../shared/loading-dots";
 import { openGraphPlugin } from "./plugins/openGraph";
-import SeoChecker from "./SeoChecker";
 interface BlobInfo {
   id: () => string;
   name: () => string;
@@ -89,6 +88,7 @@ const Editor = ({
   onChange,
 }: {
   defaultValue?: string;
+
   onChange: (text: string) => void;
 }) => {
 
@@ -99,21 +99,19 @@ const Editor = ({
 
   const [seoValue, setSeoValue] = useState(initialValue);
   const [isClient, setIsClient] = useState(false);
+  const [loaded, setLoaded] = useState(false);
 
   function togglePreview() {
     setShowPreview(!showPreview);
   }
 
   useEffect(() => {
-
-    console.log("useeefetc", defaultValue);
-    if(!defaultValue) return
+    if (!defaultValue) return
     setInitialValue(defaultValue || "");
   }, [defaultValue]);
 
   useEffect(() => {
     setIsClient(true);
-
   }, []);
 
   function updatePreviewAndHandleChange(state: string) {
@@ -122,84 +120,78 @@ const Editor = ({
   }
 
   return (
-    <div className="my-4 h-fit">
-      <div className="h-max flex gap-3 ">
-        {isClient ? (
-          <>
-          <div className="flex-grow h-full">
-            <RichTextEditor
-              ref={editorRef}
-              apiKey={"w5nc9aqbzcv7ao6jscyo80kncaq1vbpp63v2wqazfsbjkowp"}
-              init={{
-                height: `45rem`,
-                content_css: ['tinymce-5', '/styles/tinymce.css'],
-                plugins: [
-                  "advlist",
-                  "autolink",
-                  "lists",
-                  "link",
-                  "charmap",
-                  "preview",
-                  "anchor",
-                  "pagebreak",
-                  "searchreplace",
-                  "wordcount",
-                  "visualblocks",
-                  "visualchars",
-                  "fullscreen",
-                  "insertdatetime",
-                  "media",
-                  "nonbreaking",
-                  "save",
-                  "table",
-                  "emoticons",
-                  "image",
-                  "code",
-                  "media",
-                ],
-                toolbar1:
-                  "insertfile undo redo | styleselect | bold italic | alignleft aligncenter alignright alignjustify | bullist numlist outdent indent  | fullscreen",
-                toolbar2: "link image code media markdown opengraph",
-                file_picker_types: "image",
-                images_file_types: "jpg,svg,webp",
-                file_picker_callback: async (cb, value, record) =>
-                  filePickerCallback(cb, value, record, editorRef.current),
-                images_upload_handler: uploadImages,
-                image_advtab: true,
-                automatic_uploads: true,
-                extended_valid_elements:
-                  "script[language|type|src], style[media|type]",
-                protect: [
-                  /<script>[\s\S]*?<\/script>/g,
-                  /<style>[\s\S]*?<\/style>/g,
-                ],
-            
-                setup: (editor) => {
-                  console.log("running setup");
-                  markdownPlugin(editor);
-                  openGraphPlugin(editor);
-                },
-              }}
-              initialValue={initialValue}
-              onEditorChange={updatePreviewAndHandleChange}
-            />
-          </div>
-          <SeoChecker textAreaValue={seoValue ?? ""}  />
-  </>
-        ) : (
-          <>
-            <div className="items center my-5 flex justify-center">
-              <LoadingDots />
-            </div>
-          </>
-        )}
-      </div>
+    <>
+      <>
+        <div className="flex gap-1 h-full" id="editor-root">
+          {isClient ? (
+            <div className="flex-grow">
+              <RichTextEditor
+                ref={editorRef}
+                apiKey={"w5nc9aqbzcv7ao6jscyo80kncaq1vbpp63v2wqazfsbjkowp"}
+                init={{
+                  height: `45rem`,
+                  content_css: ['tinymce-5', '/styles/tinymce.css'],
+                  plugins: [
+                    "advlist",
+                    "autolink",
+                    "lists",
+                    "link",    
+                    "charmap",
+                    "preview",
+                    "anchor",
+                    "pagebreak",
+                    "searchreplace",
+                    "wordcount",
+                    "visualblocks",
+                    "visualchars",
+                    "fullscreen",
+                    "insertdatetime",
+                    "media",
+                    "nonbreaking",
+                    "save",
+                    "table",
+                    "emoticons",
+                    "image",
+                    "code",
+                    "media",
+                  ],
+                  toolbar1:
+                    "insertfile undo redo | styleselect | bold italic | alignleft aligncenter alignright alignjustify | bullist numlist outdent indent  | fullscreen",
+                  toolbar2: "link image code media markdown opengraph",
+                  file_picker_types: "image",
+                  images_file_types: "jpg,svg,webp",
+                  file_picker_callback: async (cb, value, record) =>
+                    filePickerCallback(cb, value, record, editorRef.current),
+                  images_upload_handler: uploadImages,
+                  image_advtab: true,
+                  automatic_uploads: true,
+                  extended_valid_elements:
+                    "script[language|type|src], style[media|type]",
+                  protect: [
+                    /<script>[\s\S]*?<\/script>/g,
+                    /<style>[\s\S]*?<\/style>/g,
+                  ],
+                  setup: (editor) => {
+                    console.log("running setup");
+                    markdownPlugin(editor);
+                    openGraphPlugin(editor);
+                  },
+                }}
+                initialValue={initialValue}
+                onEditorChange={updatePreviewAndHandleChange}
+              />
+            </div>) : (
+            <>
+              <div className="items center my-5 flex justify-center w-full">
+                <LoadingDots />
+              </div>
+            </>
+          )}
+        </div>
+      </>
 
-      <button>
-        
-      </button>
-       
-    </div>
+
+    </>
   );
 };
 export default Editor;

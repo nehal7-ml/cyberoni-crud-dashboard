@@ -133,8 +133,7 @@ const DynamicInput: React.FC<DynamicInputProps> = ({
   }, [currentData, defaultValue, schema.type]);
 
   return (
-    <div>
-      <div>
+      <>
         {schema.type === "string" ? (
           <FloatingLabelInput
             type={"text"}
@@ -263,8 +262,7 @@ const DynamicInput: React.FC<DynamicInputProps> = ({
             maxTags={schema.max || 10}
           />
         ) : null}
-      </div>
-    </div>
+      </>
   );
 };
 

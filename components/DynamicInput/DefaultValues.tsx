@@ -1,17 +1,18 @@
 import { useMemo } from "react";
 import { FormSchema } from ".";
 
-function useDefaultValues({ schema , defaultValue}: { schema: FormSchema , defaultValue?: any}) {
+function useDefaultValues({ schema, defaultValue }: { schema: FormSchema, defaultValue?: any }) {
     const current = useMemo(() => {
         let data: any;
 
-        if(defaultValue) {
+        if (defaultValue) {
             data = defaultValue;
 
-            if(schema.type === 'rich-text') {
+            if (schema.type === 'rich-text') {
                 data = {
                     initial: defaultValue,
-                    current: defaultValue
+                    current: defaultValue,
+
                 }
             }
             return data;
@@ -49,8 +50,8 @@ function useDefaultValues({ schema , defaultValue}: { schema: FormSchema , defau
         }
         else if (schema.type === 'rich-text') {
             data = {
-                initial:  "",
-                current:  ""
+                initial: "",
+                current: ""
             }
         }
 
@@ -70,7 +71,7 @@ function useDefaultValues({ schema , defaultValue}: { schema: FormSchema , defau
         }
 
         return data;
-    }, [defaultValue,  schema]);
+    }, [defaultValue, schema]);
 
     return current
 

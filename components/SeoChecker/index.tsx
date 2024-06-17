@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect } from "react";
 import { useSeoUtils } from "./useSideBarUtils";
 import FloatingLabelInput from "@/components/shared/FloatingLabelInput";
 import FloatingLabelTextArea from "@/components/shared/FloatingLabelTextArea";
@@ -7,9 +7,12 @@ import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/comp
 import { Button } from "@/components/ui/button";
 interface SideBarProps {
   textAreaValue: string;
+  title?: string;
+  keyWords?: string;
+  description?: string;
 }
 
-const SeoChecker: React.FC<SideBarProps> = ({ textAreaValue }) => {
+const SeoChecker: React.FC<SideBarProps> = ({ textAreaValue, description, keyWords, title }) => {
   // Properties from sidebarUtils
   const {
     activeMenu,
@@ -31,7 +34,21 @@ const SeoChecker: React.FC<SideBarProps> = ({ textAreaValue }) => {
     checkImageAltText,
     formatDescription,
     formatTitle,
+    setKeyword,
+    setMetaDescription,
+    setPageTitle,
   } = useSeoUtils();
+
+  useEffect(()=> {
+
+
+    if(keyWords) setKeyword(keyWords);
+    if(title) setPageTitle(title);
+    if(description) setMetaDescription(description)
+      
+
+  }, [description, keyWords, setKeyword, setMetaDescription, setPageTitle, title])
+
 
   // Preprocessing of input and setting up of basic variables
   let textWithoutHTML = textAreaValue.replace(/(<([^>]+)>)/gi, "");
@@ -196,7 +213,7 @@ const SeoChecker: React.FC<SideBarProps> = ({ textAreaValue }) => {
             <TooltipProvider>
               <Tooltip>
                 <TooltipTrigger asChild>
-                  <div   className="flex justify-center items-center">
+                  <div className="flex justify-center items-center">
                     {/* eslint-disable-next-line @next/next/no-img-element */}
                     <img
                       height="50"
@@ -208,7 +225,7 @@ const SeoChecker: React.FC<SideBarProps> = ({ textAreaValue }) => {
                   </div>
                 </TooltipTrigger>
                 <TooltipContent>
-                Google Search result preview
+                  Google Search result preview
                 </TooltipContent>
               </Tooltip>
             </TooltipProvider>

@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useState, useRef } from "react";
 import AddImagesAndTags from "../AddImagesAndTags";
 import Notification, { useNotify } from "../Notification";
 import {
@@ -22,6 +22,8 @@ import JsonInput from "../shared/JsonInput";
 import example from "./example.json";
 import DynamicInput from "../DynamicInput";
 import blogFormSchema from "./formSchema";
+import { createPortal } from "react-dom";
+import SeoChecker from "../SeoChecker";
 
 function BlogForm({
   categories,
@@ -36,9 +38,11 @@ function BlogForm({
 }) {
   const [loading, setLoading] = useState(false);
 
+  const editorRef = useRef<HTMLDivElement | null>(null)
+
   const defaultBlogData = useMemo(() => {
     if (initial) {
-      return initial
+      return initial;
     } else {
       return {
         title: "",
@@ -52,17 +56,13 @@ function BlogForm({
         author: { email: "author@example.com" },
         tags: [],
         images: [],
-      }
-
+      };
     }
-
-
-  }, [initial])
+  }, [initial]);
 
   const defaultJson = useMemo(() => {
-
-    return JSON.stringify(BlogSchema.parse(defaultBlogData), null, 2)
-  }, [defaultBlogData])
+    return JSON.stringify(BlogSchema.parse(defaultBlogData), null, 2);
+  }, [defaultBlogData]);
   const [blogData, setBlogData] = useState<CreateBlogDTO>(defaultBlogData);
   const [rawJson, setRawJson] = useState(defaultJson);
   const { toast } = useNotify();
@@ -102,12 +102,9 @@ function BlogForm({
     setLoading(false);
   };
 
-
-
   useEffect(() => {
     if (initial) setBlogData(initial);
   }, [initial]);
-
 
   useEffect(() => {
     console.log(rawJson);
@@ -128,7 +125,6 @@ function BlogForm({
         setBlogData((prev) => ({
           ...prev,
           ...valid.data,
-
         }));
       }
     } catch (error) {
@@ -137,6 +133,14 @@ function BlogForm({
     }
   }
 
+
+  useEffect(() => {
+    if(document && window) {
+      let elem = document.getElementById('editor-root')
+      console.log("find elemnt  ;", elem);
+      editorRef.current =  document.getElementById('editor-root') as HTMLDivElement 
+    }
+  }, []);
 
   return (
     <div className="light:bg-gray-100 light:text-black flex min-h-screen  items-center justify-center bg-gray-100 dark:bg-gray-700 dark:text-gray-800 ">
@@ -151,7 +155,22 @@ function BlogForm({
             setRawJson={setRawJson}
             example={JSON.stringify(example, null, 2)}
           />
-          <DynamicInput schema={blogFormSchema} onChange={setBlogData} defaultValue={blogData} />
+          <DynamicInput
+            schema={blogFormSchema}
+            onChange={setBlogData}
+            defaultValue={blogData}
+          />
+          {editorRef.current ? createPortal(
+            <div className="flex-shrink">
+              <SeoChecker
+                textAreaValue={blogData.content}
+                title={blogData.title}
+                description={blogData.description}
+                keyWords={blogData.tags.length > 0 ? blogData.tags[0].name : ""}
+              />
+            </div>,
+            editorRef.current,
+          ): null}
           <div className="mb-4">
             <CategoryForm
               onChange={(category) => {
