@@ -33,7 +33,7 @@ function LoginForm() {
         <form
           method="POST"
           action={"/api/auth/callback/credentials"}
-          className="flex flex-col bg-gray-50 p-5 text-gray-950 lg:p-10"
+          className="flex flex-col bg-gray-50 p-5 text-gray-950 lg:p-5"
         >
           <h1 className="text-bold text-4xl">Sign In</h1>
           {search.error === "CredentialsSignin" ? (
