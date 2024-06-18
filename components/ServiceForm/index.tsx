@@ -4,9 +4,9 @@ import {
   CreateServiceDTO,
 
 } from "@/crud/DTOs";
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useMemo, useState } from "react";
 
-import  {
+import {
   NotificationType,
   useNotify,
 } from "@/components/Notification";
@@ -17,7 +17,7 @@ import example from "./example.json";
 import { ServiceSchema } from "../zodSchemas";
 import JsonInput from "../shared/JsonInput";
 import DynamicInput from "../DynamicInput";
-import {  ServiceFormSchema } from "./formSchema";
+import { ServiceFormSchema } from "./formSchema";
 
 function ServiceForm({
   method,
@@ -48,22 +48,34 @@ function ServiceForm({
       faqs: [],
     },
   );
+  const defaultJSon = useMemo(() => {
+    if (method === 'POST') {
 
-  const [rawJson, setRawJson] = useState(
-    JSON.stringify(ServiceSchema.parse(serviceData), null, 2),
-  );
+      return JSON.stringify(serviceData, null, 2);
 
+    } else {
 
+      return JSON.stringify(ServiceSchema.parse(serviceData), null, 2)
+
+    }
+
+  }, [method, serviceData])
+
+  const [rawJson, setRawJson] = useState(defaultJSon);
 
   const router = useRouter();
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setLoading(true);
 
-    let valid =  ServiceSchema.safeParse(serviceData);
-    if(!valid.success){
-        toast(`invalid Body`, {type: 'error'})
-        return 
+    let valid = ServiceSchema.safeParse(serviceData);
+    if (!valid.success) {
+      for (const e of valid.error.errors) {
+        toast(`${e.path} ${e.message}`, { type: "error" });
+      }
+      setLoading(false);
+
+      return
     }
     // Send the userData to your backend for creating the user
     const res = await fetch(action, {
@@ -86,7 +98,7 @@ function ServiceForm({
   }
 
 
-  
+
 
   useEffect(() => {
     if (initial) setServiceData(initial as CreateServiceDTO);

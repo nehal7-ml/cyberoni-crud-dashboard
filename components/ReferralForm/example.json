@@ -1,0 +1,24 @@
+{
+    "prefix": "Example_Landing_Page_01_DIRECT_update",
+    "type": "AFFILIATE",
+    "campaignId": "EXAMPLECAMPAIGN",
+    "expires": "2024-12-31T23:59:59Z",
+    "description": "This reroutes users to directly to the example form",
+    "priority": "HIGH",
+    "link": "https://form.example.com/1234567890",
+    "fallback": "https://example.com/fallback",
+    "redirect": "https://example.com/redirect",
+    "click": 0,
+    "utmProps": {
+      "utm_medium": "examplemedium",
+      "utm_campaign": "ExampleCampaign_RedditOrg0.01",
+      "utm_source": "Example Source",
+      "utm_segment": "CTA Click",
+      "utm_product_category": "Example-Product",
+      "utm_communication_theme": "TestCall",
+      "utm_ad_type": "Direct Click",
+      "utm_funnel_location": "Market Research",
+      "utm_earned_or_paid": "paid"
+    }
+  }
+  

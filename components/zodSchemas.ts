@@ -44,8 +44,8 @@ const BlogSchema = z.object({
 });
 
 const ServiceSchema = z.object({
-  title: z.string(),
-  previewContent: z.string(),
+  title: z.string().min(1),
+  previewContent: z.string().min(1),
   ServiceDescription: z.array(
     z.object({
       id: z.string().optional(),
@@ -198,6 +198,36 @@ const EventSchema = z.object({
 });
 
 
+
+
+
+const ReferralTypeEnum = z.enum(['AFFILIATE', 'REDIRECT']);
+const ReferralPriorityEnum = z.enum(['HIGH', 'MEDIUM', 'LOW']);
+
+const ReferralSchema = z.object({
+  prefix: z.string().nullable(),
+  type: ReferralTypeEnum,
+  campaignId: z.string(),
+  expires: z.coerce.date().nullable(),
+  description: z.string(),
+  priority: ReferralPriorityEnum,
+  link: z.string().url(),
+  fallback: z.string().url(),
+  utmProps: 
+    z.object({
+      utm_medium: z.string().optional(),
+      utm_campaign: z.string().optional(),
+      utm_source: z.string().optional(),
+      utm_segment: z.string().optional(),
+      utm_product_category: z.string().optional(),
+      utm_communication_theme: z.string().optional(),
+      utm_ad_type: z.string().optional(),
+      utm_funnel_location: z.string().optional(),
+      utm_earned_or_paid: z.enum(['earned', 'paid']).optional(),
+    }).optional(),
+});
+
+
 export {
   TagSchema,
   ImageSchema,
@@ -212,5 +242,7 @@ export {
   UserPersonaSchema,
   CaseStudySchema,
   SoftwareProductSchema,
-  EventSchema
+  EventSchema,
+  ReferralSchema
+
 };
