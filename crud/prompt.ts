@@ -151,7 +151,7 @@ async function getAll(
           [options.orderby]: options.order,
         }
       : {
-          updatedAt: "desc",
+          createdAt: "desc",
         },
   });
 

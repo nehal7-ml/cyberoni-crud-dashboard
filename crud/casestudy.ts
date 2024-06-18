@@ -147,7 +147,7 @@ export async function getAll(
       subServices: true,
       type: true,
     },
-    orderBy: options?.orderby ? { [options.orderby]: options.order } : { updatedAt: "desc" },
+    orderBy: options?.orderby ? { [options.orderby]: options.order } : { createdAt: "desc" },
   });
 
   const totalCount = await caseStudys.count();
