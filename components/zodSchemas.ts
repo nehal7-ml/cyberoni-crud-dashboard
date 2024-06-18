@@ -61,12 +61,14 @@ const ServiceSchema = z.object({
   image: ImageSchema.optional().nullable(),
   SubServices: z.array(SubServiceSchema),
   tags: z.array(TagSchema),
-  faqs: z.array(
-    z.object({
-      question: z.string(),
-      answer: z.string(),
-    }),
-  ).optional(),
+  faqs: z
+    .array(
+      z.object({
+        question: z.string(),
+        answer: z.string(),
+      }),
+    )
+    .optional(),
 });
 
 const sysCommandsSchema = z.record(
@@ -183,7 +185,6 @@ const SoftwareProductSchema = z.object({
   status: z.enum(["Released", "Beta", "Alpha", "ComingSoon", "Planned"]),
 });
 
-
 const EventSchema = z.object({
   name: z.string().min(1),
   date: z.coerce.date(),
@@ -196,15 +197,11 @@ const EventSchema = z.object({
   tags: z.array(TagSchema),
 });
 
-
-
-
-
-const ReferralTypeEnum = z.enum(['AFFILIATE', 'REDIRECT']);
-const ReferralPriorityEnum = z.enum(['HIGH', 'MEDIUM', 'LOW']);
+const ReferralTypeEnum = z.enum(["AFFILIATE", "REDIRECT"]);
+const ReferralPriorityEnum = z.enum(["HIGH", "MEDIUM", "LOW"]);
 
 const ReferralSchema = z.object({
-  prefix: z.string().nullable(),
+  prefix: z.string().min(1),
   type: ReferralTypeEnum,
   campaignId: z.string(),
   expires: z.coerce.date().nullable(),
@@ -212,8 +209,9 @@ const ReferralSchema = z.object({
   priority: ReferralPriorityEnum,
   link: z.string().url(),
   fallback: z.string().url(),
-  utmProps: 
-    z.object({
+  redirect: z.string().url().optional(),
+  utmProps: z
+    .object({
       utm_medium: z.string().optional(),
       utm_campaign: z.string().optional(),
       utm_source: z.string().optional(),
@@ -222,10 +220,18 @@ const ReferralSchema = z.object({
       utm_communication_theme: z.string().optional(),
       utm_ad_type: z.string().optional(),
       utm_funnel_location: z.string().optional(),
-      utm_earned_or_paid: z.enum(['earned', 'paid']).optional(),
-    }).optional(),
+      utm_earned_or_paid: z.enum(["earned", "paid"]).optional(),
+    })
+    .optional(),
 });
 
+const DiscountSchema = z.object({
+  name: z.string().refine((name) => /^[a-z0-9]+$/i.test(name), {
+    message: "Discount Name must be alphanumeric",
+  }),
+  value: z.number().min(1).max(25),
+  expires: z.coerce.date().nullable(),
+});
 
 export {
   TagSchema,
@@ -242,6 +248,6 @@ export {
   CaseStudySchema,
   SoftwareProductSchema,
   EventSchema,
-  ReferralSchema
-
+  ReferralSchema,
+  DiscountSchema,
 };

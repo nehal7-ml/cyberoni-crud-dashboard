@@ -99,6 +99,15 @@ const ReferralForm = ({
     const payload = { ...referralData };
 
     console.log(payload);
+    let valid = ReferralSchema.safeParse(referralData);
+    if (!valid.success) {
+      for (const e of valid.error.errors) {
+        toast(`${e.path} ${e.message}`, { type: "error" });
+      }
+      setLoading(false);
+
+      return
+    }
     const res = await fetch(`${action}`, {
       method,
       body: JSON.stringify(payload),

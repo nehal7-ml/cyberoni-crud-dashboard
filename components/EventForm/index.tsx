@@ -79,6 +79,19 @@ const EventForm = ({
 
     e.preventDefault();
     console.log(eventData);
+    let valid = EventSchema.safeParse(eventData);
+
+    if (!valid.success) {
+      for(const e of valid.error.errors) {
+        toast(`${e.path} ${e.message}`, {
+          type:'error'
+        })
+
+      }
+      setLoading(false);
+      return 
+    }
+
     const res = await fetch(`${action}`, {
       method,
       body: JSON.stringify(eventData),
