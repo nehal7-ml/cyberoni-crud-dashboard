@@ -17,7 +17,7 @@ const DateInput: React.FC<DateInputProps> = ({
   required,
   disabled,
 }) => {
-  console.log("dateInput: ", name, value);
+  //console.log("dateInput: ", name, value);
   const [selectedDate, setSelectedDate] = useState<string>(
     value?.toISOString().slice(0, 10) ?? "",
   );

@@ -126,7 +126,7 @@ const DynamicInput: React.FC<DynamicInputProps> = ({
 
   useEffect(() => {
     if (!deepEqual(currentData, defaultValue)) {
-       console.log("calling change", schema.title, currentData, defaultValue);
+       //console.log("calling change", schema.title, currentData, defaultValue);
       setCurrentData(defaultValue);
       
     }
