@@ -61,8 +61,11 @@ function BlogForm({
   }, [initial]);
 
   const defaultJson = useMemo(() => {
+    if (method === 'POST') {
+      return JSON.stringify(defaultBlogData, null, 2);
+    }
     return JSON.stringify(BlogSchema.parse(defaultBlogData), null, 2);
-  }, [defaultBlogData]);
+  }, [defaultBlogData, method]);
   const [blogData, setBlogData] = useState<CreateBlogDTO>(defaultBlogData);
   const [rawJson, setRawJson] = useState(defaultJson);
   const { toast } = useNotify();
@@ -76,8 +79,19 @@ function BlogForm({
       "Content-Type": "application/json",
       Authorization: "Bearer your-access-token",
     };
-    // Send the userData to your backend for creating the user
-    console.log(blogData);
+
+    let valid = BlogSchema.safeParse(blogData);
+    if (!valid.success) {
+      for (const e of valid.error.errors) {
+        toast(`${e.path} ${e.message}`, { type: "error" });
+      }
+      setLoading(false);
+
+      return
+    }
+
+
+
     const res = await fetch(`${action}`, {
       method: method,
       body: JSON.stringify(blogData),
@@ -135,10 +149,10 @@ function BlogForm({
 
 
   useEffect(() => {
-    if(document && window) {
+    if (document && window) {
       let elem = document.getElementById('editor-root')
       console.log("find elemnt  ;", elem);
-      editorRef.current =  document.getElementById('editor-root') as HTMLDivElement 
+      editorRef.current = document.getElementById('editor-root') as HTMLDivElement
     }
   }, []);
 
@@ -170,7 +184,7 @@ function BlogForm({
               />
             </div>,
             editorRef.current,
-          ): null}
+          ) : null}
           <div className="mb-4">
             <CategoryForm
               onChange={(category) => {

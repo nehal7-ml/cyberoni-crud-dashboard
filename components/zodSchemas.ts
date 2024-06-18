@@ -29,13 +29,13 @@ const SubServiceSchema = z.object({
 });
 
 const BlogSchema = z.object({
-  title: z.string(),
-  subTitle: z.string(),
-  description: z.string(),
+  title: z.string().min(1),
+  subTitle: z.string().min(1),
+  description: z.string().min(1),
   featured: z.boolean(),
   date: z.coerce.date(),
   publishDate: z.coerce.date(),
-  content: z.string(),
+  content: z.string().min(1),
   author: z.object({
     email: z.string().email(),
   }),
