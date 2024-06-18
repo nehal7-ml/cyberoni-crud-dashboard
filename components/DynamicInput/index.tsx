@@ -101,7 +101,7 @@ const DynamicInput: React.FC<DynamicInputProps> = ({
   onChange,
   defaultValue,
 }) => {
-  const current = useDefaultValues({ schema , defaultValue});
+  const current = useDefaultValues({ schema });
   const [currentData, setCurrentData] = useState(current);
 
   const handleTextChange = (
@@ -126,7 +126,7 @@ const DynamicInput: React.FC<DynamicInputProps> = ({
 
   useEffect(() => {
     if (!deepEqual(currentData, defaultValue)) {
-      // console.log("calling change", schema.title, currentData, defaultValue);
+       console.log("calling change", schema.title, currentData, defaultValue);
       setCurrentData(defaultValue);
       
     }
@@ -159,10 +159,10 @@ const DynamicInput: React.FC<DynamicInputProps> = ({
           <Editor
             onChange={(text) => {
               onChange(text);
-              setCurrentData((prev:any)=> ({...prev, current: text}));
+              setCurrentData(text);
 
             }}
-            defaultValue={currentData.initial}
+            defaultValue={currentData}
           />
         ) : schema.type === "number" ? (
           <FloatingLabelInput

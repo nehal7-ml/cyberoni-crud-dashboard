@@ -75,7 +75,18 @@ function SoftwareProductForm({
       Authorization: "Bearer your-access-token",
     };
     // Send the userData to your backend for creating the user
-    console.log(softwareProductData);
+
+    let valid = SoftwareProductSchema.safeParse(softwareProductData);
+    if (!valid.success) {
+      for (const e of valid.error.errors) {
+        toast(`${e.path} ${e.message}`, { type: "error" });
+      }
+      setLoading(false);
+
+      return
+    }
+
+
     const res = await fetch(`${action}`, {
       method: method,
       body: JSON.stringify(softwareProductData),
@@ -133,9 +144,9 @@ function SoftwareProductForm({
           ...(valid.data as CreateSoftwareProductDTO),
           blog: valid.data.blogLink
             ? {
-                id: extractUUID(valid.data.blogLink),
-                title: valid.data.blogLink,
-              }
+              id: extractUUID(valid.data.blogLink),
+              title: valid.data.blogLink,
+            }
             : prev.blog,
         }));
       }
@@ -173,9 +184,9 @@ function SoftwareProductForm({
                 blog:
                   e.blogLink.length > 0
                     ? {
-                        id: extractUUID(e.blogLink),
-                        title: prev.blog?.title as string,
-                      }
+                      id: extractUUID(e.blogLink),
+                      title: prev.blog?.title as string,
+                    }
                     : undefined,
                 images: prev.images,
                 tags: prev.tags,
@@ -194,11 +205,11 @@ function SoftwareProductForm({
                 status: softwareProductData.status,
                 blogLink: softwareProductData.blog
                   ? `${stripSlashes(
-                      process.env.NEXT_PUBLIC_API_URL!,
-                    )}/blogs/post/${seoUrl(
-                      softwareProductData.blog!.title,
-                      softwareProductData.blog!.id,
-                    )}`
+                    process.env.NEXT_PUBLIC_API_URL!,
+                  )}/blogs/post/${seoUrl(
+                    softwareProductData.blog!.title,
+                    softwareProductData.blog!.id,
+                  )}`
                   : "",
               }),
               [softwareProductData],

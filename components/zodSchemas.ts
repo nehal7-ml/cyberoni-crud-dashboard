@@ -33,7 +33,6 @@ const BlogSchema = z.object({
   subTitle: z.string().min(1),
   description: z.string().min(1),
   featured: z.boolean(),
-  date: z.coerce.date(),
   publishDate: z.coerce.date(),
   content: z.string().min(1),
   author: z.object({
@@ -166,8 +165,8 @@ const CaseStudySchema = z.object({
 
 const SoftwareProductSchema = z.object({
   id: z.string().optional(),
-  title: z.string(),
-  subTitle: z.string(),
+  title: z.string().min(1),
+  subTitle: z.string().min(1),
   description: z.string().nullable().optional(),
   images: z.array(ImageSchema),
   tags: z.array(TagSchema),

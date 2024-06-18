@@ -97,9 +97,7 @@ const Editor = ({
   const editorRef = useRef<RichTextEditor>(null);
   // const previewRef = useRef<ReactQuill>(null);
 
-  const [seoValue, setSeoValue] = useState(initialValue);
   const [isClient, setIsClient] = useState(false);
-  const [loaded, setLoaded] = useState(false);
 
   function togglePreview() {
     setShowPreview(!showPreview);
@@ -107,8 +105,10 @@ const Editor = ({
 
   useEffect(() => {
     if (!defaultValue) return
-    setInitialValue(defaultValue || "");
-  }, [defaultValue]);
+    if (initialValue !== defaultValue) {
+      setInitialValue(defaultValue);
+    }
+  }, [defaultValue, initialValue]);
 
   useEffect(() => {
     setIsClient(true);
@@ -116,7 +116,7 @@ const Editor = ({
 
   function updatePreviewAndHandleChange(state: string) {
     onChange(state);
-    setSeoValue(state)
+    setInitialValue(state)
   }
 
   return (
@@ -135,7 +135,7 @@ const Editor = ({
                     "advlist",
                     "autolink",
                     "lists",
-                    "link",    
+                    "link",
                     "charmap",
                     "preview",
                     "anchor",
@@ -177,7 +177,7 @@ const Editor = ({
                     openGraphPlugin(editor);
                   },
                 }}
-                initialValue={initialValue}
+                value={initialValue}
                 onEditorChange={updatePreviewAndHandleChange}
               />
             </div>) : (

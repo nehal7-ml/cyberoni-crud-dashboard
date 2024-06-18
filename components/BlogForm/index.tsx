@@ -24,6 +24,7 @@ import DynamicInput from "../DynamicInput";
 import blogFormSchema from "./formSchema";
 import { createPortal } from "react-dom";
 import SeoChecker from "../SeoChecker";
+import { datacatalog_v1 } from "googleapis";
 
 function BlogForm({
   categories,
@@ -49,7 +50,6 @@ function BlogForm({
         subTitle: "",
         description: "",
         featured: false,
-        date: new Date(),
         publishDate: new Date(),
         category: undefined,
         content: "",
@@ -60,13 +60,15 @@ function BlogForm({
     }
   }, [initial]);
 
+
+  const [blogData, setBlogData] = useState<CreateBlogDTO>(defaultBlogData);
+
   const defaultJson = useMemo(() => {
     if (method === 'POST') {
-      return JSON.stringify(defaultBlogData, null, 2);
+      return JSON.stringify(blogData, null, 2);
     }
-    return JSON.stringify(BlogSchema.parse(defaultBlogData), null, 2);
-  }, [defaultBlogData, method]);
-  const [blogData, setBlogData] = useState<CreateBlogDTO>(defaultBlogData);
+    return JSON.stringify(BlogSchema.parse(blogData), null, 2);
+  }, [blogData, method]);
   const [rawJson, setRawJson] = useState(defaultJson);
   const { toast } = useNotify();
 
@@ -89,8 +91,8 @@ function BlogForm({
 
       return
     }
-
-
+    console.log(blogData);
+    throw "Checl Conlse"
 
     const res = await fetch(`${action}`, {
       method: method,
@@ -120,9 +122,7 @@ function BlogForm({
     if (initial) setBlogData(initial);
   }, [initial]);
 
-  useEffect(() => {
-    console.log(rawJson);
-  }, [rawJson]);
+
 
   function parseJson(json: string) {
     try {
@@ -156,6 +156,11 @@ function BlogForm({
     }
   }, []);
 
+  function handleDataChange(data: CreateBlogDTO) {
+    console.log("onChange data", data);
+    setBlogData((prev) => ({ ...prev, ...data }));
+
+  }
   return (
     <div className="light:bg-gray-100 light:text-black flex min-h-screen  items-center justify-center bg-gray-100 dark:bg-gray-700 dark:text-gray-800 ">
       <div className="w-full rounded bg-white p-8 shadow-md">
@@ -171,7 +176,7 @@ function BlogForm({
           />
           <DynamicInput
             schema={blogFormSchema}
-            onChange={setBlogData}
+            onChange={handleDataChange}
             defaultValue={blogData}
           />
           {editorRef.current ? createPortal(
