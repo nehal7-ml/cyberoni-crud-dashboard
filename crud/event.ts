@@ -91,7 +91,7 @@ async function getAll(
     orderBy: options?.orderby? {
       [options.orderby]: options.order
     }: {
-      updatedAt: 'desc',
+      createdAt: 'desc',
       
     },
 

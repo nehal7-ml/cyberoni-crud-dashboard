@@ -1,25 +1,20 @@
 "use client";
 
 import { CreateDiscountDTO, Discount } from "@/crud/DTOs";
-import { FormEvent, useEffect, useState } from "react";
+import { FormEvent, useEffect, useMemo, useState } from "react";
 import { z } from "zod";
 import Notification, { useNotify } from "@/components/Notification";
 import { FormProps } from "@/crud/commonDTO";
 import DateInput from "../DateInput";
 import { useRouter } from "next/navigation";
 import LoadingDots from "../shared/loading-dots";
-const valueSchema = z.number().min(1).max(25);
-const nameSchema = z.string().refine((name) => /^[a-z0-9]+$/i.test(name), {
-  message: "Discount Name must be alphanumeric",
-});
-const discountSchema = z.object({
-  name: nameSchema,
-  value: valueSchema,
-});
+import JsonInput from "../shared/JsonInput";
+import { DiscountSchema } from "../zodSchemas";
+import example from "./example.json";
 
 function DiscountsForm({ initial, method, action }: FormProps) {
   const [loading, setLoading] = useState(false);
-  const {toast} = useNotify();
+  const { toast } = useNotify();
 
   const [discountData, setDiscountData] = useState<CreateDiscountDTO>(
     (initial as CreateDiscountDTO) || {
@@ -28,6 +23,12 @@ function DiscountsForm({ initial, method, action }: FormProps) {
       expires: null,
     },
   );
+  const defaultJson = useMemo(() => {
+    if (method === "POST") {
+      return JSON.stringify(discountData, null, 2);
+    } else return JSON.stringify(DiscountSchema.parse(discountData), null, 2);
+  }, [discountData, method]);
+  const [rawJson, setRawJson] = useState(defaultJson);
 
   const router = useRouter();
 
@@ -35,7 +36,7 @@ function DiscountsForm({ initial, method, action }: FormProps) {
     e.preventDefault();
     setLoading(true);
 
-    let discount = discountSchema.safeParse(discountData);
+    let discount = DiscountSchema.safeParse(discountData);
 
     if (!discount.success) {
       console.log(discount.error.issues[0]);
@@ -63,7 +64,17 @@ function DiscountsForm({ initial, method, action }: FormProps) {
     } else toast(resJson.message, { type: "error" });
 
     setLoading(false);
+  }
 
+  function parseJSon(json: string) {
+    let valid = DiscountSchema.safeParse(JSON.parse(json));
+
+    if (valid.success) setDiscountData(valid.data);
+    else {
+      for (const e of valid.error.errors) {
+        toast(`${e.path} ${e.message}`, { type: "error" });
+      }
+    }
   }
 
   return (
@@ -73,6 +84,12 @@ function DiscountsForm({ initial, method, action }: FormProps) {
           {method === "POST" ? "Create" : "Update"} Discount
         </h2>
         <form onSubmit={handleSubmit} className="">
+          <JsonInput
+            rawJson={rawJson}
+            setRawJson={setRawJson}
+            parseJson={parseJSon}
+            example={JSON.stringify(example, null, 2)}
+          />
           <div className="mb-4">
             <input
               type="text"
@@ -143,7 +160,7 @@ function DiscountsForm({ initial, method, action }: FormProps) {
           <button
             disabled={loading}
             type="submit"
-            className="w-full flex justify-center items-center rounded bg-blue-500 p-2 text-white hover:bg-blue-600 focus:outline-none focus:ring focus:ring-blue-300"
+            className="flex w-full items-center justify-center rounded bg-blue-500 p-2 text-white hover:bg-blue-600 focus:outline-none focus:ring focus:ring-blue-300"
           >
             {loading ? <LoadingDots /> : null}
             {method === "POST" ? "Create" : "Update"} Discount Code

@@ -27,7 +27,6 @@ export type CreateBlogDTO = {
   subTitle: string;
   description: string;
   featured: boolean;
-  date: Date;
   publishDate: Date;
   content: string;
   templateId?: string;

@@ -29,13 +29,12 @@ const SubServiceSchema = z.object({
 });
 
 const BlogSchema = z.object({
-  title: z.string(),
-  subTitle: z.string(),
-  description: z.string(),
+  title: z.string().min(1),
+  subTitle: z.string().min(1),
+  description: z.string().min(1),
   featured: z.boolean(),
-  date: z.coerce.date(),
   publishDate: z.coerce.date(),
-  content: z.string(),
+  content: z.string().min(1),
   author: z.object({
     email: z.string().email(),
   }),
@@ -44,8 +43,8 @@ const BlogSchema = z.object({
 });
 
 const ServiceSchema = z.object({
-  title: z.string(),
-  previewContent: z.string(),
+  title: z.string().min(1),
+  previewContent: z.string().min(1),
   ServiceDescription: z.array(
     z.object({
       id: z.string().optional(),
@@ -62,12 +61,14 @@ const ServiceSchema = z.object({
   image: ImageSchema.optional().nullable(),
   SubServices: z.array(SubServiceSchema),
   tags: z.array(TagSchema),
-  faqs: z.array(
-    z.object({
-      question: z.string(),
-      answer: z.string(),
-    }),
-  ).optional(),
+  faqs: z
+    .array(
+      z.object({
+        question: z.string(),
+        answer: z.string(),
+      }),
+    )
+    .optional(),
 });
 
 const sysCommandsSchema = z.record(
@@ -166,8 +167,8 @@ const CaseStudySchema = z.object({
 
 const SoftwareProductSchema = z.object({
   id: z.string().optional(),
-  title: z.string(),
-  subTitle: z.string(),
+  title: z.string().min(1),
+  subTitle: z.string().min(1),
   description: z.string().nullable().optional(),
   images: z.array(ImageSchema),
   tags: z.array(TagSchema),
@@ -184,7 +185,6 @@ const SoftwareProductSchema = z.object({
   status: z.enum(["Released", "Beta", "Alpha", "ComingSoon", "Planned"]),
 });
 
-
 const EventSchema = z.object({
   name: z.string().min(1),
   date: z.coerce.date(),
@@ -197,6 +197,41 @@ const EventSchema = z.object({
   tags: z.array(TagSchema),
 });
 
+const ReferralTypeEnum = z.enum(["AFFILIATE", "REDIRECT"]);
+const ReferralPriorityEnum = z.enum(["HIGH", "MEDIUM", "LOW"]);
+
+const ReferralSchema = z.object({
+  prefix: z.string().min(1),
+  type: ReferralTypeEnum,
+  campaignId: z.string(),
+  expires: z.coerce.date().nullable(),
+  description: z.string(),
+  priority: ReferralPriorityEnum,
+  link: z.string().url(),
+  fallback: z.string().url(),
+  redirect: z.string().url().optional(),
+  utmProps: z
+    .object({
+      utm_medium: z.string().optional(),
+      utm_campaign: z.string().optional(),
+      utm_source: z.string().optional(),
+      utm_segment: z.string().optional(),
+      utm_product_category: z.string().optional(),
+      utm_communication_theme: z.string().optional(),
+      utm_ad_type: z.string().optional(),
+      utm_funnel_location: z.string().optional(),
+      utm_earned_or_paid: z.enum(["earned", "paid"]).optional(),
+    })
+    .optional(),
+});
+
+const DiscountSchema = z.object({
+  name: z.string().refine((name) => /^[a-z0-9]+$/i.test(name), {
+    message: "Discount Name must be alphanumeric",
+  }),
+  value: z.number().min(1).max(25),
+  expires: z.coerce.date().nullable(),
+});
 
 export {
   TagSchema,
@@ -212,5 +247,7 @@ export {
   UserPersonaSchema,
   CaseStudySchema,
   SoftwareProductSchema,
-  EventSchema
+  EventSchema,
+  ReferralSchema,
+  DiscountSchema,
 };
