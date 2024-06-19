@@ -91,9 +91,6 @@ function BlogForm({
 
       return
     }
-    console.log(blogData);
-    throw "Checl Conlse"
-
     const res = await fetch(`${action}`, {
       method: method,
       body: JSON.stringify(blogData),
