@@ -76,7 +76,7 @@ async function update(
     const match = await bcrypt.compare(user.password, existingUser.password);
 
     let hashedPassword =
-      user.password.length >= 8
+      !match && user.password.length >= 8
         ? await bcrypt.hash(user.password, 10)
         : existingUser.password;
 
@@ -180,10 +180,10 @@ async function getAll(
     skip: (page - 1) * pageSize,
     take: pageSize,
     where: {},
-    orderBy: options?.orderby? {
+    orderBy: options?.orderby ? {
       [options.orderby]: options.order
-    }: {
-      createdAt: 'desc' 
+    } : {
+      createdAt: 'desc'
     }
   });
 
