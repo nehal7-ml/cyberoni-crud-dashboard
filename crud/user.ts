@@ -73,10 +73,10 @@ async function update(
     throw { status: 400, message: `User ${user.email} doesn't exists` };
   else {
     let image = await createObject(user.image);
-    const match = await bcrypt.compare(user.password, existingUser.password);
+    const isHash = user.password === existingUser.password;
 
     let hashedPassword =
-      !match && user.password.length >= 8
+      !isHash && user.password.length >= 8
         ? await bcrypt.hash(user.password, 10)
         : existingUser.password;
 
@@ -98,20 +98,22 @@ async function update(
           },
         },
         address: {
-          update: {
-            where: {
-              id: user.address?.id as string,
-            },
-            data: {
+          upsert: {
+            create: {
               ...user.address,
+
             },
+            update: {
+              ...user.address,
+
+            }
           },
         },
         role: user.role,
       },
     });
 
-    if (!match) await sendPasswordEmail({ email: user.email, password: user.password });
+    if (!isHash) await sendPasswordEmail({ email: user.email, password: user.password });
 
     return updatedUser;
   }
