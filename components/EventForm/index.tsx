@@ -3,7 +3,7 @@ import AddImagesAndTags from "@/components/AddImagesAndTags";
 import { CreateEventDTO, CreateImageDTO } from "@/crud/DTOs";
 import { CreateTagDTO } from "@/crud/DTOs";
 import { EventStatus } from "@prisma/client";
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useMemo, useState } from "react";
 import Notification, {
   NotificationType,
   useNotify,
@@ -41,7 +41,15 @@ const EventForm = ({
     },
   );
 
-  const [rawJson, setRawJson] = useState(JSON.stringify(EventSchema.parse(initial ?? example), null, 2));
+  const defaultJSON = useMemo(() => {
+    if (method === 'POST') {
+      return JSON.stringify(eventData, null, 2)
+
+    }
+    else return JSON.stringify(EventSchema.parse(eventData), null, 2)
+  }, [eventData, method]);
+
+  const [rawJson, setRawJson] = useState(defaultJSON);
   const [date, setDate] = useState(
     (initial?.date || new Date()).toISOString().split("T")[0],
   );
@@ -82,14 +90,14 @@ const EventForm = ({
     let valid = EventSchema.safeParse(eventData);
 
     if (!valid.success) {
-      for(const e of valid.error.errors) {
+      for (const e of valid.error.errors) {
         toast(`${e.path} ${e.message}`, {
-          type:'error'
+          type: 'error'
         })
 
       }
       setLoading(false);
-      return 
+      return
     }
 
     const res = await fetch(`${action}`, {
