@@ -59,6 +59,8 @@ describe("SoftwareProduct Service", () => {
         internal:false,
         createdAt: new Date(),
         updatedAt: new Date(),
+        userId: null,
+
       };
 
       (prismaClient.softwareProduct.create as jest.Mock).mockResolvedValue(createdProduct);
@@ -127,7 +129,9 @@ describe("SoftwareProduct Service", () => {
         blogId: "1",
         createdAt: new Date(),
         updatedAt: new Date(),
-        internal:false
+        internal:false,
+        userId: null,
+
       };
 
       const updatedProductData = {
@@ -150,6 +154,8 @@ describe("SoftwareProduct Service", () => {
         internal:false,
         createdAt: new Date(),
         updatedAt: new Date(),
+        userId: null,
+
       };
 
       (prismaClient.softwareProduct.findUnique as jest.Mock).mockResolvedValue(existingProduct);
@@ -226,6 +232,8 @@ describe("SoftwareProduct Service", () => {
           internal:false,
           createdAt: new Date(),
           updatedAt: new Date(),
+          userId: null,
+
         },
       ];
 

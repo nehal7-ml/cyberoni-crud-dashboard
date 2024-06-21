@@ -60,6 +60,7 @@ const mockServices: (Service & {
     featured: true,
     hourlyRate: 100,
     imageId: "1",
+    userId: null,
   },
   {
     id: "2",
@@ -74,6 +75,7 @@ const mockServices: (Service & {
     featured: true,
     hourlyRate: 100,
     imageId: "1",
+    userId: null,
   },
 ];
 

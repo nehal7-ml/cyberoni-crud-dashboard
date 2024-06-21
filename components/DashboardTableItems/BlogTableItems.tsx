@@ -29,7 +29,7 @@ function BlogTable({
           row.push(<div className="max-w-prose">{value.title}</div>);
           row.push(
             <FeaturedCheckbox
-              initial={value as CreateBlogDTO}
+              initial={value as unknown as CreateBlogDTO}
               action={`/api/blogs/${value.id}`}
             />,
           );
