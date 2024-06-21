@@ -56,6 +56,7 @@ function BlogForm({
         author: { email: "author@example.com" },
         tags: [],
         images: [],
+        ctaProps: undefined
       };
     }
   }, [initial]);

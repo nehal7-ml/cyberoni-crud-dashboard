@@ -33,9 +33,18 @@ export type CreateBlogDTO = {
   author: { id?: string; email: string };
   images: CreateImageDTO[];
   tags: CreateTagDTO[];
-  category?: BlogCategory
+  category?: BlogCategory;
+  ctaProps?: CTAProps
 
 };
+
+
+export type CTAProps = {
+  title: string;
+  subTitle: string;
+  link: string;
+  button: string;
+}
 
 export type BlogCategory = {
   id?: string

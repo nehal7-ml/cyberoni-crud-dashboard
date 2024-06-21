@@ -40,6 +40,12 @@ const BlogSchema = z.object({
   }),
   images: z.array(ImageSchema),
   tags: z.array(TagSchema),
+  ctaProps: z.object({
+    title: z.string().min(1),
+    subTitle: z.string().min(1),
+    link: z.string().url(),
+    button: z.string().min(1),
+  }).optional(),
 });
 
 const ServiceSchema = z.object({
