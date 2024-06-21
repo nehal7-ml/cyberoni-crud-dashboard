@@ -43,9 +43,6 @@ const ReferralForm = ({
     initial
       ? {
         ...initial,
-        link: initial?.link.includes(appUrl)
-          ? `${initial.link.replace(appUrl, "")}`
-          : initial.link,
         redirect: `${stripSlashes(appUrl)}${initial.type === "REDIRECT" ? "/referrals" : "/affiliate"}/${initial.prefix}?${utmPraram.current.toString()}`,
         utmProps: initial.utmProps
           ? {
@@ -83,10 +80,10 @@ const ReferralForm = ({
   );
 
   const defaultJson = useMemo(() => {
-    if(method ==='POST') return JSON.stringify(referralData, null, 2)
+    if(method ==='POST') return JSON.stringify(example, null, 2)
       
-      else return JSON.stringify(ReferralSchema.parse(referralData), null, 2)
-  },[method, referralData])
+      else{ return JSON.stringify(ReferralSchema.parse(initial), null, 2)}
+  },[method, initial])
 
   const [rawJson, setRawJson] = useState(defaultJson);
 
