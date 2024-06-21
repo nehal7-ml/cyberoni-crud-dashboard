@@ -52,6 +52,7 @@ async function create(service: CreateServiceDTO, prismaClient: PrismaClient) {
           service.ServiceDescription as CreateServiceDescription[],
         ),
       },
+      createdBy: service.userId ? { connect: { id: service.userId } } : undefined,
     },
     include: {
       SubServices: true,
@@ -109,9 +110,9 @@ async function update(
 
   let createFaqs = service.faqs?.filter(faq => !faq.id) || []
   let updateFaqs = service.faqs?.filter(faq => faq.id) || []
-  let deleteFaqs = oldService.faqs?.filter(oldFaq => 
+  let deleteFaqs = oldService.faqs?.filter(oldFaq =>
     !(service.faqs || []).some(newFaq => newFaq.id === oldFaq.id)
-) || [];
+  ) || [];
   // let currentService = await services.findUnique({ where: { id: serviceId } })
   let updatedService = await services.update({
     where: { id: serviceId },

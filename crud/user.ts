@@ -23,6 +23,7 @@ export type CreateUserDTO = {
   image?: CreateImageDTO;
   address: CreateAddressDTO;
   role: Role;
+  creatorId?: string | null;
 };
 
 export type DisplayUserDTO = {
@@ -52,6 +53,7 @@ async function create(user: CreateUserDTO, prismaClient: PrismaClient) {
         image: image ? { create: image } : {},
         address: { create: user.address },
         role: user.role,
+        createdBy: user.creatorId ? { connect: { id: user.creatorId } } : undefined,
       },
     });
 

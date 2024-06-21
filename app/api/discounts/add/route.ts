@@ -6,6 +6,8 @@ import { prisma } from "@/lib/prisma";
 import { PrismaClientKnownRequestError } from "@prisma/client/runtime/library";
 import { NextApiRequest, NextApiResponse } from "next";
 import { NextResponse } from "next/server";
+import { getServerSession } from "next-auth";
+import { authOptions } from "@/lib/nextAuthAdapter";
 
 export const { POST, DELETE, GET, PATCH, PUT } = apiHandler({ POST: post });
 
@@ -13,6 +15,8 @@ async function post(req: Request) {
   if (req.method === "POST") {
     const discount = (await req.json()) as CreateDiscountDTO;
     try {
+      const session = await getServerSession(authOptions) ;
+      discount.userId = session?.user?.id ?? undefined;
       const newDiscount = await create(discount, prisma);
       return NextResponse.json({ message: "Add success", data: newDiscount });
     } catch (error) {

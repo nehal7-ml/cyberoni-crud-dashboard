@@ -19,6 +19,7 @@ async function create(event: CreateEventDTO, prismaClient: PrismaClient) {
       status: event.status,      
       eventLink: event.eventLink,
       date: new Date(event.date),
+      createdBy: event.userId ? { connect: { id: event.userId } } : undefined,  
       image: await connectImages(event.image, []),
       tags: { connectOrCreate: connectTag(event.tags, []).connectOrCreate },
     },
@@ -53,18 +54,18 @@ async function update(
 }
 async function remove(eventId: string, prismaClient: PrismaClient) {
   const events = prismaClient.event;
-  const existingevent = await events.findUnique({ where: { id: eventId } });
-  if (existingevent) {
+  const existingEvent = await events.findUnique({ where: { id: eventId } });
+  if (existingEvent) {
     await events.delete({ where: { id: eventId } });
   }
 }
 async function read(eventId: string, prismaClient: PrismaClient) {
   const events = prismaClient.event;
-  const existingevent = await events.findUnique({
+  const existingEvent = await events.findUnique({
     where: { id: eventId },
     include: { image: true, tags: true },
   });
-  if (existingevent) return existingevent;
+  if (existingEvent) return existingEvent;
 }
 
 async function getAll(

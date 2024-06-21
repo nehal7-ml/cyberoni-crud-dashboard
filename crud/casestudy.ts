@@ -36,6 +36,7 @@ export async function create(caseStudy: CreateCaseStudyDTO, prisma: PrismaClient
       wireFrames: createImageJson(wireFrames),
       competitiveAnalysis: createImageJson(competetiveAnalysis),
       type: caseStudy.serviceId ? { connect: { id: caseStudy.serviceId } } : {},
+      createdBy: caseStudy.userId ? { connect: { id: caseStudy.userId } } : {},
       subServices: caseStudy.subServices
         ? { connect: caseStudy.subServices }
         : {},

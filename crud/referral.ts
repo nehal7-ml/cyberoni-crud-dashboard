@@ -19,6 +19,7 @@ export async function create(
       priority: referral.priority,
       type: referral.type,
       utmProps: referral.utmProps,
+      createdBy: referral.userId ? { connect: { id: referral.userId } } : undefined,
       click: 0
 
     },

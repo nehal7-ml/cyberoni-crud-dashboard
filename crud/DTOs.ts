@@ -79,6 +79,7 @@ export type CreateServiceDTO = {
   SubServices?: CreateSubServiceDTO[]
   tags?: CreateTagDTO[];
   faqs?: CreateFaqDTO[];
+  userId?: string;
 };
 
 export type CreateServiceDescription = {
@@ -261,6 +262,7 @@ export type CreateReferralDTO = {
   fallback: string;
   redirect: string;
   click: number;
+  userId?: string;
   utmProps:
   | {
     utm_medium: string;
@@ -295,6 +297,7 @@ export type CreateCaseStudyDTO = {
   hifiDesign?: CreateImageDTO[];
   userFlow?: CreateImageDTO[];
   architecture?: CreateImageDTO[];
+  userId?:string | null;
 };
 
 export type UserPersona = {
@@ -311,6 +314,7 @@ export type CreateDiscountDTO = {
   name: string;
   value: number;
   expires?: Date | null;
+  userId?: string | null;
 };
 
 
@@ -390,10 +394,13 @@ export type CreateEventDTO = {
   eventLink: string;
   status: EventStatus;
   isVirtual: boolean;
+  userId?: string | null;
 };
 
 
 export type CreateSoftwareProductDTO = {
+  userId?: string
+} & ({
   id?: string;
   title: string;
   subTitle: string;
@@ -425,7 +432,7 @@ export type CreateSoftwareProductDTO = {
 
 
 
-};
+});
 
 export type SubscriptionModel = {
   id?: string | null;

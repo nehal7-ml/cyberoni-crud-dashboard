@@ -50,6 +50,7 @@ async function create(
       githubLink,
       status,
       internal: false,
+      createdBy: product.userId ? { connect: { id: product.userId } } : undefined,
       blog: product.blog ? { connect: { id: product.blog.id } } : undefined,
       images: await connectImages(product.images, []),
       tags: {
@@ -231,13 +232,13 @@ async function updateSubscriptionSoftwareProduct(
     ? productData.subscriptionModel.filter((model) => model.id)
     : [];
 
-    const disconnectModels = oldProduct.subscriptionModel && productData.subscriptionModel
+  const disconnectModels = oldProduct.subscriptionModel && productData.subscriptionModel
     ? oldProduct.subscriptionModel.filter(
-        (model) =>
-          !productData.subscriptionModel?.find(
-            (newModel) => newModel.id === model.id
-          )
-      )
+      (model) =>
+        !productData.subscriptionModel?.find(
+          (newModel) => newModel.id === model.id
+        )
+    )
     : [];
   const {
     product,

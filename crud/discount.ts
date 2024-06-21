@@ -8,7 +8,12 @@ export async function create(
 ) {
     const discounts = prisma.discount;
     const newDiscount = await discounts.create({
-        data: discount,
+        data: {
+            name: discount.name,
+            value: discount.value,
+            expires: discount.expires,
+            createdBy: discount.userId ? { connect: { id: discount.userId } } : undefined,
+        },
     });
 
     return newDiscount;
