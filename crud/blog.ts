@@ -11,12 +11,13 @@ async function create(blog: CreateBlogDTO, prismaClient: PrismaClient) {
   let createdBlog = await blogs.create({
     data: {
       ...blog,
+      ctaProps: blog.ctaProps ? blog.ctaProps : undefined,
       date: new Date(),
       category: blog.category ? {
         connect: {
           id: blog.category.id,
         }
-     } : undefined,
+      } : undefined,
       images: await connectImages(blog.images, []),
       tags: { connectOrCreate: connectTags(blog.tags, []).connectOrCreate },
       author: { connect: { email: blog.author.email } },
@@ -53,6 +54,7 @@ async function update(
     where: { id: blogId },
     data: {
       ...blog,
+      ctaProps: blog.ctaProps ? blog.ctaProps : undefined,
       category: blog.category ? {
         connect: {
           id: blog.category.id,
@@ -98,7 +100,7 @@ async function read(blogId: string, prismaClient: PrismaClient) {
       title: true,
       subTitle: true,
       publishDate: true,
-      ctaProps:true,
+      ctaProps: true,
       category: {
         include: {
           parent: true,
@@ -144,7 +146,7 @@ async function getAll(
       title: true,
       subTitle: true,
       publishDate: true,
-      ctaProps:true,
+      ctaProps: true,
       author: {
         select: {
           id: true,
@@ -157,7 +159,7 @@ async function getAll(
     orderBy: options?.orderby ? {
       [options.orderby]: options.order
     } : {
-       date: "desc",
+      date: "desc",
     },
   });
 
