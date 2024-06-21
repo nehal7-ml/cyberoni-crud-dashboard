@@ -34,7 +34,7 @@ export type CreateBlogDTO = {
   images: CreateImageDTO[];
   tags: CreateTagDTO[];
   category?: BlogCategory;
-  ctaProps?: CTAProps
+  ctaProps?: CTAProps | null
 
 };
 
