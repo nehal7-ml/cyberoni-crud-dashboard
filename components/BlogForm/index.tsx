@@ -66,10 +66,10 @@ function BlogForm({
 
   const defaultJson = useMemo(() => {
     if (method === 'POST') {
-      return JSON.stringify(blogData, null, 2);
+      return JSON.stringify(example, null, 2);
     }
-    return JSON.stringify(BlogSchema.parse(blogData), null, 2);
-  }, [blogData, method]);
+    return JSON.stringify(BlogSchema.parse(initial), null, 2);
+  }, [initial, method]);
   const [rawJson, setRawJson] = useState(defaultJson);
   const { toast } = useNotify();
 

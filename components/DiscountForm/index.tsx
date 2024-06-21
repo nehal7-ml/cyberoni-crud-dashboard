@@ -25,9 +25,9 @@ function DiscountsForm({ initial, method, action }: FormProps) {
   );
   const defaultJson = useMemo(() => {
     if (method === "POST") {
-      return JSON.stringify(discountData, null, 2);
-    } else return JSON.stringify(DiscountSchema.parse(discountData), null, 2);
-  }, [discountData, method]);
+      return JSON.stringify(example, null, 2);
+    } else return JSON.stringify(DiscountSchema.parse(initial), null, 2);
+  }, [initial, method]);
 
   
   const [rawJson, setRawJson] = useState(defaultJson);

@@ -51,15 +51,15 @@ function ServiceForm({
   const defaultJSon = useMemo(() => {
     if (method === 'POST') {
 
-      return JSON.stringify(serviceData, null, 2);
+      return JSON.stringify(example, null, 2);
 
     } else {
 
-      return JSON.stringify(ServiceSchema.parse(serviceData), null, 2)
+      return JSON.stringify(ServiceSchema.parse(initial), null, 2)
 
     }
 
-  }, [method, serviceData])
+  }, [method, initial])
 
   const [rawJson, setRawJson] = useState(defaultJSon);
 
