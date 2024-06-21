@@ -5,10 +5,9 @@
     "expires": "2024-12-31T23:59:59Z",
     "description": "This reroutes users to directly to the example form",
     "priority": "HIGH",
-    "link": "https://form.example.com/1234567890",
-    "fallback": "https://example.com/fallback",
+    "link": "https://cybershoptech.com",
+    "fallback": "https://cybershoptech.com",
     "redirect": "https://example.com/redirect",
-    "click": 0,
     "utmProps": {
       "utm_medium": "examplemedium",
       "utm_campaign": "ExampleCampaign_RedditOrg0.01",
