@@ -140,7 +140,7 @@ const DynamicInput: React.FC<DynamicInputProps> = ({
             className=""
             placeholder={schema.title}
             name={schema.title}
-            value={currentData as string}
+            value={currentData ?? ""}
             onChange={handleTextChange}
             disabled={schema.disabled ?? false}
             pattern={schema.pattern ?? undefined}
@@ -150,7 +150,7 @@ const DynamicInput: React.FC<DynamicInputProps> = ({
           <FloatingLabelTextArea
             className=""
             placeholder={schema.title}
-            value={currentData as string}
+            value={currentData ?? ""}
             rows={7}
             name={schema.title}
             onChange={handleTextChange}
@@ -170,7 +170,7 @@ const DynamicInput: React.FC<DynamicInputProps> = ({
             type={"text"}
             className=""
             name={schema.title}
-            value={currentData as string}
+            value={currentData ?? ""}
             onChange={handleNumberChange}
             pattern="[0-9]*"
             disabled={schema.disabled ?? false}
@@ -230,11 +230,12 @@ const DynamicInput: React.FC<DynamicInputProps> = ({
         ) : schema.type === "multi-select" ? (
           <div></div>
         ) : schema.type === "object" ? (
-          <div>
+          <div className="my-4">
+            <label htmlFor="">{schema.title}</label>
             {Object.entries(schema.properties).map(([key, value]) => (
               <DynamicInput
                 key={key}
-                defaultValue={currentData[key]}
+                defaultValue={currentData? currentData[key]: currentData}
                 schema={value}
                 onChange={(newData) => {
                   onChange({ ...currentData, [key]: newData });

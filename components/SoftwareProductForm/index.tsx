@@ -59,9 +59,15 @@ function SoftwareProductForm({
         subscriptionModel: undefined,
       },
     );
-  const [rawJson, setRawJson] = useState(
-    JSON.stringify(SoftwareProductSchema.parse(softwareProductData), null, 2),
-  );
+
+  const defaultJson = useMemo(() => {
+    if (method === 'POST') {
+      return JSON.stringify(softwareProductData, null, 2);
+    }
+    return JSON.stringify(SoftwareProductSchema.parse(softwareProductData), null, 2);
+  }, [softwareProductData, method]);
+  
+  const [rawJson, setRawJson] = useState(defaultJson);
 
   const { toast } = useNotify();
 

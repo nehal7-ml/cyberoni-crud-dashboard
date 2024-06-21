@@ -22,6 +22,35 @@ const blogFormSchema: FormSchema = {
       description: { type: "text", title: "Description", required: true },
       featured: { type: "boolean", title: "Featured", required: true },
       content: { type: "rich-text", title: "Content", required: true },
+      ctaProps: {
+          type: 'object',
+          description: 'CTA Banner props',
+          title: 'CTA Banner Props',
+          properties: {
+              'title': {
+                  type: 'string',
+                  required: true,
+                  title: 'Title'
+                },
+                'subTitle': {
+                  type: 'string',
+                  required: true,
+                  title: 'SubTitle',
+                },
+                'link': {
+                  type: 'string',
+                  required: true,
+                  title: 'Link',
+                  pattern: '^(ftp|http|https)://\[^ "\]+$|^/.*$'
+                },
+                'button': {
+                  type: 'string',
+                  required: true,
+                  title: 'Button Text',
+                }
+          },
+          required: false
+      },
       templateId: {
         type: "select",
         title: "Template",

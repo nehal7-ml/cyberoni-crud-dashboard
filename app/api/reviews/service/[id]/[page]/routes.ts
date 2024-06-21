@@ -9,7 +9,7 @@ export const get = async (
   { params }: { params: { id: string; page: string } },
 ) => {
   const serviceId = params.id;
-
+  
   const reviews = await getByServiceId(
     serviceId,
     parseInt(params.page),

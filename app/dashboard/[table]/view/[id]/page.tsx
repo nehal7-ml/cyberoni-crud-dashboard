@@ -51,7 +51,7 @@ async function UpdateForm({
   params: { id: string; table: TableType };
 }) {
   if (params.table === "blogs") {
-    const blog = (await readBlog(params.id, prisma)) as CreateBlogDTO;
+    const blog = (await readBlog(params.id, prisma)) as unknown as CreateBlogDTO;
     const categories = await getCategories("blog", prisma) as BlogCategory[];
 
     return (

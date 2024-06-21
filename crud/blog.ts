@@ -98,6 +98,7 @@ async function read(blogId: string, prismaClient: PrismaClient) {
       title: true,
       subTitle: true,
       publishDate: true,
+      ctaProps:true,
       category: {
         include: {
           parent: true,
@@ -143,6 +144,7 @@ async function getAll(
       title: true,
       subTitle: true,
       publishDate: true,
+      ctaProps:true,
       author: {
         select: {
           id: true,

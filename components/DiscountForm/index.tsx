@@ -28,6 +28,8 @@ function DiscountsForm({ initial, method, action }: FormProps) {
       return JSON.stringify(discountData, null, 2);
     } else return JSON.stringify(DiscountSchema.parse(discountData), null, 2);
   }, [discountData, method]);
+
+  
   const [rawJson, setRawJson] = useState(defaultJson);
 
   const router = useRouter();

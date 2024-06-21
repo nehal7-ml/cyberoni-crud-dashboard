@@ -13,7 +13,6 @@ describe('Testing Service crud unit functions', () => {
         title: 'Test title',
         content: 'testcontent',
         description: 'test  description',
-        date: new Date(),
         featured: false,
         subTitle: 'preview',
         publishDate: new Date(),
