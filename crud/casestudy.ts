@@ -1,5 +1,5 @@
 import "server-only";
-import { Image, PrismaClient } from "@prisma/client";
+import { Image, PrismaClient, Role } from "@prisma/client";
 import { CreateImageDTO } from "./DTOs";
 import { connectOrCreateObject, createImageJson } from "./images";
 import { CreateCaseStudyDTO } from "./DTOs";
@@ -130,10 +130,15 @@ export async function remove(caseStudyId: string, prisma: PrismaClient) {
 export async function getAll(
   page: number,
   pageSize: number,
+  user: {
+    id: string;
+    role: Role;
+  },
   prismaClient: PrismaClient,
   options?: {
     order: 'asc' | 'desc';
     orderby: 'updatedAt' | 'title';
+    userId?: string
   }
 ) {
   const caseStudys = prismaClient.caseStudy;
@@ -143,7 +148,7 @@ export async function getAll(
   let allrecords = await caseStudys.findMany({
     skip: (page - 1) * pageSize,
     take: pageSize,
-    where: {},
+    where: user?.role === 'SUPERUSER' ? {} : { createdBy: { id: user.id } },
     include: {
       subServices: true,
       type: true,
@@ -151,7 +156,7 @@ export async function getAll(
     orderBy: options?.orderby ? { [options.orderby]: options.order } : { createdAt: "desc" },
   });
 
-  const totalCount = await caseStudys.count();
+  const totalCount = await caseStudys.count({where: user?.role === 'SUPERUSER' ? {} : { createdBy: { id: user.id } }});
   const totalPages = Math.ceil(totalCount / pageSize);
 
   return { records: allrecords, currentPage: page, totalPages, pageSize };

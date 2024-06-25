@@ -1,10 +1,12 @@
 import {
   Blog,
+  Event,
   EventStatus,
   GptPrompt,
   Image,
   PricingModel,
   ProductStatus,
+  Referral,
   ReferralPriority,
   ReferralType,
   Review,
@@ -23,6 +25,7 @@ import {
 } from "@prisma/client";
 
 export type CreateBlogDTO = {
+  id?:string;
   title: string;
   subTitle: string;
   description: string;
@@ -30,7 +33,7 @@ export type CreateBlogDTO = {
   publishDate: Date;
   content: string;
   templateId?: string;
-  author: { id?: string; email: string };
+  author: { id: string };
   images: CreateImageDTO[];
   tags: CreateTagDTO[];
   category?: BlogCategory;
@@ -67,6 +70,7 @@ export type CreateImageDTO = {
   src: string;
 };
 export type CreateServiceDTO = {
+  id?:string;
   title: string;
   previewContent: string;
   featured: boolean;
@@ -100,6 +104,7 @@ export type DisplayServiceDTO = Service & {
   tags?: Tag[];
   SubServices?: SubService[];
   ServiceDescription?: (ServiceDescription & { image: Image | null })[];
+  createdBy?:User
 };
 export type CreateSubServiceDTO = {
   id?: string;
@@ -122,6 +127,13 @@ export type Discount = {
   name: string;
   value: number;
 };
+
+export type DisplayDiscountDTO = {
+  id?: string;
+  name: string;
+  value: number;
+  createdBy?: User
+}
 export type CreateAddressDTO = {
   id?: string;
   street: string;
@@ -277,6 +289,11 @@ export type CreateReferralDTO = {
   }
   | {};
 };
+
+
+export type DisplayReferralDTO = Referral & {
+  createdBy?: User;
+}
 export type CreateCaseStudyDTO = {
   id?: string;
   title: string;
@@ -297,7 +314,7 @@ export type CreateCaseStudyDTO = {
   hifiDesign?: CreateImageDTO[];
   userFlow?: CreateImageDTO[];
   architecture?: CreateImageDTO[];
-  userId?:string | null;
+  userId?: string | null;
 };
 
 export type UserPersona = {
@@ -397,6 +414,10 @@ export type CreateEventDTO = {
   userId?: string | null;
 };
 
+export type DisplayEventDTO = Event & {
+  createdBy?: User
+}
+
 
 export type CreateSoftwareProductDTO = {
   userId?: string
@@ -468,6 +489,7 @@ export type DisplaySoftwareProductDTO = {
   link?: string;
   githubLink?: string;
   status: SoftwareProductStatus;
+  createdBy:User;
   category?: SoftwareProductCategory
   blog?: { id: string }
 }

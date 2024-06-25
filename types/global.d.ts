@@ -10,6 +10,7 @@ export type TableType =
   | "discounts"
   | "referrals";
 export type OrderTableBy =
+  | "createdAt"
   | "updatedAt"
   | "title"
   | "name"

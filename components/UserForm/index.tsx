@@ -4,7 +4,7 @@ import { CreateAddressDTO } from "@/crud/DTOs";
 import { CreateImageDTO } from "@/crud/DTOs";
 import { CreateUserDTO } from "@/crud/user";
 import { Role } from "@prisma/client";
-import React, { useState } from "react";
+import React, { useMemo, useState } from "react";
 import Notification, {
   NotificationType,
   useNotify,
@@ -12,11 +12,20 @@ import Notification, {
 import { FormProps } from "@/crud/commonDTO";
 import PasswordGenerator from "../PasswordInput";
 import { redirect, useRouter } from "next/navigation";
+import { useSession } from "next-auth/react";
 
 const apiUrl = process.env.NEXT_PUBLIC_API_URL;
 
 const UserForm = ({ method, action, initial }: FormProps) => {
-  const {toast} = useNotify();
+  const { toast } = useNotify();
+  const session = useSession();
+
+  const Roles = useMemo(() => {
+
+    if (!session.data) return []
+    if (session.data?.user?.role === Role.SUPERUSER) Object.values(Role);
+    return [Role.CUSTOMER, Role.USER, Role.ADMIN]
+  }, [session.data])
 
   const [userData, setUserData] = useState<CreateUserDTO>(
     (initial as CreateUserDTO) || {
@@ -162,7 +171,7 @@ const UserForm = ({ method, action, initial }: FormProps) => {
               onChange={handleInputChange}
               required
             >
-              {Object.values(Role).map((role) => (
+              {Roles.map((role) => (
                 <option key={role} value={role}>
                   {role}
                 </option>

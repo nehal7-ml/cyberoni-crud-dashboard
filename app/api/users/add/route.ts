@@ -14,6 +14,8 @@ async function post(req: Request) {
     const user = (await req.json()) as CreateUserDTO;
     const session = await getServerSession(authOptions) ;
     user.creatorId = session?.user?.id ?? undefined;
+
+    if(session?.user.role!=="SUPERUSER" && user.role=="SUPERUSER") return NextResponse.json({ message: "Unauthorized Can't add super user" });
     const newUser = await create(user, prisma);
     return NextResponse.json(
       { message: "Add success", data: newUser },

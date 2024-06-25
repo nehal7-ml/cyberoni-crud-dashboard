@@ -5,6 +5,8 @@ import { CreateServiceDTO } from "@/crud/DTOs";
 import { NextRequest, NextResponse } from "next/server";
 import apiHandler from "@/errorHandler";
 import { revalidatePath } from "next/cache";
+import { getServerSession } from "next-auth";
+import { authOptions } from "@/lib/nextAuthAdapter";
 
 export const { POST, DELETE, GET, PATCH, PUT } = apiHandler({
   GET: get,

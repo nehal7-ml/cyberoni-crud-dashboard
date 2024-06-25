@@ -1,5 +1,5 @@
 import "server-only";
-import { PrismaClient, Prisma, FAQ } from "@prisma/client";
+import { PrismaClient, Prisma, FAQ, Role } from "@prisma/client";
 import {
   create as createTag,
   connectOrCreateObject as connectTags,
@@ -224,6 +224,10 @@ async function getServicesByTag(tag: string, prismaClient: PrismaClient) { }
 async function getAll(
   page: number,
   pageSize: number,
+  user: {
+    id: string;
+    role :Role;
+  },
   prismaClient: PrismaClient,
   options?: {
     order: 'asc' | 'desc';
@@ -238,7 +242,7 @@ async function getAll(
   let allServices = await services.findMany({
     skip: page === 0 ? 0 : (page - 1) * pageSize,
     take: page === 0 ? 9999 : pageSize,
-    where: {},
+    where:user?.role === 'SUPERUSER' ? {} : { createdBy: { id: user.id } },
     include: {
       // reviews: true,
       SubServices: {
@@ -255,7 +259,7 @@ async function getAll(
     }
   });
 
-  const totalCount = await services.count();
+  const totalCount = await services.count({where: user?.role === 'SUPERUSER' ? {} : { createdBy: { id: user.id } }});
   const totalPages = Math.ceil(totalCount / pageSize);
 
   return { records: allServices, currentPage: page, totalPages, pageSize };

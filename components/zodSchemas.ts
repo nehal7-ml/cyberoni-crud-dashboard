@@ -35,9 +35,6 @@ const BlogSchema = z.object({
   featured: z.boolean(),
   publishDate: z.coerce.date(),
   content: z.string().min(1),
-  author: z.object({
-    email: z.string().email(),
-  }),
   images: z.array(ImageSchema),
   tags: z.array(TagSchema),
   ctaProps: z.object({

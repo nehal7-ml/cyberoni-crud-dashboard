@@ -1,5 +1,5 @@
 import "server-only";
-import { PrismaClient, Referral } from "@prisma/client";
+import { PrismaClient, Referral, Role } from "@prisma/client";
 import { CreateReferralDTO } from "./DTOs";
 
 export async function create(
@@ -19,9 +19,10 @@ export async function create(
       priority: referral.priority,
       type: referral.type,
       utmProps: referral.utmProps,
-      createdBy: referral.userId ? { connect: { id: referral.userId } } : undefined,
-      click: 0
-
+      createdBy: referral.userId
+        ? { connect: { id: referral.userId } }
+        : undefined,
+      click: 0,
     },
   });
 
@@ -71,7 +72,7 @@ export async function update(
       priority: referral.priority,
       type: referral.type,
       utmProps: referral.utmProps,
-      click: referral.click
+      click: referral.click,
     },
   });
 
@@ -81,11 +82,16 @@ export async function update(
 export async function getAll(
   page: number,
   pageSize: number,
+  user: {
+    id: string;
+    role: Role;
+  },
   prismaClient: PrismaClient,
   options?: {
-    order: 'asc' | 'desc';
-    orderby: 'updatedAt' | 'prefix' | 'expires' | 'click';
-  }
+    order: "asc" | "desc";
+    orderby: "updatedAt" | "prefix" | "expires" | "click";
+    userId?: string;
+  },
 ) {
   const refferals = prismaClient.referral;
 
@@ -95,15 +101,17 @@ export async function getAll(
   let allrefferals = await refferals.findMany({
     skip: (page - 1) * pageSize,
     take: pageSize,
-    where: {},
-    orderBy: options?.orderby ? {
-      [options.orderby]: options.order,
-    } : {
-      createdAt: "desc",
-    }
+    where: user?.role === "SUPERUSER" ? {} : { createdBy: { id: user.id } },
+    orderBy: options?.orderby
+      ? {
+          [options.orderby]: options.order,
+        }
+      : {
+          createdAt: "desc",
+        },
   });
 
-  const totalCount = await refferals.count();
+  const totalCount = await refferals.count({where: user?.role === 'SUPERUSER' ? {} : { createdBy: { id: user.id } }});
   const totalPages = Math.ceil(totalCount / pageSize);
 
   return { records: allrefferals, currentPage: page, totalPages, pageSize };

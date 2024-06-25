@@ -39,12 +39,12 @@ export const authOptions: NextAuthOptions = {
         token.name = session.name;
         //token.user = user
       }
-      console.log("jwt", token);
+      //console.log("jwt", token);
 
       return token;
     },
     session: async ({ session, token }) => {
-      console.log("session", token.user);
+     // console.log("session", token.user);
 
       token.user && (session.user = token.user as AdapterUser);
 

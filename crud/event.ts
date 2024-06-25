@@ -1,5 +1,5 @@
 import "server-only";
-import { Event, EventStatus, PrismaClient, User } from "@prisma/client";
+import { Event, EventStatus, PrismaClient, Role, User } from "@prisma/client";
 import { CreateEventDTO, CreateImageDTO } from "./DTOs";
 import { connectOrCreateObject as connectTag } from "./tags";
 import { CreateTagDTO } from "./DTOs";
@@ -16,10 +16,10 @@ async function create(event: CreateEventDTO, prismaClient: PrismaClient) {
       description: event.description,
       isVirtual: event.isVirtual,
       location: event.location,
-      status: event.status,      
+      status: event.status,
       eventLink: event.eventLink,
       date: new Date(event.date),
-      createdBy: event.userId ? { connect: { id: event.userId } } : undefined,  
+      createdBy: event.userId ? { connect: { id: event.userId } } : undefined,
       image: await connectImages(event.image, []),
       tags: { connectOrCreate: connectTag(event.tags, []).connectOrCreate },
     },
@@ -33,9 +33,9 @@ async function update(
   prismaClient: PrismaClient,
 ) {
   const events = prismaClient.event;
-  const oldEvent = await events.findUnique({where: {id: eventId}, include: {image: true, tags:true}})
+  const oldEvent = await events.findUnique({ where: { id: eventId }, include: { image: true, tags: true } })
 
-  if(!oldEvent) throw HttpError(404 , 'Event Not found')
+  if (!oldEvent) throw HttpError(404, 'Event Not found')
   const updatedEvent = await events.update({
     where: { id: eventId },
     data: {
@@ -43,11 +43,11 @@ async function update(
       description: event.description,
       isVirtual: event.isVirtual,
       location: event.location,
-      status: event.status,      
+      status: event.status,
       eventLink: event.eventLink,
       date: new Date(event.date),
       image: await connectImages(event.image, oldEvent.image),
-      tags: connectTag(event.tags,oldEvent.tags ),
+      tags: connectTag(event.tags, oldEvent.tags),
     },
   });
   return updatedEvent;
@@ -71,6 +71,10 @@ async function read(eventId: string, prismaClient: PrismaClient) {
 async function getAll(
   page: number,
   pageSize: number,
+  user: {
+    id: string;
+    role: Role;
+  },
   prismaClient: PrismaClient,
   options?: {
     order: 'asc' | 'desc';
@@ -85,15 +89,15 @@ async function getAll(
   let allEvents = await events.findMany({
     skip: (page - 1) * pageSize,
     take: pageSize,
-    where: {},
+    where: user?.role === 'SUPERUSER' ? {} : { createdBy: { id: user.id } },
     include: {
       // reviews: true,
     },
-    orderBy: options?.orderby? {
+    orderBy: options?.orderby ? {
       [options.orderby]: options.order
-    }: {
+    } : {
       createdAt: 'desc',
-      
+
     },
 
   });

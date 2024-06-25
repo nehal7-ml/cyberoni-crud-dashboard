@@ -25,6 +25,7 @@ import blogFormSchema from "./formSchema";
 import { createPortal } from "react-dom";
 import SeoChecker from "../SeoChecker";
 import { datacatalog_v1 } from "googleapis";
+import { useSession } from "next-auth/react";
 
 function BlogForm({
   categories,
@@ -39,7 +40,8 @@ function BlogForm({
 }) {
   const [loading, setLoading] = useState(false);
 
-  const editorRef = useRef<HTMLDivElement | null>(null)
+  const editorRef = useRef<HTMLDivElement | null>(null);
+  const session = useSession();
 
   const defaultBlogData = useMemo(() => {
     if (initial) {
@@ -53,7 +55,7 @@ function BlogForm({
         publishDate: new Date(),
         category: undefined,
         content: "",
-        author: { email: "author@example.com" },
+        author: { id: session.data?.user?.id as string },
         tags: [],
         images: [],
         ctaProps: undefined

@@ -5,9 +5,6 @@
     "featured": true,
     "publishDate": "2024-05-24T14:00:00Z",
     "content": "Web development is constantly evolving...",
-    "author": {
-        "email": "codingoni@gmail.com"
-    },
     "images": [
         {
             "name": "webdev_future",

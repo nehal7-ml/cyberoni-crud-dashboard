@@ -33,6 +33,7 @@ export type DisplayUserDTO = {
   email: string;
   emailVerified: Date;
   role: Role;
+  createdBy: User | null;
 };
 async function create(user: CreateUserDTO, prismaClient: PrismaClient) {
   const users = prismaClient.user;
@@ -169,6 +170,10 @@ async function read(userId: string, prismaClient: PrismaClient) {
 async function getAll(
   page: number,
   pageSize: number,
+  user: {
+    id: string;
+    role: Role;
+  },
   prismaClient: PrismaClient,
   options?: {
     order: 'asc' | 'desc';
@@ -183,7 +188,8 @@ async function getAll(
   let allUsers = await users.findMany({
     skip: (page - 1) * pageSize,
     take: pageSize,
-    where: {},
+    where: user?.role === 'SUPERUSER' ? {} : { OR: [{ createdBy: { id: user.id } }, { id: user.id }] },
+    include: {createdBy: true},
     orderBy: options?.orderby ? {
       [options.orderby]: options.order
     } : {
@@ -191,7 +197,7 @@ async function getAll(
     }
   });
 
-  const totalCount = await users.count();
+  const totalCount = await users.count({ where: user?.role === 'SUPERUSER' ? {} : {OR: [{ createdBy: { id: user.id } }, { id: user.id }]} });
   const totalPages = Math.ceil(totalCount / pageSize);
 
   return {

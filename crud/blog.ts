@@ -1,5 +1,5 @@
 import "server-only";
-import { PrismaClient } from "@prisma/client";
+import { PrismaClient, Role } from "@prisma/client";
 import { connectOrCreateObject as connectTags } from "./tags";
 import { connectOrCreateObject as connectImages } from "./images";
 import { CreateBlogDTO, CreateCategory } from "./DTOs";
@@ -16,10 +16,10 @@ async function create(blog: CreateBlogDTO, prismaClient: PrismaClient) {
         connect: {
           id: blog.category.id,
         }
-     } : undefined,
+      } : undefined,
       images: await connectImages(blog.images, []),
       tags: { connectOrCreate: connectTags(blog.tags, []).connectOrCreate },
-      author: { connect: { email: blog.author.email } },
+      author: { connect: { id: blog.author.id} },
     },
     include: {
       images: true, tags: true,
@@ -60,7 +60,7 @@ async function update(
       } : undefined,
       images: await connectImages(blog.images, oldBlog!.images),
       tags: connectTags(blog.tags, oldBlog?.tags),
-      author: { connect: { email: blog.author.email } },
+      author: { connect: { id: blog.author.id } },
     }, include: {
       images: true, tags: true,
       author: {
@@ -98,7 +98,7 @@ async function read(blogId: string, prismaClient: PrismaClient) {
       title: true,
       subTitle: true,
       publishDate: true,
-      ctaProps:true,
+      ctaProps: true,
       category: {
         include: {
           parent: true,
@@ -117,13 +117,18 @@ async function read(blogId: string, prismaClient: PrismaClient) {
   if (existingBlog) return existingBlog;
 }
 
-async function getAll(
+async function getAllBlogs(
   page: number,
   pageSize: number,
+  user: {
+    id: string;
+    role: Role
+  },
   prismaClient: PrismaClient,
   options?: {
     order: 'asc' | 'desc';
-    orderby: 'updatedAt' | 'title';
+    orderby: 'createdAt' | 'updatedAt' | 'title';
+    userId?: string;
   }
 ) {
   const blogs = prismaClient.blog;
@@ -133,7 +138,7 @@ async function getAll(
   let allBlogs = await blogs.findMany({
     skip: page === 0 ? 0 : (page - 1) * pageSize,
     take: page === 0 ? 9999 : pageSize,
-    where: {},
+    where: user?.role === 'SUPERUSER' ? {} : { author: { id: user.id } },
     select: {
       userId: false,
       content: true,
@@ -144,7 +149,7 @@ async function getAll(
       title: true,
       subTitle: true,
       publishDate: true,
-      ctaProps:true,
+      ctaProps: true,
       author: {
         select: {
           id: true,
@@ -157,13 +162,12 @@ async function getAll(
     orderBy: options?.orderby ? {
       [options.orderby]: options.order
     } : {
-       date: "desc",
+      date: "desc",
     },
   });
 
-  const totalCount = await blogs.count();
+  const totalCount = await blogs.count({where: user?.role === 'SUPERUSER' ? {} : { author: { id: user.id } }});
   const totalPages = Math.ceil(totalCount / pageSize);
-
   return { records: allBlogs, currentPage: page, totalPages, pageSize };
 }
 
@@ -185,4 +189,4 @@ export async function updateIndex(blogId: string, BlogTitle: string, type: "URL_
   }
 }
 
-export { create, update, remove, read, getAll };
+export { create, update, remove, read, getAllBlogs };

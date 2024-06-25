@@ -1,4 +1,4 @@
-import { PrismaClient, SoftwareProduct } from "@prisma/client";
+import { PrismaClient, Role, SoftwareProduct } from "@prisma/client";
 import { CreateImageDTO, CreateSoftwareProductDTO } from "./DTOs";
 import { connectOrCreateObject as connectTags } from "./tags";
 import { connectOrCreateObject as connectImages } from "./images";
@@ -172,7 +172,12 @@ async function remove(
 async function getAll(
   page: number,
   pageSize: number,
+  user: {
+    id: string;
+    role :Role;
+  },
   prismaClient: PrismaClient,
+  
   options?: {
     order: "asc" | "desc";
     orderby: "updatedAt" | "pricing";
@@ -186,6 +191,7 @@ async function getAll(
   let allProducts = await prismaClient.softwareProduct.findMany({
     skip: (page - 1) * pageSize,
     take: pageSize,
+    where: user?.role === 'SUPERUSER' ? {} : { createdBy: { id: user.id } },
     include: {
       category: true,
     },
@@ -198,7 +204,7 @@ async function getAll(
       },
   });
 
-  const totalCount = await prismaClient.softwareProduct.count();
+  const totalCount = await prismaClient.softwareProduct.count({where: user?.role === 'SUPERUSER' ? {} : { createdBy: { id: user.id } }});
   const totalPages = Math.ceil(totalCount / pageSize);
 
   return { records: allProducts, currentPage: page, totalPages, pageSize };

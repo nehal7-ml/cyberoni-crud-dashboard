@@ -1,89 +1,97 @@
 import "server-only";
-import { PrismaClient } from "@prisma/client";
+import { PrismaClient, Role } from "@prisma/client";
 import { CreateDiscountDTO } from "./DTOs";
 
 export async function create(
-    discount: CreateDiscountDTO,
-    prisma: PrismaClient,
+  discount: CreateDiscountDTO,
+  prisma: PrismaClient,
 ) {
-    const discounts = prisma.discount;
-    const newDiscount = await discounts.create({
-        data: {
-            name: discount.name,
-            value: discount.value,
-            expires: discount.expires,
-            createdBy: discount.userId ? { connect: { id: discount.userId } } : undefined,
-        },
-    });
+  const discounts = prisma.discount;
+  const newDiscount = await discounts.create({
+    data: {
+      name: discount.name,
+      value: discount.value,
+      expires: discount.expires,
+      createdBy: discount.userId
+        ? { connect: { id: discount.userId } }
+        : undefined,
+    },
+  });
 
-    return newDiscount;
+  return newDiscount;
 }
 
 export async function read(id: string, prisma: PrismaClient) {
-    const discounts = prisma.discount;
-    const newDiscount = await discounts.findUnique({
-        where: {
-            id,
-        },
-    });
+  const discounts = prisma.discount;
+  const newDiscount = await discounts.findUnique({
+    where: {
+      id,
+    },
+  });
 
-    return newDiscount;
+  return newDiscount;
 }
 
 export async function remove(id: string, prisma: PrismaClient) {
-    const discounts = prisma.discount;
-    const newDiscount = await discounts.delete({
-        where: {
-            id,
-        },
-    });
+  const discounts = prisma.discount;
+  const newDiscount = await discounts.delete({
+    where: {
+      id,
+    },
+  });
 
-    return newDiscount;
+  return newDiscount;
 }
 
 export async function update(
-    id: string,
-    discount: CreateDiscountDTO,
-    prisma: PrismaClient,
+  id: string,
+  discount: CreateDiscountDTO,
+  prisma: PrismaClient,
 ) {
-    const discounts = prisma.discount;
-    const newDiscount = await discounts.update({
-        where: {
-            id,
-        },
-        data: discount,
-    });
+  const discounts = prisma.discount;
+  const newDiscount = await discounts.update({
+    where: {
+      id,
+    },
+    data: discount,
+  });
 
-    return newDiscount;
+  return newDiscount;
 }
 
 export async function getAll(
-    page: number,
-    pageSize: number,
-    prismaClient: PrismaClient,
-    options?: {
-        order: 'asc' | 'desc';
-        orderby: 'updatedAt' | 'name';
-      }
+  page: number,
+  pageSize: number,
+  user: {
+    id: string;
+    role :Role;
+  },
+  prismaClient: PrismaClient,
+  options?: {
+    order: "asc" | "desc";
+    orderby: "updatedAt" | "name";
+  },
 ) {
-    const discounts = prismaClient.discount;
+  const discounts = prismaClient.discount;
 
-    if (pageSize !== 10 && pageSize != 30 && pageSize !== 50)
-        throw new Error("page size must be 10, 30 or 50");
+  if (pageSize !== 10 && pageSize != 30 && pageSize !== 50)
+    throw new Error("page size must be 10, 30 or 50");
 
-    let allDiscounts = await discounts.findMany({
-        skip: (page - 1) * pageSize,
-        take: pageSize,
-        where: {},
-        orderBy: options?.orderby? {
-           [options.orderby]: options.order
-        }: {
-            createdAt: "desc",
+  let allDiscounts = await discounts.findMany({
+    skip: (page - 1) * pageSize,
+    take: pageSize,
+    where: user?.role === 'SUPERUSER' ? {} : { createdBy: { id: user.id } },
+    orderBy: options?.orderby
+      ? {
+          [options.orderby]: options.order,
         }
-    });
+      : {
+          createdAt: "desc",
+        },
+  });
 
-    const totalCount = await discounts.count();
-    const totalPages = Math.ceil(totalCount / pageSize);
+  const totalCount = await discounts.count({where: user?.role === 'SUPERUSER' ? {} : { createdBy: { id: user.id } }});
+  const totalPages = Math.ceil(totalCount / pageSize);
 
-    return { records: allDiscounts, currentPage: page, totalPages, pageSize };
+  return { records: allDiscounts, currentPage: page, totalPages, pageSize };
 }

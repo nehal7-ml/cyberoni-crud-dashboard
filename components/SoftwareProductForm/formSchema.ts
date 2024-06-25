@@ -77,6 +77,12 @@ export const SubscriptionModelSchema: FormSchema = {
         title: "Subscription Item",
         type: "object",
         properties: {
+            "id": {
+                type: "string",
+                required: false,
+                title: "ID", 
+                disabled: true
+            },
             "name": {
                 type: "string",
                 required: true,
