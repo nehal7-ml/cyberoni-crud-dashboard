@@ -1,6 +1,7 @@
-import { features } from "process";
+import { features, title } from "process";
 import { FormSchema } from "../DynamicInput";
 import { SoftwareProductStatus, SoftwarePricing } from "@prisma/client";
+import { workflows } from "googleapis/build/src/apis/workflows";
 export const SoftwareProductFormSchema: FormSchema = {
     description: "Software properties form",
     title: "Software Product Form",
@@ -127,10 +128,68 @@ export const SubscriptionModelSchema: FormSchema = {
                             type: 'string',
                             required: true,
                             title: 'Description'
+                        },
+                        tags: {
+                            type: 'tags',
+                            title: 'Tags',
+                            description: 'Tags for features',
                         }
                     }
                 }, 
                 toString: (object:any)=>object.title
+            },
+            workflows: {
+                type: "array",
+                title: "Workflows",
+                description: "Workflows",
+                required: false,
+                items: {
+                    type: "object",
+                    description: "Workflow items",
+                    title: "Workflow",
+                    required: false,
+                    properties: {
+                        title: {
+                            type: "string",
+                            required: true,
+                            title: "Title",
+                            
+                            
+                        } , 
+                        'token': {
+                            type: "string",
+                            required: true,
+                            title: "Token",
+                        }
+                    }
+                },
+                toString: (object:any)=>object.title
+            },
+            chatBots: {
+                type : 'array',
+                title: 'Chat Bots',
+                required: false,
+                description: 'Chat Bots',
+                items: {
+                    type: "object",
+                    title: "Chat Bot",
+                    description: "Chat Bot Items",
+                    required: false,
+                    properties: {
+                        title: {
+                            type: "string",
+                            required: true,
+                            title: "Title"
+                        },
+                        token: {
+                            type: "string",
+                            required: true,
+                            title: "Token"
+                        }
+                    }
+                },
+                toString: (object:any)=>object.title
+
             },
             credits: {
                 type: "number",
