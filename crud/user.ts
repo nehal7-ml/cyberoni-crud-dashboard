@@ -160,7 +160,7 @@ export async function reset(
 }
 async function remove(userId: string, user: AuthUser) {
   const users = prisma.user;
-  const existingUser = await users.findUnique({ where: { id: userId } });
+  const existingUser = await users.findUnique({ where: { id: userId , AND: userQuery(user)} });
   if (!existingUser)
     throw { status: 400, message: `User ${userId} doesn't exists` };
   else {
