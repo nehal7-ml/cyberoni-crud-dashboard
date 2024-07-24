@@ -10,11 +10,7 @@ import {
   DisplayBlogDTO,
 } from "@/crud/DTOs";
 import { redirect, useParams, useRouter } from "next/navigation";
-import { CreateImageDTO } from "@/crud/DTOs";
-import Editor from "../RichTextEditor";
-import Ajv from "ajv";
-import addFormats from "ajv-formats";
-import DateInput from "../DateInput";
+
 import LoadingDots from "../shared/loading-dots";
 import CategoryForm from "../CategoryForm";
 import { BlogSchema } from "../zodSchemas";
@@ -61,7 +57,7 @@ function BlogForm({
         ctaProps: undefined
       };
     }
-  }, [initial]);
+  }, [initial, session.data?.user?.id]);
 
 
   const [blogData, setBlogData] = useState<CreateBlogDTO>(defaultBlogData);

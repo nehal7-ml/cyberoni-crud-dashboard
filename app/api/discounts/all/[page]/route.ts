@@ -10,17 +10,12 @@ const get = async (
   req: NextApiRequest,
   { params }: { params: { page: string } },
 ) => {
-  const session = await getServerSession(authOptions);
-  if (!session) return NextResponse.json({ message: "Unauthorized" });
-  let role = session?.user?.role;
+  const session = await getServerSession(authOptions)
+  if(!session) return NextResponse.json({ message: "Unauthorized" })
   const blogs = await getAll(
     parseInt(params.page),
     10,
-    {
-      id: session?.user?.id as string,
-      role: role,
-    },
-    prisma,
+    session.user
   ); // skipping 10 record for every new page
   return NextResponse.json({ message: "found", data: blogs });
 };

@@ -5,6 +5,12 @@
     "featured": true,
     "publishDate": "2024-05-24T14:00:00Z",
     "content": "Web development is constantly evolving...",
+    "ctaProps": {
+        "title": "CTA Title",
+        "subTitle": "CTA Subtitle",
+        "link": "https://example.com",
+        "button": "Read More"
+    },
     "images": [
         {
             "name": "webdev_future",

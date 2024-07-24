@@ -43,10 +43,10 @@ function CaseStudyForm({
     initial
       ? {
           ...initial,
-          serviceId: initial?.serviceId ?? types[0].id,
+          serviceId: initial?.serviceId ?? undefined,
         }
       : {
-          serviceId: types[0].id,
+          serviceId: undefined,
           subServices: [],
           architecture: [],
           competitiveAnalysis: [],
@@ -193,7 +193,7 @@ function CaseStudyForm({
                 <select
                   name="serviceId"
                   className="mt-1 w-full rounded border p-2"
-                  value={caseData.serviceId ?? types[0].id}
+                  value={caseData.serviceId ??  ""}
                   onChange={handleInputChange}
                 >
                   <option disabled>Select Service</option>

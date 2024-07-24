@@ -8,26 +8,24 @@ import { authOptions } from "@/lib/nextAuthAdapter";
 
 const get = async (
   req: NextApiRequest,
-  { params }: { params: { page: string } },
+  { params }: { params: { page: string, orgId: string } },
 ) => {
   const session = await getServerSession(authOptions);
   if (!session) return NextResponse.json({ message: "Unauthorized" })
-  let role = session?.user?.role;
   const blogs = await getAllBlogs(
     parseInt(params.page),
     10,
     {
       id: session?.user?.id as string,
-      role: role,
+      role: session.user.role,
+      orgId: params.orgId
     },
-    prisma,
-    role === "SUPERUSER"
-      ? undefined
-      : {
-        orderby: "createdAt",
-        order: "desc",
-        userId: session?.user?.id,
-      },
+
+    {
+      orderby: "createdAt",
+      order: "desc",
+      userId: session?.user?.id,
+    },
   ); // skipping 10 record for every new page
   return NextResponse.json({ message: "found", data: blogs });
 };

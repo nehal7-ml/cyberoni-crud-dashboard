@@ -10,12 +10,17 @@ declare module "next-auth" {
             /** Oauth access token */
             role: Role;
             id?: string;
+            orgId: string;
 
         } & DefaultSession["user"];
     }
 
     interface User extends DefaultUser {
         id?: string;
-        role: Role
+        role: Role;
+        orgId: string;
+
     }
 }
+
+

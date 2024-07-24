@@ -1,15 +1,17 @@
 import "server-only";
-import { Event, EventStatus, PrismaClient, Role, User } from "@prisma/client";
+import { Event, EventStatus, Role } from "@prisma/client";
 import { CreateEventDTO, CreateImageDTO } from "./DTOs";
 import { connectOrCreateObject as connectTag } from "./tags";
 import { CreateTagDTO } from "./DTOs";
 import { HttpError } from "@/lib/utils";
 import { connectOrCreateObject as connectImages } from "./images";
+import { userQuery } from "./permissions";
+import { prisma } from "@/lib/prisma"
+import { User } from "next-auth";
 
 
-
-async function create(event: CreateEventDTO, prismaClient: PrismaClient) {
-  const events = prismaClient.event;
+async function create(event: CreateEventDTO, user: User) {
+  const events = prisma.event;
   let createdevent = await events.create({
     data: {
       name: event.name,
@@ -19,7 +21,12 @@ async function create(event: CreateEventDTO, prismaClient: PrismaClient) {
       status: event.status,
       eventLink: event.eventLink,
       date: new Date(event.date),
-      createdBy: event.userId ? { connect: { id: event.userId } } : undefined,
+      createdBy: {
+        connect: { id: user.id }
+      },
+      Organization: {
+        connect: { id: user.orgId },
+      },
       image: await connectImages(event.image, []),
       tags: { connectOrCreate: connectTag(event.tags, []).connectOrCreate },
     },
@@ -30,14 +37,14 @@ async function create(event: CreateEventDTO, prismaClient: PrismaClient) {
 async function update(
   eventId: string,
   event: CreateEventDTO,
-  prismaClient: PrismaClient,
+  user: User,
 ) {
-  const events = prismaClient.event;
+  const events = prisma.event;
   const oldEvent = await events.findUnique({ where: { id: eventId }, include: { image: true, tags: true } })
 
   if (!oldEvent) throw HttpError(404, 'Event Not found')
   const updatedEvent = await events.update({
-    where: { id: eventId },
+    where: { id: eventId, AND: userQuery(user) },
     data: {
       name: event.name,
       description: event.description,
@@ -52,17 +59,17 @@ async function update(
   });
   return updatedEvent;
 }
-async function remove(eventId: string, prismaClient: PrismaClient) {
-  const events = prismaClient.event;
-  const existingEvent = await events.findUnique({ where: { id: eventId } });
+async function remove(eventId: string, user: User) {
+  const events = prisma.event;
+  const existingEvent = await events.findUnique({ where: { id: eventId, AND: userQuery(user) } });
   if (existingEvent) {
     await events.delete({ where: { id: eventId } });
   }
 }
-async function read(eventId: string, prismaClient: PrismaClient) {
-  const events = prismaClient.event;
+async function read(eventId: string, user: User) {
+  const events = prisma.event;
   const existingEvent = await events.findUnique({
-    where: { id: eventId },
+    where: { id: eventId, AND: userQuery(user) },
     include: { image: true, tags: true },
   });
   if (existingEvent) return existingEvent;
@@ -71,25 +78,23 @@ async function read(eventId: string, prismaClient: PrismaClient) {
 async function getAll(
   page: number,
   pageSize: number,
-  user: {
-    id: string;
-    role: Role;
-  },
-  prismaClient: PrismaClient,
+  user: User,
   options?: {
     order: 'asc' | 'desc';
     orderby: 'updatedAt' | 'name';
   }
 ) {
-  const events = prismaClient.event;
+  const events = prisma.event;
 
   if (pageSize !== 10 && pageSize != 30 && pageSize !== 50)
     throw new Error("page size must be 10, 30 or 50");
 
+  let query = { AND: userQuery(user) }
+
   let allEvents = await events.findMany({
     skip: (page - 1) * pageSize,
     take: pageSize,
-    where: user?.role === 'SUPERUSER' ? {} : { createdBy: { id: user.id } },
+    where: query,
     include: {
       // reviews: true,
     },
@@ -102,7 +107,7 @@ async function getAll(
 
   });
 
-  const totalCount = await events.count();
+  const totalCount = await events.count({ where: query });
   const totalPages = Math.ceil(totalCount / pageSize);
 
   return { records: allEvents, currentPage: page, totalPages, pageSize };

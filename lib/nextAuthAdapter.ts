@@ -26,9 +26,9 @@ export const authOptions: NextAuthOptions = {
   },
   session: {
     strategy: "jwt",
-    
 
-},
+
+  },
 
   callbacks: {
     jwt: async ({ token, user, session, trigger }) => {
@@ -44,7 +44,7 @@ export const authOptions: NextAuthOptions = {
       return token;
     },
     session: async ({ session, token }) => {
-     // console.log("session", token.user);
+      // console.log("session", token.user);
 
       token.user && (session.user = token.user as AdapterUser);
 
@@ -60,7 +60,6 @@ async function authorize(
   try {
     const user = await authorizeWithPassword(
       { email: credentials?.username!, password: credentials?.password! },
-      prisma,
     );
     if (user) {
       return {
@@ -68,6 +67,7 @@ async function authorize(
         name: `${user.firstName} ${user.lastName}`,
         email: user.email,
         role: user.role,
+        orgId: user.Organization[0].id
       };
     } else return null;
     // console.log(user);
@@ -77,75 +77,3 @@ async function authorize(
   }
   // If no error and we have user data, return it
 }
-
-// export default function MyAdapter(client: PrismaClient, options = {}): Adapter {
-//     return {
-//         async createUser(user: Omit<AdapterUser, "id">) {
-//             const newUser = await createAgent(user as CreateUserDTO & AdapterUser, client);
-//             return newUser as AdapterUser
-//         },
-//         async getUser(id: string) {
-//             const user = await getUser(id, client);
-//             return user as CreateUserDTO & AdapterUser
-//         },
-//         async getUserByEmail(email: string) {
-//             const user = await userByEmail(email, client);
-//             return user
-//         },
-//         async getUserByAccount({ providerAccountId, provider }: { providerAccountId: string, provider: string }) {
-//             const emptyAccount = {} as GuruAgent
-//             return emptyAccount
-//         },
-//         async updateUser(user) {
-//             const updatedUser = await update(user.id, user as CreateUserDTO, client)
-//             return updatedUser
-//         },
-//         async deleteUser(userId: string) {
-//             const deleted = await remove(userId, client);
-//             return
-//         },
-//         async linkAccount(account) {
-//             return
-//         },
-//         async unlinkAccount({ providerAccountId, provider }) {
-//             return
-//         },
-//         async createSession({ sessionToken, userId, expires }) {
-//             const session = await createSession({ sessionToken, userId, expires }, client)
-//             // console.log(session)
-//             console.log("create sesssion called");
-//             return session
-//         },
-//         async getSessionAndUser(sessionToken) {
-//             console.log(sessionToken, ";;;topkenm is");
-
-//             try {
-//                 const session = (await getSession(sessionToken, client))
-//                 return { session, user: session.guruAgent as DisplayGuruAgentDTO & AdapterUser }
-
-//             } catch (error) {
-//                 const { message } = error as HttpError;
-//                 console.log(error);
-//             }
-
-//             return null
-//         },
-//         async updateSession({ sessionToken }) {
-//             console.log("update sesssion called");
-
-//             const session = await prismaSessionUpdate(sessionToken, client)
-//             return session
-//         },
-//         async deleteSession(sessionToken) {
-//             return
-//         },
-//         async createVerificationToken({ identifier, expires }) {
-//             const token = await createVerifyToken({ identifier, expires }, client)
-//             return token
-//         },
-//         async useVerificationToken({ identifier, token }) {
-//             const usedToken = await useToken({ identifier, token }, client);
-//             return usedToken as VerificationToken
-//         },
-//     }
-// }

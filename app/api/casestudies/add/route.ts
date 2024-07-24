@@ -11,7 +11,7 @@ export const { POST, DELETE, GET, PATCH, PUT } = apiHandler({ POST: post });
 async function post(req: NextRequest) {
   const caseStudy = (await req.json()) as CreateCaseStudyDTO;
   const session = await getServerSession(authOptions) ;
-  caseStudy.userId = session?.user?.id ?? undefined;
-  const newUser = await create(caseStudy, prisma);
+  if (!session) return NextResponse.json({ message: "Unauthorized" })
+  const newUser = await create(caseStudy, session?.user);
   return NextResponse.json({ message: "Add success", data: newUser });
 }

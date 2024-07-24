@@ -16,11 +16,7 @@ const get = async (
   const caseStudies = await getAll(
     parseInt(params.page),
     10,
-    {
-      id: session?.user?.id as string,
-      role: role,
-    },
-    prisma,
+    session.user,
   ); // skipping 10 record for every new page
   return NextResponse.json({ message: "found", data: caseStudies });
 };

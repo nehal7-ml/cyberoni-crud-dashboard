@@ -65,7 +65,9 @@ async function Blogs({
   if (!session) {
     return redirect("/auth/login")
   }
-  const data = (await getData(page, params.table, { id: session?.user.id as string, role: session?.user.role }, searchParams)) || {
+
+
+  const data = (await getData(page, params.table, { id: session?.user.id as string, role: session?.user.role, orgId: session?.user.orgId }, searchParams)) || {
     records: [],
     totalPages: 0,
   };
@@ -112,7 +114,8 @@ async function getData(
   table: TableType,
   user: {
     id: string,
-    role: Role
+    role: Role,
+    orgId: string
   },
   searchParams: {
     orderBy: OrderTableBy;
@@ -120,56 +123,56 @@ async function getData(
   }
 ) {
   if (table === "blogs") {
-    let res = await getAllBlogs(page, 10, user, prisma, {
+    let res = await getAllBlogs(page, 10, user, {
       orderby: searchParams.orderBy as "updatedAt" | "title",
       order: searchParams.order,
     });
     return res;
   }
   if (table === "casestudies") {
-    let res = await getAllCaseStudies(page, 10, user, prisma, {
+    let res = await getAllCaseStudies(page, 10, user,  {
       orderby: searchParams.orderBy as "updatedAt" | "title",
       order: searchParams.order,
     });
     return res;
   }
   if (table === "discounts") {
-    let res = await getAllDiscounts(page, 10, user, prisma, {
+    let res = await getAllDiscounts(page, 10, user,  {
       orderby: searchParams.orderBy as "updatedAt" | "name",
       order: searchParams.order,
     });
     return res;
   }
   if (table === "events") {
-    let res = await getAllEvents(page, 10, user, prisma, {
+    let res = await getAllEvents(page, 10, user,  {
       orderby: searchParams.orderBy as "updatedAt" | "name",
       order: searchParams.order,
     });
     return res;
   }
   // if (table === "products") {
-  //   let res = await getAllProducts(page, 10, prisma, {
+  //   let res = await getAllProducts(page, 10,  {
   //     orderby: searchParams.orderBy as "updatedAt" | "title",
   //     order: searchParams.order,
   //   });
   //   return res;
   // }
   // if (table === "prompts") {
-  //   let res = await getAllPrompts(page, 10, prisma, {
+  //   let res = await getAllPrompts(page, 10,  {
   //     orderby: searchParams.orderBy as "updatedAt" | "title",
   //     order: searchParams.order,
   //   });
   //   return res;
   // }
   if (table === "referrals") {
-    let res = await getAllReferrals(page, 10, user, prisma, {
+    let res = await getAllReferrals(page, 10, user,  {
       orderby: searchParams.orderBy as "updatedAt" | "prefix" | 'expires' | 'click',
       order: searchParams.order,
     });
     return res;
   }
   if (table === "services") {
-    let res = await getAllServices(page, 10, user, prisma, {
+    let res = await getAllServices(page, 10, user, {
       orderby: searchParams.orderBy as "updatedAt" | "title",
       order: searchParams.order,
     });
@@ -177,14 +180,14 @@ async function getData(
   }
 
   if (table === "softwares") {
-    let res = await getAllSoftwares(page, 10, user, prisma, {
+    let res = await getAllSoftwares(page, 10, user,  {
       orderby: searchParams.orderBy as "updatedAt" | "pricing",
       order: searchParams.order,
     });
     return res;
   }
   if (table === "users") {
-    let res = await getAllUser(page, 10, user, prisma, {
+    let res = await getAllUser(page, 10, user, {
       orderby: searchParams.orderBy as "updatedAt" | "email",
       order: searchParams.order,
     });

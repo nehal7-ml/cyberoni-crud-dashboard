@@ -11,8 +11,8 @@ export const { POST, DELETE, GET, PATCH, PUT } = apiHandler({ POST: post });
 
 async function post(req: Request) {
     const service = (await req.json()) as CreateServiceDTO;
-    const session = await getServerSession(authOptions) ;
-    service.userId = session?.user?.id ?? undefined;
-    const newService = await create(service, prisma);
+    const session = await getServerSession(authOptions)
+    if (!session) return NextResponse.json({ message: "Unauthorized" })
+    const newService = await create(service, session?.user);
     return NextResponse.json({ message: "Add success", data: newService });
 }

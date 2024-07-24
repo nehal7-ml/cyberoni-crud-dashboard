@@ -18,7 +18,7 @@ export async function resetPassword(state: {
     try {
       const password = state.password;
       //const { email } = verify(state.token, process.env.NEXTAUTH_SECRET as string) as { email: string }
-      await reset(state.token, password, prisma);
+      await reset(state.token, password);
       state.success = true;
     } catch (error) {
       console.log(error);

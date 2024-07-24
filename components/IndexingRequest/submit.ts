@@ -1,13 +1,14 @@
 "use server";
 
-import { getAll as getAllBlogs } from "@/crud/blog";
+import {  getAllBlogs } from "@/crud/blog";
 import { getAll as getAllServices } from "@/crud/service";
 import { IndexingRequest, requestIndexing } from "@/lib/googleIndexing";
 import { prisma } from "@/lib/prisma";
 import { getBaseUrl, seoUrl } from "@/lib/utils";
-export async function indexEverything() {
-  const blogs = await getAllBlogs(0, 10, prisma);
-  const services = await getAllServices(0, 10, prisma);
+import { User } from "next-auth";
+export async function indexEverything(user: User) {
+  const blogs = await getAllBlogs(0, 10, user);
+  const services = await getAllServices(0, 10,user);
 
   let urls: IndexingRequest[] = blogs.records
     .map(

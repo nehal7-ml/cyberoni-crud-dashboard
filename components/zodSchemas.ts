@@ -42,7 +42,7 @@ const BlogSchema = z.object({
     subTitle: z.string().min(1),
     link: z.string().url(),
     button: z.string().min(1),
-  }).optional(),
+  }).optional().nullable(),
 });
 
 const ServiceSchema = z.object({

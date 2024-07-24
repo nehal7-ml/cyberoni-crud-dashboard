@@ -1,3 +1,4 @@
+import verifyOrgAccess from "@/app/dashboard/verifyOrgAccess";
 import BlogForm from "@/components/BlogForm";
 import CaseStudyForm from "@/components/CaseStudyForm";
 import DiscountsForm from "@/components/DiscountForm";
@@ -36,7 +37,7 @@ import { prisma } from "@/lib/prisma";
 import verifyAccess from "@/lib/verifyAccess";
 import { TableType } from "@/types/global";
 import { Metadata } from "next";
-import { getServerSession } from "next-auth";
+import { getServerSession, User } from "next-auth";
 import { redirect } from "next/navigation";
 
 export async function generateMetadata({
@@ -52,7 +53,7 @@ export async function generateMetadata({
 async function UpdateForm({
   params,
 }: {
-  params: { id: string; table: TableType };
+  params: { orgId: string; id: string; table: TableType };
 }) {
   const session = await getServerSession(authOptions);
 
@@ -61,22 +62,14 @@ async function UpdateForm({
       `/auth/login?${new URLSearchParams({ callbackUrl: `/dashboard/${params.table}/view/${params.id}` })}`,
     );
   }
+
+  let user = session.user as User;
+
   if (params.table === "blogs") {
-    const blog = (await readBlog(
-      params.id,
-      prisma,
-    )) as unknown as CreateBlogDTO;
-    const categories = (await getCategories("blog", prisma)) as BlogCategory[];
-    if (
-      verifyAccess(
-        { id: session.user.id as string, role: session.user.role },
-        {
-          data: { id: blog?.id as string, author: blog.author },
-          type: params.table,
-        },
-      )
-    )
-      return <></>;
+    const blog = (await readBlog(params.id, user)) as unknown as CreateBlogDTO;
+    const categories = (await getCategories("blog", user)) as BlogCategory[];
+
+    if (!blog) redirect("/404");
 
     return (
       <BlogForm
@@ -89,28 +82,15 @@ async function UpdateForm({
   } else if (params.table === "casestudies") {
     const caseStudy = (await readCaseStudy(
       params.id,
-      prisma,
+      user,
     )) as CreateCaseStudyDTO;
-    const service = await getAllServices(
-      0,
-      0,
-      { id: session.user.id as string, role: session.user.role },
-      prisma,
-    );
+    const service = await getAllServices(0, 0, {
+      id: session.user.id as string,
+      role: session.user.role,
+      orgId: session.user.orgId,
+    });
 
-    if (
-      caseStudy &&
-      verifyAccess(
-        { id: session.user.id as string, role: session.user.role },
-        {
-          data: {
-            id: caseStudy?.id as string,
-            createdBy: { id: caseStudy.userId as string },
-          },
-          type: params.table,
-        },
-      )
-    ) {
+    if (caseStudy) {
       return (
         <CaseStudyForm
           types={service.records}
@@ -121,15 +101,8 @@ async function UpdateForm({
       );
     } else redirect("/404");
   } else if (params.table === "discounts") {
-    const discount = await readDiscount(params.id, prisma);
-    if(!discount) redirect("/404");
-    if (!verifyAccess(
-      { id: session.user.id as string, role: session.user.role },
-      {
-        data: { id: discount?.id as string, createdBy: { id: discount.userId  as string} },
-        type: params.table,
-      },
-    )) redirect("/404");
+    const discount = await readDiscount(params.id, user);
+    if (!discount) redirect("/404");
     // console.log(event);
     return (
       <DiscountsForm
@@ -139,15 +112,8 @@ async function UpdateForm({
       />
     );
   } else if (params.table === "events") {
-    const res = await readEvent(params.id, prisma);
-    if(!res) redirect("/404");
-    if (!verifyAccess(
-      { id: session.user.id as string, role: session.user.role },
-      {
-        data: { id: res?.id as string, createdBy: { id: res.userId  as string} },
-        type: params.table,
-      },
-    )) redirect("/404");
+    const res = await readEvent(params.id, user);
+    if (!res) redirect("/404");
     const { ...event } = res;
     return (
       <EventForm
@@ -156,49 +122,47 @@ async function UpdateForm({
         action={`/api/events/${params.id}`}
       />
     );
-  } else if (params.table === "products") {
-    const res = await readProduct(params.id, prisma);
-    if(!res) redirect("/404");
-    const { reviews, ...product } = res;
+  }
 
-    const categories = await getCategories("product", prisma);
+  // else if (params.table === "products") {
+  //   const res = await readProduct(params.id, user);
+  //   if (!res) redirect("/404");
+  //   const { reviews, ...product } = res;
 
-    // console.log(event);
-    return (
-      <ProductForm
-        categories={categories}
-        method="PUT"
-        initial={product as CreateProductDTO}
-        action={`/api/products/${params.id}`}
-      />
-    );
-  } else if (params.table === "prompts") {
-    const res = await readPrompt(params.id, prisma);
-    if(!res) redirect("/404");
-    const categories = await getCategories("prompt", prisma);
+  //   const categories = await getCategories("product", user);
 
-    const { reviews, ...prompt } = res;
+  //   // console.log(event);
+  //   return (
+  //     <ProductForm
+  //       categories={categories}
+  //       method="PUT"
+  //       initial={product as CreateProductDTO}
+  //       action={`/api/products/${params.id}`}
+  //     />
+  //   );
+  // } else if (params.table === "prompts") {
+  //   const res = await readPrompt(params.id, user);
+  //   if (!res) redirect("/404");
+  //   const categories = await getCategories("prompt", user);
 
-    //console.log(prompt);
-    return (
-      <GptPromptForm
-        categories={categories}
-        method="PUT"
-        initial={prompt as unknown as CreateGptPromptDTO}
-        action={`/api/prompts/${params.id}`}
-      />
-    );
-  } else if (params.table === "referrals") {
-    const res = await readReferral(params.id, prisma);
-    if(!res) redirect("/404");
-    if (!verifyAccess(
-      { id: session.user.id as string, role: session.user.role },
-      {
-        data: { id: res?.id as string, createdBy: { id: res.userId  as string} },
-        type: params.table,
-      },
-    )) redirect("/404");
-    
+  //   const { reviews, ...prompt } = res;
+
+  //   //console.log(prompt);
+  //   return (
+  //     <GptPromptForm
+  //       categories={categories}
+  //       method="PUT"
+  //       initial={prompt as unknown as CreateGptPromptDTO}
+  //       action={`/api/prompts/${params.id}`}
+  //     />
+  //   );
+  // } 
+
+
+  else if (params.table === "referrals") {
+    const res = await readReferral(params.id, user);
+    if (!res) redirect("/404");
+
     const { ...referral } = res;
     // console.log(event);
     return (
@@ -209,17 +173,10 @@ async function UpdateForm({
       />
     );
   } else if (params.table === "softwares") {
-    const res = await readSoftware(params.id, prisma);
-    if(!res) redirect("/404");
-    if (!verifyAccess(
-      { id: session.user.id as string, role: session.user.role },
-      {
-        data: { id: res?.id as string, createdBy: { id: res.userId  as string} },
-        type: params.table,
-      },
-    )) redirect("/404");
+    const res = await readSoftware(params.id, user);
+    if (!res) redirect("/404");
     const { updatedAt, createdAt, ...software } = res;
-    const categories = await getCategories("software", prisma);
+    const categories = await getCategories("software", user);
 
     // console.log(event);
     return (
@@ -231,15 +188,8 @@ async function UpdateForm({
       />
     );
   } else if (params.table === "services") {
-    const res = (await readService(params.id, prisma)) as CreateServiceDTO;
-    if(!res) redirect("/404");
-    if (!verifyAccess(
-      { id: session.user.id as string, role: session.user.role },
-      {
-        data: { id: res?.id as string, createdBy: { id: res.userId  as string} },
-        type: params.table,
-      },
-    )) redirect("/404");
+    const res = (await readService(params.id, user)) as CreateServiceDTO;
+    if (!res) redirect("/404");
     const { ...service } = res;
     // console.log(service);
     return (
@@ -254,11 +204,11 @@ async function UpdateForm({
       </>
     );
   } else if (params.table === "users") {
-    const user = (await readUser(params.id, prisma)) as CreateUserDTO;
+    const retrievedUser = (await readUser(params.id, user)) as CreateUserDTO;
     return (
       <UserForm
         method="PUT"
-        initial={user}
+        initial={retrievedUser}
         action={`/api/users/${params.id}`}
       />
     );

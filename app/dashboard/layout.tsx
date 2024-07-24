@@ -7,6 +7,7 @@ import { Loader } from "lucide-react";
 import Loading from "@/components/Loading";
 import IndexingRequest from "@/components/IndexingRequest";
 import { Metadata } from "next";
+import OrganizationSwitch from "@/components/OrganisationSwitch";
 
 
 export default function DashboardLayout({
@@ -21,6 +22,10 @@ export default function DashboardLayout({
       <SidePanel className="col-span-2 h-screen  max-h-screen"></SidePanel>
       <div className="col-span-10 h-screen">
         <div className="flex items-center justify-between py-3">
+          <OrganizationSwitch orgs={[{ name: "test_org-1", id: "test_id_1" },
+          { name: "test_org-2", id: "test_id_1" },
+          { name: "test_org-3", id: "test_id_3" }
+          ]} />
           <div className="col-span-2">
             <IndexingRequest />
           </div>

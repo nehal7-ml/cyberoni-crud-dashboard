@@ -4,6 +4,7 @@ import {
   EventStatus,
   GptPrompt,
   Image,
+  Organization,
   PricingModel,
   ProductStatus,
   Referral,
@@ -25,7 +26,7 @@ import {
 } from "@prisma/client";
 
 export type CreateBlogDTO = {
-  id?:string;
+  id?: string;
   title: string;
   subTitle: string;
   description: string;
@@ -33,11 +34,11 @@ export type CreateBlogDTO = {
   publishDate: Date;
   content: string;
   templateId?: string;
-  author: { id: string };
   images: CreateImageDTO[];
   tags: CreateTagDTO[];
   category?: BlogCategory;
-  ctaProps?: CTAProps
+  ctaProps?: CTAProps | null
+  Organization?: Organization
 
 };
 
@@ -70,7 +71,7 @@ export type CreateImageDTO = {
   src: string;
 };
 export type CreateServiceDTO = {
-  id?:string;
+  id?: string;
   title: string;
   previewContent: string;
   featured: boolean;
@@ -83,7 +84,6 @@ export type CreateServiceDTO = {
   SubServices?: CreateSubServiceDTO[]
   tags?: CreateTagDTO[];
   faqs?: CreateFaqDTO[];
-  userId?: string;
 };
 
 export type CreateServiceDescription = {
@@ -104,7 +104,7 @@ export type DisplayServiceDTO = Service & {
   tags?: Tag[];
   SubServices?: SubService[];
   ServiceDescription?: (ServiceDescription & { image: Image | null })[];
-  createdBy?:User
+  createdBy?: User
 };
 export type CreateSubServiceDTO = {
   id?: string;
@@ -314,7 +314,6 @@ export type CreateCaseStudyDTO = {
   hifiDesign?: CreateImageDTO[];
   userFlow?: CreateImageDTO[];
   architecture?: CreateImageDTO[];
-  userId?: string | null;
 };
 
 export type UserPersona = {
@@ -331,7 +330,6 @@ export type CreateDiscountDTO = {
   name: string;
   value: number;
   expires?: Date | null;
-  userId?: string | null;
 };
 
 
@@ -419,9 +417,7 @@ export type DisplayEventDTO = Event & {
 }
 
 
-export type CreateSoftwareProductDTO = {
-  userId?: string
-} & ({
+export type CreateSoftwareProductDTO = ({
   id?: string;
   title: string;
   subTitle: string;
@@ -489,7 +485,20 @@ export type DisplaySoftwareProductDTO = {
   link?: string;
   githubLink?: string;
   status: SoftwareProductStatus;
-  createdBy:User;
+  createdBy: User;
   category?: SoftwareProductCategory
   blog?: { id: string }
+}
+
+
+
+export type CreateOrgDTO = {
+  name: string;
+  ownerId: string;
+}
+
+export type UpdateOrgDTO = {
+  id: string,
+  name: string,
+  ownerId: string
 }

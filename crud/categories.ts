@@ -2,38 +2,42 @@ import { PrismaClient } from "@prisma/client";
 import { CategoryType } from "@/types/global";
 import { CreateCategory } from "./DTOs";
 import { HttpError } from "@/lib/utils";
-
+import { prisma } from "@/lib/prisma";
+import { User } from "next-auth";
+import { userQuery } from "./permissions";
 // Get categories based on the type
-async function getCategories(type: CategoryType, prisma: PrismaClient) {
+async function getCategories(type: CategoryType, user: User) {
   switch (type) {
-    case "product":
-      return await prisma.productCategory.findMany({
-        where: {
-          parent: {
-            is: null,
-          },
-        },
-        include: { children: true },
-      });
-    case "prompt":
-      return await prisma.gptCategory.findMany({
-        where: {
-          parent: {
-            is: null,
-          },
-        },
-        include: { children: true },
-      });
+    // case "product":
+    //   return await prisma.productCategory.findMany({
+    //     where: {
+    //       parent: {
+    //         is: null,
+    //       },
+    //       AND: userQuery(user),
+    //     },
+    //     include: { children: true },
+    //   });
+    // case "prompt":
+    //   return await prisma.gptCategory.findMany({
+    //     where: {
+    //       parent: {
+    //         is: null,
+    //       },
+    //     },
+    //     include: { children: true },
+    //   });
     case "blog":
       return await prisma.blogCategory.findMany({
         where: {
           parent: {
             is: null,
           },
+          AND: userQuery(user),
         },
         include: { children: true },
       });
-    
+
 
     case "software": {
       return await prisma.softwareProductCategory.findMany({
@@ -41,6 +45,7 @@ async function getCategories(type: CategoryType, prisma: PrismaClient) {
           parent: {
             is: null,
           },
+          AND: userQuery(user),
         },
         include: { children: true },
       })
@@ -55,52 +60,54 @@ async function updateCategory(
   id: string,
   category: CreateCategory,
   type: CategoryType,
-  prisma: PrismaClient,
+  user: User,
 ) {
   switch (type) {
-    case "product": {
-      let existing = await prisma.productCategory.findUnique({
-        where: { id },
-        include: { children: true },
-      });
-      if (!existing) throw HttpError(404, "Category not found");
-      return await prisma.productCategory.update({
-        where: { id },
-        data: {
-          name: category.name,
-          children: createOrUpdateOrDeleteChildren(
-            category.children,
-            existing.children,
-          ),
-        },
-        include: {
-          children: true,
-        },
-      });
-    }
-    case "prompt": {
-      let existing = await prisma.gptCategory.findUnique({
-        where: { id },
-        include: { children: true },
-      });
-      if (!existing) throw HttpError(404, "Category not found");
-      return await prisma.gptCategory.update({
-        where: { id },
-        data: {
-          name: category.name,
-          children: createOrUpdateOrDeleteChildren(
-            category.children,
-            existing.children,
-          ),
-        },
-        include: {
-          children: true,
-        },
-      });
-    }
+    // case "product": {
+    //   let existing = await prisma.productCategory.findUnique({
+    //     where: { id },
+    //     include: { children: true },
+    //   });
+    //   if (!existing) throw HttpError(404, "Category not found");
+    //   return await prisma.productCategory.update({
+    //     where: { id },
+    //     data: {
+    //       name: category.name,
+    //       children: createOrUpdateOrDeleteChildren(
+    //         category.children,
+    //         existing.children,
+    //       ),
+    //     },
+    //     include: {
+    //       children: true,
+    //     },
+    //   });
+    // }
+    // case "prompt": {
+    //   let existing = await prisma.gptCategory.findUnique({
+    //     where: { id },
+    //     include: { children: true },
+    //   });
+    //   if (!existing) throw HttpError(404, "Category not found");
+    //   return await prisma.gptCategory.update({
+    //     where: { id },
+    //     data: {
+    //       name: category.name,
+    //       children: createOrUpdateOrDeleteChildren(
+    //         category.children,
+    //         existing.children,
+    //       ),
+    //     },
+    //     include: {
+    //       children: true,
+    //     },
+    //   });
+    // }
     case "blog": {
       let existing = await prisma.blogCategory.findUnique({
-        where: { id },
+        where: {
+          id, AND: userQuery(user),
+        },
         include: { children: true },
       });
       if (!existing) throw HttpError(404, "Category not found");
@@ -120,7 +127,9 @@ async function updateCategory(
     }
     case "software": {
       let existing = await prisma.softwareProductCategory.findUnique({
-        where: { id },
+        where: {
+          id, AND: userQuery(user),
+        },
         include: { children: true },
       });
       if (!existing) throw HttpError(404, "Category not found");
@@ -148,72 +157,72 @@ async function updateCategory(
 async function addCategory(
   type: CategoryType,
   category: CreateCategory,
-  prisma: PrismaClient,
+  user: User,
 ) {
   const categories =
     prisma[
-      type === "blog"
-        ? "blogCategory"
-        : type === "prompt"
-          ? "gptCategory"
-          : "productCategory"
+    type === "blog"
+      ? "blogCategory"
+      : type === "prompt"
+        ? "gptCategory"
+        : "productCategory"
     ];
   switch (type) {
-    case "product": {
-      let existingCategory = await prisma.productCategory.findFirst({
-        where: {
-          parent: {
-            name: category.name,
-            parent: null,
-          },
-        },
-      });
+    // case "product": {
+    //   let existingCategory = await prisma.productCategory.findFirst({
+    //     where: {
+    //       parent: {
+    //         name: category.name,
+    //         parent: null,
+    //       },
+    //     },
+    //   });
 
-      if (existingCategory) HttpError(400, "Category already exists");
+    //   if (existingCategory) HttpError(400, "Category already exists");
 
-      return await prisma.productCategory.create({
-        data: {
-          name: category.name,
-          children: {
-            create: category.children.map((child) => {
-              return {
-                name: child.name,
-              };
-            }),
-          },
-        },
-        include: {
-          children: true,
-        },
-      });
-    }
-    case "prompt": {
-      let existingCategory = await prisma.gptCategory.findFirst({
-        where: {
-          parent: {
-            name: category.name,
-            parent: null,
-          },
-        },
-      });
+    //   return await prisma.productCategory.create({
+    //     data: {
+    //       name: category.name,
+    //       children: {
+    //         create: category.children.map((child) => {
+    //           return {
+    //             name: child.name,
+    //           };
+    //         }),
+    //       },
+    //     },
+    //     include: {
+    //       children: true,
+    //     },
+    //   });
+    // }
+    // case "prompt": {
+    //   let existingCategory = await prisma.gptCategory.findFirst({
+    //     where: {
+    //       parent: {
+    //         name: category.name,
+    //         parent: null,
+    //       },
+    //     },
+    //   });
 
-      if (existingCategory) HttpError(400, "Category already exists");
-      return await prisma.gptCategory.create({
-        data: {
-          name: category.name,
-          children: {
-            create: category.children.map((child) => {
-              return {
-                name: child.name,
-              };
-            }),
-          },
-        },
-        include: {
-          children: true,
-        },
-      });
-    }
+    //   if (existingCategory) HttpError(400, "Category already exists");
+    //   return await prisma.gptCategory.create({
+    //     data: {
+    //       name: category.name,
+    //       children: {
+    //         create: category.children.map((child) => {
+    //           return {
+    //             name: child.name,
+    //           };
+    //         }),
+    //       },
+    //     },
+    //     include: {
+    //       children: true,
+    //     },
+    //   });
+    // }
     case "blog": {
       let existingCategory = await prisma.blogCategory.findFirst({
         where: {
@@ -221,6 +230,8 @@ async function addCategory(
             name: category.name,
             parent: null,
           },
+          AND: userQuery(user),
+
         },
       });
 
@@ -235,6 +246,12 @@ async function addCategory(
               };
             }),
           },
+          Organization: {
+            connect: { id: user.orgId },
+          },
+          createdBy: {
+            connect: { id: user.id },
+          }
         },
         include: {
           children: true,
@@ -248,6 +265,7 @@ async function addCategory(
             name: category.name,
             parent: null,
           },
+          AND: userQuery(user),
         },
       });
       if (existingCategory) HttpError(400, "Category already exists");
@@ -261,6 +279,12 @@ async function addCategory(
               };
             }),
           },
+          Organization: {
+            connect: { id: user.orgId },
+          },
+          createdBy: {
+            connect: { id: user.id },
+          }
         },
         include: {
           children: true,
@@ -276,53 +300,56 @@ async function addCategory(
 async function removeCategory(
   id: string,
   type: CategoryType,
-  prisma: PrismaClient,
+  user: User,
 ) {
   switch (type) {
-    case "product": {
-      await prisma.product.updateMany({
-        where: {
-          OR: [{ category: { parent: { id } } }, { productCategoryId: id }],
-        },
-        data: { productCategoryId: null },
-      });
-      let existingCategory = await prisma.productCategory.findUnique({
-        where: { id },
-        include: { children: true },
-      });
-      await prisma.productCategory.deleteMany({
-        where: {
-          id: { in: existingCategory?.children?.map((child) => child.id) },
-        },
-      });
+    // case "product": {
+    //   await prisma.product.updateMany({
+    //     where: {
+    //       OR: [{ category: { parent: { id } } }, { productCategoryId: id }],
+    //       AND: userQuery(user),
+    //     },
+    //     data: { productCategoryId: null },
+    //   });
+    //   let existingCategory = await prisma.productCategory.findUnique({
+    //     where: { id },
+    //     include: { children: true },
+    //   });
+    //   await prisma.productCategory.deleteMany({
+    //     where: {
+    //       id: { in: existingCategory?.children?.map((child) => child.id) },
+    //     },
+    //   });
 
-      return await prisma.productCategory.delete({ where: { id } });
-    }
-    case "prompt":
-      {
-        await prisma.gptPrompt.updateMany({
-          where: {
-            OR: [{ category: { parent: { id } } }, { category: { id } }],
-          },
-          data: { gptCategoryId: null },
-        });
-        let existingCategory = await prisma.gptCategory.findUnique({
-          where: { id },
-          include: { children: true },
-        });
-        await prisma.gptCategory.deleteMany({
-          where: {
-            id: { in: existingCategory?.children?.map((child) => child.id) },
-          },
-        });
-      }
+    //   return await prisma.productCategory.delete({ where: { id } });
+    // }
+    // case "prompt":
+    //   {
+    //     await prisma.gptPrompt.updateMany({
+    //       where: {
+    //         OR: [{ category: { parent: { id } } }, { category: { id } }],
+    //       },
+    //       data: { gptCategoryId: null },
+    //     });
+    //     let existingCategory = await prisma.gptCategory.findUnique({
+    //       where: { id },
+    //       include: { children: true },
+    //     });
+    //     await prisma.gptCategory.deleteMany({
+    //       where: {
+    //         id: { in: existingCategory?.children?.map((child) => child.id) },
+    //       },
+    //     });
+    //   }
 
-      return await prisma.gptCategory.delete({ where: { id } });
+    //   return await prisma.gptCategory.delete({ where: { id } });
 
     case "blog": {
       await prisma.blog.updateMany({
         where: {
           OR: [{ category: { parent: { id } } }, { category: { id } }],
+          AND: userQuery(user),
+
         },
         data: { blogCategoryId: null },
       });
@@ -341,7 +368,9 @@ async function removeCategory(
 
     case "software": {
       let existingCategory = await prisma.softwareProductCategory.findUnique({
-        where: { id },
+        where: {
+          id, AND: userQuery(user),
+        },
         include: { children: true },
       });
       await prisma.softwareProductCategory.deleteMany({
@@ -360,26 +389,26 @@ async function removeCategory(
 async function readCategory(
   id: string,
   type: CategoryType,
-  prisma: PrismaClient,
+  user: User,
 ) {
   switch (type) {
-    case "product":
-      return await prisma.productCategory.findUnique({
-        where: { id },
-        include: {
-          children: true,
-        },
-      });
-    case "prompt":
-      return await prisma.gptCategory.findUnique({
-        where: { id },
-        include: {
-          children: true,
-        },
-      });
+    // case "product":
+    //   return await prisma.productCategory.findFirst({
+    //     where: { id , AND: userQuery(user) },
+    //     include: {
+    //       children: true,
+    //     },
+    //   });
+    // case "prompt":
+    //   return await prisma.gptCategory.findUnique({
+    //     where: { id },
+    //     include: {
+    //       children: true,
+    //     },
+    //   });
     case "blog":
       return await prisma.blogCategory.findUnique({
-        where: { id },
+        where: { id, AND: userQuery(user) },
         include: {
           children: true,
         },
@@ -387,7 +416,7 @@ async function readCategory(
 
     case "software":
       return await prisma.softwareProductCategory.findUnique({
-        where: { id },
+        where: { id , AND: userQuery(user) },
         include: {
           children: true,
         },

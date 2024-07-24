@@ -16,9 +16,9 @@ async function post(req: Request) {
     const referral = (await req.json()) as CreateReferralDTO;
     try {
       await fetch(referral.link).catch(() => { throw HttpError(406, "Link in unreachable"); });
-      const session = await getServerSession(authOptions) ;
-      referral.userId = session?.user?.id ?? undefined;
-      const newReferral = await create(referral, prisma);
+      const session = await getServerSession(authOptions)
+      if(!session) return NextResponse.json({ message: "Unauthorized" })
+      const newReferral = await create(referral, session.user);
       return NextResponse.json({ message: "Add success", data: newReferral });
     } catch (error) {
       console.log(error);
