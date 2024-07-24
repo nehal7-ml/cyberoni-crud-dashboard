@@ -3,7 +3,7 @@ import { PrismaClient, Role } from "@prisma/client";
 import { CreateDiscountDTO } from "./DTOs";
 import { prisma } from "@/lib/prisma";
 import { User } from "next-auth";
-import { userQuery } from "./permissions";
+import { orgQuery } from "./permissions";
 export async function create(
   discount: CreateDiscountDTO,
   user: User
@@ -31,7 +31,7 @@ export async function read(id: string, user: User) {
   const newDiscount = await discounts.findUnique({
     where: {
       id,
-      AND: userQuery(user)
+      AND: orgQuery(user)
     },
   });
 
@@ -43,7 +43,7 @@ export async function remove(id: string, user: User) {
   const newDiscount = await discounts.delete({
     where: {
       id,
-      AND: userQuery(user),
+      AND: orgQuery(user),
     },
   });
 
@@ -59,7 +59,7 @@ export async function update(
   const newDiscount = await discounts.update({
     where: {
       id,
-      AND: userQuery(user),
+      AND: orgQuery(user),
     },
     data: discount,
   });
@@ -80,7 +80,7 @@ export async function getAll(
 
   if (pageSize !== 10 && pageSize != 30 && pageSize !== 50)
     throw new Error("page size must be 10, 30 or 50");
-  let query = { AND: userQuery(user) }
+  let query = { AND: orgQuery(user) }
   let allDiscounts = await discounts.findMany({
     skip: (page - 1) * pageSize,
     take: pageSize,

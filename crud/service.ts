@@ -24,7 +24,7 @@ import {
 import { CreateServiceDTO } from "./DTOs";
 import { HttpError, seoUrl } from "@/lib/utils";
 import { indexPage } from "@/lib/googleIndexing";
-import { userQuery } from "./permissions";
+import { orgQuery } from "./permissions";
 import { prisma } from "@/lib/prisma"
 import { User } from "next-auth";
 async function create(service: CreateServiceDTO, user: User) {
@@ -90,7 +90,7 @@ async function update(
 ) {
   const services = prisma.service;
   const oldService = await services.findUnique({
-    where: { id: serviceId, AND: userQuery(user) }, include: {
+    where: { id: serviceId, AND: orgQuery(user) }, include: {
       SubServices: true,
       image: true,
       ServiceDescription: {
@@ -243,7 +243,7 @@ async function getAll(
   let allServices = await services.findMany({
     skip: page === 0 ? 0 : (page - 1) * pageSize,
     take: page === 0 ? 9999 : pageSize,
-    where: { AND: userQuery(user) },
+    where: { AND: orgQuery(user) },
     include: {
       // reviews: true,
       SubServices: {
@@ -269,7 +269,7 @@ async function getAll(
 export async function getFeatured(user: User) {
   const services = prisma.service;
   const records = await services.findMany({
-    where: { featured: true, AND: userQuery(user) },
+    where: { featured: true, AND: orgQuery(user) },
     take: 5,
     orderBy: { hourlyRate: "desc" },
   });

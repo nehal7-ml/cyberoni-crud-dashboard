@@ -5,7 +5,7 @@ import { connectOrCreateObject as connectImages } from "./images";
 import { CreateBlogDTO, CreateCategory } from "./DTOs";
 import { HttpError, seoUrl } from "@/lib/utils";
 import { indexPage } from "@/lib/googleIndexing";
-import { userQuery } from "./permissions";
+import { orgQuery } from "./permissions";
 import { prisma } from "@/lib/prisma"
 import { User } from "next-auth";
 
@@ -51,7 +51,7 @@ async function update(
 ) {
   const blogs = prisma.blog;
   const oldBlog = await blogs.findUnique({
-    where: { id: blogId, AND: userQuery(user), },
+    where: { id: blogId, AND: orgQuery(user), },
     include: { images: true, tags: true },
   });
 
@@ -88,7 +88,7 @@ async function update(
 
 async function remove(blogId: string, user: User) {
   const blogs = prisma.blog;
-  const existingBlog = await blogs.findUnique({ where: { id: blogId, AND: userQuery(user) } });
+  const existingBlog = await blogs.findUnique({ where: { id: blogId, AND: orgQuery(user) } });
   if (existingBlog) {
     await blogs.delete({ where: { id: blogId } });
     await updateIndex(existingBlog.id, existingBlog.title, "URL_DELETED")
@@ -97,7 +97,7 @@ async function remove(blogId: string, user: User) {
 async function read(blogId: string, user: User) {
   const blogs = prisma.blog;
   const existingBlog = await blogs.findUnique({
-    where: { id: blogId, AND: userQuery(user) },
+    where: { id: blogId, AND: orgQuery(user) },
     select: {
       userId: false,
       content: true,
@@ -141,7 +141,7 @@ async function getAllBlogs(
   if (pageSize !== 10 && pageSize != 30 && pageSize !== 50)
     throw new Error("page size must be 10, 30 or 50");
 
-  let query = { AND: userQuery(user, ) }
+  let query = { AND: orgQuery(user,) }
   let allBlogs = await blogs.findMany({
     skip: page === 0 ? 0 : (page - 1) * pageSize,
     take: page === 0 ? 9999 : pageSize,

@@ -1,10 +1,5 @@
 "use server";
-import { read, reset, update } from "@/crud/user";
-//import { verifyCaptcha } from "@/lib/";
-import { redirect } from "next/navigation";
-import { verify } from "jsonwebtoken";
-import { getUserByEmail } from "@/crud/user";
-import { prisma } from "@/lib/prisma";
+import {  reset } from "@/crud/user";
 
 export async function resetPassword(state: {
   token: string;

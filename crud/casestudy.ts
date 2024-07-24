@@ -5,7 +5,7 @@ import { connectOrCreateObject, createImageJson } from "./images";
 import { CreateCaseStudyDTO } from "./DTOs";
 import { User } from "next-auth";
 import { prisma } from "@/lib/prisma";
-import { userQuery } from "./permissions";
+import { orgQuery } from "./permissions";
 import { HttpError } from "@/lib/utils";
 export type CaseStudyType = "ECOMMERCE" | "LANDING" | "SOFTWARE" | "GRAPHICS";
 
@@ -56,7 +56,7 @@ export async function create(caseStudy: CreateCaseStudyDTO, user: User) {
 export async function read(caseStudyId: string, user: User) {
   const cases = prisma.caseStudy;
   const caseStudy = await cases.findUnique({
-    where: { id: caseStudyId, AND: userQuery(user) },
+    where: { id: caseStudyId, AND: orgQuery(user) },
     include: { subServices: { select: { id: true } } },
   });
   return {
@@ -76,7 +76,7 @@ export async function update(
   user: User,
 ) {
   const cases = prisma.caseStudy;
-  const oldCase = await cases.findUnique({ where: { id: caseStudyId, AND: userQuery(user) } });
+  const oldCase = await cases.findUnique({ where: { id: caseStudyId, AND: orgQuery(user) } });
   if (!oldCase) {
     throw HttpError(404, "Case study not found")
   }
@@ -133,7 +133,7 @@ export async function update(
 
 export async function remove(caseStudyId: string, user: User) {
   const cases = prisma.caseStudy;
-  const updatedCaseStudy = await cases.delete({ where: { id: caseStudyId, AND: userQuery(user) } });
+  const updatedCaseStudy = await cases.delete({ where: { id: caseStudyId, AND: orgQuery(user) } });
   return updatedCaseStudy;
 }
 
@@ -150,7 +150,7 @@ export async function getAll(
   const caseStudys = prisma.caseStudy;
   if (pageSize !== 10 && pageSize != 30 && pageSize !== 50)
     throw new Error("page size must be 10, 30 or 50");
-  let query = { AND: userQuery(user) };
+  let query = { AND: orgQuery(user) };
   let allrecords = await caseStudys.findMany({
     skip: (page - 1) * pageSize,
     take: pageSize,

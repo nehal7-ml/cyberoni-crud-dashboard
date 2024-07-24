@@ -12,7 +12,7 @@ import { verify } from "jsonwebtoken";
 
 import { prisma } from "@/lib/prisma";
 import { User as AuthUser } from "next-auth"
-import { userQuery } from "./permissions";
+import { orgQuery, userQuery } from "./permissions";
 export type CredentialAuthDTO = {
   email: string;
   password: string;
@@ -82,7 +82,7 @@ async function update(
   creator: AuthUser
 ) {
   const users = prisma.user;
-  const existingUser = await users.findUnique({ where: { id: userId, } });
+  const existingUser = await users.findUnique({ where: { id: userId, AND: userQuery(creator) } });
 
   if (!existingUser)
     throw { status: 400, message: `User ${user.email} doesn't exists` };
@@ -96,7 +96,7 @@ async function update(
         : existingUser.password;
 
     let updatedUser = await users.update({
-      where: { id: userId },
+      where: { id: userId, },
       data: {
         email: user.email,
         password: hashedPassword,
@@ -168,10 +168,10 @@ async function remove(userId: string, user: AuthUser) {
     return true;
   }
 }
-async function read(userId: string , user: AuthUser) {
+async function read(userId: string, user: AuthUser) {
   const users = prisma.user;
   const existingUser = await users.findUnique({
-    where: { id: userId, },
+    where: { id: userId, AND: userQuery(user) },
     include: { address: true },
   });
   if (existingUser) return existingUser;
@@ -192,15 +192,7 @@ async function getAll(
   if (pageSize !== 10 && pageSize != 30 && pageSize !== 50)
     throw new Error("page size must be 10, 30 or 50");
 
-  let query = user.role === 'SUPERUSER' ? {} : {
-    AND: [{
-      Organization: {
-        some: {
-          id: user.orgId
-        }
-      }
-    }]
-  }
+  let query = { AND: userQuery(user) }
   let allUsers = await users.findMany({
     skip: (page - 1) * pageSize,
     take: pageSize,

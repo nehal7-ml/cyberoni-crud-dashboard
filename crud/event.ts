@@ -5,7 +5,7 @@ import { connectOrCreateObject as connectTag } from "./tags";
 import { CreateTagDTO } from "./DTOs";
 import { HttpError } from "@/lib/utils";
 import { connectOrCreateObject as connectImages } from "./images";
-import { userQuery } from "./permissions";
+import { orgQuery } from "./permissions";
 import { prisma } from "@/lib/prisma"
 import { User } from "next-auth";
 
@@ -44,7 +44,7 @@ async function update(
 
   if (!oldEvent) throw HttpError(404, 'Event Not found')
   const updatedEvent = await events.update({
-    where: { id: eventId, AND: userQuery(user) },
+    where: { id: eventId, AND: orgQuery(user) },
     data: {
       name: event.name,
       description: event.description,
@@ -61,7 +61,7 @@ async function update(
 }
 async function remove(eventId: string, user: User) {
   const events = prisma.event;
-  const existingEvent = await events.findUnique({ where: { id: eventId, AND: userQuery(user) } });
+  const existingEvent = await events.findUnique({ where: { id: eventId, AND: orgQuery(user) } });
   if (existingEvent) {
     await events.delete({ where: { id: eventId } });
   }
@@ -69,7 +69,7 @@ async function remove(eventId: string, user: User) {
 async function read(eventId: string, user: User) {
   const events = prisma.event;
   const existingEvent = await events.findUnique({
-    where: { id: eventId, AND: userQuery(user) },
+    where: { id: eventId, AND: orgQuery(user) },
     include: { image: true, tags: true },
   });
   if (existingEvent) return existingEvent;
@@ -89,7 +89,7 @@ async function getAll(
   if (pageSize !== 10 && pageSize != 30 && pageSize !== 50)
     throw new Error("page size must be 10, 30 or 50");
 
-  let query = { AND: userQuery(user) }
+  let query = { AND: orgQuery(user) }
 
   let allEvents = await events.findMany({
     skip: (page - 1) * pageSize,

@@ -7,7 +7,7 @@ import {
   createSubscriptionProduct,
   updateSubscriptionProduct,
 } from "@/lib/stripe";
-import { userQuery } from "./permissions";
+import { orgQuery } from "./permissions";
 import { prisma } from "@/lib/prisma";
 import { User } from "next-auth";
 
@@ -95,7 +95,7 @@ async function create(
 
 async function read(productId: string, user: User) {
   const product = await prisma.softwareProduct.findUnique({
-    where: { id: productId, AND: userQuery(user) },
+    where: { id: productId, AND: orgQuery(user) },
     include: {
       images: true,
       tags: true,
@@ -114,7 +114,7 @@ async function update(
   user: User,
 ): Promise<SoftwareProduct> {
   const oldProduct = await prisma.softwareProduct.findUnique({
-    where: { id: productId, AND: userQuery(user) },
+    where: { id: productId, AND: orgQuery(user) },
     include: {
       tags: true,
       images: true,
@@ -172,7 +172,7 @@ async function remove(
   user: User,
 ): Promise<void> {
   await prisma.softwareProduct.delete({
-    where: { id: productId, AND: userQuery(user) },
+    where: { id: productId, AND: orgQuery(user) },
   });
 }
 
@@ -191,7 +191,7 @@ async function getAll(
   pageSize: number;
 }> {
 
-  let query = { AND: userQuery(user) };
+  let query = { AND: orgQuery(user) };
   let allProducts = await prisma.softwareProduct.findMany({
     skip: (page - 1) * pageSize,
     take: pageSize,

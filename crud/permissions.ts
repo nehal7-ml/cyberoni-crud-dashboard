@@ -28,7 +28,7 @@ export function hasAccess(user: User, orgId: string) {
 
 }
 
-export function userQuery(user: User) {
+export function orgQuery(user: User) {
     if (isUserSuperUser(user)) {
         return []
     }
@@ -39,4 +39,13 @@ export function userQuery(user: User) {
             }
         }
     ]
+}
+
+
+export function userQuery(user: User) {
+    if (isUserSuperUser(user)) {
+        return []
+    }
+    return [{ Organization: { some: { id: user.orgId } } }]
+
 }

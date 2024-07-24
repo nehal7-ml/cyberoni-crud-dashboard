@@ -3,7 +3,7 @@ import { PrismaClient, Referral, Role } from "@prisma/client";
 import { CreateReferralDTO } from "./DTOs";
 import { prisma } from "@/lib/prisma";
 import { User } from "next-auth";
-import { userQuery } from "./permissions";
+import { orgQuery } from "./permissions";
 import { HttpError } from "@/lib/utils";
 export async function create(
   referral: CreateReferralDTO,
@@ -40,7 +40,7 @@ export async function read(id: string, user: User) {
   const newReferral = await referrals.findUnique({
     where: {
       id,
-      AND: userQuery(user),
+      AND: orgQuery(user),
     },
   });
 
@@ -54,7 +54,7 @@ export async function remove(id: string, user: User) {
   const newReferral = await referrals.delete({
     where: {
       id,
-      AND: userQuery(user),
+      AND: orgQuery(user),
     },
   });
 
@@ -70,7 +70,7 @@ export async function update(
   const newReferral = await referrals.update({
     where: {
       id,
-      AND: userQuery(user),
+      AND: orgQuery(user),
     },
     data: {
       campaignId: referral.campaignId,
@@ -108,7 +108,7 @@ export async function getAll(
     skip: (page - 1) * pageSize,
     take: pageSize,
     where: {
-      AND: userQuery(user),
+      AND: orgQuery(user),
     },
     orderBy: options?.orderby
       ? {

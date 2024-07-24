@@ -4,7 +4,7 @@ import { CreateCategory } from "./DTOs";
 import { HttpError } from "@/lib/utils";
 import { prisma } from "@/lib/prisma";
 import { User } from "next-auth";
-import { userQuery } from "./permissions";
+import { orgQuery } from "./permissions";
 // Get categories based on the type
 async function getCategories(type: CategoryType, user: User) {
   switch (type) {
@@ -33,7 +33,7 @@ async function getCategories(type: CategoryType, user: User) {
           parent: {
             is: null,
           },
-          AND: userQuery(user),
+          AND: orgQuery(user),
         },
         include: { children: true },
       });
@@ -45,7 +45,7 @@ async function getCategories(type: CategoryType, user: User) {
           parent: {
             is: null,
           },
-          AND: userQuery(user),
+          AND: orgQuery(user),
         },
         include: { children: true },
       })
@@ -106,7 +106,7 @@ async function updateCategory(
     case "blog": {
       let existing = await prisma.blogCategory.findUnique({
         where: {
-          id, AND: userQuery(user),
+          id, AND: orgQuery(user),
         },
         include: { children: true },
       });
@@ -128,7 +128,7 @@ async function updateCategory(
     case "software": {
       let existing = await prisma.softwareProductCategory.findUnique({
         where: {
-          id, AND: userQuery(user),
+          id, AND: orgQuery(user),
         },
         include: { children: true },
       });
@@ -230,7 +230,7 @@ async function addCategory(
             name: category.name,
             parent: null,
           },
-          AND: userQuery(user),
+          AND: orgQuery(user),
 
         },
       });
@@ -265,7 +265,7 @@ async function addCategory(
             name: category.name,
             parent: null,
           },
-          AND: userQuery(user),
+          AND: orgQuery(user),
         },
       });
       if (existingCategory) HttpError(400, "Category already exists");
@@ -348,7 +348,7 @@ async function removeCategory(
       await prisma.blog.updateMany({
         where: {
           OR: [{ category: { parent: { id } } }, { category: { id } }],
-          AND: userQuery(user),
+          AND: orgQuery(user),
 
         },
         data: { blogCategoryId: null },
@@ -369,7 +369,7 @@ async function removeCategory(
     case "software": {
       let existingCategory = await prisma.softwareProductCategory.findUnique({
         where: {
-          id, AND: userQuery(user),
+          id, AND: orgQuery(user),
         },
         include: { children: true },
       });
@@ -408,7 +408,7 @@ async function readCategory(
     //   });
     case "blog":
       return await prisma.blogCategory.findUnique({
-        where: { id, AND: userQuery(user) },
+        where: { id, AND: orgQuery(user) },
         include: {
           children: true,
         },
@@ -416,7 +416,7 @@ async function readCategory(
 
     case "software":
       return await prisma.softwareProductCategory.findUnique({
-        where: { id , AND: userQuery(user) },
+        where: { id, AND: orgQuery(user) },
         include: {
           children: true,
         },
