@@ -1,7 +1,23 @@
-import { features, title } from "process";
+import { workflowServices, workFlowTools } from "@/crud/DTOs";
 import { FormSchema } from "../DynamicInput";
-import { SoftwareProductStatus, SoftwarePricing } from "@prisma/client";
-import { workflows } from "googleapis/build/src/apis/workflows";
+
+const servicesOptions = Object.values(workflowServices).map(service => ({ label: service, value: service }));
+const toolsOptions = Object.values(workFlowTools).map(tool => ({ label: tool, value: tool }));
+
+const ServiceSelectSchema: FormSchema = {
+    type: "multi-select",
+    title: "Services",
+    required: true,
+    options: servicesOptions,
+}
+
+const ToolSelectSchema: FormSchema = {
+    type: "multi-select",
+    title: "Tools",
+    required: true,
+    options: toolsOptions,
+}
+
 export const SoftwareProductFormSchema: FormSchema = {
     description: "Software properties form",
     title: "Software Product Form",
@@ -22,7 +38,7 @@ export const SoftwareProductFormSchema: FormSchema = {
             required: false,
             title: "Description",
         },
- 
+
         "pricing": {
             type: "select",
             title: "Pricing Model",
@@ -81,7 +97,7 @@ export const SubscriptionModelSchema: FormSchema = {
             "id": {
                 type: "string",
                 required: false,
-                title: "ID", 
+                title: "ID",
                 disabled: true
             },
             "name": {
@@ -107,7 +123,7 @@ export const SubscriptionModelSchema: FormSchema = {
                 ],
                 required: true,
                 title: 'Type'
-            }, 
+            },
             features: {
                 type: 'array',
                 title: 'Features',
@@ -135,8 +151,8 @@ export const SubscriptionModelSchema: FormSchema = {
                             description: 'Tags for features',
                         }
                     }
-                }, 
-                toString: (object:any)=>object.title
+                },
+                toString: (object: any) => object.title
             },
             workflows: {
                 type: "array",
@@ -153,20 +169,23 @@ export const SubscriptionModelSchema: FormSchema = {
                             type: "string",
                             required: true,
                             title: "Title",
-                            
-                            
-                        } , 
+
+
+                        },
                         'token': {
                             type: "string",
                             required: true,
                             title: "Token",
-                        }
+                        },
+                        'tools': ToolSelectSchema,
+                        'services': ServiceSelectSchema
+                            
                     }
                 },
-                toString: (object:any)=>object.title
+                toString: (object: any) => object.title
             },
             chatBots: {
-                type : 'array',
+                type: 'array',
                 title: 'Chat Bots',
                 required: false,
                 description: 'Chat Bots',
@@ -185,10 +204,13 @@ export const SubscriptionModelSchema: FormSchema = {
                             type: "string",
                             required: true,
                             title: "Token"
-                        }
+                        },
+                        'tools': ToolSelectSchema,
+                        'services': ServiceSelectSchema
+                            
                     }
                 },
-                toString: (object:any)=>object.title
+                toString: (object: any) => object.title
 
             },
             credits: {
@@ -198,13 +220,13 @@ export const SubscriptionModelSchema: FormSchema = {
             },
             profit: {
                 type: "number",
-                required:true,
+                required: true,
                 title: "% Profit",
             }
         },
         description: "Subscription Item",
         required: true,
-        
+
     },
     toString: object => object.name,
     required: true

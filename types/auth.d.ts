@@ -1,4 +1,4 @@
-import { Account, Role } from "@prisma/client";
+import { Account, Organization, Role } from "@prisma/client";
 import { DefaultSession, DefaultUser } from "next-auth";
 
 declare module "next-auth" {
@@ -11,6 +11,8 @@ declare module "next-auth" {
             role: Role;
             id?: string;
             orgId: string;
+            organizations? : Organization[]
+
 
         } & DefaultSession["user"];
     }
@@ -19,6 +21,7 @@ declare module "next-auth" {
         id?: string;
         role: Role;
         orgId: string;
+        organizations? : Organization[]
 
     }
 }

@@ -451,6 +451,68 @@ export type CreateSoftwareProductDTO = ({
 
 });
 
+export enum workFlowTools {
+  Google = "Google",
+  Bing = "Bing",
+  DuckDuckGo = "DuckDuckGo",
+  SearchApi = "SearchApi",
+  SearXNG = "SearXNG",
+  DALLE = "DALL-E",
+  AzureDALLE = "Azure DALL-E",
+  Stability = "Stability",
+  Wikipedia = "Wikipedia",
+  YahooFinance = "YahooFinance",
+  ArXiv = "ArXiv",
+  PubMed = "PubMed",
+  StableDiffusion = "Stable Diffusion",
+  WebScraper = "WebScraper",
+  Jina = "Jina",
+  AIPPT = "AIPPT",
+  YouTube = "YouTube",
+  CodeInterpreter = "Code Interpreter",
+  WolframAlpha = "WolframAlpha",
+  Maths = "Maths",
+  Github = "Github",
+  ChartGenerator = "ChartGenerator",
+  CurrentTime = "CurrentTime",
+  VectorizerAI = "Vectorizer.AI",
+  Autonavi = "Autonavi",
+  Wecom = "Wecom",
+  QRCode = "QRCode",
+  DingTalk = "DingTalk",
+  Feishu = "Feishu",
+  FeishuBase = "Feishu Base",
+  Slack = "Slack",
+  Brave = "Brave",
+  DevDocs = "DevDocs",
+  Firecrawl = "Firecrawl",
+  Judge0CE = "Judge0 CE",
+  NovitaAI = "Novita AI",
+  OpenWeatherQuery = "Open weather query",
+  Spark = "Spark",
+  StackExchange = "Stack Exchange",
+  Tavily = "Tavily",
+  Trello = "Trello",
+  Twilio = "Twilio",
+}
+
+export enum workflowServices {
+  Facebook = "Facebook",
+  Twitter = "Twitter",
+  Google = "Google",
+  LinkedIn = "LinkedIn",
+  Zapier = "Zapier",
+  WordPress = "WordPress",
+  Drupal = "Drupal",
+  Salesforce = "Salesforce",
+  NetSuite = "NetSuite",
+  SecondCall = "SecondCall",
+  Shopify = "Shopify",
+  Printful = "Printful",
+  Eventbrite = "Eventbrite"
+}
+
+
 export type SubscriptionModel = {
   id?: string | null;
   name: string;
@@ -460,6 +522,12 @@ export type SubscriptionModel = {
     subTitle: string;
 
   },
+  workflows: {
+    title: string;
+    token: string;
+    tools?: workFlowTools[]
+    services?: workflowServices[]
+  }
   status: SubscriptionStatus
   type: SubscriptionPeriod
   credits: number | 0

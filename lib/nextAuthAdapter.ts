@@ -37,6 +37,8 @@ export const authOptions: NextAuthOptions = {
       if (trigger === "update" && session?.name) {
         // Note, that `session` can be any arbitrary object, remember to validate it!
         token.name = session.name;
+        session.user = user;
+        token.user = user
         //token.user = user
       }
       //console.log("jwt", token);
@@ -67,7 +69,8 @@ async function authorize(
         name: `${user.firstName} ${user.lastName}`,
         email: user.email,
         role: user.role,
-        orgId: user.Organization[0].id
+        orgId: user.Organization[0].id,
+        organizations: user.Organization
       };
     } else return null;
     // console.log(user);

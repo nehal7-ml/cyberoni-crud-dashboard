@@ -30,6 +30,10 @@ async function create(
   let id = undefined;
   let pricingIds = [] as string[];
   if (product.pricing === "Subscription") {
+
+    if (product.subscriptionModel.length === 0) {
+      throw  HttpError(400, "Subscription model is required");
+    }
     const subscription = await createSubscriptionProduct({
       name: product.title,
       pricingPlans: product.subscriptionModel.map((model) => ({

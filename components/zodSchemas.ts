@@ -168,6 +168,89 @@ const CaseStudySchema = z.object({
   architecture: z.array(ImageSchema).optional(),
 });
 
+
+export const workFlowTools = z.enum([
+  "Google",
+  "Bing",
+  "DuckDuckGo",
+  "SearchApi",
+  "SearXNG",
+  "DALLE",
+  "AzureDALLE",
+  "Stability",
+  "Wikipedia",
+  "YahooFinance",
+  "ArXiv",
+  "PubMed",
+  "StableDiffusion",
+  "WebScraper",
+  "Jina",
+  "AIPPT",
+  "YouTube",
+  "CodeInterpreter",
+  "WolframAlpha",
+  "Maths",
+  "Github",
+  "ChartGenerator",
+  "CurrentTime",
+  "VectorizerAI",
+  "Autonavi",
+  "Wecom",
+  "QRCode",
+  "DingTalk",
+  "Feishu",
+  "FeishuBase",
+  "Slack",
+  "Brave",
+  "DevDocs",
+  "Firecrawl",
+  "Judge0CE",
+  "NovitaAI",
+  "OpenWeatherQuery",
+  "Spark",
+  "StackExchange",
+  "Tavily",
+  "Trello",
+  "Twilio",
+]);
+
+export const workflowServices = z.enum([
+  "Facebook",
+  "Twitter",
+  "Google",
+  "LinkedIn",
+  "Zapier",
+  "WordPress",
+  "Drupal",
+  "Salesforce",
+  "NetSuite",
+  "SecondCall",
+  "Shopify",
+  "Printful",
+  "Eventbrite",
+]);
+const SubscriptionModelSchema = z.object({
+  id: z.string().optional(),
+  name: z.string().min(1),
+  description: z.string().min(1),
+  price: z.number(),
+  features: z.object({
+    title: z.string().min(1),
+    subTitle: z.string().min(1),
+  }),
+  workflows: z.object({
+    title: z.string().min(1),
+    token: z.string().min(1),
+    tools: z.array(workFlowTools).optional(),
+    services: z.array(workflowServices).optional(),
+  }),
+  status: z.enum(["ACTIVE", "INACTIVE"]), // Assuming SubscriptionStatus is an enum with values "ACTIVE" and "INACTIVE"
+  type: z.enum(["MONTHLY", "YEARLY"]), // Assuming SubscriptionPeriod is an enum with values "MONTHLY" and "YEARLY"
+  credits: z.number().min(0).default(0),
+  profit: z.number().min(0).default(0),
+});
+
+
 const SoftwareProductSchema = z.object({
   id: z.string().optional(),
   title: z.string().min(1),
@@ -178,6 +261,7 @@ const SoftwareProductSchema = z.object({
   pricing: z.enum(["Freemium", "Free", "Paid", "Subscription"]),
   link: z.string().nullable().optional(),
   githubLink: z.string().nullable().optional(),
+  subscriptionModel: z.array(SubscriptionModelSchema).optional().nullable(),
   blogLink: z
     .string()
     .regex(
@@ -186,7 +270,8 @@ const SoftwareProductSchema = z.object({
     )
     .optional(),
   status: z.enum(["Released", "Beta", "Alpha", "ComingSoon", "Planned"]),
-});
+})
+
 
 const EventSchema = z.object({
   name: z.string().min(1),
