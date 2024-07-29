@@ -2,6 +2,7 @@ import { NextRequestWithAuth, withAuth } from "next-auth/middleware";
 import { DisplayUserDTO } from "./crud/user";
 import { JWT } from "next-auth/jwt";
 
+
 export default withAuth(
   // `withAuth` augments your `Request` with the user's token.
   async function middleware(req: NextRequestWithAuth) {
@@ -10,12 +11,18 @@ export default withAuth(
   {
     callbacks: {
       authorized: async ({ token, req }) => {
-        if (token) {
+        if (token && token.user) {
           //console.log("authorize",(isAdmin(token) || isSuper(token)));
-          return isAdmin(token) || isSuper(token);
+          const path = req.nextUrl.pathname
+          if (isSuper(token)) return true
+          else {
+            let admin = isAdmin(token)
+            return admin
+          }
         } else return false;
       },
     },
+
   },
 );
 

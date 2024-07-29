@@ -1,4 +1,4 @@
-import { PrismaClient, SoftwareProduct } from "@prisma/client";
+import { Role, SoftwareProduct } from "@prisma/client";
 import { CreateImageDTO, CreateSoftwareProductDTO } from "./DTOs";
 import { connectOrCreateObject as connectTags } from "./tags";
 import { connectOrCreateObject as connectImages } from "./images";
@@ -7,9 +7,13 @@ import {
   createSubscriptionProduct,
   updateSubscriptionProduct,
 } from "@/lib/stripe";
+import { orgQuery } from "./permissions";
+import { prisma } from "@/lib/prisma";
+import { User } from "next-auth";
+
 async function create(
   product: CreateSoftwareProductDTO,
-  prismaClient: PrismaClient,
+  user: User,
 ): Promise<SoftwareProduct> {
   const {
     title,
@@ -26,6 +30,10 @@ async function create(
   let id = undefined;
   let pricingIds = [] as string[];
   if (product.pricing === "Subscription") {
+
+    if (product.subscriptionModel.length === 0) {
+      throw  HttpError(400, "Subscription model is required");
+    }
     const subscription = await createSubscriptionProduct({
       name: product.title,
       pricingPlans: product.subscriptionModel.map((model) => ({
@@ -39,7 +47,7 @@ async function create(
     id = subscription.product.id;
     pricingIds = subscription.pricingPlans.map((plan) => plan.id);
   }
-  let createdProduct = await prismaClient.softwareProduct.create({
+  let createdProduct = await prisma.softwareProduct.create({
     data: {
       id: id,
       title,
@@ -50,6 +58,12 @@ async function create(
       githubLink,
       status,
       internal: false,
+      createdBy: {
+        connect: { id: user.id }
+      },
+      Organization: {
+        connect: { id: user.orgId },
+      },
       blog: product.blog ? { connect: { id: product.blog.id } } : undefined,
       images: await connectImages(product.images, []),
       tags: {
@@ -83,9 +97,9 @@ async function create(
   return createdProduct;
 }
 
-async function read(productId: string, prismaClient: PrismaClient) {
-  const product = await prismaClient.softwareProduct.findUnique({
-    where: { id: productId },
+async function read(productId: string, user: User) {
+  const product = await prisma.softwareProduct.findUnique({
+    where: { id: productId, AND: orgQuery(user) },
     include: {
       images: true,
       tags: true,
@@ -101,10 +115,10 @@ async function read(productId: string, prismaClient: PrismaClient) {
 async function update(
   productId: string,
   productData: CreateSoftwareProductDTO,
-  prisma: PrismaClient,
+  user: User,
 ): Promise<SoftwareProduct> {
   const oldProduct = await prisma.softwareProduct.findUnique({
-    where: { id: productId },
+    where: { id: productId, AND: orgQuery(user) },
     include: {
       tags: true,
       images: true,
@@ -123,9 +137,7 @@ async function update(
   if (productData.pricing === "Subscription") {
     const product = await updateSubscriptionSoftwareProduct(
       productData,
-      oldProduct as unknown as CreateSoftwareProductDTO,
-      prisma,
-    );
+      oldProduct as unknown as CreateSoftwareProductDTO);
 
     return product;
   } else {
@@ -161,17 +173,17 @@ async function update(
 
 async function remove(
   productId: string,
-  prismaClient: PrismaClient,
+  user: User,
 ): Promise<void> {
-  await prismaClient.softwareProduct.delete({
-    where: { id: productId },
+  await prisma.softwareProduct.delete({
+    where: { id: productId, AND: orgQuery(user) },
   });
 }
 
 async function getAll(
   page: number,
   pageSize: number,
-  prismaClient: PrismaClient,
+  user: User,
   options?: {
     order: "asc" | "desc";
     orderby: "updatedAt" | "pricing";
@@ -182,9 +194,12 @@ async function getAll(
   totalPages: number;
   pageSize: number;
 }> {
-  let allProducts = await prismaClient.softwareProduct.findMany({
+
+  let query = { AND: orgQuery(user) };
+  let allProducts = await prisma.softwareProduct.findMany({
     skip: (page - 1) * pageSize,
     take: pageSize,
+    where: query,
     include: {
       category: true,
     },
@@ -197,7 +212,7 @@ async function getAll(
       },
   });
 
-  const totalCount = await prismaClient.softwareProduct.count();
+  const totalCount = await prisma.softwareProduct.count({ where: query });
   const totalPages = Math.ceil(totalCount / pageSize);
 
   return { records: allProducts, currentPage: page, totalPages, pageSize };
@@ -205,9 +220,7 @@ async function getAll(
 
 async function updateSubscriptionSoftwareProduct(
   productData: CreateSoftwareProductDTO,
-  oldProduct: CreateSoftwareProductDTO,
-  prisma: PrismaClient,
-) {
+  oldProduct: CreateSoftwareProductDTO) {
   const {
     title,
     subTitle,
@@ -231,13 +244,13 @@ async function updateSubscriptionSoftwareProduct(
     ? productData.subscriptionModel.filter((model) => model.id)
     : [];
 
-    const disconnectModels = oldProduct.subscriptionModel && productData.subscriptionModel
+  const disconnectModels = oldProduct.subscriptionModel && productData.subscriptionModel
     ? oldProduct.subscriptionModel.filter(
-        (model) =>
-          !productData.subscriptionModel?.find(
-            (newModel) => newModel.id === model.id
-          )
-      )
+      (model) =>
+        !productData.subscriptionModel?.find(
+          (newModel) => newModel.id === model.id
+        )
+    )
     : [];
   const {
     product,

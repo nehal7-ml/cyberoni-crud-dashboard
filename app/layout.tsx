@@ -5,6 +5,7 @@ import { Inter } from "next/font/google";
 import { Suspense } from "react";
 import { getServerSession } from "next-auth";
 import Notification, { NotificationProvider } from "@/components/Notification";
+import SessionProvider from "@/components/SessionProvider";
 
 const inter = Inter({ subsets: ["latin"] });
 
@@ -19,14 +20,17 @@ export default async function RootLayout({
   children: React.ReactNode;
 }) {
   const session = await getServerSession();
+
   return (
     <html lang="en">
       <body className={`${inter.className} bg-blacktext-white `}>
 
         <Suspense>
-          <NotificationProvider>
-          {children}
-          </NotificationProvider>
+          <SessionProvider session={session} >
+            <NotificationProvider>
+              {children}
+            </NotificationProvider>
+          </SessionProvider>
         </Suspense>
       </body>
     </html>

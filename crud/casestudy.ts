@@ -1,11 +1,15 @@
 import "server-only";
-import { Image, PrismaClient } from "@prisma/client";
+import { Image, PrismaClient, Role } from "@prisma/client";
 import { CreateImageDTO } from "./DTOs";
 import { connectOrCreateObject, createImageJson } from "./images";
 import { CreateCaseStudyDTO } from "./DTOs";
+import { User } from "next-auth";
+import { prisma } from "@/lib/prisma";
+import { orgQuery } from "./permissions";
+import { HttpError } from "@/lib/utils";
 export type CaseStudyType = "ECOMMERCE" | "LANDING" | "SOFTWARE" | "GRAPHICS";
 
-export async function create(caseStudy: CreateCaseStudyDTO, prisma: PrismaClient) {
+export async function create(caseStudy: CreateCaseStudyDTO, user: User) {
   const cases = prisma.caseStudy;
   let images = await connectOrCreateObject(caseStudy.images, []);
   let competetiveAnalysis = await connectOrCreateObject(
@@ -36,6 +40,10 @@ export async function create(caseStudy: CreateCaseStudyDTO, prisma: PrismaClient
       wireFrames: createImageJson(wireFrames),
       competitiveAnalysis: createImageJson(competetiveAnalysis),
       type: caseStudy.serviceId ? { connect: { id: caseStudy.serviceId } } : {},
+      createdBy: { connect: { id: user.id } },
+      Organization: {
+        connect: { id: user.orgId },
+      },
       subServices: caseStudy.subServices
         ? { connect: caseStudy.subServices }
         : {},
@@ -45,10 +53,10 @@ export async function create(caseStudy: CreateCaseStudyDTO, prisma: PrismaClient
   return newCase;
 }
 
-export async function read(caseStudyId: string, prisma: PrismaClient) {
+export async function read(caseStudyId: string, user: User) {
   const cases = prisma.caseStudy;
   const caseStudy = await cases.findUnique({
-    where: { id: caseStudyId },
+    where: { id: caseStudyId, AND: orgQuery(user) },
     include: { subServices: { select: { id: true } } },
   });
   return {
@@ -65,10 +73,13 @@ export async function read(caseStudyId: string, prisma: PrismaClient) {
 export async function update(
   caseStudyId: string,
   caseStudy: CreateCaseStudyDTO,
-  prisma: PrismaClient,
+  user: User,
 ) {
   const cases = prisma.caseStudy;
-  const oldCase = await cases.findUnique({ where: { id: caseStudyId } });
+  const oldCase = await cases.findUnique({ where: { id: caseStudyId, AND: orgQuery(user) } });
+  if (!oldCase) {
+    throw HttpError(404, "Case study not found")
+  }
   let images = await connectOrCreateObject(
     caseStudy.images,
     oldCase?.images as unknown as Image[],
@@ -120,29 +131,30 @@ export async function update(
   return updatedCaseStudy;
 }
 
-export async function remove(caseStudyId: string, prisma: PrismaClient) {
+export async function remove(caseStudyId: string, user: User) {
   const cases = prisma.caseStudy;
-  const updatedCaseStudy = await cases.delete({ where: { id: caseStudyId } });
+  const updatedCaseStudy = await cases.delete({ where: { id: caseStudyId, AND: orgQuery(user) } });
   return updatedCaseStudy;
 }
 
 export async function getAll(
   page: number,
   pageSize: number,
-  prismaClient: PrismaClient,
+  user: User,
   options?: {
     order: 'asc' | 'desc';
     orderby: 'updatedAt' | 'title';
+    userId?: string
   }
 ) {
-  const caseStudys = prismaClient.caseStudy;
+  const caseStudys = prisma.caseStudy;
   if (pageSize !== 10 && pageSize != 30 && pageSize !== 50)
     throw new Error("page size must be 10, 30 or 50");
-
+  let query = { AND: orgQuery(user) };
   let allrecords = await caseStudys.findMany({
     skip: (page - 1) * pageSize,
     take: pageSize,
-    where: {},
+    where: query,
     include: {
       subServices: true,
       type: true,
@@ -150,7 +162,7 @@ export async function getAll(
     orderBy: options?.orderby ? { [options.orderby]: options.order } : { createdAt: "desc" },
   });
 
-  const totalCount = await caseStudys.count();
+  const totalCount = await caseStudys.count({ where: query });
   const totalPages = Math.ceil(totalCount / pageSize);
 
   return { records: allrecords, currentPage: page, totalPages, pageSize };

@@ -7,16 +7,6 @@ const blogFormSchema: FormSchema = {
     required: true,
     properties: {
       title: { type: "string", title: "Title", required: true },
-      author: {
-        type: "object",
-        title: "Author",
-        description: "Author details",
-        required: true,
-        properties: {
-          email: { type: "string", title: "Email", required: true },
-        },
-        toString: (object) => object.email,
-      },
       publishDate: { type: "date", title: "Publish Date", required: true },
       subTitle: { type: "string", title: "SubTitle", required: true },
       description: { type: "text", title: "Description", required: true },

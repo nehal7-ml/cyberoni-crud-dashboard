@@ -1,3 +1,5 @@
+import { PrismaClient } from "@prisma/client";
+
 export type TableType =
   | "blogs"
   | "services"
@@ -10,6 +12,7 @@ export type TableType =
   | "discounts"
   | "referrals";
 export type OrderTableBy =
+  | "createdAt"
   | "updatedAt"
   | "title"
   | "name"
@@ -31,3 +34,7 @@ export type OrderTable = "desc" | "asc";
 
 
 export type CategoryType = "product" | "prompt" | "blog" | "service" | "software"
+
+declare global {
+  var prisma: PrismaClient | undefined;
+}

@@ -15,6 +15,7 @@ import { NextRequest } from "next/server";
 import Link from "next/link";
 import LoginForm from "@/components/LoginForm";
 import { DisplayUserDTO } from "@/crud/user";
+import { User } from "next-auth";
 
 export const dynamic = "force-dynamic";
 
@@ -27,7 +28,7 @@ export default async function SignIn() {
   // To avoid an infinite loop!
 
   if (session) {
-    const user = session.user as DisplayUserDTO;
+    const user = session.user as User;
     if (user.role == "ADMIN" || user.role == "SUPERUSER") redirect("/");
   }
 

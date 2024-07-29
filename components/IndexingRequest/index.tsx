@@ -8,17 +8,20 @@ import Loading from "../Loading";
 import Notification, { useNotify } from "../Notification";
 import LoadingDots from "../shared/loading-dots";
 import Link from "next/link";
+import { useSession } from "next-auth/react";
+import { User } from "next-auth";
 
 function IndexingRequest() {
   const [loading, setLoading] = useState(false);
   const [infoModal, setInfoModal] = useState(false);
   const [progress, setProgress] = useState(0);
-  const {toast} = useNotify();
+  const { toast } = useNotify();
+  const { data } = useSession();
   async function requestIndexing(event: FormEvent) {
     event.preventDefault();
     setLoading((prev) => !prev);
     try {
-      await indexEverything();
+      await indexEverything(data?.user as User);
     } catch (error) {
       toast((error as Error).toString(), {
         type: "error",

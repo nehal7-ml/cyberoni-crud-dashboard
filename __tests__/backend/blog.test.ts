@@ -7,8 +7,15 @@ import { prisma } from "@/lib/prisma";
 import { create, remove, update, } from "@/crud/blog";
 import { CreateBlogDTO, CreateImageDTO, CreateTagDTO } from "@/crud/DTOs";
 import { Blog } from "@prisma/client";
+import { User } from "next-auth";
 
 describe('Testing Service crud unit functions', () => {
+    const mockedUser = {
+        orgId: '123',
+        id: '123',
+        role: 'ADMIN',
+        email: "email",
+    } as User
     const mockBlog: CreateBlogDTO = {
         title: 'Test title',
         content: 'testcontent',
@@ -16,9 +23,7 @@ describe('Testing Service crud unit functions', () => {
         featured: false,
         subTitle: 'preview',
         publishDate: new Date(),
-        author: {
-            email: 'nehal.sk.99@gmail.com'
-        },
+
         tags: [
             { name: 'Tech' },
             { name: 'Mobile' },
@@ -33,7 +38,7 @@ describe('Testing Service crud unit functions', () => {
 
 
     it('should successfully create a blog', async () => {
-        const resp = await create(mockBlog, prisma);
+        const resp = await create(mockBlog, mockedUser);
         createdBlog = resp
 
         //console.log(resp);
@@ -46,7 +51,7 @@ describe('Testing Service crud unit functions', () => {
         const resp = await update(createdBlog.id, {
             ...mockBlog,
             tags: [{ name: 'Mobile' }, { name: 'update' }]
-        }, prisma);
+        }, mockedUser);
         //console.log(resp);
         expect(resp.title).toBe(mockBlog.title);
         const tagNames = [{ name: 'Mobile' }, { name: 'update' }].map(tag => tag.name);
@@ -54,15 +59,15 @@ describe('Testing Service crud unit functions', () => {
         // Filter tagsWithIds to contain only tags with names present in tagNames
         const filteredTags = resp.tags.filter(tag => tagNames.includes(tag.name));
 
-        const tagsMatch =filteredTags.length === tagNames.length;
+        const tagsMatch = filteredTags.length === tagNames.length;
         expect(tagsMatch).toBeTruthy();
 
     }, 20000);
     it('should successfully remove a blog', async () => {
-        const resp = await remove(createdBlog.id, prisma);
+        const resp = await remove(createdBlog.id, mockedUser);
         //console.log(resp);
         expect(resp).toBe(undefined);
-    },10000);
+    }, 10000);
 
 
 

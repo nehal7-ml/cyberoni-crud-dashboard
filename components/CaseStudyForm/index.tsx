@@ -1,17 +1,12 @@
 "use client";
-import { CreateCaseStudyDTO, UserPersona } from "@/crud/DTOs";
-import { useEffect, useMemo, useState } from "react";
-import AddImage from "../AddImagesAndTags/AddImage";
-import Image from "next/image";
-import { PlusCircle, X } from "lucide-react";
-import { CreateImageDTO } from "@/crud/DTOs";
-import ListInput from "../ListInput";
-import Notification, { useNotify } from "../Notification";
+import { CreateCaseStudyDTO } from "@/crud/DTOs";
+import {  useMemo, useState } from "react";
+
+import  { useNotify } from "../Notification";
 import { Service } from "@prisma/client";
 import LoadingDots from "../shared/loading-dots";
-import { SafeParseReturnType } from "zod";
 import DynamicInput from "../DynamicInput";
-import { caseStudyFormSchema, userPersona } from "./formSchema";
+import { caseStudyFormSchema } from "./formSchema";
 import { useRouter } from "next/navigation";
 import JsonInput from "../shared/JsonInput";
 import example from "./example.json";
@@ -43,10 +38,10 @@ function CaseStudyForm({
     initial
       ? {
           ...initial,
-          serviceId: initial?.serviceId ?? types[0].id,
+          serviceId: initial?.serviceId ?? undefined,
         }
       : {
-          serviceId: types[0].id,
+          serviceId: undefined,
           subServices: [],
           architecture: [],
           competitiveAnalysis: [],
@@ -200,7 +195,7 @@ function CaseStudyForm({
                 <select
                   name="serviceId"
                   className="mt-1 w-full rounded border p-2"
-                  value={caseData.serviceId ?? types[0].id}
+                  value={caseData.serviceId ??  ""}
                   onChange={handleInputChange}
                 >
                   <option disabled>Select Service</option>

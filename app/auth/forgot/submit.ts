@@ -9,7 +9,7 @@ import { redirect } from "next/navigation";
 export async function resetPassword(formData: FormData) {
   const email = formData.get("username");
   try {
-    await getUserByEmail(email as string, prisma);
+    await getUserByEmail(email as string);
   } catch (error) {
     console.log(error);
     redirect("/auth/forgot?error=NotFound");

@@ -1,3 +1,4 @@
+import verifyOrgAccess from "@/app/dashboard/verifyOrgAccess";
 import BlogForm from "@/components/BlogForm";
 import CaseStudyForm from "@/components/CaseStudyForm";
 import DiscountsForm from "@/components/DiscountForm";
@@ -12,9 +13,11 @@ import { BlogCategory, CreateReferralDTO } from "@/crud/DTOs";
 import { getCategories } from "@/crud/categories";
 import { read as readReferral } from "@/crud/referral";
 import { getAll as getAllServices } from "@/crud/service";
+import { authOptions } from "@/lib/nextAuthAdapter";
 import { prisma } from "@/lib/prisma";
 import { TableType } from "@/types/global";
 import { Metadata } from "next";
+import { getServerSession } from "next-auth";
 import { redirect } from "next/navigation";
 export async function generateMetadata({ params }: {
   params: { table: string }
@@ -28,11 +31,24 @@ async function CreateForm({
   params,
   searchParams,
 }: {
-  params: { id: string; table: TableType };
+  params: {id: string; table: TableType };
   searchParams: { id?: string; duplicate?: "true" | "false" };
 }) {
+
+  const session = await getServerSession(authOptions);
+  if (!session) {
+    redirect("/auth/login")
+  }
+
+  // check if user has access to the organization
+  const user = {
+    id: session?.user.id as string,
+    role: session?.user.role,
+    orgId: session?.user.orgId,
+  }
+
   if (params.table === "blogs") {
-    const categories = await getCategories("blog", prisma) as BlogCategory[];
+    const categories = await getCategories("blog", user) as BlogCategory[];
 
     return (
       <BlogForm
@@ -42,7 +58,7 @@ async function CreateForm({
       />
     );
   } else if (params.table === "casestudies") {
-    const service = await getAllServices(0, 0, prisma);
+    const service = await getAllServices(0, 0, user);
 
     return (
       <CaseStudyForm
@@ -57,18 +73,21 @@ async function CreateForm({
   } else if (params.table === "events") {
     // console.log(event);
     return <EventForm method="POST" action={`/api/events/add`} />;
-  } else if (params.table === "products") {
-    const categories = await getCategories("product", prisma);
-    // console.log(event);
-    return (
-      <ProductForm
-        categories={categories}
-        method="POST"
-        action={`/api/products/add`}
-      />
-    );
-  } else if (params.table === "softwares") {
-    const categories = await getCategories("software", prisma);
+  } 
+  // else if (params.table === "products") {
+  //   const categories = await getCategories("product", prisma);
+  //   // console.log(event);
+  //   return (
+  //     <ProductForm
+  //       categories={categories}
+  //       method="POST"
+  //       action={`/api/products/add`}
+  //     />
+  //   );
+  // }
+  
+  else if (params.table === "softwares") {
+    const categories = await getCategories("software", user);
 
     return (
       <SoftwareProductForm
@@ -81,21 +100,23 @@ async function CreateForm({
   }
 
 
-  else if (params.table === "prompts") {
-    const categories = await getCategories("prompt", prisma);
+  // else if (params.table === "prompts") {
+  //   const categories = await getCategories("prompt", prisma);
 
-    //console.log(prompt);
-    return (
-      <GptPromptForm
-        categories={categories}
-        method="POST"
-        action={`/api/prompts/add`}
-      />
-    );
-  } else if (params.table === "referrals") {
+  //   //console.log(prompt);
+  //   return (
+  //     <GptPromptForm
+  //       categories={categories}
+  //       method="POST"
+  //       action={`/api/prompts/add`}
+  //     />
+  //   );
+  // } 
+  
+  else if (params.table === "referrals") {
     let res: any | null;
     if (searchParams.id && searchParams.duplicate === "true") {
-      res = await readReferral(searchParams.id, prisma);
+      res = await readReferral(searchParams.id, user);
       if (!res) redirect("/404");
     }
 

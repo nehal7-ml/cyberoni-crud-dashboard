@@ -1,5 +1,5 @@
 import "server-only";
-import { PrismaClient, Prisma, FAQ } from "@prisma/client";
+import { Prisma, FAQ, Role } from "@prisma/client";
 import {
   create as createTag,
   connectOrCreateObject as connectTags,
@@ -24,9 +24,11 @@ import {
 import { CreateServiceDTO } from "./DTOs";
 import { HttpError, seoUrl } from "@/lib/utils";
 import { indexPage } from "@/lib/googleIndexing";
-
-async function create(service: CreateServiceDTO, prismaClient: PrismaClient) {
-  const services = prismaClient.service;
+import { orgQuery } from "./permissions";
+import { prisma } from "@/lib/prisma"
+import { User } from "next-auth";
+async function create(service: CreateServiceDTO, user: User) {
+  const services = prisma.service;
   let image = await createImageObject(service.image);
   let createdService = await services.create({
     data: {
@@ -52,6 +54,10 @@ async function create(service: CreateServiceDTO, prismaClient: PrismaClient) {
           service.ServiceDescription as CreateServiceDescription[],
         ),
       },
+      createdBy: user.id ? { connect: { id: user.id } } : undefined,
+      Organization: {
+        connect: { id: user.orgId },
+      }
     },
     include: {
       SubServices: true,
@@ -80,11 +86,11 @@ async function create(service: CreateServiceDTO, prismaClient: PrismaClient) {
 async function update(
   serviceId: string,
   service: CreateServiceDTO,
-  prismaClient: PrismaClient,
+  user: User,
 ) {
-  const services = prismaClient.service;
+  const services = prisma.service;
   const oldService = await services.findUnique({
-    where: { id: serviceId }, include: {
+    where: { id: serviceId, AND: orgQuery(user) }, include: {
       SubServices: true,
       image: true,
       ServiceDescription: {
@@ -109,9 +115,9 @@ async function update(
 
   let createFaqs = service.faqs?.filter(faq => !faq.id) || []
   let updateFaqs = service.faqs?.filter(faq => faq.id) || []
-  let deleteFaqs = oldService.faqs?.filter(oldFaq => 
+  let deleteFaqs = oldService.faqs?.filter(oldFaq =>
     !(service.faqs || []).some(newFaq => newFaq.id === oldFaq.id)
-) || [];
+  ) || [];
   // let currentService = await services.findUnique({ where: { id: serviceId } })
   let updatedService = await services.update({
     where: { id: serviceId },
@@ -169,8 +175,8 @@ async function update(
 
   return updatedService;
 }
-async function remove(serviceId: string, prismaClient: PrismaClient) {
-  const services = prismaClient.service;
+async function remove(serviceId: string, user: User) {
+  const services = prisma.service;
   const existingService = await services.findUnique({
     where: { id: serviceId },
   });
@@ -182,8 +188,8 @@ async function remove(serviceId: string, prismaClient: PrismaClient) {
     await updateIndex(existingService.id, existingService.title, "URL_DELETED")
   }
 }
-async function read(serviceId: string, prismaClient: PrismaClient) {
-  const services = prismaClient.service;
+async function read(serviceId: string, user: User) {
+  const services = prisma.service;
   const existingService = await services.findUnique({
     where: { id: serviceId },
     include: {
@@ -215,21 +221,21 @@ async function read(serviceId: string, prismaClient: PrismaClient) {
 
 async function getServicesByName(
   serviceName: string,
-  prismaClient: PrismaClient,
+  user: User,
 ) { }
 
-async function getServicesByTag(tag: string, prismaClient: PrismaClient) { }
+async function getServicesByTag(tag: string, user: User) { }
 
 async function getAll(
   page: number,
   pageSize: number,
-  prismaClient: PrismaClient,
+  user: User,
   options?: {
     order: 'asc' | 'desc';
     orderby: 'updatedAt' | 'title';
   }
 ) {
-  const services = prismaClient.service;
+  const services = prisma.service;
 
   if (pageSize !== 10 && pageSize != 30 && pageSize !== 50 && pageSize !== 0)
     throw new Error("page size must be 10, 30 or 50");
@@ -237,7 +243,7 @@ async function getAll(
   let allServices = await services.findMany({
     skip: page === 0 ? 0 : (page - 1) * pageSize,
     take: page === 0 ? 9999 : pageSize,
-    where: {},
+    where: { AND: orgQuery(user) },
     include: {
       // reviews: true,
       SubServices: {
@@ -254,16 +260,16 @@ async function getAll(
     }
   });
 
-  const totalCount = await services.count();
+  const totalCount = await services.count({ where: user?.role === 'SUPERUSER' ? {} : { createdBy: { id: user.id } } });
   const totalPages = Math.ceil(totalCount / pageSize);
 
   return { records: allServices, currentPage: page, totalPages, pageSize };
 }
 
-export async function getFeatured(prisma: PrismaClient) {
+export async function getFeatured(user: User) {
   const services = prisma.service;
   const records = await services.findMany({
-    where: { featured: true },
+    where: { featured: true, AND: orgQuery(user) },
     take: 5,
     orderBy: { hourlyRate: "desc" },
   });

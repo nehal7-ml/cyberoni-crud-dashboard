@@ -4,13 +4,15 @@ import apiHandler from "@/errorHandler";
 import { prisma } from "@/lib/prisma";
 import { NextApiRequest, NextApiResponse } from "next";
 import { NextResponse } from "next/server";
+import { getServerSession } from "next-auth";
+import { authOptions } from "@/lib/nextAuthAdapter";
 
 export const { POST, DELETE, GET, PATCH, PUT } = apiHandler({ POST: post });
 
 async function post(req: Request) {
-  if (req.method === "POST") {
     const service = (await req.json()) as CreateServiceDTO;
-    const newService = await create(service, prisma);
+    const session = await getServerSession(authOptions)
+    if (!session) return NextResponse.json({ message: "Unauthorized" })
+    const newService = await create(service, session?.user);
     return NextResponse.json({ message: "Add success", data: newService });
-  }
 }

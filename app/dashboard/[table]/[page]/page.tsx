@@ -13,7 +13,7 @@ import UserTableItems from "@/components/DashboardTableItems/UserTableItem";
 import Pagination from "@/components/Pagination";
 import Table from "@/components/Table";
 import { TableItem } from "@/components/Table/TableItem";
-import { getAll as getAllBlogs } from "@/crud/blog";
+import { getAllBlogs } from "@/crud/blog";
 import { getAll as getAllCaseStudies } from "@/crud/casestudy";
 import { getAll as getAllDiscounts } from "@/crud/discount";
 import { CreateBlogDTO, DisplayBlogDTO, DisplayProductDTO, DisplaySoftwareProductDTO } from "@/crud/DTOs";
@@ -24,6 +24,7 @@ import { getAll as getAllReferrals } from "@/crud/referral";
 import { getAll as getAllServices } from "@/crud/service";
 import { getAll as getAllSoftwares } from "@/crud/softwareProduct";
 import { DisplayUserDTO, getAll as getAllUser } from "@/crud/user";
+import { authOptions } from "@/lib/nextAuthAdapter";
 import { prisma } from "@/lib/prisma";
 import { seoUrl, stripSlashes } from "@/lib/utils";
 import { OrderTableBy, TableType } from "@/types/global";
@@ -33,9 +34,12 @@ import {
   Event,
   GptPrompt,
   Referral,
+  Role,
   Service,
 } from "@prisma/client";
 import { Metadata } from "next";
+import { getServerSession } from "next-auth";
+import { redirect } from "next/navigation";
 import React, { ReactNode, useMemo } from "react";
 
 export const dynamic = "force-dynamic";
@@ -56,7 +60,14 @@ async function Blogs({
   searchParams: { orderBy: "updatedAt" | "title"; order: "asc" | "desc" };
 }) {
   const page = parseInt(params.page);
-  const data = (await getData(page, params.table, searchParams)) || {
+  let session = await getServerSession(authOptions);
+
+  if (!session) {
+    return redirect("/auth/login")
+  }
+
+
+  const data = (await getData(page, params.table, { id: session?.user.id as string, role: session?.user.role, orgId: session?.user.orgId }, searchParams)) || {
     records: [],
     totalPages: 0,
   };
@@ -101,62 +112,67 @@ async function Blogs({
 async function getData(
   page: number,
   table: TableType,
+  user: {
+    id: string,
+    role: Role,
+    orgId: string
+  },
   searchParams: {
     orderBy: OrderTableBy;
     order: "asc" | "desc";
-  },
+  }
 ) {
   if (table === "blogs") {
-    let res = await getAllBlogs(page, 10, prisma, {
+    let res = await getAllBlogs(page, 10, user, {
       orderby: searchParams.orderBy as "updatedAt" | "title",
       order: searchParams.order,
     });
     return res;
   }
   if (table === "casestudies") {
-    let res = await getAllCaseStudies(page, 10, prisma, {
+    let res = await getAllCaseStudies(page, 10, user,  {
       orderby: searchParams.orderBy as "updatedAt" | "title",
       order: searchParams.order,
     });
     return res;
   }
   if (table === "discounts") {
-    let res = await getAllDiscounts(page, 10, prisma, {
+    let res = await getAllDiscounts(page, 10, user,  {
       orderby: searchParams.orderBy as "updatedAt" | "name",
       order: searchParams.order,
     });
     return res;
   }
   if (table === "events") {
-    let res = await getAllEvents(page, 10, prisma, {
+    let res = await getAllEvents(page, 10, user,  {
       orderby: searchParams.orderBy as "updatedAt" | "name",
       order: searchParams.order,
     });
     return res;
   }
-  if (table === "products") {
-    let res = await getAllProducts(page, 10, prisma, {
-      orderby: searchParams.orderBy as "updatedAt" | "title",
-      order: searchParams.order,
-    });
-    return res;
-  }
-  if (table === "prompts") {
-    let res = await getAllPrompts(page, 10, prisma, {
-      orderby: searchParams.orderBy as "updatedAt" | "title",
-      order: searchParams.order,
-    });
-    return res;
-  }
+  // if (table === "products") {
+  //   let res = await getAllProducts(page, 10,  {
+  //     orderby: searchParams.orderBy as "updatedAt" | "title",
+  //     order: searchParams.order,
+  //   });
+  //   return res;
+  // }
+  // if (table === "prompts") {
+  //   let res = await getAllPrompts(page, 10,  {
+  //     orderby: searchParams.orderBy as "updatedAt" | "title",
+  //     order: searchParams.order,
+  //   });
+  //   return res;
+  // }
   if (table === "referrals") {
-    let res = await getAllReferrals(page, 10, prisma, {
+    let res = await getAllReferrals(page, 10, user,  {
       orderby: searchParams.orderBy as "updatedAt" | "prefix" | 'expires' | 'click',
       order: searchParams.order,
     });
     return res;
   }
   if (table === "services") {
-    let res = await getAllServices(page, 10, prisma, {
+    let res = await getAllServices(page, 10, user, {
       orderby: searchParams.orderBy as "updatedAt" | "title",
       order: searchParams.order,
     });
@@ -164,14 +180,14 @@ async function getData(
   }
 
   if (table === "softwares") {
-    let res = await getAllSoftwares(page, 10, prisma, {
+    let res = await getAllSoftwares(page, 10, user,  {
       orderby: searchParams.orderBy as "updatedAt" | "pricing",
       order: searchParams.order,
     });
     return res;
   }
   if (table === "users") {
-    let res = await getAllUser(page, 10, prisma, {
+    let res = await getAllUser(page, 10, user, {
       orderby: searchParams.orderBy as "updatedAt" | "email",
       order: searchParams.order,
     });

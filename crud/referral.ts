@@ -1,10 +1,13 @@
 import "server-only";
-import { PrismaClient, Referral } from "@prisma/client";
+import { PrismaClient, Referral, Role } from "@prisma/client";
 import { CreateReferralDTO } from "./DTOs";
-
+import { prisma } from "@/lib/prisma";
+import { User } from "next-auth";
+import { orgQuery } from "./permissions";
+import { HttpError } from "@/lib/utils";
 export async function create(
   referral: CreateReferralDTO,
-  prisma: PrismaClient,
+  user: User
 ) {
   const referrals = prisma.referral;
   const newReferral = await referrals.create({
@@ -19,30 +22,39 @@ export async function create(
       priority: referral.priority,
       type: referral.type,
       utmProps: referral.utmProps,
-      click: 0
-
+      createdBy: referral.userId
+        ? { connect: { id: user.id } }
+        : undefined,
+        Organization: {
+          connect: { id: user.orgId },
+        },
+      click: 0,
     },
   });
 
   return newReferral;
 }
 
-export async function read(id: string, prisma: PrismaClient) {
+export async function read(id: string, user: User) {
   const referrals = prisma.referral;
   const newReferral = await referrals.findUnique({
     where: {
       id,
+      AND: orgQuery(user),
     },
   });
+
+  if (!newReferral) throw HttpError(404, "Referral not found")
 
   return newReferral;
 }
 
-export async function remove(id: string, prisma: PrismaClient) {
+export async function remove(id: string, user: User) {
   const referrals = prisma.referral;
   const newReferral = await referrals.delete({
     where: {
       id,
+      AND: orgQuery(user),
     },
   });
 
@@ -52,12 +64,13 @@ export async function remove(id: string, prisma: PrismaClient) {
 export async function update(
   id: string,
   referral: CreateReferralDTO,
-  prisma: PrismaClient,
+  user: User,
 ) {
   const referrals = prisma.referral;
   const newReferral = await referrals.update({
     where: {
       id,
+      AND: orgQuery(user),
     },
     data: {
       campaignId: referral.campaignId,
@@ -70,7 +83,7 @@ export async function update(
       priority: referral.priority,
       type: referral.type,
       utmProps: referral.utmProps,
-      click: referral.click
+      click: referral.click,
     },
   });
 
@@ -80,13 +93,13 @@ export async function update(
 export async function getAll(
   page: number,
   pageSize: number,
-  prismaClient: PrismaClient,
+  user: User,
   options?: {
-    order: 'asc' | 'desc';
-    orderby: 'updatedAt' | 'prefix' | 'expires' | 'click';
-  }
+    order: "asc" | "desc";
+    orderby: "updatedAt" | "prefix" | "expires" | "click";
+  },
 ) {
-  const refferals = prismaClient.referral;
+  const refferals = prisma.referral;
 
   if (pageSize !== 10 && pageSize != 30 && pageSize !== 50)
     throw new Error("page size must be 10, 30 or 50");
@@ -94,15 +107,19 @@ export async function getAll(
   let allrefferals = await refferals.findMany({
     skip: (page - 1) * pageSize,
     take: pageSize,
-    where: {},
-    orderBy: options?.orderby ? {
-      [options.orderby]: options.order,
-    } : {
-      createdAt: "desc",
-    }
+    where: {
+      AND: orgQuery(user),
+    },
+    orderBy: options?.orderby
+      ? {
+        [options.orderby]: options.order,
+      }
+      : {
+        createdAt: "desc",
+      },
   });
 
-  const totalCount = await refferals.count();
+  const totalCount = await refferals.count({ where: user?.role === 'SUPERUSER' ? {} : { createdBy: { id: user.id } } });
   const totalPages = Math.ceil(totalCount / pageSize);
 
   return { records: allrefferals, currentPage: page, totalPages, pageSize };
