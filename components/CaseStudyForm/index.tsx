@@ -1,17 +1,12 @@
 "use client";
-import { CreateCaseStudyDTO, UserPersona } from "@/crud/DTOs";
-import { useEffect, useMemo, useState } from "react";
-import AddImage from "../AddImagesAndTags/AddImage";
-import Image from "next/image";
-import { PlusCircle, X } from "lucide-react";
-import { CreateImageDTO } from "@/crud/DTOs";
-import ListInput from "../ListInput";
-import Notification, { useNotify } from "../Notification";
+import { CreateCaseStudyDTO } from "@/crud/DTOs";
+import {  useMemo, useState } from "react";
+
+import  { useNotify } from "../Notification";
 import { Service } from "@prisma/client";
 import LoadingDots from "../shared/loading-dots";
-import { SafeParseReturnType } from "zod";
 import DynamicInput from "../DynamicInput";
-import { caseStudyFormSchema, userPersona } from "./formSchema";
+import { caseStudyFormSchema } from "./formSchema";
 import { useRouter } from "next/navigation";
 import JsonInput from "../shared/JsonInput";
 import example from "./example.json";
