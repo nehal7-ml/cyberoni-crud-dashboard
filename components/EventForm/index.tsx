@@ -43,11 +43,11 @@ const EventForm = ({
 
   const defaultJSON = useMemo(() => {
     if (method === 'POST') {
-      return JSON.stringify(eventData, null, 2)
+      return JSON.stringify(example, null, 2)
 
     }
-    else return JSON.stringify(EventSchema.parse(eventData), null, 2)
-  }, [eventData, method]);
+    else return JSON.stringify(EventSchema.parse(initial), null, 2)
+  }, [initial, method]);
 
   const [rawJson, setRawJson] = useState(defaultJSON);
   const [date, setDate] = useState(

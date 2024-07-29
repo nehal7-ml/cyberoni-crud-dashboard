@@ -61,9 +61,16 @@ function CaseStudyForm({
           hifiDesign: [],
         },
   );
-  const [rawJson, setRawJson] = useState(
-    JSON.stringify(CaseStudySchema.parse(caseData), null, 2),
-  );
+
+  const defaultJson = useMemo (() => {
+    if(method === 'POST') {
+
+      return JSON.stringify(example, null, 2);
+    } else {
+      return JSON.stringify(CaseStudySchema.parse(initial), null, 2)
+    }
+  },[method, initial])
+  const [rawJson, setRawJson] = useState(defaultJson);
 
   // console.log(types);
   const handleSubmit = async (e: React.FormEvent) => {
