@@ -10,6 +10,9 @@ import { sendPasswordEmail } from "@/lib/sendgrid";
 import { generatePassword } from "@/lib/utils";
 import { verify } from "jsonwebtoken";
 
+import { prisma } from "@/lib/prisma";
+import { User as AuthUser } from "next-auth"
+import { orgQuery, userQuery } from "./permissions";
 export type CredentialAuthDTO = {
   email: string;
   password: string;
@@ -23,6 +26,7 @@ export type CreateUserDTO = {
   image?: CreateImageDTO;
   address: CreateAddressDTO;
   role: Role;
+  creatorId?: string | null;
 };
 
 export type DisplayUserDTO = {
@@ -32,10 +36,15 @@ export type DisplayUserDTO = {
   email: string;
   emailVerified: Date;
   role: Role;
+  createdBy: User | null;
 };
-async function create(user: CreateUserDTO, prismaClient: PrismaClient) {
-  const users = prismaClient.user;
-  const existingUser = await users.findUnique({ where: { email: user.email } });
+async function create(user: CreateUserDTO, creator: AuthUser) {
+  const users = prisma.user;
+  const existingUser = await users.findUnique({
+    where: {
+      email: user.email,
+    }
+  });
   let image = await createObject(user.image);
 
   if (existingUser)
@@ -52,6 +61,12 @@ async function create(user: CreateUserDTO, prismaClient: PrismaClient) {
         image: image ? { create: image } : {},
         address: { create: user.address },
         role: user.role,
+        createdBy: user.creatorId ? { connect: { id: user.creatorId } } : undefined,
+        Organization: {
+          connect: {
+            id: creator.orgId as string,
+          }
+        }
       },
     });
 
@@ -64,10 +79,10 @@ async function create(user: CreateUserDTO, prismaClient: PrismaClient) {
 async function update(
   userId: string,
   user: CreateUserDTO,
-  prismaClient: PrismaClient,
+  creator: AuthUser
 ) {
-  const users = prismaClient.user;
-  const existingUser = await users.findUnique({ where: { id: userId } });
+  const users = prisma.user;
+  const existingUser = await users.findUnique({ where: { id: userId, AND: userQuery(creator) } });
 
   if (!existingUser)
     throw { status: 400, message: `User ${user.email} doesn't exists` };
@@ -81,7 +96,7 @@ async function update(
         : existingUser.password;
 
     let updatedUser = await users.update({
-      where: { id: userId },
+      where: { id: userId, },
       data: {
         email: user.email,
         password: hashedPassword,
@@ -97,7 +112,7 @@ async function update(
             },
           },
         },
-        address: {
+        address: user.address ? {
           upsert: {
             create: {
               ...user.address,
@@ -108,7 +123,7 @@ async function update(
 
             }
           },
-        },
+        } : undefined,
         role: user.role,
       },
     });
@@ -122,9 +137,8 @@ async function update(
 export async function reset(
   token: string,
   password: string,
-  prismaClient: PrismaClient,
 ) {
-  const users = prismaClient.user;
+  const users = prisma.user;
   const { email } = verify(
     token as string,
     process.env.NEXTAUTH_SECRET as string,
@@ -144,9 +158,9 @@ export async function reset(
   });
   return true;
 }
-async function remove(userId: string, prismaClient: PrismaClient) {
-  const users = prismaClient.user;
-  const existingUser = await users.findUnique({ where: { id: userId } });
+async function remove(userId: string, user: AuthUser) {
+  const users = prisma.user;
+  const existingUser = await users.findUnique({ where: { id: userId , AND: userQuery(user)} });
   if (!existingUser)
     throw { status: 400, message: `User ${userId} doesn't exists` };
   else {
@@ -154,10 +168,10 @@ async function remove(userId: string, prismaClient: PrismaClient) {
     return true;
   }
 }
-async function read(userId: string, prismaClient: PrismaClient) {
-  const users = prismaClient.user;
+async function read(userId: string, user: AuthUser) {
+  const users = prisma.user;
   const existingUser = await users.findUnique({
-    where: { id: userId },
+    where: { id: userId, AND: userQuery(user) },
     include: { address: true },
   });
   if (existingUser) return existingUser;
@@ -167,21 +181,23 @@ async function read(userId: string, prismaClient: PrismaClient) {
 async function getAll(
   page: number,
   pageSize: number,
-  prismaClient: PrismaClient,
+  user: AuthUser,
   options?: {
     order: 'asc' | 'desc';
     orderby: 'updatedAt' | 'email';
   }
 ) {
-  const users = prismaClient.user;
+  const users = prisma.user;
 
   if (pageSize !== 10 && pageSize != 30 && pageSize !== 50)
     throw new Error("page size must be 10, 30 or 50");
 
+  let query = { AND: userQuery(user) }
   let allUsers = await users.findMany({
     skip: (page - 1) * pageSize,
     take: pageSize,
-    where: {},
+    where: query,
+    include: { createdBy: true },
     orderBy: options?.orderby ? {
       [options.orderby]: options.order
     } : {
@@ -189,7 +205,7 @@ async function getAll(
     }
   });
 
-  const totalCount = await users.count();
+  const totalCount = await users.count({ where: query });
   const totalPages = Math.ceil(totalCount / pageSize);
 
   return {
@@ -202,21 +218,20 @@ async function getAll(
 
 export async function getUserByEmail(
   email: string,
-  prismaClient: PrismaClient,
 ) {
-  const users = prismaClient.user;
-  const existingUsers = await users.findUnique({ where: { email: email } });
+  const users = prisma.user;
+  const existingUsers = await users.findUnique({ where: { email } });
   if (existingUsers) return existingUsers;
   else throw { status: 400, message: `User ${email} doesn't exists` };
 }
 
 export async function authorizeWithPassword(
   { email, password }: CredentialAuthDTO,
-  prisma: PrismaClient,
 ) {
   const users = prisma.user;
   const user = await users.findUnique({
     where: { email: email.toLowerCase() },
+    include: { Organization: true }
   });
   if (!user || user.role === "CUSTOMER" || user.role === "USER")
     throw {

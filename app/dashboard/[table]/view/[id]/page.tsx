@@ -1,3 +1,4 @@
+import verifyOrgAccess from "@/app/dashboard/verifyOrgAccess";
 import BlogForm from "@/components/BlogForm";
 import CaseStudyForm from "@/components/CaseStudyForm";
 import DiscountsForm from "@/components/DiscountForm";
@@ -22,37 +23,53 @@ import {
   CreateReferralDTO,
   CreateServiceDTO,
   CreateSoftwareProductDTO,
+  DisplayBlogDTO,
 } from "@/crud/DTOs";
 import { read as readEvent } from "@/crud/event";
 import { read as readProduct } from "@/crud/product";
 import { read as readPrompt } from "@/crud/prompt";
 import { read as readReferral } from "@/crud/referral";
 import { getAll as getAllServices, read as readService } from "@/crud/service";
-import { read  as readSoftware} from "@/crud/softwareProduct";
+import { read as readSoftware } from "@/crud/softwareProduct";
 import { CreateUserDTO, read as readUser } from "@/crud/user";
+import { authOptions } from "@/lib/nextAuthAdapter";
 import { prisma } from "@/lib/prisma";
+import verifyAccess from "@/lib/verifyAccess";
 import { TableType } from "@/types/global";
 import { Metadata } from "next";
+import { getServerSession, User } from "next-auth";
 import { redirect } from "next/navigation";
 
-
-export async function generateMetadata({ params }: {
-  params: { table: string }
+export async function generateMetadata({
+  params,
+}: {
+  params: { table: string };
 }) {
-
   return {
     title: `update ${params.table}`,
-  } as Metadata
+  } as Metadata;
 }
 
 async function UpdateForm({
   params,
 }: {
-  params: { id: string; table: TableType };
+  params: { orgId: string; id: string; table: TableType };
 }) {
+  const session = await getServerSession(authOptions);
+
+  if (!session) {
+    redirect(
+      `/auth/login?${new URLSearchParams({ callbackUrl: `/dashboard/${params.table}/view/${params.id}` })}`,
+    );
+  }
+
+  let user = session.user as User;
+
   if (params.table === "blogs") {
-    const blog = (await readBlog(params.id, prisma)) as unknown as CreateBlogDTO;
-    const categories = await getCategories("blog", prisma) as BlogCategory[];
+    const blog = (await readBlog(params.id, user)) as unknown as CreateBlogDTO;
+    const categories = (await getCategories("blog", user)) as BlogCategory[];
+
+    if (!blog) redirect("/404");
 
     return (
       <BlogForm
@@ -65,11 +82,15 @@ async function UpdateForm({
   } else if (params.table === "casestudies") {
     const caseStudy = (await readCaseStudy(
       params.id,
-      prisma,
+      user,
     )) as CreateCaseStudyDTO;
-    const service = await getAllServices(0, 0, prisma);
+    const service = await getAllServices(0, 0, {
+      id: session.user.id as string,
+      role: session.user.role,
+      orgId: session.user.orgId,
+    });
 
-    if (caseStudy)
+    if (caseStudy) {
       return (
         <CaseStudyForm
           types={service.records}
@@ -78,11 +99,10 @@ async function UpdateForm({
           action={`/api/casestudies/${params.id}`}
         />
       );
-    else redirect("/404");
+    } else redirect("/404");
   } else if (params.table === "discounts") {
-    const res = await readDiscount(params.id, prisma);
-    if (!res) redirect("/404");
-    const { ...discount } = res;
+    const discount = await readDiscount(params.id, user);
+    if (!discount) redirect("/404");
     // console.log(event);
     return (
       <DiscountsForm
@@ -92,9 +112,9 @@ async function UpdateForm({
       />
     );
   } else if (params.table === "events") {
-    const res = await readEvent(params.id, prisma);
+    const res = await readEvent(params.id, user);
     if (!res) redirect("/404");
-    const {  ...event } = res;
+    const { ...event } = res;
     return (
       <EventForm
         method="PUT"
@@ -102,41 +122,47 @@ async function UpdateForm({
         action={`/api/events/${params.id}`}
       />
     );
-  } else if (params.table === "products") {
-    const res = await readProduct(params.id, prisma);
+  }
+
+  // else if (params.table === "products") {
+  //   const res = await readProduct(params.id, user);
+  //   if (!res) redirect("/404");
+  //   const { reviews, ...product } = res;
+
+  //   const categories = await getCategories("product", user);
+
+  //   // console.log(event);
+  //   return (
+  //     <ProductForm
+  //       categories={categories}
+  //       method="PUT"
+  //       initial={product as CreateProductDTO}
+  //       action={`/api/products/${params.id}`}
+  //     />
+  //   );
+  // } else if (params.table === "prompts") {
+  //   const res = await readPrompt(params.id, user);
+  //   if (!res) redirect("/404");
+  //   const categories = await getCategories("prompt", user);
+
+  //   const { reviews, ...prompt } = res;
+
+  //   //console.log(prompt);
+  //   return (
+  //     <GptPromptForm
+  //       categories={categories}
+  //       method="PUT"
+  //       initial={prompt as unknown as CreateGptPromptDTO}
+  //       action={`/api/prompts/${params.id}`}
+  //     />
+  //   );
+  // } 
+
+
+  else if (params.table === "referrals") {
+    const res = await readReferral(params.id, user);
     if (!res) redirect("/404");
-    const { reviews, ...product } = res;
 
-    const categories = await getCategories("product", prisma);
-
-    // console.log(event);
-    return (
-      <ProductForm
-        categories={categories}
-        method="PUT"
-        initial={product as CreateProductDTO}
-        action={`/api/products/${params.id}`}
-      />
-    );
-  } else if (params.table === "prompts") {
-    const res = await readPrompt(params.id, prisma);
-    if (!res) redirect("/404");
-    const categories = await getCategories("prompt", prisma);
-
-    const { reviews, ...prompt } = res;
-
-    //console.log(prompt);
-    return (
-      <GptPromptForm
-        categories={categories}
-        method="PUT"
-        initial={prompt as unknown as CreateGptPromptDTO}
-        action={`/api/prompts/${params.id}`}
-      />
-    );
-  } else if (params.table === "referrals") {
-    const res = await readReferral(params.id, prisma);
-    if (!res) redirect("/404");
     const { ...referral } = res;
     // console.log(event);
     return (
@@ -146,12 +172,11 @@ async function UpdateForm({
         action={`/api/referrals/${params.id}`}
       />
     );
-  } 
-  else if (params.table === "softwares") {
-    const res = await readSoftware(params.id, prisma);
+  } else if (params.table === "softwares") {
+    const res = await readSoftware(params.id, user);
     if (!res) redirect("/404");
-    const {  updatedAt, createdAt ,...software } = res;
-    const categories = await getCategories("software", prisma);
+    const { updatedAt, createdAt, ...software } = res;
+    const categories = await getCategories("software", user);
 
     // console.log(event);
     return (
@@ -162,10 +187,10 @@ async function UpdateForm({
         action={`/api/softwares/${params.id}`}
       />
     );
-  }
-  
-  else if (params.table === "services") {
-    const service = (await readService(params.id, prisma)) as CreateServiceDTO;
+  } else if (params.table === "services") {
+    const res = (await readService(params.id, user)) as CreateServiceDTO;
+    if (!res) redirect("/404");
+    const { ...service } = res;
     // console.log(service);
     return (
       <>
@@ -179,11 +204,11 @@ async function UpdateForm({
       </>
     );
   } else if (params.table === "users") {
-    const user = (await readUser(params.id, prisma)) as CreateUserDTO;
+    const retrievedUser = (await readUser(params.id, user)) as CreateUserDTO;
     return (
       <UserForm
         method="PUT"
-        initial={user}
+        initial={retrievedUser}
         action={`/api/users/${params.id}`}
       />
     );

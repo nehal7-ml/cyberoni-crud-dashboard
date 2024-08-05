@@ -1,24 +1,32 @@
 import "server-only";
-import { Event, EventStatus, PrismaClient, User } from "@prisma/client";
+import { Event, EventStatus, Role } from "@prisma/client";
 import { CreateEventDTO, CreateImageDTO } from "./DTOs";
 import { connectOrCreateObject as connectTag } from "./tags";
 import { CreateTagDTO } from "./DTOs";
 import { HttpError } from "@/lib/utils";
 import { connectOrCreateObject as connectImages } from "./images";
+import { orgQuery } from "./permissions";
+import { prisma } from "@/lib/prisma"
+import { User } from "next-auth";
 
 
-
-async function create(event: CreateEventDTO, prismaClient: PrismaClient) {
-  const events = prismaClient.event;
+async function create(event: CreateEventDTO, user: User) {
+  const events = prisma.event;
   let createdevent = await events.create({
     data: {
       name: event.name,
       description: event.description,
       isVirtual: event.isVirtual,
       location: event.location,
-      status: event.status,      
+      status: event.status,
       eventLink: event.eventLink,
       date: new Date(event.date),
+      createdBy: {
+        connect: { id: user.id }
+      },
+      Organization: {
+        connect: { id: user.orgId },
+      },
       image: await connectImages(event.image, []),
       tags: { connectOrCreate: connectTag(event.tags, []).connectOrCreate },
     },
@@ -29,75 +37,77 @@ async function create(event: CreateEventDTO, prismaClient: PrismaClient) {
 async function update(
   eventId: string,
   event: CreateEventDTO,
-  prismaClient: PrismaClient,
+  user: User,
 ) {
-  const events = prismaClient.event;
-  const oldEvent = await events.findUnique({where: {id: eventId}, include: {image: true, tags:true}})
+  const events = prisma.event;
+  const oldEvent = await events.findUnique({ where: { id: eventId }, include: { image: true, tags: true } })
 
-  if(!oldEvent) throw HttpError(404 , 'Event Not found')
+  if (!oldEvent) throw HttpError(404, 'Event Not found')
   const updatedEvent = await events.update({
-    where: { id: eventId },
+    where: { id: eventId, AND: orgQuery(user) },
     data: {
       name: event.name,
       description: event.description,
       isVirtual: event.isVirtual,
       location: event.location,
-      status: event.status,      
+      status: event.status,
       eventLink: event.eventLink,
       date: new Date(event.date),
       image: await connectImages(event.image, oldEvent.image),
-      tags: connectTag(event.tags,oldEvent.tags ),
+      tags: connectTag(event.tags, oldEvent.tags),
     },
   });
   return updatedEvent;
 }
-async function remove(eventId: string, prismaClient: PrismaClient) {
-  const events = prismaClient.event;
-  const existingevent = await events.findUnique({ where: { id: eventId } });
-  if (existingevent) {
+async function remove(eventId: string, user: User) {
+  const events = prisma.event;
+  const existingEvent = await events.findUnique({ where: { id: eventId, AND: orgQuery(user) } });
+  if (existingEvent) {
     await events.delete({ where: { id: eventId } });
   }
 }
-async function read(eventId: string, prismaClient: PrismaClient) {
-  const events = prismaClient.event;
-  const existingevent = await events.findUnique({
-    where: { id: eventId },
+async function read(eventId: string, user: User) {
+  const events = prisma.event;
+  const existingEvent = await events.findUnique({
+    where: { id: eventId, AND: orgQuery(user) },
     include: { image: true, tags: true },
   });
-  if (existingevent) return existingevent;
+  if (existingEvent) return existingEvent;
 }
 
 async function getAll(
   page: number,
   pageSize: number,
-  prismaClient: PrismaClient,
+  user: User,
   options?: {
     order: 'asc' | 'desc';
     orderby: 'updatedAt' | 'name';
   }
 ) {
-  const events = prismaClient.event;
+  const events = prisma.event;
 
   if (pageSize !== 10 && pageSize != 30 && pageSize !== 50)
     throw new Error("page size must be 10, 30 or 50");
 
+  let query = { AND: orgQuery(user) }
+
   let allEvents = await events.findMany({
     skip: (page - 1) * pageSize,
     take: pageSize,
-    where: {},
+    where: query,
     include: {
       // reviews: true,
     },
-    orderBy: options?.orderby? {
+    orderBy: options?.orderby ? {
       [options.orderby]: options.order
-    }: {
+    } : {
       createdAt: 'desc',
-      
+
     },
 
   });
 
-  const totalCount = await events.count();
+  const totalCount = await events.count({ where: query });
   const totalPages = Math.ceil(totalCount / pageSize);
 
   return { records: allEvents, currentPage: page, totalPages, pageSize };

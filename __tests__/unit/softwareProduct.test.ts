@@ -40,12 +40,12 @@ describe("SoftwareProduct Service", () => {
         subTitle: "Test Subtitle",
         description: "Test Description",
         images: [],
-        pricing: "Free" as SoftwarePricing, 
+        pricing: "Free" as SoftwarePricing,
         link: "http://example.com",
         githubLink: "http://github.com/example",
         status: "Released" as SoftwareProductStatus,
-        
-        
+
+
         tags: [],
         blog: { id: "1", title: 'test titlte' },
         category: { id: "1", name: "Test Category" },
@@ -54,9 +54,9 @@ describe("SoftwareProduct Service", () => {
       const createdProduct: SoftwareProduct = {
         id: "1",
         ...productData,
-        blogId: productData.blog?.id as  string,
+        blogId: productData.blog?.id as string,
         softwareProductCategoryId: productData.category?.id as string,
-        internal:false,
+        internal: false,
         createdAt: new Date(),
         updatedAt: new Date(),
         userId: null,
@@ -88,7 +88,7 @@ describe("SoftwareProduct Service", () => {
         githubLink: "http://github.com/example",
         status: "Released",
         softwareProductCategoryId: "1",
-        images: [] as  Image[],
+        images: [] as Image[],
         blogId: "1",
         createdAt: new Date(),
         updatedAt: new Date(),
@@ -129,7 +129,7 @@ describe("SoftwareProduct Service", () => {
         blogId: "1",
         createdAt: new Date(),
         updatedAt: new Date(),
-        internal:false,
+        internal: false,
         userId: null,
 
       };
@@ -139,7 +139,7 @@ describe("SoftwareProduct Service", () => {
         subTitle: "Updated Subtitle",
         description: "Updated Description",
         images: [],
-        pricing: "Free" as  SoftwarePricing,
+        pricing: "Free" as SoftwarePricing,
         link: "http://newexample.com",
         githubLink: "http://github.com/newexample",
         status: "Released" as SoftwareProductStatus,
@@ -151,7 +151,7 @@ describe("SoftwareProduct Service", () => {
         ...updatedProductData,
         softwareProductCategoryId: "1",
         blogId: "1",
-        internal:false,
+        internal: false,
         createdAt: new Date(),
         updatedAt: new Date(),
         userId: null,
@@ -229,7 +229,7 @@ describe("SoftwareProduct Service", () => {
           status: "Released",
           softwareProductCategoryId: "1",
           blogId: "1",
-          internal:false,
+          internal: false,
           createdAt: new Date(),
           updatedAt: new Date(),
           userId: null,
@@ -240,7 +240,7 @@ describe("SoftwareProduct Service", () => {
       (prismaClient.softwareProduct.findMany as jest.Mock).mockResolvedValue(products);
       (prismaClient.softwareProduct.count as jest.Mock).mockResolvedValue(1);
 
-      const result = await getAll(page, pageSize, prismaClient);
+      const result = await getAll(page, pageSize, { role: "SUPERUSER", id: 'ahjsdjksd' }, prismaClient);
 
       expect(result.records).toEqual(products);
       expect(result.currentPage).toBe(page);

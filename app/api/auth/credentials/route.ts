@@ -6,7 +6,7 @@ import { prisma } from "@/lib/prisma";
 export async function POST(req: NextRequest) {
   try {
     const credentials = (await req.json()) as CredentialAuthDTO;
-    const user = await authorizeWithPassword(credentials, prisma);
+    const user = await authorizeWithPassword(credentials,);
     return NextResponse.json({ user });
   } catch (error) {
     console.log(error);

@@ -5,6 +5,8 @@ import { CreateServiceDTO } from "@/crud/DTOs";
 import { NextRequest, NextResponse } from "next/server";
 import apiHandler from "@/errorHandler";
 import { revalidatePath } from "next/cache";
+import { getServerSession } from "next-auth";
+import { authOptions } from "@/lib/nextAuthAdapter";
 
 export const { POST, DELETE, GET, PATCH, PUT } = apiHandler({
   GET: get,
@@ -14,7 +16,9 @@ export const { POST, DELETE, GET, PATCH, PUT } = apiHandler({
 async function put(req: NextRequest, { params }: { params: { id: string } }) {
   const serviceId = params.id as string;
   const service = (await req.json()) as CreateServiceDTO;
-  const updatedUser = await update(serviceId, service, prisma);
+  const session = await getServerSession(authOptions)
+  if(!session) return NextResponse.json({ message: "Unauthorized" })
+  const updatedUser = await update(serviceId, service, session.user);
   revalidatePath(`/dashboard/services/view/${serviceId}`);
   return NextResponse.json({ message: "update success", data: updatedUser });
 }
@@ -23,12 +27,16 @@ async function remove(
   { params }: { params: { id: string } },
 ) {
   const serviceId = params.id as string;
-  const deleted = await removeService(serviceId, prisma);
+  const session = await getServerSession(authOptions)
+  if(!session) return NextResponse.json({ message: "Unauthorized" })
+  const deleted = await removeService(serviceId, session.user);
   return NextResponse.json({ message: "delete success" });
 }
 
 async function get(req: NextRequest, { params }: { params: { id: string } }) {
   const serviceId = params.id as string;
-  const service = await read(serviceId, prisma);
+  const session = await getServerSession(authOptions)
+  if(!session) return NextResponse.json({ message: "Unauthorized" })
+  const service = await read(serviceId, session.user);
   return NextResponse.json({ data: service });
 }

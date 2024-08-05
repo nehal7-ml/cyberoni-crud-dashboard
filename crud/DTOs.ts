@@ -1,10 +1,13 @@
 import {
   Blog,
+  Event,
   EventStatus,
   GptPrompt,
   Image,
+  Organization,
   PricingModel,
   ProductStatus,
+  Referral,
   ReferralPriority,
   ReferralType,
   Review,
@@ -23,6 +26,7 @@ import {
 } from "@prisma/client";
 
 export type CreateBlogDTO = {
+  id?: string;
   title: string;
   subTitle: string;
   description: string;
@@ -30,11 +34,11 @@ export type CreateBlogDTO = {
   publishDate: Date;
   content: string;
   templateId?: string;
-  author: { id?: string; email: string };
   images: CreateImageDTO[];
   tags: CreateTagDTO[];
   category?: BlogCategory;
   ctaProps?: CTAProps | null
+  Organization?: Organization
 
 };
 
@@ -67,6 +71,7 @@ export type CreateImageDTO = {
   src: string;
 };
 export type CreateServiceDTO = {
+  id?: string;
   title: string;
   previewContent: string;
   featured: boolean;
@@ -99,6 +104,7 @@ export type DisplayServiceDTO = Service & {
   tags?: Tag[];
   SubServices?: SubService[];
   ServiceDescription?: (ServiceDescription & { image: Image | null })[];
+  createdBy?: User
 };
 export type CreateSubServiceDTO = {
   id?: string;
@@ -121,6 +127,13 @@ export type Discount = {
   name: string;
   value: number;
 };
+
+export type DisplayDiscountDTO = {
+  id?: string;
+  name: string;
+  value: number;
+  createdBy?: User
+}
 export type CreateAddressDTO = {
   id?: string;
   street: string;
@@ -261,6 +274,7 @@ export type CreateReferralDTO = {
   fallback: string;
   redirect: string;
   click: number;
+  userId?: string;
   utmProps:
   | {
     utm_medium: string;
@@ -275,6 +289,11 @@ export type CreateReferralDTO = {
   }
   | {};
 };
+
+
+export type DisplayReferralDTO = Referral & {
+  createdBy?: User;
+}
 export type CreateCaseStudyDTO = {
   id?: string;
   title: string;
@@ -390,10 +409,15 @@ export type CreateEventDTO = {
   eventLink: string;
   status: EventStatus;
   isVirtual: boolean;
+  userId?: string | null;
 };
 
+export type DisplayEventDTO = Event & {
+  createdBy?: User
+}
 
-export type CreateSoftwareProductDTO = {
+
+export type CreateSoftwareProductDTO = ({
   id?: string;
   title: string;
   subTitle: string;
@@ -425,7 +449,69 @@ export type CreateSoftwareProductDTO = {
 
 
 
-};
+});
+
+export enum workFlowTools {
+  Google = "Google",
+  Bing = "Bing",
+  DuckDuckGo = "DuckDuckGo",
+  SearchApi = "SearchApi",
+  SearXNG = "SearXNG",
+  DALLE = "DALL-E",
+  AzureDALLE = "Azure DALL-E",
+  Stability = "Stability",
+  Wikipedia = "Wikipedia",
+  YahooFinance = "YahooFinance",
+  ArXiv = "ArXiv",
+  PubMed = "PubMed",
+  StableDiffusion = "Stable Diffusion",
+  WebScraper = "WebScraper",
+  Jina = "Jina",
+  AIPPT = "AIPPT",
+  YouTube = "YouTube",
+  CodeInterpreter = "Code Interpreter",
+  WolframAlpha = "WolframAlpha",
+  Maths = "Maths",
+  Github = "Github",
+  ChartGenerator = "ChartGenerator",
+  CurrentTime = "CurrentTime",
+  VectorizerAI = "Vectorizer.AI",
+  Autonavi = "Autonavi",
+  Wecom = "Wecom",
+  QRCode = "QRCode",
+  DingTalk = "DingTalk",
+  Feishu = "Feishu",
+  FeishuBase = "Feishu Base",
+  Slack = "Slack",
+  Brave = "Brave",
+  DevDocs = "DevDocs",
+  Firecrawl = "Firecrawl",
+  Judge0CE = "Judge0 CE",
+  NovitaAI = "Novita AI",
+  OpenWeatherQuery = "Open weather query",
+  Spark = "Spark",
+  StackExchange = "Stack Exchange",
+  Tavily = "Tavily",
+  Trello = "Trello",
+  Twilio = "Twilio",
+}
+
+export enum workflowServices {
+  Facebook = "Facebook",
+  Twitter = "Twitter",
+  Google = "Google",
+  LinkedIn = "LinkedIn",
+  Zapier = "Zapier",
+  WordPress = "WordPress",
+  Drupal = "Drupal",
+  Salesforce = "Salesforce",
+  NetSuite = "NetSuite",
+  SecondCall = "SecondCall",
+  Shopify = "Shopify",
+  Printful = "Printful",
+  Eventbrite = "Eventbrite"
+}
+
 
 export type SubscriptionModel = {
   id?: string | null;
@@ -436,6 +522,12 @@ export type SubscriptionModel = {
     subTitle: string;
 
   },
+  workflows: {
+    title: string;
+    token: string;
+    tools?: workFlowTools[]
+    services?: workflowServices[]
+  }
   status: SubscriptionStatus
   type: SubscriptionPeriod
   credits: number | 0
@@ -461,6 +553,20 @@ export type DisplaySoftwareProductDTO = {
   link?: string;
   githubLink?: string;
   status: SoftwareProductStatus;
+  createdBy: User;
   category?: SoftwareProductCategory
   blog?: { id: string }
+}
+
+
+
+export type CreateOrgDTO = {
+  name: string;
+  ownerId: string;
+}
+
+export type UpdateOrgDTO = {
+  id: string,
+  name: string,
+  ownerId: string
 }
