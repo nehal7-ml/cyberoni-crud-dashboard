@@ -78,7 +78,7 @@ function CaseStudyForm({
 
     e.preventDefault();
 
-    console.log(caseData);
+    // console.log(caseData);
     const res = await fetch(`${action}`, {
       method: method,
       body: JSON.stringify(caseData),

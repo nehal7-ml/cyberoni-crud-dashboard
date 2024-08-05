@@ -57,7 +57,7 @@ function CategoryForm({
     }
 
     setLoading(true);
-    console.log(currentCategory);
+    // console.log(currentCategory);
     const res = await fetch(
       `/api/categories/${action}/${method == "POST" ? `add` : `${currentCategory?.id}`}`,
       {
@@ -75,12 +75,13 @@ function CategoryForm({
       });
       const { data } = await res.json();
       console.log("recieved data", data);
+      setCurrentCategory(data)
+      setShowDialog(false);
       setCategories((prev) =>
         method == "POST"
           ? [...prev, data]
           : prev.map((c) => (c.id == data.id ? data : c)),
       );
-      setShowDialog(false);
     } else {
       toast("Something went wrong", {
         type: "error",
@@ -94,7 +95,7 @@ function CategoryForm({
     name: string;
     children: { name: string; id?: string }[];
   }) {
-    setCurrentCategory((prev)=>({
+    setCurrentCategory((prev) => ({
       ...prev,
       name: data.name,
       children: data.children,
@@ -103,7 +104,7 @@ function CategoryForm({
 
   useEffect(() => {
     if (selected && categories.length > 0) {
-      // console.log(selected);
+      //  console.log("uef-selected: ", selected);
       if (selected.parentId !== null) {
         const category = categories.findIndex((c) => c.id == selected.parentId);
         if (category !== currentIndex) {
@@ -136,6 +137,10 @@ function CategoryForm({
 
     fetchData();
   }, [action]);
+
+  useEffect(() => {
+    console.log(categories);
+  }, [categories]);
 
   return (
     <>
@@ -180,7 +185,6 @@ function CategoryForm({
                   value={currentSubCategory}
                   onChange={(e) => {
                     setCurrentSubCategory(Number(e.target.value));
-
                     onChange({
                       id: currentCategory.children[Number(e.target.value)].id!,
                       name: currentCategory.children[Number(e.target.value)]
@@ -263,50 +267,52 @@ function CategoryForm({
           >
             <X />
           </button>
-          <DynamicInput
-            defaultValue={{
-              name: currentCategory.name,
-              children: currentCategory.children,
-            }}
-            onChange={handleChange}
-            schema={{
-              type: "object",
-              properties: {
-                name: { type: "string", required: true, title: "Category" },
-                children: {
-                  type: "array",
-                  description: "Subcategories of this category",
-                  items: {
-                    title: "Subcategory",
-                    type: "object",
+          {showDialog && (
+            <DynamicInput
+              defaultValue={{
+                name: currentCategory.name,
+                children: currentCategory.children,
+              }}
+              onChange={handleChange}
+              schema={{
+                type: "object",
+                properties: {
+                  name: { type: "string", required: true, title: "Category" },
+                  children: {
+                    type: "array",
                     description: "Subcategories of this category",
-                    properties: {
-                      id: {
-                        type: "string",
-                        title: "SubcategoryID",
-                        required: false,
-                        disabled: true,
+                    items: {
+                      title: "Subcategory",
+                      type: "object",
+                      description: "Subcategories of this category",
+                      properties: {
+                        id: {
+                          type: "string",
+                          title: "SubcategoryID",
+                          required: false,
+                          disabled: true,
+                        },
+                        name: {
+                          type: "string",
+                          title: "Subcategory",
+                          required: true,
+                        },
                       },
-                      name: {
-                        type: "string",
-                        title: "Subcategory",
-                        required: true,
-                      },
+                      required: true,
                     },
                     required: true,
-                  },
-                  required: true,
-                  title: "Subcategory",
-                  toString: (object: { name: string }) => {
-                    return object.name;
+                    title: "Subcategory",
+                    toString: (object: { name: string }) => {
+                      return object.name;
+                    },
                   },
                 },
-              },
-              required: true,
-              description: "Subcategories of this category",
-              title: "Subcategories",
-            }}
-          />
+                required: true,
+                description: "Subcategories of this category",
+                title: "Subcategories",
+              }}
+            />
+          )}
           <button
             type="button"
             onClick={handleSubmit}
@@ -327,7 +333,9 @@ function CategoryForm({
           setCurrentIndex(-1),
           setCurrentSubCategory(-1),
           setCurrentCategory({ name: "", children: [] }),
-          setCategories((prev) => prev.filter((c) => c.id != currentCategory?.id)),
+          setCategories((prev) =>
+            prev.filter((c) => c.id != currentCategory?.id),
+          ),
           onChange(undefined)
         )}
       ></DeleteModal>

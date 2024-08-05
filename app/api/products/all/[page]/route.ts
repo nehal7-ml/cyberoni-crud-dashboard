@@ -9,7 +9,7 @@ const get = async (
   { params }: { params: { page: string } },
 ) => {
   const products = await getAll(parseInt(params.page), 10, prisma); // skipping 10 record for every new page
-  console.log(products);
+  // console.log(products);
   return NextResponse.json({ message: "found", data: products });
 };
 

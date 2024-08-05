@@ -13,7 +13,7 @@ const get = async (
   const session = await getServerSession(authOptions)
   if(!session) return NextResponse.json({ message: "Unauthorized" })
   const products = await getAll(parseInt(params.page), 10, session.user); // skipping 10 record for every new page
-  console.log(products);
+  // console.log(products);
   return NextResponse.json({ message: "found", data: products });
 };
 
