@@ -147,13 +147,13 @@ function BlogForm({
   useEffect(() => {
     if (document && window) {
       let elem = document.getElementById('editor-root')
-      console.log("find elemnt  ;", elem);
+      // console.log("find elemnt  ;", elem);
       editorRef.current = document.getElementById('editor-root') as HTMLDivElement
     }
   }, []);
 
   function handleDataChange(data: CreateBlogDTO) {
-    console.log("onChange data", data);
+    // console.log("onChange data", data);
     setBlogData((prev) => ({ ...prev, ...data }));
 
   }

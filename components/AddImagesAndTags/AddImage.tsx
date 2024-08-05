@@ -166,7 +166,7 @@ function AddImage({
       defaultImages.length > 0 &&
       !arraysAreEqual(images, defaultImages)
     ) {
-      console.log("setinig  updateing imafe", defaultImages);
+      // console.log("setinig  updateing imafe", defaultImages);
       setImages(defaultImages);
     }
   }, [defaultImages, images, name]);

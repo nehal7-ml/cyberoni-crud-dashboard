@@ -27,7 +27,6 @@ function OrganizationSwitch({ orgs }: OrganizationSwitchProps) {
         setSelected(index);
     }
 
-    console.log(orgs);
     return (
         <DropdownMenu>
             <DropdownMenuTrigger className="hover:border-1 flex cursor-pointer gap-4 rounded-md p-2">
