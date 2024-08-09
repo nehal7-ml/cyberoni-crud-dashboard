@@ -1,23 +1,12 @@
-import {
-  getProviders,
-  signIn,
-  getCsrfToken,
-  useSession,
-} from "next-auth/react";
-import NextAuth, { getServerSession } from "next-auth/next";
+
+import  { getServerSession } from "next-auth/next";
 import { authOptions } from "@/lib/nextAuthAdapter";
-import ClientInput from "@/components/ClientInput";
-import { ArrowRight, ArrowRightCircle } from "lucide-react";
-import Image from "next/image";
-import { ReadonlyURLSearchParams, redirect } from "next/navigation";
-import { cookies } from "next/headers";
-import { NextRequest } from "next/server";
-import Link from "next/link";
+
+import {  redirect } from "next/navigation";
+
 import LoginForm from "@/components/LoginForm";
-import { DisplayUserDTO } from "@/crud/user";
 import { User } from "next-auth";
 
-export const dynamic = "force-dynamic";
 
 export default async function SignIn() {
   const session = await getServerSession(authOptions);

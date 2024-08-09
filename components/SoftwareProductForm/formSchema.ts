@@ -60,7 +60,7 @@ export const SoftwareProductFormSchema: FormSchema = {
             type: "string",
             required: false,
             title: "GitHub Link",
-            pattern: "^https:\/\/github\.com\/([a-zA-Z0-9_\\-]+)\/([a-zA-Z0-9_\\-]+)(\/(tree|blob)\/([a-zA-Z0-9_\\-]+)(\/.+?)?)?"
+            pattern: "^(https?|ftp):\/\/(?:[a-zA-Z0-9\\-]+\.)+[a-zA-Z]{2,}(?::\d{2,5})?(?:\/[^\s]*)?$"
         },
         "blogLink": {
             type: "string",
@@ -76,7 +76,7 @@ export const SoftwareProductFormSchema: FormSchema = {
                 { label: "Released", value: "Released" },
                 { label: "Beta", value: "Beta" },
                 { label: "Alpha", value: "Alpha" },
-                { label: "Coming Soon", value: "CommingSoon" },
+                { label: "Coming Soon", value: "ComingSoon" },
                 { label: "Planned", value: "Planned" }
             ]
         }
@@ -91,7 +91,7 @@ export const SubscriptionModelSchema: FormSchema = {
     description: "Subscription Model",
     type: "array",
     items: {
-        title: "Subscription Item",
+        title: "Subscription Tier",
         type: "object",
         properties: {
             "id": {
@@ -105,7 +105,7 @@ export const SubscriptionModelSchema: FormSchema = {
                 required: true,
                 title: "Title",
             },
-            "subTitle": {
+            "description": {
                 type: "string",
                 required: true,
                 title: "Description",

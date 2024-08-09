@@ -1,14 +1,12 @@
 "use client";
 import { Copy, CopyCheckIcon } from "lucide-react";
 import React, { useState } from "react";
+import { forwardRef } from "react";
 
-const CopyButton = ({
-  text,
-  showText,
-}: {
-  text: string;
-  showText?: boolean;
-}) => {
+const CopyButton = forwardRef<
+  HTMLButtonElement,
+  { text: string; showText?: boolean }
+>(({ text, showText }, ref) => {
   const [copied, setCopied] = useState(false);
 
   const copyToClipboard = (e: React.MouseEvent<HTMLButtonElement>) => {
@@ -27,15 +25,17 @@ const CopyButton = ({
   };
 
   return (
-    <div className="flex gap-3 w-full items-center justify-center">
+    <div className="flex w-full items-center justify-center gap-3">
       {showText ? (
         <div className="w-40 overflow-clip text-ellipsis">{text}</div>
       ) : null}
-      <button type="button" onClick={copyToClipboard} className="p-3">
+      <button ref={ref} type="button" onClick={copyToClipboard} className="p-3">
         {copied ? <CopyCheckIcon className="text-green-400" /> : <Copy />}
       </button>
     </div>
   );
-};
+});
+
+CopyButton.displayName = "CopyButton";
 
 export default CopyButton;

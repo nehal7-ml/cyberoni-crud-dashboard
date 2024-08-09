@@ -512,22 +512,24 @@ export enum workflowServices {
   Eventbrite = "Eventbrite"
 }
 
-
+type DifyBots = {
+  title: string;
+  token: string;
+  tools?: workFlowTools[]
+  services?: workflowServices[]
+}
 export type SubscriptionModel = {
   id?: string | null;
   name: string;
   price: number;
+  description: string;
   features: {
     title: string;
     subTitle: string;
 
   },
-  workflows: {
-    title: string;
-    token: string;
-    tools?: workFlowTools[]
-    services?: workflowServices[]
-  }
+  workflows: DifyBots,
+  chatBots:    DifyBots,
   status: SubscriptionStatus
   type: SubscriptionPeriod
   credits: number | 0

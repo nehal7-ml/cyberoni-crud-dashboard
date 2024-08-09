@@ -26,7 +26,8 @@ import { extractUUID, seoUrl, stripSlashes } from "@/lib/utils";
 import { ZodNullable } from "zod";
 import { SoftwareProductSchema } from "../zodSchemas";
 import JsonInput from "../shared/JsonInput";
-import example from "./example.json";
+import Freemium from "./FreeProduct.json";
+import Subscription from "./SubscriptionProduct.json";
 
 function SoftwareProductForm({
   categories,
@@ -175,11 +176,15 @@ function SoftwareProductForm({
             rawJson={rawJson}
             parseJson={parseJson}
             setRawJson={setRawJson}
-            example={JSON.stringify(example, null, 2)}
+            example={[
+              {name: "Freemium", json: JSON.stringify(Freemium, null, 2)},
+              {name: "Subscription", json: JSON.stringify(Subscription, null, 2)},
+            ]}
           />
           <DynamicInput
             onChange={(e) =>
               setSoftwareProductData((prev) => ({
+                ...prev,
                 title: e.title,
                 subTitle: e.subTitle,
                 description: e.description,
