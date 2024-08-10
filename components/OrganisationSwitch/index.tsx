@@ -3,16 +3,13 @@
 import {
     DropdownMenu,
     DropdownMenuContent,
-    DropdownMenuItem,
-    DropdownMenuLabel,
     DropdownMenuRadioGroup,
     DropdownMenuRadioItem,
-    DropdownMenuSeparator,
     DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { ChevronDown } from "lucide-react";
-import { getSession, useSession } from "next-auth/react";
-import { useMemo, useState } from "react";
+import {  useSession } from "next-auth/react";
+import {  useState } from "react";
 
 interface OrganizationSwitchProps {
     orgs: { name: string; id: string }[];
@@ -20,7 +17,7 @@ interface OrganizationSwitchProps {
 function OrganizationSwitch({ orgs }: OrganizationSwitchProps) {
     const [selected, setSelected] = useState(0);
 
-    const { data: session, status, update } = useSession();
+    const { data: session,  update } = useSession();
 
     async function changeSelectedOrg(index: number) {
         await update({ ...session?.user, orgId: orgs[index].id });

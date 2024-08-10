@@ -14,7 +14,6 @@ import { User } from "next-auth";
 function IndexingRequest() {
   const [loading, setLoading] = useState(false);
   const [infoModal, setInfoModal] = useState(false);
-  const [progress, setProgress] = useState(0);
   const { toast } = useNotify();
   const { data } = useSession();
   async function requestIndexing(event: FormEvent) {

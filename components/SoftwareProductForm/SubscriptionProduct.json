@@ -1,0 +1,109 @@
+{
+  "title": "SuperApp",
+  "subTitle": "The ultimate productivity tool",
+  "description": "SuperApp is designed to enhance productivity and streamline your workflow.",
+  "images": [
+    {
+      "name": "Dashboard Screenshot",
+      "src": "https://example.com/image1.png"
+    },
+    {
+      "name": "Feature Overview",
+      "src": "https://example.com/image2.png"
+    }
+  ],
+  "tags": [
+    {
+      "name": "Productivity"
+    },
+    {
+      "name": "Tool"
+    }
+  ],
+  "pricing": "Subscription",
+  "link": "https://superapp.com",
+  "githubLink": "https://github.com/superapp",
+  "subscriptionModel": [
+    {
+      "name": "Pro Plan",
+      "description": "Advanced subscription with premium features",
+      "price": 29.99,
+      "features": [
+        {
+          "title": "Unlimited Access",
+          "subTitle": "Access to all premium features"
+        },
+        {
+          "title": "Priority Support",
+          "subTitle": "24/7 customer support"
+        }
+      ],
+      "workflows": [
+        {
+          "title": "Automated Backup",
+          "token": "token_123",
+          "tools": ["Google", "WolframAlpha", "Slack"],
+          "services": ["Salesforce", "Zapier"]
+        },
+        {
+          "title": "Data Analysis",
+          "token": "token_456",
+          "tools": ["Github", "CodeInterpreter", "ChartGenerator"],
+          "services": ["Google", "NetSuite"]
+        }
+      ],
+      "chatBots": [
+        {
+          "title": "Customer Support Bot",
+          "token": "token_789",
+          "tools": ["Slack", "Trello", "YouTube"],
+          "services": ["Twitter", "Facebook"]
+        },
+        {
+          "title": "Sales Assistant Bot",
+          "token": "token_012",
+          "tools": ["DingTalk", "Wecom", "QRCode"],
+          "services": ["LinkedIn", "Shopify"]
+        }
+      ],
+      "type": "MONTHLY",
+      "credits": 100,
+      "profit": 50
+    },
+    {
+      "name": "Basic Plan",
+      "description": "Essential tools for small teams",
+      "price": 9.99,
+      "features": [
+        {
+          "title": "Limited Access",
+          "subTitle": "Access to essential features only"
+        },
+        {
+          "title": "Standard Support",
+          "subTitle": "Support during business hours"
+        }
+      ],
+      "workflows": [
+        {
+          "title": "Simple Backup",
+          "token": "token_345",
+          "tools": ["Bing", "Stability", "WebScraper"],
+          "services": ["Drupal", "WordPress"]
+        }
+      ],
+      "chatBots": [
+        {
+          "title": "Basic Support Bot",
+          "token": "token_678",
+          "tools": ["Feishu", "Brave", "DevDocs"],
+          "services": ["Twitter", "Facebook"]
+        }
+      ],
+      "type": "YEARLY",
+      "credits": 50,
+      "profit": 20
+    }
+  ],
+  "status": "Released"
+}

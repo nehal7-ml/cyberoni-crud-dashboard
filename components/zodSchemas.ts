@@ -232,19 +232,24 @@ export const workflowServices = z.enum([
 const SubscriptionModelSchema = z.object({
   id: z.string().optional(),
   name: z.string().min(1),
-  description: z.string().min(1),
+  description: z.string().optional(),
   price: z.number(),
-  features: z.object({
+  features: z.array(z.object({
     title: z.string().min(1),
     subTitle: z.string().min(1),
-  }),
-  workflows: z.object({
+  })).optional().nullable(),
+  workflows: z.array(z.object({
     title: z.string().min(1),
     token: z.string().min(1),
-    tools: z.array(workFlowTools).optional(),
-    services: z.array(workflowServices).optional(),
-  }),
-  status: z.enum(["ACTIVE", "INACTIVE"]), // Assuming SubscriptionStatus is an enum with values "ACTIVE" and "INACTIVE"
+    tools: z.array(workFlowTools).optional().nullable(),
+    services: z.array(workflowServices).optional().nullable(),
+  })).optional().nullable(),
+  chatBots: z.array(z.object({
+    title: z.string().min(1),
+    token: z.string().min(1),
+    tools: z.array(workFlowTools).optional().nullable(),
+    services: z.array(workflowServices).optional().nullable(),
+  })).optional().nullable(),
   type: z.enum(["MONTHLY", "YEARLY"]), // Assuming SubscriptionPeriod is an enum with values "MONTHLY" and "YEARLY"
   credits: z.number().min(0).default(0),
   profit: z.number().min(0).default(0),
@@ -259,8 +264,8 @@ const SoftwareProductSchema = z.object({
   images: z.array(ImageSchema),
   tags: z.array(TagSchema),
   pricing: z.enum(["Freemium", "Free", "Paid", "Subscription"]),
-  link: z.string().nullable().optional(),
-  githubLink: z.string().nullable().optional(),
+  link: z.string().url().nullable().optional(),
+  githubLink: z.string().url().nullable().optional(),
   subscriptionModel: z.array(SubscriptionModelSchema).optional().nullable(),
   blogLink: z
     .string()
