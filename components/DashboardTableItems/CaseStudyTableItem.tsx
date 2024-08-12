@@ -2,12 +2,14 @@ import { CaseStudy } from "@prisma/client";
 import { TableItem } from "../Table/TableItem";
 import { seoUrl, stripSlashes } from "@/lib/utils";
 import Table from "../Table";
+import { CreateCaseStudyDTO } from "@/crud/DTOs";
+import { string } from "zod";
 
 function CaseStudyTable({
   records,
   page,
 }: {
-  records: CaseStudy[];
+  records:( CreateCaseStudyDTO & { id: string })[];
   page: number;
 }) {
   return (
@@ -24,7 +26,7 @@ function CaseStudyTable({
         rows={records.map((value, index) => {
           const row: any = [];
           row.push(value.title);
-          row.push((value.goals as string[]).join("/n"));
+          row.push(value.goals.goals as string );
           row.push(value.preview);
           return {
             index: value.id,

@@ -37,34 +37,36 @@ export type CreateBlogDTO = {
   images: CreateImageDTO[];
   tags: CreateTagDTO[];
   category?: BlogCategory;
-  ctaProps?: CTAProps | null
-  Organization?: Organization
-
+  ctaProps?: CTAProps | null;
+  Organization?: Organization;
 };
-
 
 export type CTAProps = {
   title: string;
   subTitle: string;
   link: string;
   button: string;
-}
+};
 
 export type BlogCategory = {
-  id?: string
+  id?: string;
   name: string;
-  children?: BlogCategory[],
-  parentId?: string | null
+  children?: BlogCategory[];
+  parentId?: string | null;
   parent?: {
     id: string;
   } | null;
-}
+};
 export type CreateCategory = {
   id?: string;
   name: string;
-  children: { name: string, id?: string }[]
-}
-export type DisplayBlogDTO = Blog & { author: User, tags: Tag[], images: Image[] };
+  children: { name: string; id?: string }[];
+};
+export type DisplayBlogDTO = Blog & {
+  author: User;
+  tags: Tag[];
+  images: Image[];
+};
 export type CreateImageDTO = {
   id?: string | undefined;
   name?: string | undefined | null;
@@ -75,13 +77,13 @@ export type CreateServiceDTO = {
   title: string;
   previewContent: string;
   featured: boolean;
-  ServiceDescription: CreateServiceDescription[]
+  ServiceDescription: CreateServiceDescription[];
   hourlyRate: number;
   valueBrought: string[];
   skillsUsed: string[];
   htmlEmbed?: string;
   image?: CreateImageDTO;
-  SubServices?: CreateSubServiceDTO[]
+  SubServices?: CreateSubServiceDTO[];
   tags?: CreateTagDTO[];
   faqs?: CreateFaqDTO[];
 };
@@ -104,7 +106,7 @@ export type DisplayServiceDTO = Service & {
   tags?: Tag[];
   SubServices?: SubService[];
   ServiceDescription?: (ServiceDescription & { image: Image | null })[];
-  createdBy?: User
+  createdBy?: User;
 };
 export type CreateSubServiceDTO = {
   id?: string;
@@ -132,8 +134,8 @@ export type DisplayDiscountDTO = {
   id?: string;
   name: string;
   value: number;
-  createdBy?: User
-}
+  createdBy?: User;
+};
 export type CreateAddressDTO = {
   id?: string;
   street: string;
@@ -167,56 +169,55 @@ export type CreateGptPromptDTO = {
   tags: CreateTagDTO[];
   image: CreateImageDTO[];
   botUrl?: string;
-  conversationStarters: GptConvoStarters[] | [],
-  seed: number,
-  startPhrase: string
-  sysCommands: GptSysCommands | {}
-  steps: GptSteps[] | [],
-  stream: boolean
-  toolChoice: string,
-  tools: {}
+  conversationStarters: GptConvoStarters[] | [];
+  seed: number;
+  startPhrase: string;
+  sysCommands: GptSysCommands | {};
+  steps: GptSteps[] | [];
+  stream: boolean;
+  toolChoice: string;
+  tools: {};
   variables: {
-    title: string,
-    description: string
-  }[]
-
+    title: string;
+    description: string;
+  }[];
 };
 export type GptCategory = {
-  id?: string
+  id?: string;
   name: string;
-  children?: GptCategory[],
+  children?: GptCategory[];
   parent?: {
     id: string;
   } | null;
-  parentId?: string | null
-}
+  parentId?: string | null;
+};
 export type GptSteps = {
-  index: number,
-  command: string,
-  callTo: "@LLM" | number
-  priority: 'HIGH' | 'MEDIUM' | 'LOW',
-  context: string
-  goal: string,
-}
+  index: number;
+  command: string;
+  callTo: "@LLM" | number;
+  priority: "HIGH" | "MEDIUM" | "LOW";
+  context: string;
+  goal: string;
+};
 
 export type GptConvoStarters = {
   title: string;
-  description: string
-}
+  description: string;
+};
 
 export type GptSysCommands = {
   [x: string]: {
-    priority: 'HIGH' | 'MEDIUM' | 'LOW',
-    context: string,
-    example: string
-  }
-}
+    priority: "HIGH" | "MEDIUM" | "LOW";
+    context: string;
+    example: string;
+  };
+};
 export type DisplayPrompt = GptPrompt & {
   stop: string[];
   reviews?: Review[];
   image?: Image;
   tags: Tag[];
-  tools: {}
+  tools: {};
 };
 
 export type CreateOrderDTO = {
@@ -276,44 +277,70 @@ export type CreateReferralDTO = {
   click: number;
   userId?: string;
   utmProps:
-  | {
-    utm_medium: string;
-    utm_campaign: string;
-    utm_source: string;
-    utm_segment: string;
-    utm_product_category: string;
-    utm_communication_theme: string;
-    utm_ad_type: string;
-    utm_funnel_location: string;
-    utm_earned_or_paid: "earned" | "paid";
-  }
-  | {};
+    | {
+        utm_medium: string;
+        utm_campaign: string;
+        utm_source: string;
+        utm_segment: string;
+        utm_product_category: string;
+        utm_communication_theme: string;
+        utm_ad_type: string;
+        utm_funnel_location: string;
+        utm_earned_or_paid: "earned" | "paid";
+      }
+    | {};
 };
-
 
 export type DisplayReferralDTO = Referral & {
   createdBy?: User;
-}
+};
 export type CreateCaseStudyDTO = {
   id?: string;
   title: string;
-  serviceId?: string;
+  serviceId?: string | null;
   subServices: { id: string }[];
   preview: string;
-  problemStatement: string;
-  userProblems: string[]; //comma seaprated
-  possibleSolutions: string[]; //comma seaprated
-  goals: string[]; //comma seaprated
+  problemStatement: {
+    title: string;
+    statement: string;
+  };
+  primaryResearch: {
+    title : string;
+    research: string;
+  };
+  userProblems: {
+    title: string;
+    problems: string
+  },
+  possibleSolutions: {
+    title: string;
+    solution: string;
+  };
+  goals: {
+    title: string;
+    goals: string;
+  }; //comma seaprated
   images: CreateImageDTO[];
-  uniqueFeatures: string;
-  userResearch: string;
-  keyLearning: string;
+  uniqueFeatures: {
+    title: string;
+    features: string[];
+  };
+  results: {
+    image?: CreateImageDTO;
+    title: string;
+    description: string;
+  };
+  userResearch: {
+    title: string;
+    research: string;
+  };
+  keyLearning: {
+    title: string;
+    learning: string;
+    image?: CreateImageDTO;
+  };
   userPersonas: UserPersona[];
-  competitiveAnalysis: CreateImageDTO[];
-  wireFrames?: CreateImageDTO[];
-  hifiDesign?: CreateImageDTO[];
-  userFlow?: CreateImageDTO[];
-  architecture?: CreateImageDTO[];
+  competitorAnalysis: { title: string; analysis: string };
 };
 
 export type UserPersona = {
@@ -331,7 +358,6 @@ export type CreateDiscountDTO = {
   value: number;
   expires?: Date | null;
 };
-
 
 export type CreateProductDTO = {
   sku: string;
@@ -379,8 +405,7 @@ export type ProductCategory = {
   children?: ProductCategory[];
   parent?: ProductCategory | null;
   parentId?: string | null;
-
-}
+};
 export type CreateSupplierDTO = {
   baseShippingPrice: number;
   height: number;
@@ -413,43 +438,40 @@ export type CreateEventDTO = {
 };
 
 export type DisplayEventDTO = Event & {
-  createdBy?: User
-}
+  createdBy?: User;
+};
 
-
-export type CreateSoftwareProductDTO = ({
-  id?: string;
-  title: string;
-  subTitle: string;
-  description?: string;
-  images: CreateImageDTO[];
-  tags: CreateTagDTO[];
-  pricing: 'Free' | 'Freemium' | 'Paid';
-  link?: string;
-  githubLink?: string;
-  blog?: { id: string, title: string };
-  status: SoftwareProductStatus;
-  category?: SoftwareProductCategory
-  subscriptionModel?: SubscriptionModel[]
-
-} | {
-  id?: string;
-  title: string;
-  subTitle: string;
-  description?: string;
-  images: CreateImageDTO[];
-  tags: CreateTagDTO[];
-  pricing: 'Subscription';
-  link?: string;
-  githubLink?: string;
-  blog?: { id: string, title: string };
-  status: SoftwareProductStatus;
-  category?: SoftwareProductCategory
-  subscriptionModel: SubscriptionModel[]
-
-
-
-});
+export type CreateSoftwareProductDTO =
+  | {
+      id?: string;
+      title: string;
+      subTitle: string;
+      description?: string;
+      images: CreateImageDTO[];
+      tags: CreateTagDTO[];
+      pricing: "Free" | "Freemium" | "Paid";
+      link?: string;
+      githubLink?: string;
+      blog?: { id: string; title: string };
+      status: SoftwareProductStatus;
+      category?: SoftwareProductCategory;
+      subscriptionModel?: SubscriptionModel[];
+    }
+  | {
+      id?: string;
+      title: string;
+      subTitle: string;
+      description?: string;
+      images: CreateImageDTO[];
+      tags: CreateTagDTO[];
+      pricing: "Subscription";
+      link?: string;
+      githubLink?: string;
+      blog?: { id: string; title: string };
+      status: SoftwareProductStatus;
+      category?: SoftwareProductCategory;
+      subscriptionModel: SubscriptionModel[];
+    };
 
 export enum workFlowTools {
   Google = "Google",
@@ -509,15 +531,15 @@ export enum workflowServices {
   SecondCall = "SecondCall",
   Shopify = "Shopify",
   Printful = "Printful",
-  Eventbrite = "Eventbrite"
+  Eventbrite = "Eventbrite",
 }
 
 type DifyBots = {
   title: string;
   token: string;
-  tools?: workFlowTools[]
-  services?: workflowServices[]
-}
+  tools?: workFlowTools[];
+  services?: workflowServices[];
+};
 export type SubscriptionModel = {
   id?: string | null;
   name: string;
@@ -526,15 +548,14 @@ export type SubscriptionModel = {
   features: {
     title: string;
     subTitle: string;
-
-  },
-  workflows: DifyBots,
-  chatBots:    DifyBots,
-  status: SubscriptionStatus
-  type: SubscriptionPeriod
-  credits: number | 0
-  profit: number | 0
-}
+  };
+  workflows: DifyBots;
+  chatBots: DifyBots;
+  status: SubscriptionStatus;
+  type: SubscriptionPeriod;
+  credits: number | 0;
+  profit: number | 0;
+};
 
 export type SoftwareProductCategory = {
   id: string;
@@ -542,7 +563,7 @@ export type SoftwareProductCategory = {
   children?: SoftwareProductCategory[];
   parent?: SoftwareProductCategory | null;
   parentId?: string | null;
-}
+};
 
 export type DisplaySoftwareProductDTO = {
   id: string;
@@ -556,19 +577,17 @@ export type DisplaySoftwareProductDTO = {
   githubLink?: string;
   status: SoftwareProductStatus;
   createdBy: User;
-  category?: SoftwareProductCategory
-  blog?: { id: string }
-}
-
-
+  category?: SoftwareProductCategory;
+  blog?: { id: string };
+};
 
 export type CreateOrgDTO = {
   name: string;
   ownerId: string;
-}
+};
 
 export type UpdateOrgDTO = {
-  id: string,
-  name: string,
-  ownerId: string
-}
+  id: string;
+  name: string;
+  ownerId: string;
+};

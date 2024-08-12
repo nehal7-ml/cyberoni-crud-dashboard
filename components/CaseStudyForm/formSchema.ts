@@ -1,148 +1,220 @@
 import { FormSchema } from "../DynamicInput";
 
-export const userPersona:FormSchema ={
-    type: "array",
-    title: "User Personas",
-    description: "User Personas Items",
-    items: {
-      type: "object",
-      description: "User Persona",
-      title: "User Persona",
-      required: true,
-      properties: {
-        name: {
-          required: true,
-          type: "string",
-          title: "Name",
-        },
-        age: {
-          type: 'number',
-          title: "Age",
-          required: false,
-        },
-        bio: {
-          type: "string",
-          title: "Bio",
-          required: true,
-        },
-        image: {
-          type: "image",
-          title: "image",
-          required: true,
-        },
-        gender: {
-          type: "string",
-          title: "gender",
-          required: false,
-        },
-        goals: {
-          type: "array",
-          title: "goals",
-          description: "Describe your goals",
-          items: {
-            type: "string",
-            title: "goal",
-            required: true,
-          },
-          required: false,
-        },
-        painPoints: {
-          type: "array",
-          title: "painPoints",
-          description: "Describe your pain points",
-          items: {
-            type: "string",
-            title: "painPoints",
-            required: true,
-          },
-          required: false,
-        },
-      },
-
-    },
-    toString: (object: any) => {
-      return object.name;
-    },
-    required: false,
-  }
-
-
-
-  const caseStudyFormSchema: FormSchema = {
+export const userPersona: FormSchema = {
+  type: "array",
+  title: "User Personas",
+  description: "User Personas Items",
+  items: {
     type: "object",
-    title: "CaseStudyForm",
-    description: "Schema for the case study form",
+    description: "User Persona",
+    title: "User Persona",
     required: true,
     properties: {
-      title: { type: "string", title: "Title", required: true },
-      preview: { type: "text", title: "Preview", required: true },
-      problemStatement: { type: "text", title: "Problem Statement", required: true },
-      userProblems: {
-        type: "array",
-        title: "User Problems",
-        description: "User Problems",
+      name: {
         required: true,
-        items: { type: "string", title: "User Problem", required: true },
-        toString: (object) => object.join(", "),
+        type: "string",
+        title: "Name",
       },
-      possibleSolutions: {
-        type: "array",
-        title: "Possible Solutions",
-        description: "Possible Solutions",
+      age: {
+        type: "number",
+        title: "Age",
         required: true,
-        items: { type: "string", title: "Possible Solution", required: true },
-        toString: (object) => object.join(", "),
+      },
+      bio: {
+        type: "string",
+        title: "Bio",
+        required: true,
+      },
+      image: {
+        type: "image", // Updated to handle CreateImageDTO
+        title: "Image",
+        required: false, // Made optional based on DTO
+        max: 1,
+      },
+      gender: {
+        type: "string",
+        title: "Gender",
+        required: false,
       },
       goals: {
         type: "array",
         title: "Goals",
-        description: "Goals",
+        description: "Describe your goals",
+        items: {
+          type: "string",
+          title: "Goal",
+          required: true,
+        },
         required: true,
-        items: { type: "string", title: "Goal", required: true },
-        toString: (object) => object.join(", "),
       },
-      images: {
-        type: "image",
-        title: "Images",
-        required: true,
-        max: 10,
-      },
-      uniqueFeatures: { type: "text", title: "Unique Features", required: true },
-      userResearch: { type: "text", title: "User Research", required: true },
-      keyLearning: { type: "text", title: "Key Learning", required: true },
-      userPersonas: userPersona,
-      competitiveAnalysis: {
-        type: "image",
-        title: "Competitive Analysis",
+      painPoints: {
+        type: "array",
+        title: "Pain Points",
+        description: "Describe your pain points",
+        items: {
+          type: "string",
+          title: "Pain Point",
+          required: true,
+        },
         required: false,
-        max: 10,
-      },
-      wireFrames: {
-        type: "image",
-        title: "Wireframes",
-        required: false,
-        max: 10,
-      },
-      hifiDesign: {
-        type: "image",
-        title: "High Fidelity Design",
-        required: false,
-        max: 10,
-      },
-      userFlow: {
-        type: "image",
-        title: "User Flow",
-        required: false,
-        max: 10,
-      },
-      architecture: {
-        type: "image",
-        title: "Architecture",
-        required: false,
-        max: 10,
       },
     },
-    toString: (object) => object.title,
-  };
+  },
+  toString: (object: any) => {
+    return object.name;
+  },
+  required: true,
+};
 
-  export { caseStudyFormSchema };
+const caseStudyFormSchema: FormSchema = {
+  type: "object",
+  title: "Case Study Form",
+  description: "Schema for the case study form",
+  required: true,
+  properties: {
+    title: { type: "string", title: "Title", required: true },
+    preview: { type: "string", title: "Preview", required: true },
+    images: {
+      type: "image",
+      title: "Images",
+      required: true,
+      max: 1,
+
+    },
+    problemStatement: {
+      type: "object",
+      title: "Problem Statement",
+      description: "Problem Statement for the case study",
+      required: true,
+      properties: {
+        title: { type: "string", title: "Title", required: true },
+        statement: { type: "text", title: "Statement", required: true },
+      },
+    },
+    primaryResearch: {
+      type: "object",
+      title: "Primary Research",
+      description: "Primary Research for the case study",
+      required: false,
+      properties: {
+        title: { type: "string", title: "Title", required: true },
+        research: { type: "text", title: "Research", required: true },
+      },
+    },
+    userProblems: {
+      type: "object",
+      title: "User Problems",
+      description: "User Problems",
+      required: true,
+      properties: {'title': {
+        'type': 'string',
+        'title': 'Title',
+        'required': true
+      }, 
+      'problems': {
+        'type': 'text',
+        'title': 'Problems',
+        'required': true
+      }
+    
+    
+    },
+      toString: (object) => object.join(", "),
+    },
+    possibleSolutions: {
+      type: "object",
+      title: "Possible Solutions",
+      description: "Possible Solutions",
+      required: true,
+      properties: {
+        title: { type: "string", title: "Title", required: true },
+        solution: { type: "text", title: "Solution", required: true },
+      },
+    },
+    goals: {
+      type: "object",
+      title: "Goals",
+      description: "Goals",
+      required: true,
+      properties: {
+        title: { type: "string", title: "Title", required: true },
+        goals: { type: "text", title: "Goals", required: true },
+      },
+    },
+   
+    uniqueFeatures: {
+      type: "object",
+      title: "Unique Features",
+      description: "Unique Features",
+      required: true,
+      properties: {
+        title: { type: "string", title: "Title", required: true },
+        features: {
+          type: "array",
+          description: "Features",
+          title: "Features",
+          required: true,
+          items: { type: "string", title: "Feature", required: true },
+        },
+      },
+    },
+    results: {
+      type: "object",
+      title: "Results",
+      description: "Results",
+      required: false,
+      properties: {
+        title: { type: "string", title: "Title", required: true },
+        description: { type: "text", title: "Description", required: true },
+        image: {
+          type: "image",
+          title: "Image",
+          required: true,
+
+        },
+      },
+    },
+    userResearch: {
+      type: "object",
+      title: "User Research",
+      description: "User Research",
+      required: true,
+      properties: {
+        title: { type: "string", title: "Title", required: true },
+        research: { type: "text", title: "Research", required: true },
+      },
+    },
+    keyLearning: {
+      type: "object",
+      title: "Key Learning",
+      required: true,
+      description: "Key Learning",
+      properties: {
+        title: { type: "string", title: "Title", required: true },
+        learning: { type: "text", title: "Learning", required: true },
+        image: {
+          type: "image",
+          title: "Image",
+          max: 1,
+          required: true,
+
+        },
+      },
+    },
+    competitorAnalysis: {
+      type: "object",
+      title: "Competitor Analysis",
+      description: "Competitor Analysis",
+      required: false,
+      properties: {
+        title: { type: "string", title: "Title", required: true },
+        analysis: { type: "text", title: "Analysis", required: true },
+      },
+    },
+    userPersonas: userPersona,
+
+  },
+  toString: (object) => object.title,
+};
+
+export { caseStudyFormSchema };

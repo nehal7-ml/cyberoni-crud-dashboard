@@ -1,7 +1,7 @@
 import "server-only";
 import { Image, PrismaClient, Role } from "@prisma/client";
 import { CreateImageDTO } from "./DTOs";
-import { connectOrCreateObject, createImageJson } from "./images";
+import { connectOrCreateObject, createImageJson, createObject as createImage } from "./images";
 import { CreateCaseStudyDTO } from "./DTOs";
 import { User } from "next-auth";
 import { prisma } from "@/lib/prisma";
@@ -12,14 +12,17 @@ export type CaseStudyType = "ECOMMERCE" | "LANDING" | "SOFTWARE" | "GRAPHICS";
 export async function create(caseStudy: CreateCaseStudyDTO, user: User) {
   const cases = prisma.caseStudy;
   let images = await connectOrCreateObject(caseStudy.images, []);
-  let competetiveAnalysis = await connectOrCreateObject(
-    caseStudy.competitiveAnalysis,
-    [],
+  let resultImage = await createImage(caseStudy.results.image);
+  let keyLearningsImage = await createImage(caseStudy.keyLearning.image);
+
+  let updatedUserPersonas = await Promise.all(
+    caseStudy.userPersonas.map(async (userPersona) => {
+      return {
+        ...userPersona,
+        image: await createImage(userPersona.image),
+      };
+    })
   );
-  let wireFrames = await connectOrCreateObject(caseStudy.wireFrames!, []);
-  let hifiDesign = await connectOrCreateObject(caseStudy.hifiDesign!, []);
-  let userFlow = await connectOrCreateObject(caseStudy.userFlow!, []);
-  let architecture = await connectOrCreateObject(caseStudy.architecture!, []);
 
   const newCase = await cases.create({
     data: {
@@ -27,18 +30,18 @@ export async function create(caseStudy: CreateCaseStudyDTO, user: User) {
       goals: caseStudy.goals,
       preview: caseStudy.preview,
       userResearch: caseStudy.userResearch,
-      keyLearning: caseStudy.keyLearning,
+      keyLearning: {
+        ...caseStudy.keyLearning,
+        image: keyLearningsImage,
+      },
       possibleSolutions: caseStudy.possibleSolutions,
       problemStatement: caseStudy.problemStatement,
       uniqueFeatures: caseStudy.uniqueFeatures,
-      userPersonas: caseStudy.userPersonas,
+      userPersonas: updatedUserPersonas,
       userProblems: caseStudy.userProblems,
-      architecture: createImageJson(architecture),
-      hifiDesign: createImageJson(hifiDesign),
-      images: createImageJson(images),
-      userFlow: createImageJson(userFlow),
-      wireFrames: createImageJson(wireFrames),
-      competitiveAnalysis: createImageJson(competetiveAnalysis),
+      results: { ...caseStudy.results, image: resultImage },
+      images: images,
+      competitorAnalysis: caseStudy.competitorAnalysis,
       type: caseStudy.serviceId ? { connect: { id: caseStudy.serviceId } } : {},
       createdBy: { connect: { id: user.id } },
       Organization: {
@@ -57,17 +60,12 @@ export async function read(caseStudyId: string, user: User) {
   const cases = prisma.caseStudy;
   const caseStudy = await cases.findUnique({
     where: { id: caseStudyId, AND: orgQuery(user) },
-    include: { subServices: { select: { id: true } } },
+    include: { subServices: { select: { id: true } }, images: true },
+    
   });
   return {
     ...caseStudy,
-    competitiveAnalysis: caseStudy?.competitiveAnalysis as CreateImageDTO[],
-    architecture: caseStudy?.architecture as CreateImageDTO[],
-    images: caseStudy?.images as CreateImageDTO[],
-    hifiDesign: caseStudy?.hifiDesign as CreateImageDTO[],
-    userFlow: caseStudy?.userFlow as CreateImageDTO[],
-    wireFrames: caseStudy?.wireFrames as CreateImageDTO[],
-  } as CreateCaseStudyDTO;
+  } as unknown as CreateCaseStudyDTO;
 }
 
 export async function update(
@@ -76,34 +74,20 @@ export async function update(
   user: User,
 ) {
   const cases = prisma.caseStudy;
-  const oldCase = await cases.findUnique({ where: { id: caseStudyId, AND: orgQuery(user) } });
+  const oldCase = await cases.findUnique({
+    where: { id: caseStudyId, AND: orgQuery(user) },
+    include: { images: true },
+  });
   if (!oldCase) {
-    throw HttpError(404, "Case study not found")
+    throw HttpError(404, "Case study not found");
   }
   let images = await connectOrCreateObject(
     caseStudy.images,
     oldCase?.images as unknown as Image[],
   );
-  let competitiveAnalysis = await connectOrCreateObject(
-    caseStudy.competitiveAnalysis,
-    oldCase?.images as unknown as Image[],
-  );
-  let wireFrames = await connectOrCreateObject(
-    caseStudy.wireFrames!,
-    oldCase?.wireFrames as unknown as Image[],
-  );
-  let hifiDesign = await connectOrCreateObject(
-    caseStudy.hifiDesign!,
-    oldCase?.hifiDesign as unknown as Image[],
-  );
-  let userFlow = await connectOrCreateObject(
-    caseStudy.userFlow!,
-    oldCase?.userFlow as unknown as Image[],
-  );
-  let architecture = await connectOrCreateObject(
-    caseStudy.architecture!,
-    oldCase?.architecture as unknown as Image[],
-  );
+
+  let resultImage = await createImage(caseStudy.results.image);
+  let keyLearningsImage = await createImage(caseStudy.keyLearning.image);
 
   const updatedCaseStudy = await cases.update({
     where: { id: caseStudyId },
@@ -112,18 +96,18 @@ export async function update(
       goals: caseStudy.goals,
       preview: caseStudy.preview,
       userResearch: caseStudy.userResearch,
-      keyLearning: caseStudy.keyLearning,
       possibleSolutions: caseStudy.possibleSolutions,
-      competitiveAnalysis: createImageJson(competitiveAnalysis),
+      competitorAnalysis: caseStudy.competitorAnalysis,
       problemStatement: caseStudy.problemStatement,
       uniqueFeatures: caseStudy.uniqueFeatures,
       userPersonas: caseStudy.userPersonas,
       userProblems: caseStudy.userProblems,
-      architecture: createImageJson(architecture),
-      hifiDesign: createImageJson(hifiDesign),
-      images: createImageJson(images),
-      userFlow: createImageJson(userFlow),
-      wireFrames: createImageJson(wireFrames),
+      images: images,
+      results: { ...caseStudy.results, image: resultImage },
+      keyLearning: {
+        ...caseStudy.keyLearning,
+        image: keyLearningsImage,
+      },
       type: caseStudy.serviceId ? { connect: { id: caseStudy.serviceId } } : {},
       subServices: caseStudy.subServices ? { set: caseStudy.subServices } : {},
     },
@@ -133,7 +117,9 @@ export async function update(
 
 export async function remove(caseStudyId: string, user: User) {
   const cases = prisma.caseStudy;
-  const updatedCaseStudy = await cases.delete({ where: { id: caseStudyId, AND: orgQuery(user) } });
+  const updatedCaseStudy = await cases.delete({
+    where: { id: caseStudyId, AND: orgQuery(user) },
+  });
   return updatedCaseStudy;
 }
 
@@ -142,10 +128,10 @@ export async function getAll(
   pageSize: number,
   user: User,
   options?: {
-    order: 'asc' | 'desc';
-    orderby: 'updatedAt' | 'title';
-    userId?: string
-  }
+    order: "asc" | "desc";
+    orderby: "updatedAt" | "title";
+    userId?: string;
+  },
 ) {
   const caseStudys = prisma.caseStudy;
   if (pageSize !== 10 && pageSize != 30 && pageSize !== 50)
@@ -159,7 +145,9 @@ export async function getAll(
       subServices: true,
       type: true,
     },
-    orderBy: options?.orderby ? { [options.orderby]: options.order } : { createdAt: "desc" },
+    orderBy: options?.orderby
+      ? { [options.orderby]: options.order }
+      : { createdAt: "desc" },
   });
 
   const totalCount = await caseStudys.count({ where: query });

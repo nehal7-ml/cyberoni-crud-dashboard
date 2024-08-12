@@ -1,8 +1,8 @@
 "use client";
 import { CreateCaseStudyDTO } from "@/crud/DTOs";
-import {  useMemo, useState } from "react";
+import { useMemo, useState } from "react";
 
-import  { useNotify } from "../Notification";
+import { useNotify } from "../Notification";
 import { Service } from "@prisma/client";
 import LoadingDots from "../shared/loading-dots";
 import DynamicInput from "../DynamicInput";
@@ -32,7 +32,6 @@ function CaseStudyForm({
   const [loading, setLoading] = useState(false);
   const { toast } = useNotify();
   const router = useRouter();
-  const [userPersonaForm, setUserPersonaForm] = useState(false);
 
   const [caseData, setCaseData] = useState<CreateCaseStudyDTO>(
     initial
@@ -43,33 +42,62 @@ function CaseStudyForm({
       : {
           serviceId: undefined,
           subServices: [],
-          architecture: [],
-          competitiveAnalysis: [],
-          goals: [],
+          goals: { title: "", goals: "" },
           images: [],
-          keyLearning: "Key learnings",
+          keyLearning: {
+            title: "",
+            learning: "",
+            image: undefined,
+          },
           preview: "test preview",
           title: "Test Title",
-          userFlow: [],
-          userProblems: [],
+          userProblems: {
+            title: "",
+            problems: "",
+          },
           userPersonas: [],
-          wireFrames: [],
-          uniqueFeatures: "Unique Features",
-          possibleSolutions: [],
-          problemStatement: "Test Problem",
-          userResearch: "User Research",
-          hifiDesign: [],
+
+          uniqueFeatures: {
+            title: "",
+            features: [],
+          },
+          possibleSolutions: {
+            title: "",
+            solution: "",
+          },
+          problemStatement: {
+            title: "",
+            statement: "",
+          },
+          primaryResearch: {
+            title: "",
+            research: "",
+          },
+          competitorAnalysis: {
+            title: "",
+            analysis: "",
+          },
+          results: {
+            image: undefined,
+            title: "",
+            description: "",
+          },
+          userResearch: {
+            title: "",
+            research: "",
+          },
         },
   );
 
-  const defaultJson = useMemo (() => {
-    if(method === 'POST') {
-
+  const defaultJson = useMemo(() => {
+    if (method === "POST") {
       return JSON.stringify(example, null, 2);
     } else {
-      return JSON.stringify(CaseStudySchema.parse(initial), null, 2)
+      const parsedDta = CaseStudySchema.safeParse(initial);
+      if (parsedDta.success) return JSON.stringify(parsedDta.data, null, 2);
+      else return JSON.stringify(example, null, 2);
     }
-  },[method, initial])
+  }, [method, initial]);
   const [rawJson, setRawJson] = useState(defaultJson);
 
   // console.log(types);
@@ -195,7 +223,7 @@ function CaseStudyForm({
                 <select
                   name="serviceId"
                   className="mt-1 w-full rounded border p-2"
-                  value={caseData.serviceId ??  ""}
+                  value={caseData.serviceId ?? ""}
                   onChange={handleInputChange}
                 >
                   <option disabled>Select Service</option>

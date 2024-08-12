@@ -37,12 +37,15 @@ const BlogSchema = z.object({
   content: z.string().min(1),
   images: z.array(ImageSchema),
   tags: z.array(TagSchema),
-  ctaProps: z.object({
-    title: z.string().min(1),
-    subTitle: z.string().min(1),
-    link: z.string().url(),
-    button: z.string().min(1),
-  }).optional().nullable(),
+  ctaProps: z
+    .object({
+      title: z.string().min(1),
+      subTitle: z.string().min(1),
+      link: z.string().url(),
+      button: z.string().min(1),
+    })
+    .optional()
+    .nullable(),
 });
 
 const ServiceSchema = z.object({
@@ -148,26 +151,61 @@ const UserPersonaSchema = z.object({
   image: ImageSchema.optional(),
 });
 
+// Updated Case Study Schema
 const CaseStudySchema = z.object({
   id: z.string().optional(),
   title: z.string().min(1),
   preview: z.string().min(1),
-  problemStatement: z.string().min(1),
-  userProblems: z.array(z.string().min(1)),
-  possibleSolutions: z.array(z.string().min(1)),
-  goals: z.array(z.string().min(1)),
+  problemStatement: z.object({
+    title: z.string().min(1),
+    statement: z.string().min(1),
+  }).optional(),
+  primaryResearch: z
+    .object({
+      title: z.string().min(1),
+      research: z.string().min(1),
+    })
+    .optional().nullable(),
+  userProblems: z.object({
+    title: z.string().min(1),
+    problems: z.string().min(1),
+  }),
+  possibleSolutions: z.object({
+    title: z.string().min(1),
+    solution: z.string().min(1),
+  }).optional(),
+  goals: z.object({
+    title: z.string().min(1),
+    goals: z.string().min(1),
+  }).optional(),
   images: z.array(ImageSchema).optional(),
-  uniqueFeatures: z.string(),
-  userResearch: z.string(),
-  keyLearning: z.string(),
+  uniqueFeatures: z.object({
+    title: z.string().min(1),
+    features: z.array(z.string().min(1)),
+  }).optional(),
+  results: z
+    .object({
+      title: z.string().min(1),
+      description: z.string().min(1),
+      image: ImageSchema,
+    })
+    .optional(),
+  userResearch: z.object({
+    title: z.string().min(1),
+    research: z.string().min(1),
+  }).optional(),
+  keyLearning: z.object({
+    title: z.string().min(1),
+    learning: z.string().min(1),
+    image: ImageSchema,
+  }).optional(),
   userPersonas: z.array(UserPersonaSchema).optional(),
-  competitiveAnalysis: z.array(ImageSchema).optional(),
-  wireFrames: z.array(ImageSchema).optional(),
-  hifiDesign: z.array(ImageSchema).optional(),
-  userFlow: z.array(ImageSchema).optional(),
-  architecture: z.array(ImageSchema).optional(),
-});
+  competitorAnalysis: z.object({
+    title: z.string().min(1),
+    analysis: z.string().min(1),
+  }).optional(),
 
+});
 
 export const workFlowTools = z.enum([
   "Google",
@@ -234,27 +272,41 @@ const SubscriptionModelSchema = z.object({
   name: z.string().min(1),
   description: z.string().optional(),
   price: z.number(),
-  features: z.array(z.object({
-    title: z.string().min(1),
-    subTitle: z.string().min(1),
-  })).optional().nullable(),
-  workflows: z.array(z.object({
-    title: z.string().min(1),
-    token: z.string().min(1),
-    tools: z.array(workFlowTools).optional().nullable(),
-    services: z.array(workflowServices).optional().nullable(),
-  })).optional().nullable(),
-  chatBots: z.array(z.object({
-    title: z.string().min(1),
-    token: z.string().min(1),
-    tools: z.array(workFlowTools).optional().nullable(),
-    services: z.array(workflowServices).optional().nullable(),
-  })).optional().nullable(),
+  features: z
+    .array(
+      z.object({
+        title: z.string().min(1),
+        subTitle: z.string().min(1),
+      }),
+    )
+    .optional()
+    .nullable(),
+  workflows: z
+    .array(
+      z.object({
+        title: z.string().min(1),
+        token: z.string().min(1),
+        tools: z.array(workFlowTools).optional().nullable(),
+        services: z.array(workflowServices).optional().nullable(),
+      }),
+    )
+    .optional()
+    .nullable(),
+  chatBots: z
+    .array(
+      z.object({
+        title: z.string().min(1),
+        token: z.string().min(1),
+        tools: z.array(workFlowTools).optional().nullable(),
+        services: z.array(workflowServices).optional().nullable(),
+      }),
+    )
+    .optional()
+    .nullable(),
   type: z.enum(["MONTHLY", "YEARLY"]), // Assuming SubscriptionPeriod is an enum with values "MONTHLY" and "YEARLY"
   credits: z.number().min(0).default(0),
   profit: z.number().min(0).default(0),
 });
-
 
 const SoftwareProductSchema = z.object({
   id: z.string().optional(),
@@ -275,8 +327,7 @@ const SoftwareProductSchema = z.object({
     )
     .optional(),
   status: z.enum(["Released", "Beta", "Alpha", "ComingSoon", "Planned"]),
-})
-
+});
 
 const EventSchema = z.object({
   name: z.string().min(1),
